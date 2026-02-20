@@ -70,11 +70,12 @@
 ## STEP 7 — Gemini API 연동
 `feat: gemini image API`
 
-- [ ] `src/api/gemini.js` 작성
-  - 원본 사진 + 스타일 프롬프트를 Gemini API에 전달
+- [x] `src/api/gemini.js` 작성
+  - 원본 사진 + 카드 스타일 프롬프트 → Gemini API 전달
   - 모델: `gemini-2.5-flash-preview-image-generation`
-  - 생성된 이미지 URL 반환
-- [ ] CardDetail에 적용 사진 표시
+  - 생성된 이미지 base64 반환
+- [x] CardDetail에 "사진 생성하기" 버튼 + 결과 이미지 표시
+- [x] 생성 중 스피너, 에러 메시지, 다시 생성하기 버튼
 
 ---
 
