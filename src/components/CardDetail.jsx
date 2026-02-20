@@ -1,7 +1,25 @@
+import { useState } from 'react'
+import { generateStyledPhoto } from '../api/gemini'
 import './CardDetail.css'
 
-export default function CardDetail({ card, onBack }) {
+export default function CardDetail({ card, image, onBack }) {
   const isAvoid = card.type === 'avoid'
+  const [styledPhoto, setStyledPhoto] = useState(null)
+  const [generating, setGenerating] = useState(false)
+  const [genError, setGenError] = useState(null)
+
+  const handleGenerate = async () => {
+    setGenerating(true)
+    setGenError(null)
+    try {
+      const result = await generateStyledPhoto(image, card)
+      setStyledPhoto(result)
+    } catch (err) {
+      setGenError(err.message)
+    } finally {
+      setGenerating(false)
+    }
+  }
 
   return (
     <div className={`detail-page ${isAvoid ? 'avoid-page' : ''}`}>
@@ -46,12 +64,40 @@ export default function CardDetail({ card, onBack }) {
         <p className="coach-text">{card.coachComment}</p>
       </div>
 
-      {/* 적용 사진 (STEP 7 placeholder) */}
+      {/* 적용 사진 (추천 카드만) */}
       {!isAvoid && (
-        <div className="photo-placeholder">
-          <p className="placeholder-icon">🖼</p>
-          <p className="placeholder-text">내 얼굴에 적용된 사진</p>
-          <p className="placeholder-sub">STEP 7에서 구현 예정</p>
+        <div className="photo-section">
+          <p className="card-label" style={{ marginBottom: 12 }}>🖼 내 얼굴에 적용해보기</p>
+
+          {styledPhoto ? (
+            <img src={styledPhoto} alt="스타일 적용 사진" className="styled-photo" />
+          ) : (
+            <div className="photo-placeholder">
+              {generating ? (
+                <>
+                  <div className="gen-spinner" />
+                  <p className="placeholder-text">사진을 생성하고 있어요...</p>
+                  <p className="placeholder-sub">Gemini AI가 스타일을 적용 중이에요</p>
+                </>
+              ) : (
+                <>
+                  <p className="placeholder-icon">✨</p>
+                  <p className="placeholder-text">내 얼굴에 이 스타일을 적용해볼까요?</p>
+                  <button className="gen-btn" onClick={handleGenerate}>
+                    사진 생성하기
+                  </button>
+                </>
+              )}
+            </div>
+          )}
+
+          {genError && <p className="gen-error">{genError}</p>}
+
+          {styledPhoto && (
+            <button className="regen-btn" onClick={handleGenerate} disabled={generating}>
+              {generating ? '생성 중...' : '다시 생성하기'}
+            </button>
+          )}
         </div>
       )}
     </div>

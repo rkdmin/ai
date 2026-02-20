@@ -68,6 +68,7 @@ export default function App() {
     return (
       <CardDetail
         card={selectedCard}
+        image={image}
         onBack={() => setStep('cards')}
       />
     )
