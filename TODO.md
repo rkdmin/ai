@@ -43,27 +43,27 @@
 ## STEP 5 — RAG 데이터 JSON 작성
 `feat: RAG data JSON`
 
-- [ ] `src/data/hairByFaceType.json` 작성
-- [ ] `src/data/makeupByColor.json` 작성
-- [ ] `src/data/featureTips.json` 작성
+- [x] `src/data/hair-face-json.json` 작성 (얼굴형 6종: oval/round/square/heart/long/diamond)
+- [x] `src/data/makeup-json.json` 작성 (퍼스널컬러 4종: spring_warm/summer_cool/autumn_warm/winter_cool)
+- [x] `src/data/featureTips-json.json` 작성 (이목구비 특징 19종)
 
 ---
 
-## STEP 6 — 코디 카드 3장 UI + 피드백 생성
+## STEP 6 — 코디 카드 4장 UI + 피드백 생성
 `feat: result card UI`
 `feat: RAG feedback`
 
-- [ ] `src/components/CardList.jsx` 작성
-  - 카드 3장 나열 (잠긴 상태, 제목/무드만 표시)
+- [x] `src/api/claude.js`에 `generateCards()` 추가
+  - RAG 데이터 조회 (얼굴형·퍼스널컬러·이목구비 매핑)
+  - 추천 3장 + 비추천 1장 JSON 반환
+- [x] `src/components/CardList.jsx` 작성
+  - 추천 카드 3장 + 비추천 카드 1장 목록
   - 카드 클릭 시 상세 열기
-- [ ] 카드 3장 내용 생성 로직
-  - 분석 결과 + JSON 데이터를 합쳐서 Claude에게 전달
-  - 카드 3장 내용 반환 (헤어 추천, 메이크업 포인트, 한줄 코치 멘트)
-- [ ] `src/components/CardDetail.jsx` 작성
-  - 헤어스타일 추천
-  - 메이크업 포인트 2~3가지
-  - RAG 기반 코치 멘트
-  - 적용 사진 영역 (STEP 7에서 채움)
+- [x] `src/components/CardDetail.jsx` 작성
+  - 헤어스타일 추천 + 이유
+  - 메이크업 (립/블러셔/아이섀도우)
+  - 전문가 코치 멘트
+  - 적용 사진 플레이스홀더 (STEP 7에서 채움)
 
 ---
 
