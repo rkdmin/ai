@@ -1,0 +1,27 @@
+# 의존성
+node_modules/
+
+# 빌드 결과물
+dist/
+
+# 환경변수 (API 키 포함 — 절대 커밋 금지)
+.env
+.env.local
+.env.*.local
+
+# 에디터
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# OS
+.DS_Store
+Thumbs.db
+
+# 로그
+*.log
+npm-debug.log*
