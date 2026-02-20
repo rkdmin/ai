@@ -12,24 +12,18 @@
 ---
 
 ## STEP 2 — 조명 정규화 유틸 작성
-`feat: lighting normalization`
-
-- [ ] `src/utils/normalizeLight.js` 작성
-  - 사진을 Canvas에 그린 뒤 픽셀 데이터를 읽어서 화이트밸런스 보정
-  - 보정된 이미지를 base64로 반환
-  - 핵심 로직: 이미지의 가장 밝은 영역을 기준으로 R/G/B 채널 값을 정규화
+~~`feat: lighting normalization`~~ → **생략**
 
 ---
 
 ## STEP 3 — 사진 업로드 UI
 `feat: photo upload UI`
 
-- [ ] `src/components/PhotoUpload.jsx` 작성
+- [x] `src/components/PhotoUpload.jsx` 작성
   - 사진 업로드 버튼 (클릭 또는 드래그앤드롭)
-  - 업로드 시 조명 정규화 자동 실행 (`normalizeLight.js` 호출)
-  - 원본 사진 / 보정된 사진 미리보기 나란히 표시
+  - 업로드 시 미리보기 표시
   - "분석 시작" 버튼
-  - 가이드 예시 사진 표시 (정면, 자연광 권장 안내)
+  - 팁 뱃지 (정면 사진, 자연광, 민낯 권장)
 
 ---
 
@@ -89,11 +83,6 @@
 
 ## STEP 8 — 퍼스널컬러 보정 질문 흐름
 `feat: personal color quiz`
-
-- [ ] 확신도가 medium/low일 때 질문 3개 표시
-  - "햇빛 아래 피부가 황금빛인가요, 분홍빛인가요?"
-  - "금 귀걸이 vs 은 귀걸이 어느 쪽이 더 잘 어울렸나요?"
-  - "흰색 vs 아이보리 중 더 잘 어울리는 색은?"
 - [ ] 답변 기반으로 퍼스널컬러 최종 확정 후 카드 생성
 
 ---
