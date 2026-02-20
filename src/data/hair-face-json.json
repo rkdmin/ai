@@ -1,0 +1,216 @@
+{
+  "hairByFaceType": [
+    {
+      "faceType": "oval",
+      "description": "균형 잡힌 얼굴형이나, 얼굴 길이감(짧거나 긴)에 따라 스타일링이 달라질 수 있음",
+      "exampleCelebrity": ["카리나 (Karina)", "윈터 (Winter)", "고윤정 (Go Yoon-jung)", "수지 (Suzy)", "화사 (Hwasa - 짧은 계란형)"],
+      "recommend": [
+        {
+          "style": "칼단발 (태슬컷)",
+          "reason": "이목구비가 뚜렷하고 화려하다면 시선을 얼굴로 집중시켜 세련된 느낌을 줌",
+          "promptKeyword": "sleek blunt bob cut, tassel cut, straight short hair, chic style",
+          "priority": 1
+        },
+        {
+          "style": "앞머리 펌 + 단발",
+          "reason": "얼굴이 짧은 계란형의 경우, 앞머리에 컬을 넣으면 얼굴 여백을 커버하고 사랑스러움을 극대화함",
+          "promptKeyword": "short bob with curly bangs, lovely wavy bob, soft curls",
+          "priority": 2
+        },
+        {
+          "style": "레이어드 컷",
+          "reason": "얼굴형을 타지 않고 무난하게 잘 어울리며 자연스러운 볼륨감을 줌",
+          "promptKeyword": "long layered haircut, natural volume, soft texture",
+          "priority": 3
+        }
+      ],
+      "avoid": [
+        {
+          "style": "무거운 풀뱅 (얼굴이 짧은 경우)",
+          "reason": "얼굴 세로 길이가 짧은 경우 풀뱅을 하면 얼굴이 더 짧고 넓어 보여 답답해 보일 수 있음"
+        }
+      ],
+      "coachComment": "대부분 잘 어울리지만, 얼굴이 짧은 편이라면 앞머리에 웨이브를 넣어 러블리함을 살리고, 이목구비가 화려하다면 깔끔한 칼단발로 장점을 강조해 보세요."
+    },
+    {
+      "faceType": "round",
+      "description": "얼굴 가로폭과 세로폭이 비슷하고 볼살이 있어 귀여운 인상을 주는 얼굴형",
+      "exampleCelebrity": ["디하나 (Billlie)", "제니 (Jennie - 둥근 느낌의 짧은 얼굴)", "소희 (Sohee)"],
+      "recommend": [
+        {
+          "style": "단발 레이어드 컷",
+          "reason": "머리 하단을 가볍게 층을 내어 볼살 부각을 줄이고 턱선을 갸름하게 보완함",
+          "promptKeyword": "short layered bob, airy texture, light ends, face framing layers",
+          "priority": 1
+        },
+        {
+          "style": "지그재그 가르마",
+          "reason": "정수리 볼륨을 살려 시선을 위로 분산시키고 얼굴을 길어 보이게 함",
+          "promptKeyword": "zigzag hair part, root volume, voluminous top",
+          "priority": 2
+        },
+        {
+          "style": "사이드뱅",
+          "reason": "얼굴 옆면을 자연스럽게 가려 가로 너비를 축소시킴",
+          "promptKeyword": "long side bangs, face slimming hairstyle, natural wave",
+          "priority": 2
+        }
+      ],
+      "avoid": [
+        {
+          "style": "무거운 중단발 펌",
+          "reason": "하관 쪽으로 볼륨이 쌓이면 얼굴이 더 넓고 부어 보임"
+        },
+        {
+          "style": "단발 히피펌",
+          "reason": "가로로 부해지는 스타일이라 얼굴을 더 넙데데해 보이게 만듦"
+        }
+      ],
+      "coachComment": "무거운 느낌보다는 층을 낸 가벼운 스타일이 핵심이에요. 정수리 볼륨을 살려 세로 비율을 늘려주면 훨씬 갸름해 보입니다."
+    },
+    {
+      "faceType": "square",
+      "description": "하관(턱)의 골격이 발달하여 강인하거나 지적인 인상을 주는 얼굴형 (육각형 포함)",
+      "exampleCelebrity": ["안은진 (Ahn Eun-jin)", "송혜교 (Song Hye-kyo)", "한효주 (Han Hyo-joo)"],
+      "recommend": [
+        {
+          "style": "단발 레이어드 컷 (C컬)",
+          "reason": "머리끝이 안으로 말리면서 턱 주변에 음영을 만들어 각진 턱을 감싸줌",
+          "promptKeyword": "layered bob with c-curl, chin length, face framing, soft ends",
+          "priority": 1
+        },
+        {
+          "style": "롱 히피펌",
+          "reason": "얼굴 테두리 라인을 가려주고 시선을 분산시켜 골격을 커버함",
+          "promptKeyword": "long hippie perm, bohemian waves, jelly perm, voluminous curls",
+          "priority": 2
+        },
+        {
+          "style": "가슴 아래 긴 머리 (페미닌)",
+          "reason": "턱을 보완하기보다 페미닌한 분위기를 강조하고 싶을 때 적합",
+          "promptKeyword": "very long wavy hair, feminine style, soft goddess hair",
+          "priority": 3
+        }
+      ],
+      "avoid": [
+        {
+          "style": "일자 단발 (칼단발)",
+          "reason": "턱선과 평행한 직선 라인이 하관의 각을 더욱 도드라지게 함"
+        },
+        {
+          "style": "이마를 가리는 사이드뱅",
+          "reason": "이마 양옆을 가리면 하관이 상대적으로 더 넓고 부해 보일 수 있음"
+        }
+      ],
+      "coachComment": "턱을 가리고 싶다면 머리끝이 턱을 감싸는 레이어드 단발이 베스트예요. 이마를 드러내 시선을 위로 올리는 것이 하관을 덜 부각시킵니다."
+    },
+    {
+      "faceType": "heart",
+      "description": "이마와 광대가 넓고 턱 끝은 좁은 얼굴형. 얼굴 길이가 짧은 경우도 포함",
+      "exampleCelebrity": ["해린 (Haerin - 짧은 하트형)", "사나 (Sana)", "이선빈 (Lee Sun-bin)"],
+      "recommend": [
+        {
+          "style": "사이드뱅",
+          "reason": "넓은 이마와 옆광대를 자연스럽게 커버하여 얼굴형을 부드럽게 함",
+          "promptKeyword": "long side bangs, cheekbone covering layers, soft wave",
+          "priority": 1
+        },
+        {
+          "style": "가벼운 옆머리 (숱 친 히메컷)",
+          "reason": "광대 부각이 있는 경우 숱을 적게 낸 옆머리로 자연스럽게 커버",
+          "promptKeyword": "light hime cut, soft side strands, face framing wisps",
+          "priority": 2
+        },
+        {
+          "style": "중단발 빌드펌",
+          "reason": "빈약한 턱 주변에 볼륨을 채워 전체적인 균형을 맞춤",
+          "promptKeyword": "medium length build perm, shoulder length waves, volume at chin",
+          "priority": 2
+        }
+      ],
+      "avoid": [
+        {
+          "style": "무거운 히메컷",
+          "reason": "광대가 강한 경우 얼굴 여백을 가리려다 오히려 더 답답해 보이거나 광대가 부각됨"
+        },
+        {
+          "style": "무거운 풀뱅 (짧은 하트형)",
+          "reason": "얼굴이 짧은 하트형의 경우 얼굴이 더 넓고 답답해 보일 수 있음"
+        }
+      ],
+      "coachComment": "광대와 이마의 너비를 사이드뱅으로 커버하는 것이 좋아요. 옆머리를 낼 때는 숱을 가볍게 내어 답답하지 않게 연출하세요."
+    },
+    {
+      "faceType": "long",
+      "description": "얼굴 세로 비율이 길거나, 인중 등 중안부가 긴 얼굴형",
+      "exampleCelebrity": ["로제 (Rosé)", "나나 (Nana)", "박은빈 (Park Eun-bin)", "이지아 (Lee Ji-ah)"],
+      "recommend": [
+        {
+          "style": "단발 (턱선 기장)",
+          "reason": "기장을 짧게 끊어주어 시선이 아래로 흐르는 것을 막고 얼굴을 짧아 보이게 함",
+          "promptKeyword": "chin length bob, short tassel cut, straight bob, chic",
+          "priority": 1
+        },
+        {
+          "style": "단발 S컬 펌",
+          "reason": "옆 볼륨을 풍성하게 살려 얼굴의 가로 비율을 확장해 긴 느낌을 중화",
+          "promptKeyword": "short bob with s-curl, side volume, wavy bob",
+          "priority": 1
+        },
+        {
+          "style": "옴브레 염색 (투톤)",
+          "reason": "머리 끝부분을 밝게 하면 시선이 끊겨 얼굴 길이가 짧아 보이는 착시 효과",
+          "promptKeyword": "ombre hair, two-tone hair color, dip dye, bright ends",
+          "priority": 2
+        }
+      ],
+      "avoid": [
+        {
+          "style": "긴 생머리",
+          "reason": "시선을 아래로 길게 늘어뜨려 얼굴을 더욱 길어 보이게 함"
+        },
+        {
+          "style": "5:5 가르마 스트레이트",
+          "reason": "얼굴을 세로로 양분하여 길이가 더욱 강조됨"
+        }
+      ],
+      "coachComment": "과감하게 길이를 자르는 단발이 가장 효과적입니다. 긴 머리를 원한다면 옴브레 염색이나 웨이브로 시선을 분산시키세요."
+    },
+    {
+      "faceType": "diamond",
+      "description": "옆광대가 발달하고 턱은 좁으며 턱 근육이 없는 얼굴형",
+      "exampleCelebrity": ["지젤 (Giselle)"],
+      "recommend": [
+        {
+          "style": "반묶음 (Half-up)",
+          "reason": "옆광대를 자연스럽게 커버하면서 좁은 턱선을 드러내 갸름함을 강조하는 베스트 스타일",
+          "promptKeyword": "half up half down hairstyle, elegant half ponytail, soft waves",
+          "priority": 1
+        },
+        {
+          "style": "사이드뱅 + 포니테일",
+          "reason": "옆머리로 광대를 가리고 묶음 머리로 시선을 위로 올려 세련된 느낌",
+          "promptKeyword": "low ponytail with side bangs, face framing layers, tied hair",
+          "priority": 2
+        },
+        {
+          "style": "밝은 염색 (탈색)",
+          "reason": "피부톤과 머리색의 대비를 줄여 광대 골격의 그림자를 완화함",
+          "promptKeyword": "blonde hair, light brown hair, bleached hair, soft look",
+          "priority": 3
+        }
+      ],
+      "avoid": [
+        {
+          "style": "귀 뒤로 넘긴 생머리",
+          "reason": "울퉁불퉁한 얼굴형(광대 돌출)이 그대로 드러남"
+        },
+        {
+          "style": "히메컷",
+          "reason": "옆광대 골격이 강할수록 히메컷을 했을 때 얼굴이 넙데데해 보일 수 있음"
+        }
+      ],
+      "coachComment": "옆턱 골격이 없다면 반묶음이 최고의 선택이에요. 광대만 사이드뱅이나 밝은 컬러로 부드럽게 커버해 주세요."
+    }
+  ]
+}

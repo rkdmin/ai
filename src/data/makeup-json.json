@@ -1,0 +1,268 @@
+{
+  "makeupByPersonalColor": [
+    {
+      "personalColor": "spring_warm",
+      "description": "생기 있고 투명한 이미지가 강점인 유형. 텁텁한 음영보다는 맑고 화사한 과즙 컬러가 베스트.",
+      "exampleCelebrity": ["수지 (Suzy)", "윤아 (Yoona)", "안유진 (An Yu-jin - 맑은 느낌)"],
+      "coupangSearchKeywords": {
+        "lip": ["롬앤 쥬시래스팅 틴트 코랄", "페리페라 잉크 무드 글로이 틴트 피치", "데이지크 쥬시 듀이 틴트", "봄웜 코랄 립스틱"],
+        "blush": ["크리니크 치크팝 멜론팝", "라카 러브 실크 블러쉬", "피치 블러셔"],
+        "eyeshadow": ["클리오 프로 아이 팔레트 코랄", "데이지크 섀도우 팔레트 피치", "샴페인 골드 글리터"]
+      },
+      "lip": [
+        {
+          "style": "글로시 코랄/피치 (Glossy Coral)",
+          "reason": "피부의 노란 기와 자연스럽게 어우러지며, 봄 웜톤 특유의 '생기'와 '투명함'을 가장 잘 살려주는 베스트 스타일",
+          "promptKeyword": "glossy coral lips, juicy peach lip tint, hydrating texture, bright smile",
+          "priority": 1
+        },
+        {
+          "style": "오렌지 레드 (Orange Red)",
+          "reason": "채도가 높은 컬러가 이목구비를 또렷하게 만들어주어 활동적이고 발랄한 에너지를 줌",
+          "promptKeyword": "vivid orange red lips, energetic look, bright complexion",
+          "priority": 2
+        },
+        {
+          "style": "살구 베이지 (Apricot Beige)",
+          "reason": "자연스러운 데일리 룩을 원할 때, 입술 본연의 색처럼 표현하여 청순함을 강조",
+          "promptKeyword": "soft apricot beige lips, natural makeup, mlbb",
+          "priority": 3
+        }
+      ],
+      "blush": [
+        {
+          "style": "피치/라이트 코랄",
+          "reason": "흰 끼가 섞인 맑은 컬러가 피부를 텁텁하지 않고 투명해 보이게 만들어 동안 이미지를 연출함",
+          "promptKeyword": "peach blush on cheeks, soft coral flush, lovely makeup",
+          "priority": 1
+        }
+      ],
+      "eyeshadow": [
+        {
+          "style": "샴페인 골드 글리터",
+          "reason": "눈두덩이에 가벼운 반짝임을 주어 답답함 없이 시원하고 트여 보이는 눈매를 연출",
+          "promptKeyword": "champagne gold glitter eyeshadow, sparkling eyes, sheer texture",
+          "priority": 1
+        },
+        {
+          "style": "피치 베이지",
+          "reason": "진한 음영 대신 가벼운 베이스 섀도우로 눈가 유분기만 잡아주어 맑은 느낌 유지",
+          "promptKeyword": "peach beige eyeshadow, clean eye makeup, minimal shading",
+          "priority": 2
+        }
+      ],
+      "avoid": [
+        {
+          "style": "탁한 카키/버건디",
+          "reason": "피부톤을 칙칙하게 만들고 봄 웜톤의 투명한 장점을 가림"
+        },
+        {
+          "style": "진한 스모키",
+          "reason": "눈매가 답답해 보이고 나이 들어 보일 수 있음"
+        }
+      ],
+      "coachComment": "봄 웜톤은 '투명함'이 생명이에요. 진한 아이라인이나 섀도우로 덮기보다는, 속눈썹을 강조해 눈을 맑게 트여 보이게 하고 입술에 생기를 주는 것이 베스트입니다."
+    },
+    {
+      "personalColor": "summer_cool",
+      "description": "청순하고 깨끗한 이미지가 돋보이는 유형. 색조를 덜어낼수록(Subtraction) 고유의 매력이 살아남.",
+      "exampleCelebrity": ["장원영 (Wonyoung - 쿨톤 스타일링 시)", "손예진 (Son Ye-jin)", "태연 (Taeyeon)"],
+      "coupangSearchKeywords": {
+        "lip": ["여쿨라 틴트", "롬앤 베어그레이프", "페리페라 갓기천사", "여름쿨톤 핑크 립"],
+        "blush": ["크리니크 치크팝 팬지팝", "롬앤 블루베리칩", "라벤더 블러셔", "딸기우유 블러셔"],
+        "eyeshadow": ["롬앤 말린 라벤더", "여름쿨톤 섀도우 팔레트", "에스쁘아 리얼 아이 팔레트 모브"]
+      },
+      "lip": [
+        {
+          "style": "쿨 핑크/딸기우유 (Cool Pink)",
+          "reason": "피부 톤을 한층 더 하얗고 깨끗하게 밝혀주어 청초한 느낌을 극대화함",
+          "promptKeyword": "cool pink lips, soft baby pink, strawberry milk color, pure look",
+          "priority": 1
+        },
+        {
+          "style": "모브 (Mauve)",
+          "reason": "회색빛이 섞인 차분한 핑크가 우아하고 세련된 분위기를 주며, 입술선을 스머징하면 더 부드러워 보임",
+          "promptKeyword": "mauve lips, soft dusty pink, elegant makeup, blurred lip line",
+          "priority": 2
+        },
+        {
+          "style": "소프트 베리 (Soft Berry)",
+          "reason": "너무 진하지 않은 붉은 기가 혈색만 살짝 더해주어 퓨어한 이미지를 해치지 않음",
+          "promptKeyword": "soft berry tint, sheer red lips, natural cool tone",
+          "priority": 3
+        }
+      ],
+      "blush": [
+        {
+          "style": "라벤더/연보라",
+          "reason": "피부의 노란 기를 중화시키고 투명감을 높여 몽환적이고 신비로운 분위기 형성",
+          "promptKeyword": "lavender blush, pale purple cheeks, mysterious vibe",
+          "priority": 1
+        },
+        {
+          "style": "페일 핑크",
+          "reason": "홍조를 자연스럽게 눌러주면서 뽀얀 피부 표현을 극대화함",
+          "promptKeyword": "pale pink blush, baby face, clean skin",
+          "priority": 2
+        }
+      ],
+      "eyeshadow": [
+        {
+          "style": "애쉬 그레이/토프",
+          "reason": "붉은 기 없는 그림자 컬러로 눈매 부기를 잡고 세련된 눈매 완성 (진하지 않게)",
+          "promptKeyword": "ash grey eyeshadow, cool taupe contour, subtle shading",
+          "priority": 1
+        },
+        {
+          "style": "라벤더 펄",
+          "reason": "눈 밑 애교살에 살짝 얹어 울먹이는 듯한 청순하고 촉촉한 눈망울 연출",
+          "promptKeyword": "lavender glitter under eyes, teary eye makeup, innocent look",
+          "priority": 2
+        }
+      ],
+      "avoid": [
+        {
+          "style": "오렌지 브라운",
+          "reason": "피부의 붉은 기를 강조하고 더워 보이게 만듦"
+        },
+        {
+          "style": "진한 아이라인",
+          "reason": "눈매가 답답해 보이고 청순한 이미지를 해침"
+        }
+      ],
+      "coachComment": "색조를 얹을수록 답답해 보일 수 있어요. '덜어냄의 미학'을 기억하세요. 피부 표현을 얇고 깨끗하게(세미 매트/속광) 하고, 립이나 치크 중 하나에만 은은한 포인트를 주세요."
+    },
+    {
+      "personalColor": "autumn_warm",
+      "description": "깊이 있고 성숙한 '분위기(Atmosphere)'가 강점. 선명한 라인보다는 부드럽게 번지는 그라데이션이 핵심.",
+      "exampleCelebrity": ["탕웨이 (Tang Wei)", "제니 (Jennie)", "이효리 (Lee Hyo-ri)"],
+      "coupangSearchKeywords": {
+        "lip": ["맥 칠리", "3CE 무드레시피", "헤라 센슈얼 파우더 매트 팜파스", "가을웜톤 벽돌립"],
+        "blush": ["3CE 누드 피치", "크리니크 누드팝", "진저 블러셔", "베이지 블러셔"],
+        "eyeshadow": ["롬앤 베러 댄 아이즈 말린 망고튤립", "클리오 브라운 슈", "데이지크 어텀 브리즈", "음영 섀도우 팔레트"]
+      },
+      "lip": [
+        {
+          "style": "칠리/브릭 레드 (Chili/Brick)",
+          "reason": "깊이감 있는 컬러가 얼굴의 윤곽을 잡아주고 고혹적인 아우라를 만듦",
+          "promptKeyword": "chili red lips, brick red lipstick, matte texture, autumn vibe",
+          "priority": 1
+        },
+        {
+          "style": "누드 베이지 MLBB",
+          "reason": "입술색과 자연스럽게 어우러지며, 립 라인을 스머징하면 우아하고 부드러운 인상을 줌",
+          "promptKeyword": "nude beige lips, mlbb lipstick, soft gradient lips, elegant",
+          "priority": 1
+        },
+        {
+          "style": "말린 장미 (Dried Rose)",
+          "reason": "너무 쨍하지 않게 혈색을 주어 지적이고 차분한 이미지를 연출함",
+          "promptKeyword": "dried rose lips, dusty rose color, sophisticated makeup",
+          "priority": 2
+        }
+      ],
+      "blush": [
+        {
+          "style": "진저/베이지",
+          "reason": "광대 라인을 감싸듯 발라 얼굴의 입체감을 살리고 그윽한 음영감을 연결해 줌",
+          "promptKeyword": "ginger beige blush, contouring blush, warm cheekbones",
+          "priority": 1
+        }
+      ],
+      "eyeshadow": [
+        {
+          "style": "딥 브라운 음영",
+          "reason": "눈매에 깊은 음영을 쌓아 눈을 그윽하게 만들고 분위기 있는 눈빛 완성 (아이라인 스머징 필수)",
+          "promptKeyword": "deep brown eyeshadow, smoked out eyeliner, soft contour eyes",
+          "priority": 1
+        },
+        {
+          "style": "브론즈/골드 펄",
+          "reason": "고급스러운 펄감이 가을 웜톤 특유의 성숙미와 화려함을 강조함",
+          "promptKeyword": "bronze gold shimmer, golden hour makeup, rich colors",
+          "priority": 2
+        }
+      ],
+      "avoid": [
+        {
+          "style": "형광 핑크/마젠타",
+          "reason": "피부와 따로 놀며 촌스러워 보일 수 있음"
+        },
+        {
+          "style": "파스텔 라벤더",
+          "reason": "얼굴이 창백해 보이거나 회색빛이 돌게 만듦"
+        }
+      ],
+      "coachComment": "가을 웜톤은 '그윽함'이 포인트입니다. 아이라인과 립 라인의 경계를 면봉이나 브러쉬로 스머징하여 부드럽게 풀어주면(Soft Defined), 특유의 고급스러운 분위기가 살아납니다."
+    },
+    {
+      "personalColor": "winter_cool",
+      "description": "선명한 대비감(Contrast)이 생명. 블랙 헤어, 하얀 피부, 붉은 입술의 대비를 살리는 원포인트 메이크업.",
+      "exampleCelebrity": ["김지원 (Kim Ji-won - 눈물의 여왕 스타일)", "카리나 (Karina)", "임지연 (Lim Ji-yeon)"],
+      "coupangSearchKeywords": {
+        "lip": ["겨울쿨톤 레드립", "맥 루비우", "입생로랑 틴트 체리", "롬앤 플럼콕", "페리페라 쿨톤 정석"],
+        "blush": ["겨울쿨톤 블러셔", "연보라 블러셔", "모브 블러셔"],
+        "eyeshadow": ["에스쁘아 모브미", "웨이크메이크 쿨톤 팔레트", "실버 글리터 섀도우"]
+      },
+      "lip": [
+        {
+          "style": "트루 레드/체리 레드",
+          "reason": "높은 채도의 컬러가 얼굴의 대비감을 살려 이목구비를 가장 또렷하고 선명하게 만듦 (형광등 켠 효과)",
+          "promptKeyword": "true red lips, bright cherry red, high contrast makeup, sharp lip line",
+          "priority": 1
+        },
+        {
+          "style": "플럼/버건디",
+          "reason": "깊고 차가운 컬러가 도시적이고 시크한 카리스마를 뿜어냄",
+          "promptKeyword": "plum lipstick, deep burgundy lips, chic winter look, cold tone",
+          "priority": 2
+        },
+        {
+          "style": "푸시아 핑크",
+          "reason": "형광빛 도는 핑크가 창백한 피부와 강렬하게 대비되어 화려하고 세련된 느낌을 줌",
+          "promptKeyword": "fuchsia pink lips, vivid pink, cool tone bright",
+          "priority": 3
+        }
+      ],
+      "blush": [
+        {
+          "style": "페일 핑크 (최소화)",
+          "reason": "블러셔를 생략하거나 아주 연하게 하여 피부의 하얀 느낌을 살리고 입술 포인트에 집중하게 함",
+          "promptKeyword": "minimal blush, pale pink flush, clean canvas",
+          "priority": 1
+        },
+        {
+          "style": "모브 (사선)",
+          "reason": "광대 쪽에 살짝 넣어 시크하고 성숙한 도시적인 느낌을 강조",
+          "promptKeyword": "mauve contour blush, chic cheekbones",
+          "priority": 2
+        }
+      ],
+      "eyeshadow": [
+        {
+          "style": "블랙/차콜 (아이라인 강조)",
+          "reason": "섀도우보다는 선명하고 깔끔한 아이라인으로 눈매를 강조해 얼굴의 선명도(Defined)를 높임",
+          "promptKeyword": "sharp black eyeliner, charcoal grey definition, cat eye",
+          "priority": 1
+        },
+        {
+          "style": "화이트/실버 글리터",
+          "reason": "차가운 반짝임으로 포인트만 주어 지저분하지 않고 깔끔하면서도 화려한 느낌 연출",
+          "promptKeyword": "silver glitter eyeshadow, icy sparkle, white shimmer",
+          "priority": 2
+        }
+      ],
+      "avoid": [
+        {
+          "style": "탁한 베이지/오렌지 브라운",
+          "reason": "얼굴이 누렇게 뜨고 나이 들어 보일 수 있음"
+        },
+        {
+          "style": "애매한 미지근한 톤",
+          "reason": "이목구비가 흐릿해 보이고 겨울 쿨톤 특유의 카리스마가 사라짐"
+        }
+      ],
+      "coachComment": "겨울 쿨톤은 '대비감(Contrast)'을 살려야 해요. 이것저것 다 하기보다, 입술이면 입술, 속눈썹이면 속눈썹 하나만 명확하게 살리는 '원포인트 메이크업'이 가장 세련돼 보입니다."
+    }
+  ]
+}

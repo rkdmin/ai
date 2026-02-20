@@ -1,0 +1,136 @@
+.card-list-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 48px 24px 48px;
+  max-width: 480px;
+  margin: 0 auto;
+  gap: 28px;
+}
+
+/* 헤더 */
+.list-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.back-btn {
+  background: none;
+  border: none;
+  font-size: 14px;
+  color: #9b9ba4;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+
+.back-btn:hover { color: #636370; }
+
+.list-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1a1a1a;
+  letter-spacing: -0.5px;
+}
+
+.list-sub {
+  font-size: 14px;
+  color: #9b9ba4;
+  margin-top: 4px;
+}
+
+/* 섹션 */
+section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.section-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #b0b0bc;
+  letter-spacing: 0.2px;
+  text-transform: uppercase;
+}
+
+/* 카드 공통 */
+.card-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 20px;
+  border-radius: 20px;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.card-item:hover {
+  transform: translateY(-2px);
+}
+
+.card-item:active {
+  transform: translateY(0);
+}
+
+/* 추천 카드 */
+.card-item.recommend {
+  background: #ffffff;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.07);
+}
+
+.card-item.recommend:hover {
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.11);
+}
+
+/* 비추천 카드 */
+.card-item.avoid {
+  background: #fff5f5;
+  box-shadow: 0 4px 20px rgba(220, 53, 69, 0.08);
+}
+
+.card-item.avoid:hover {
+  box-shadow: 0 8px 28px rgba(220, 53, 69, 0.13);
+}
+
+.card-item.avoid .card-mood {
+  color: #c0392b;
+}
+
+/* 카드 내용 */
+.card-emoji {
+  font-size: 32px;
+  flex-shrink: 0;
+}
+
+.card-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.card-mood {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1a1a1a;
+  letter-spacing: -0.3px;
+}
+
+.card-preview {
+  font-size: 13px;
+  color: #9b9ba4;
+  margin-top: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-arrow {
+  font-size: 20px;
+  color: #c8c8d0;
+  flex-shrink: 0;
+}
