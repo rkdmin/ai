@@ -42,10 +42,10 @@ export async function analyzeFace(imageBase64) {
           text: `이 사람의 얼굴을 분석해주세요. 아래 JSON 형식으로만 응답하세요. 다른 텍스트는 포함하지 마세요.
 
 {
-  "faceType": "계란형 | 둥근형 | 사각형 | 하트형 | 긴형 중 하나",
+  "faceType": "계란형 | 둥근형 | 사각형 | 하트형 | 긴형 | 다이아몬드형 중 하나",
   "personalColor": "봄웜 | 여름쿨 | 가을웜 | 겨울쿨 중 하나",
   "colorConfidence": "high | medium | low 중 하나",
-  "features": ["이목구비 특징을 한국어로 2~4개"]
+  "features": ["아래 목록에서 해당되는 항목만 2~4개 선택"]
 }
 
 얼굴형 기준:
@@ -54,6 +54,7 @@ export async function analyzeFace(imageBase64) {
 - 사각형: 이마와 턱의 폭이 비슷하고 각진 형태
 - 하트형: 이마가 넓고 턱이 뾰족한 형태
 - 긴형: 얼굴 길이가 폭보다 확연히 긴 형태
+- 다이아몬드형: 옆광대가 발달하고 이마와 턱이 모두 좁은 형태
 
 퍼스널컬러 기준:
 - 봄웜: 밝고 화사한 황금빛·복숭아빛 피부
@@ -66,7 +67,11 @@ colorConfidence:
 - medium: 어느 정도 판단 가능하나 확신하기 어려움
 - low: 조명·사진 품질로 판단이 매우 어려움
 
-features 예시: "눈 간격이 넓음", "코 높이가 낮음", "입술이 두꺼움", "턱선이 각짐"`,
+features 선택 목록 (이 목록에서만 골라서 정확히 이 텍스트 그대로 사용):
+"눈 간격 넓음", "눈 간격 좁음", "코 낮음", "코 높음", "코 큼",
+"이마 넓음", "이마 좁음", "눈 작음", "광대 넓음", "입술 얇음",
+"입술 두꺼움", "중안부 긴 유형", "중안부 짧은 유형", "눈두덩이 좁음",
+"눈두덩이 넓음", "관자놀이 여백 넓음", "사각턱", "돌출입", "목 짧음"`,
         },
       ],
     },
@@ -93,7 +98,7 @@ function buildRagContext(analysis) {
   const makeup = makeupData.makeupByPersonalColor.find(m => m.personalColor === colorKey) ?? {}
 
   const tips = analysis.features
-    .map(f => featureTipsData.featureTips.find(t => f.includes(t.label.split(' ')[0]) || t.label.includes(f)))
+    .map(f => featureTipsData.featureTips.find(t => t.label.includes(f)))
     .filter(Boolean)
 
   const hairCtx = `
