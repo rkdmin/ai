@@ -1,0 +1,189 @@
+.result-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 48px 24px 48px;
+  max-width: 480px;
+  margin: 0 auto;
+  gap: 16px;
+}
+
+/* 헤더 */
+.result-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+
+.back-btn {
+  background: none;
+  border: none;
+  font-size: 14px;
+  color: #9b9ba4;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.back-btn:hover {
+  color: #636370;
+}
+
+.result-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1a1a1a;
+  letter-spacing: -0.5px;
+}
+
+/* 사진 썸네일 */
+.result-photo {
+  width: 100%;
+  max-height: 280px;
+  object-fit: cover;
+  object-position: top;
+  border-radius: 20px;
+}
+
+/* 결과 카드 */
+.result-card {
+  width: 100%;
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.card-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #b0b0bc;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+/* 얼굴형 */
+.face-type-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.face-emoji {
+  font-size: 36px;
+  flex-shrink: 0;
+}
+
+.face-name {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1a1a1a;
+  letter-spacing: -0.3px;
+}
+
+.face-desc {
+  font-size: 13px;
+  color: #9b9ba4;
+  margin-top: 2px;
+}
+
+/* 퍼스널컬러 배지 */
+.color-badge {
+  display: inline-block;
+  padding: 10px 18px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.2px;
+  align-self: flex-start;
+}
+
+/* 퍼스널컬러 직접 선택 */
+.color-confirm {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 4px;
+  border-top: 1px solid #f0f0f5;
+}
+
+.confirm-notice {
+  font-size: 13px;
+  color: #9b9ba4;
+  line-height: 1.6;
+}
+
+.color-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.color-option {
+  padding: 10px;
+  border-radius: 12px;
+  border: 1.5px solid #e8e8f0;
+  background: #fafafa;
+  font-size: 14px;
+  font-weight: 500;
+  color: #636370;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.color-option:hover {
+  border-color: #c0c0cc;
+}
+
+.color-option.selected {
+  font-weight: 600;
+  border-width: 2px;
+}
+
+/* 이목구비 특징 태그 */
+.feature-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.feature-tag {
+  background: #f5f5f9;
+  border-radius: 20px;
+  padding: 7px 14px;
+  font-size: 13px;
+  color: #636370;
+}
+
+/* 코디 카드 받기 버튼 */
+.next-btn {
+  width: 100%;
+  padding: 18px;
+  border-radius: 16px;
+  border: none;
+  background: #1a1a1a;
+  color: #ffffff;
+  font-size: 17px;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: -0.3px;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.15s;
+  margin-top: 4px;
+}
+
+.next-btn:hover {
+  background: #111111;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
+}
+
+.next-btn:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
