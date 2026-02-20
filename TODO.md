@@ -30,16 +30,13 @@
 ## STEP 4 — Claude Vision API 연동 (얼굴 분석)
 `feat: claude vision API`
 
-- [ ] `src/api/claude.js` 작성
-  - 보정된 이미지(base64)를 Claude Vision API에 전송
-  - 아래 정보를 JSON으로 반환받도록 프롬프트 작성
-    - `faceType`: 얼굴형 (계란형 / 둥근형 / 사각형 / 하트형 / 긴형)
-    - `personalColor`: 퍼스널컬러 (봄웜 / 여름쿨 / 가을웜 / 겨울쿨)
-    - `colorConfidence`: 퍼스널컬러 확신도 (high / medium / low)
-    - `features`: 이목구비 특징 배열 (예: ["눈 간격 넓음", "턱선 각짐"])
-- [ ] `src/components/AnalysisResult.jsx` 작성
-  - 분석 결과 카드 표시
-  - 확신도가 medium/low일 경우 퍼스널컬러 선택 UI 표시
+- [x] `src/api/claude.js` 작성
+  - 보정된 이미지(base64)를 Claude Vision API에 전송 (claude-sonnet-4-6)
+  - faceType / personalColor / colorConfidence / features JSON 반환
+- [x] `src/components/AnalysisResult.jsx` 작성
+  - 분석 결과 카드 (얼굴형, 퍼스널컬러, 이목구비 특징)
+  - colorConfidence medium/low 시 퍼스널컬러 직접 선택 UI
+- [x] 로딩 화면 + 에러 토스트 추가
 
 ---
 
