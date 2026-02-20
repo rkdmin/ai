@@ -3,7 +3,7 @@ import PhotoUpload from './components/PhotoUpload'
 import AnalysisResult from './components/AnalysisResult'
 import CardList from './components/CardList'
 import CardDetail from './components/CardDetail'
-import { analyzeFace, generateCards } from './api/claude'
+import { analyzeFace, generateCards } from './api/ai'
 import './App.css'
 
 export default function App() {

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { generateStyledPhoto } from '../api/gemini'
+import { generateStyledPhoto } from '../api/ai'
 import './CardDetail.css'
 
 export default function CardDetail({ card, image, onBack }) {
