@@ -45,8 +45,9 @@
 .result-photo {
   width: 100%;
   max-width: 480px;
-  max-height: 340px;
+  aspect-ratio: 3 / 4;
   object-fit: cover;
+  object-position: top center;
 }
 
 /* ─── Body ────────────────────────────────────── */

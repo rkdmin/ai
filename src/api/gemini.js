@@ -146,7 +146,8 @@ ${styleDesc}
 규칙:
 - 얼굴 형태, 피부톤, 이목구비는 원본과 동일하게 유지
 - ${changeTarget}만 자연스럽게 변경
-- 실제 사람처럼 현실적으로 표현`
+- 실제 사람처럼 현실적으로 표현
+- 출력 이미지 비율은 3:4 (세로가 긴 세로형)`
 
   const data = await callGemini(
     IMAGE_MODEL,
