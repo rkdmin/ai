@@ -4,6 +4,7 @@ import './PhotoUpload.css'
 export default function PhotoUpload({ onAnalyze }) {
   const [preview, setPreview] = useState(null)
   const [isDragging, setIsDragging] = useState(false)
+  const [knowsColor, setKnowsColor] = useState(null)
   const inputRef = useRef(null)
 
   const handleFile = (file) => {
@@ -66,10 +67,28 @@ export default function PhotoUpload({ onAnalyze }) {
           <span className="tip">✓ 민낯 권장</span>
         </div>
 
+        <div className="color-question">
+          <p className="color-question-label">퍼스널컬러를 알고 계신가요?</p>
+          <div className="color-question-btns">
+            <button
+              className={`color-q-btn ${knowsColor === true ? 'selected' : ''}`}
+              onClick={() => setKnowsColor(true)}
+            >
+              알아요
+            </button>
+            <button
+              className={`color-q-btn ${knowsColor === false ? 'selected' : ''}`}
+              onClick={() => setKnowsColor(false)}
+            >
+              몰라요
+            </button>
+          </div>
+        </div>
+
         <button
           className="analyze-btn"
-          disabled={!preview}
-          onClick={() => onAnalyze(preview)}
+          disabled={!preview || knowsColor === null}
+          onClick={() => onAnalyze(preview, knowsColor)}
         >
           분석 시작하기
         </button>

@@ -43,25 +43,69 @@
           "reason": "눈두덩이에 가벼운 반짝임을 주어 답답함 없이 시원하고 트여 보이는 눈매를 연출",
           "promptKeyword": "champagne gold glitter eyeshadow, sparkling eyes, sheer texture",
           "priority": 1
+        }
+      ],
+      "eyebrow": [
+        {
+          "style": "라이트 브라운 / 염색모",
+          "reason": "눈썹 색을 밝게 빼서(염색/탈색) 이목구비의 경계를 부드럽게 만들고 투명한 이미지를 극대화함",
+          "promptKeyword": "light brown eyebrows, bleached brows, soft look",
+          "priority": 1
         },
         {
-          "style": "피치 베이지",
-          "reason": "진한 음영 대신 가벼운 베이스 섀도우로 눈가 유분기만 잡아주어 맑은 느낌 유지",
-          "promptKeyword": "peach beige eyeshadow, clean eye makeup, minimal shading",
+          "style": "부드러운 세미 아치",
+          "reason": "각진 눈썹보다는 둥근 형태가 봄 웜톤의 러블리하고 유한 인상과 잘 어우러짐",
+          "promptKeyword": "soft arched eyebrows, rounded brow shape, natural brows",
+          "priority": 2
+        }
+      ],
+      "eyeliner": [
+        {
+          "style": "브라운 펜슬 (점막 채움)",
+          "reason": "진한 블랙 라인보다는 부드러운 브라운으로 점막만 채워 눈매의 맑은 느낌을 유지",
+          "promptKeyword": "brown pencil eyeliner, tightline, soft definition",
+          "priority": 1
+        },
+        {
+          "style": "눈꼬리 내리기 (강아지상)",
+          "reason": "눈꼬리를 살짝 내려 그려 순하고 사랑스러운 이미지를 강조",
+          "promptKeyword": "puppy eyeliner, downturned eyeliner, innocent look",
+          "priority": 2
+        }
+      ],
+      "shading": [
+        {
+          "style": "최소화 (피부톤 유지)",
+          "reason": "얼굴 전체에 진한 쉐딩을 넣으면 피부가 탁해 보일 수 있어, 외곽 쉐딩은 최소화하고 본연의 피부톤을 살림",
+          "promptKeyword": "minimal contouring, clean skin, bright face",
+          "priority": 1
+        },
+        {
+          "style": "코 끝 쉐딩 (가볍게)",
+          "reason": "코 전체를 연결하기보다 코 끝만 살짝 잡아주어 귀여운 입체감만 부여",
+          "promptKeyword": "nose tip shading, button nose contour",
+          "priority": 2
+        }
+      ],
+      "highlighter": [
+        {
+          "style": "피치 빔 / 물광 (앞광대)",
+          "reason": "앞볼 쪽에 촉촉한 광(물광/윤광)을 주어 생기 있고 입체적인 동안 얼굴을 완성",
+          "promptKeyword": "dewy cheek highlight, peach beam highlighter, wet skin look",
+          "priority": 1
+        },
+        {
+          "style": "콧대 하이라이터 (짧게)",
+          "reason": "콧대 중앙에 짧게 하이라이터를 넣어 중안부를 짧아 보이게 하고 영한 느낌을 줌",
+          "promptKeyword": "nose bridge highlight, youthful glow",
           "priority": 2
         }
       ],
       "avoid": [
-        {
-          "style": "탁한 카키/버건디",
-          "reason": "피부톤을 칙칙하게 만들고 봄 웜톤의 투명한 장점을 가림"
-        },
-        {
-          "style": "진한 스모키",
-          "reason": "눈매가 답답해 보이고 나이 들어 보일 수 있음"
-        }
+        { "style": "탁한 카키/버건디", "reason": "피부톤을 칙칙하게 만들고 봄 웜톤의 투명한 장점을 가림" },
+        { "style": "진한 스모키", "reason": "눈매가 답답해 보이고 나이 들어 보일 수 있음" }
       ],
-      "coachComment": "봄 웜톤은 '투명함'이 생명이에요. 진한 아이라인이나 섀도우로 덮기보다는, 속눈썹을 강조해 눈을 맑게 트여 보이게 하고 입술에 생기를 주는 것이 베스트입니다."
+      "coachComment": "봄 웜톤은 '투명함'이 생명이에요. 진한 아이라인이나 쉐딩으로 덮기보다는, 속눈썹과 하이라이터로 맑은 입체감을 살리는 것이 베스트입니다."
     },
     {
       "personalColor": "summer_cool",
@@ -112,23 +156,67 @@
           "reason": "붉은 기 없는 그림자 컬러로 눈매 부기를 잡고 세련된 눈매 완성 (진하지 않게)",
           "promptKeyword": "ash grey eyeshadow, cool taupe contour, subtle shading",
           "priority": 1
+        }
+      ],
+      "eyebrow": [
+        {
+          "style": "애쉬 브라운 / 그레이 (결 강조)",
+          "reason": "눈썹을 꽉 채우기보다 결을 살려 가볍게 표현해야(덜어냄) 쿨톤의 청순함이 살아남",
+          "promptKeyword": "ash brown eyebrows, greyish brow, natural brow texture, feathery brows",
+          "priority": 1
         },
         {
-          "style": "라벤더 펄",
-          "reason": "눈 밑 애교살에 살짝 얹어 울먹이는 듯한 청순하고 촉촉한 눈망울 연출",
-          "promptKeyword": "lavender glitter under eyes, teary eye makeup, innocent look",
+          "style": "얇은 일자 눈썹",
+          "reason": "두꺼운 눈썹은 답답해 보일 수 있어, 얇고 자연스러운 형태로 눈매를 시원하게 트여줌",
+          "promptKeyword": "thin straight eyebrows, natural shape, clean look",
+          "priority": 2
+        }
+      ],
+      "eyeliner": [
+        {
+          "style": "쿨 브라운 / 차콜 (얇게)",
+          "reason": "블랙보다는 차콜이나 쿨 브라운으로 라인을 얇게 빼서 인위적인 느낌을 최소화",
+          "promptKeyword": "cool brown eyeliner, charcoal liner, thin eyeliner",
+          "priority": 1
+        },
+        {
+          "style": "속눈썹 강조 (라인 생략)",
+          "reason": "아이라인을 생략하고 마스카라로 속눈썹만 강조할 때 가장 맑고 청초해 보임",
+          "promptKeyword": "mascara only, defined lashes, no eyeliner makeup",
+          "priority": 2
+        }
+      ],
+      "shading": [
+        {
+          "style": "쿨 그레이 (노즈 쉐딩)",
+          "reason": "붉은 기 없는 회색 쉐딩으로 코의 윤곽만 가볍게 잡아주고 턱 쉐딩은 자제하여 깨끗함 유지",
+          "promptKeyword": "cool grey contour, nose shading, soft shading",
+          "priority": 1
+        },
+        {
+          "style": "헤어라인 쉐딩",
+          "reason": "얼굴 외곽보다는 헤어라인을 정리하여 얼굴 크기를 줄이고 깔끔한 인상 부여",
+          "promptKeyword": "hairline contour, clean forehead",
+          "priority": 2
+        }
+      ],
+      "highlighter": [
+        {
+          "style": "핑크 빔 / 투명 속광",
+          "reason": "인위적인 펄보다는 피부 속에서 우러나오는 듯한 맑은 핑크빛 광채(속광)가 베스트",
+          "promptKeyword": "pink beam highlighter, clear skin glow, subtle radiance, inner glow",
+          "priority": 1
+        },
+        {
+          "style": "눈 앞머리/애교살 (라벤더 펄)",
+          "reason": "눈 밑에 투명한 펄을 얹어 울먹이는 듯한 청순한 눈매 연출",
+          "promptKeyword": "under eye glitter, teary eyes, lavender shimmer",
           "priority": 2
         }
       ],
       "avoid": [
-        {
-          "style": "오렌지 브라운",
-          "reason": "피부의 붉은 기를 강조하고 더워 보이게 만듦"
-        },
-        {
-          "style": "진한 아이라인",
-          "reason": "눈매가 답답해 보이고 청순한 이미지를 해침"
-        }
+        { "style": "오렌지 브라운", "reason": "피부의 붉은 기를 강조하고 더워 보이게 만듦" },
+        { "style": "진한 아이라인", "reason": "눈매가 답답해 보이고 청순한 이미지를 해침" }
       ],
       "coachComment": "색조를 얹을수록 답답해 보일 수 있어요. '덜어냄의 미학'을 기억하세요. 피부 표현을 얇고 깨끗하게(세미 매트/속광) 하고, 립이나 치크 중 하나에만 은은한 포인트를 주세요."
     },
@@ -150,7 +238,7 @@
         },
         {
           "style": "누드 베이지 MLBB",
-          "reason": "입술색과 자연스럽게 어우러지며, 립 라인을 스머징하면 우아하고 부드러운 인상을 줌",
+          "reason": "입술색과 자연스럽게 어우러지며, 립 라인을 스머징하면 우아하고 부드러운 인상을 줌 (탕웨이 스타일)",
           "promptKeyword": "nude beige lips, mlbb lipstick, soft gradient lips, elegant",
           "priority": 1
         },
@@ -163,7 +251,7 @@
       ],
       "blush": [
         {
-          "style": "진저/베이지",
+          "style": "진저/베이지 (사선)",
           "reason": "광대 라인을 감싸듯 발라 얼굴의 입체감을 살리고 그윽한 음영감을 연결해 줌",
           "promptKeyword": "ginger beige blush, contouring blush, warm cheekbones",
           "priority": 1
@@ -175,23 +263,67 @@
           "reason": "눈매에 깊은 음영을 쌓아 눈을 그윽하게 만들고 분위기 있는 눈빛 완성 (아이라인 스머징 필수)",
           "promptKeyword": "deep brown eyeshadow, smoked out eyeliner, soft contour eyes",
           "priority": 1
+        }
+      ],
+      "eyebrow": [
+        {
+          "style": "내추럴 아치형",
+          "reason": "탕웨이처럼 눈썹 산을 살짝 살린 아치형이 얼굴에 입체감을 주고 우아한 분위기를 형성함",
+          "promptKeyword": "natural arched eyebrows, soft arch, elegant look",
+          "priority": 1
         },
         {
-          "style": "브론즈/골드 펄",
-          "reason": "고급스러운 펄감이 가을 웜톤 특유의 성숙미와 화려함을 강조함",
-          "promptKeyword": "bronze gold shimmer, golden hour makeup, rich colors",
+          "style": "소프트 브라운/그레이 (연하게)",
+          "reason": "눈썹을 진하게 그리기보다 연한 톤으로 채워, 눈매의 음영을 방해하지 않고 조화를 이룸",
+          "promptKeyword": "soft brown eyebrows, blurry brows, natural texture",
+          "priority": 2
+        }
+      ],
+      "eyeliner": [
+        {
+          "style": "딥 브라운 (스머징)",
+          "reason": "아이라인 꼬리를 두껍게 그리고 섀도우로 번지듯 스머징하여 깊이 있는 눈매(Atmosphere) 연출",
+          "promptKeyword": "smudged dark eyeliner, soft winged liner, deep gaze, smoked eyeliner",
+          "priority": 1
+        },
+        {
+          "style": "길게 뺀 아이라인",
+          "reason": "눈의 가로 길이를 확장하여 성숙하고 매혹적인 느낌 강조",
+          "promptKeyword": "elongated eyeliner, long eye shape, seductive eyes",
+          "priority": 2
+        }
+      ],
+      "shading": [
+        {
+          "style": "옆광대 & 턱 라인 (진저)",
+          "reason": "얼굴 외곽과 광대 라인을 부드럽게 감싸주어(Contouring) 얼굴의 골격을 고급스럽게 살림",
+          "promptKeyword": "cheekbone contouring, warm shading, sculpted face",
+          "priority": 1
+        },
+        {
+          "style": "음영 연결 (눈~코)",
+          "reason": "눈썹 앞머리에서 코로 이어지는 삼각존에 음영을 넣어 그윽함을 더함",
+          "promptKeyword": "nose bridge shading, deep eye socket",
+          "priority": 2
+        }
+      ],
+      "highlighter": [
+        {
+          "style": "골드 / 샴페인 (은은하게)",
+          "reason": "인위적인 물광보다는 고급스러운 골드 펄감으로 피부의 윤기만 살짝 더함",
+          "promptKeyword": "gold highlighter, champagne glow, subtle sheen",
+          "priority": 1
+        },
+        {
+          "style": "매트 하이라이터 (이마/앞볼)",
+          "reason": "펄 없이 밝은 컨실러나 파우더로 볼륨만 채워 깔끔하고 고급스러운 느낌 유지",
+          "promptKeyword": "matte highlight, brightener, flawless skin",
           "priority": 2
         }
       ],
       "avoid": [
-        {
-          "style": "형광 핑크/마젠타",
-          "reason": "피부와 따로 놀며 촌스러워 보일 수 있음"
-        },
-        {
-          "style": "파스텔 라벤더",
-          "reason": "얼굴이 창백해 보이거나 회색빛이 돌게 만듦"
-        }
+        { "style": "형광 핑크/마젠타", "reason": "피부와 따로 놀며 촌스러워 보일 수 있음" },
+        { "style": "파스텔 라벤더", "reason": "얼굴이 창백해 보이거나 회색빛이 돌게 만듦" }
       ],
       "coachComment": "가을 웜톤은 '그윽함'이 포인트입니다. 아이라인과 립 라인의 경계를 면봉이나 브러쉬로 스머징하여 부드럽게 풀어주면(Soft Defined), 특유의 고급스러운 분위기가 살아납니다."
     },
@@ -244,23 +376,61 @@
           "reason": "섀도우보다는 선명하고 깔끔한 아이라인으로 눈매를 강조해 얼굴의 선명도(Defined)를 높임",
           "promptKeyword": "sharp black eyeliner, charcoal grey definition, cat eye",
           "priority": 1
+        }
+      ],
+      "eyebrow": [
+        {
+          "style": "다크 그레이 / 각진 아치",
+          "reason": "김지원처럼 눈썹 산을 살려 선명하게(Defined) 그리고, 색상은 블랙이나 다크 그레이로 또렷한 인상을 줌",
+          "promptKeyword": "dark grey eyebrows, arched brows, defined look, sharp brows",
+          "priority": 1
         },
         {
-          "style": "화이트/실버 글리터",
-          "reason": "차가운 반짝임으로 포인트만 주어 지저분하지 않고 깔끔하면서도 화려한 느낌 연출",
-          "promptKeyword": "silver glitter eyeshadow, icy sparkle, white shimmer",
+          "style": "결이 살아있는 짙은 눈썹",
+          "reason": "눈썹 숱을 강조하여 이목구비의 자기주장을 높이고 카리스마 있는 이미지 형성",
+          "promptKeyword": "thick dark brows, textured eyebrows, strong gaze",
           "priority": 2
         }
       ],
-      "avoid": [
+      "eyeliner": [
         {
-          "style": "탁한 베이지/오렌지 브라운",
-          "reason": "얼굴이 누렇게 뜨고 나이 들어 보일 수 있음"
+          "style": "블랙 리퀴드 / 캣츠아이",
+          "reason": "라인을 또렷하고 날렵하게 그려 눈매의 선명함(Definition)을 극대화함",
+          "promptKeyword": "black liquid eyeliner, sharp cat eye, bold wing, graphic liner",
+          "priority": 1
         },
         {
-          "style": "애매한 미지근한 톤",
-          "reason": "이목구비가 흐릿해 보이고 겨울 쿨톤 특유의 카리스마가 사라짐"
+          "style": "점막 꽉 채우기",
+          "reason": "눈매의 빈틈을 블랙으로 채워 눈동자와 흰자의 대비감을 높임",
+          "promptKeyword": "tightline black, intense eyes",
+          "priority": 2
         }
+      ],
+      "shading": [
+        {
+          "style": "쿨 토프 (턱 라인)",
+          "reason": "얼굴 외곽을 정리하여 하얀 피부와 어두운 헤어의 대비감을 깔끔하게 살림 (지저분하지 않게)",
+          "promptKeyword": "cool taupe contour, sharp jawline shading",
+          "priority": 1
+        },
+        {
+          "style": "노즈 쉐딩 (직선적)",
+          "reason": "콧대를 직선적으로 잡아 도시적이고 시크한 느낌 강조",
+          "promptKeyword": "straight nose contour, sculpted nose",
+          "priority": 2
+        }
+      ],
+      "highlighter": [
+        {
+          "style": "실버 / 화이트 펄",
+          "reason": "차가운 느낌의 화이트나 실버 펄로 T존에 확실한 하이라이트를 주어 도시적인 느낌 강조",
+          "promptKeyword": "silver highlighter, icy white glow, high contrast",
+          "priority": 1
+        }
+      ],
+      "avoid": [
+        { "style": "탁한 베이지/오렌지 브라운", "reason": "얼굴이 누렇게 뜨고 나이 들어 보일 수 있음" },
+        { "style": "애매한 미지근한 톤", "reason": "이목구비가 흐릿해 보이고 겨울 쿨톤 특유의 카리스마가 사라짐" }
       ],
       "coachComment": "겨울 쿨톤은 '대비감(Contrast)'을 살려야 해요. 이것저것 다 하기보다, 입술이면 입술, 속눈썹이면 속눈썹 하나만 명확하게 살리는 '원포인트 메이크업'이 가장 세련돼 보입니다."
     }

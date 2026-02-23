@@ -13,9 +13,11 @@ export default function App() {
   const [cards, setCards] = useState([])
   const [selectedCard, setSelectedCard] = useState(null)
   const [error, setError] = useState(null)
+  const [knowsPersonalColor, setKnowsPersonalColor] = useState(null)
 
-  const handleAnalyze = async (imageBase64) => {
+  const handleAnalyze = async (imageBase64, knowsColor) => {
     setImage(imageBase64)
+    setKnowsPersonalColor(knowsColor)
     setError(null)
     setStep('analyzing')
     try {
@@ -50,6 +52,7 @@ export default function App() {
     setCards([])
     setSelectedCard(null)
     setError(null)
+    setKnowsPersonalColor(null)
   }
 
   // 로딩 화면
@@ -91,6 +94,7 @@ export default function App() {
         <AnalysisResult
           image={image}
           analysis={analysis}
+          knowsPersonalColor={knowsPersonalColor}
           onReset={handleReset}
           onNext={handleGenerateCards}
         />

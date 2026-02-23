@@ -164,3 +164,50 @@
   color: #c0c0cc;
   cursor: not-allowed;
 }
+
+/* 퍼스널컬러 질문 */
+.color-question {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.color-question-label {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1a1a1a;
+  letter-spacing: -0.3px;
+  text-align: center;
+}
+
+.color-question-btns {
+  display: flex;
+  gap: 10px;
+}
+
+.color-q-btn {
+  flex: 1;
+  padding: 13px;
+  border-radius: 14px;
+  border: 2px solid #e8e8f0;
+  background: #fafafa;
+  color: #636370;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  letter-spacing: -0.2px;
+}
+
+.color-q-btn:hover {
+  border-color: #ff4081;
+  color: #ff4081;
+  background: #fff8fb;
+}
+
+.color-q-btn.selected {
+  border-color: #ff4081;
+  background: #ff4081;
+  color: #ffffff;
+  font-weight: 600;
+}

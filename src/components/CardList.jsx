@@ -10,7 +10,7 @@ export default function CardList({ cards, analysis, onSelectCard, onReset }) {
         <button className="back-btn" onClick={onReset}>← 처음으로</button>
         <div className="header-text">
           <h1 className="list-title">나만의 코디 카드</h1>
-          <p className="list-sub">{analysis.faceType} · {analysis.personalColor}</p>
+          <p className="list-sub">{analysis.faceType}{analysis.personalColor ? ` · ${analysis.personalColor}` : ''}</p>
         </div>
       </header>
 

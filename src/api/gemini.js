@@ -1,7 +1,7 @@
 import { buildRagContext, CARDS_OUTPUT_FORMAT, ANALYZE_PROMPT } from '../utils/ragUtils'
 
 const API_KEY = import.meta.env.VITE_GEMINI_API_KEY
-const VISION_MODEL = 'gemini-2.0-flash'
+const VISION_MODEL = 'gemini-2.5-flash'
 const IMAGE_MODEL = 'gemini-2.5-flash-preview-image-generation'
 
 async function callGemini(model, parts, responseMimeType = 'text/plain') {
@@ -48,12 +48,19 @@ export async function analyzeFace(imageBase64) {
 // ─── 코디 카드 4장 생성 ───────────────────────────────────────────
 export async function generateCards(analysis) {
   const ragContext = buildRagContext(analysis)
+  const colorLine = analysis.personalColor
+    ? `- 퍼스널컬러: ${analysis.personalColor}`
+    : `- 퍼스널컬러: 미정 (사용자가 퍼스널컬러를 모름)`
+  const colorRule = analysis.personalColor
+    ? '추천 3장은 서로 다른 분위기(예: 데일리/글램/오피스)로 구성하세요.'
+    : '퍼스널컬러 정보가 없으므로 메이크업은 특정 색상 대신 질감·효과(예: 촉촉한 립글로스, 매트 파운데이션) 위주로 표현하세요. 추천 3장은 서로 다른 분위기(예: 데일리/글램/오피스)로 구성하세요.'
+
   const prompt = `당신은 전문 뷰티 코치입니다. 아래 얼굴 분석 결과와 RAG 지식베이스를 참고해 코디 카드 4장을 JSON 배열로 생성하세요. 다른 텍스트 없이 JSON만 응답하세요.
 
 ## 얼굴 분석
 - 얼굴형: ${analysis.faceType}
-- 퍼스널컬러: ${analysis.personalColor}
-- 이목구비 특징: ${analysis.features.join(', ')}
+${colorLine}
+- 이목구비 특징: ${(analysis.features ?? []).join(', ')}
 
 ## RAG 지식베이스
 ${ragContext}
@@ -61,7 +68,7 @@ ${ragContext}
 ## 출력 형식
 ${CARDS_OUTPUT_FORMAT}
 
-규칙: 추천 3장은 서로 다른 분위기(예: 데일리/글램/오피스)로 구성하세요.`
+규칙: ${colorRule}`
 
   const data = await callGemini(
     VISION_MODEL,
