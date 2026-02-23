@@ -68,6 +68,16 @@
   background: #fff0f6;
 }
 
+.upload-area.error {
+  border-color: #ff5252;
+  background: #fff5f5;
+}
+
+.upload-error-msg {
+  color: #ff5252 !important;
+  font-weight: 500;
+}
+
 .upload-icon {
   font-size: 48px;
   margin-bottom: 16px;

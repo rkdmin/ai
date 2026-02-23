@@ -1,16 +1,39 @@
 import { useState, useRef } from 'react'
+import { validateImage } from '../utils/validateImage'
 import './PhotoUpload.css'
+
+const MIN_FILE_SIZE = 10 * 1024 // Layer 1: 10KB 미만은 사진이 아닐 가능성 높음
 
 export default function PhotoUpload({ onAnalyze }) {
   const [preview, setPreview] = useState(null)
   const [isDragging, setIsDragging] = useState(false)
   const [knowsColor, setKnowsColor] = useState(null)
+  const [uploadError, setUploadError] = useState(null)
   const inputRef = useRef(null)
 
   const handleFile = (file) => {
     if (!file || !file.type.startsWith('image/')) return
+    setUploadError(null)
+
+    // Layer 1: 파일 크기 검사
+    if (file.size < MIN_FILE_SIZE) {
+      setUploadError('파일이 너무 작아요. 실제 사진 파일을 올려주세요.')
+      return
+    }
+
     const reader = new FileReader()
-    reader.onload = (e) => setPreview(e.target.result)
+    reader.onload = async (e) => {
+      const base64 = e.target.result
+
+      // Layer 2: Canvas 밝기·해상도·균일도 검사
+      const validation = await validateImage(base64)
+      if (!validation.valid) {
+        setUploadError(validation.reason)
+        return
+      }
+
+      setPreview(base64)
+    }
     reader.readAsDataURL(file)
   }
 
@@ -18,6 +41,12 @@ export default function PhotoUpload({ onAnalyze }) {
     e.preventDefault()
     setIsDragging(false)
     handleFile(e.dataTransfer.files[0])
+  }
+
+  const handleReset = () => {
+    setPreview(null)
+    setUploadError(null)
+    inputRef.current.value = ''
   }
 
   return (
@@ -32,24 +61,25 @@ export default function PhotoUpload({ onAnalyze }) {
         {preview ? (
           <div className="preview-wrap">
             <img src={preview} alt="업로드된 사진" className="preview-img" />
-            <button
-              className="change-btn"
-              onClick={() => { setPreview(null); inputRef.current.value = '' }}
-            >
+            <button className="change-btn" onClick={handleReset}>
               다른 사진 선택하기
             </button>
           </div>
         ) : (
           <div
-            className={`upload-area ${isDragging ? 'dragging' : ''}`}
+            className={`upload-area ${isDragging ? 'dragging' : ''} ${uploadError ? 'error' : ''}`}
             onClick={() => inputRef.current.click()}
             onDrop={handleDrop}
             onDragOver={(e) => { e.preventDefault(); setIsDragging(true) }}
             onDragLeave={() => setIsDragging(false)}
           >
-            <div className="upload-icon">📷</div>
-            <p className="upload-title">사진을 업로드하세요</p>
-            <p className="upload-desc">클릭하거나 사진을 드래그하세요</p>
+            <div className="upload-icon">{uploadError ? '⚠️' : '📷'}</div>
+            <p className="upload-title">
+              {uploadError ? '사진을 다시 선택해주세요' : '사진을 업로드하세요'}
+            </p>
+            <p className={`upload-desc ${uploadError ? 'upload-error-msg' : ''}`}>
+              {uploadError ?? '클릭하거나 사진을 드래그하세요'}
+            </p>
           </div>
         )}
 

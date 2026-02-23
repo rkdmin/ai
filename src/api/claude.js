@@ -36,7 +36,9 @@ export async function analyzeFace(imageBase64) {
   const text = data.content[0].text
   const jsonMatch = text.match(/\{[\s\S]*\}/)
   if (!jsonMatch) throw new Error('분석 결과를 읽을 수 없습니다.')
-  return JSON.parse(jsonMatch[0])
+  const result = JSON.parse(jsonMatch[0])
+  if (result.error) throw new Error(result.error)
+  return result
 }
 
 export async function generateCards(analysis) {

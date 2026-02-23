@@ -42,7 +42,9 @@ export async function analyzeFace(imageBase64) {
   const text = data.candidates[0].content.parts[0].text
   const jsonMatch = text.match(/\{[\s\S]*\}/)
   if (!jsonMatch) throw new Error('분석 결과를 읽을 수 없습니다.')
-  return JSON.parse(jsonMatch[0])
+  const result = JSON.parse(jsonMatch[0])
+  if (result.error) throw new Error(result.error)
+  return result
 }
 
 // ─── 코디 카드 4장 생성 ───────────────────────────────────────────
