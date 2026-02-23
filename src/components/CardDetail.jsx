@@ -2,6 +2,15 @@ import { useState } from 'react'
 import { generateStyledPhoto } from '../api/ai'
 import './CardDetail.css'
 
+const MAKEUP_ITEMS = [
+  { key: 'lip',         label: 'Lip',   color: '#A88890', reasonKey: 'lipReason' },
+  { key: 'blush',       label: 'Blush', color: '#B098A0', reasonKey: 'blushReason' },
+  { key: 'eyeshadow',   label: 'Eye',   color: '#8898A8', reasonKey: 'eyeshadowReason' },
+  { key: 'eyebrow',     label: 'Brow',  color: '#9A8878', reasonKey: 'eyebrowReason' },
+  { key: 'eyeliner',    label: 'Liner', color: '#787890', reasonKey: 'eyelinerReason' },
+  { key: 'highlighter', label: 'Glow',  color: '#A8A082', reasonKey: 'highlighterReason' },
+]
+
 export default function CardDetail({ card, image, onBack }) {
   const isAvoid = card.type === 'avoid'
   const [styledPhoto, setStyledPhoto] = useState(null)
@@ -27,73 +36,75 @@ export default function CardDetail({ card, image, onBack }) {
 
       {/* Hero */}
       <div className={`detail-hero ${isAvoid ? 'avoid-hero' : ''}`}>
-        <span className="detail-emoji">{card.emoji}</span>
+        <div className="hero-top">
+          <span className="detail-emoji">{card.emoji}</span>
+          {isAvoid
+            ? <span className="avoid-badge">Avoid</span>
+            : card.rank && (
+              <span className={`rank-badge-hero rank-${card.rank}`}>
+                {card.rank === 1 ? 'Best Pick' : `${card.rank}nd Pick`}
+              </span>
+            )
+          }
+        </div>
         <h1 className="detail-mood">{card.mood}</h1>
-        {isAvoid
-          ? <p className="avoid-badge">Avoid</p>
-          : card.rank && <p className={`rank-badge-hero rank-${card.rank}`}>{card.rank === 1 ? 'Best Pick' : `${card.rank}nd Pick`}</p>
-        }
       </div>
 
       <div className="detail-body">
-        {/* 헤어 */}
+
+        {/* ── 헤어 ─────────────────────────────── */}
         {card.hair && (
-          <div className="detail-card">
-            <p className="card-label">Hair Style</p>
-            <p className="detail-value">{card.hair}</p>
-            <p className="detail-reason">{card.hairReason}</p>
-          </div>
+          <section className={`ds ds-hair ${isAvoid ? 'ds-hair--avoid' : ''}`}>
+            <span className="ds-eyebrow">Hair Style</span>
+            <p className="ds-title">{card.hair}</p>
+            <p className="ds-desc">{card.hairReason}</p>
+          </section>
         )}
 
-        {/* 메이크업 */}
+        {/* ── 메이크업 ──────────────────────────── */}
         {card.makeup && (
-          <div className="detail-card">
-            <p className="card-label">Makeup</p>
-            <div className="makeup-list">
-              <div className="makeup-item">
-                <div className="makeup-row">
-                  <span className="makeup-key">Lip</span>
-                  <span className="makeup-val">{card.makeup.lip}</span>
-                </div>
-                {card.makeup.lipReason && <p className="makeup-reason">{card.makeup.lipReason}</p>}
-              </div>
-              <div className="makeup-item">
-                <div className="makeup-row">
-                  <span className="makeup-key">Blush</span>
-                  <span className="makeup-val">{card.makeup.blush}</span>
-                </div>
-                {card.makeup.blushReason && <p className="makeup-reason">{card.makeup.blushReason}</p>}
-              </div>
-              <div className="makeup-item">
-                <div className="makeup-row">
-                  <span className="makeup-key">Eye</span>
-                  <span className="makeup-val">{card.makeup.eyeshadow}</span>
-                </div>
-                {card.makeup.eyeshadowReason && <p className="makeup-reason">{card.makeup.eyeshadowReason}</p>}
-              </div>
-            </div>
-          </div>
+          <section className="ds ds-makeup">
+            <span className="ds-eyebrow">Makeup</span>
+            <ul className="mup-list">
+              {MAKEUP_ITEMS.map(({ key, label, color, reasonKey }) => {
+                const val = card.makeup[key]
+                if (!val) return null
+                return (
+                  <li key={key} className="mup-row">
+                    <div className="mup-top">
+                      <span className="mup-badge" style={{ background: color }}>{label}</span>
+                      <span className="mup-name">{val}</span>
+                    </div>
+                    {card.makeup[reasonKey] && (
+                      <p className="mup-why">{card.makeup[reasonKey]}</p>
+                    )}
+                  </li>
+                )
+              })}
+            </ul>
+          </section>
         )}
 
-        {/* 이목구비 팁 */}
+        {/* ── 이목구비 팁 ───────────────────────── */}
         {card.featureTip && (
-          <div className="detail-card feature-card">
-            <p className="card-label">Feature Tip</p>
-            <p className="detail-reason">{card.featureTip}</p>
-          </div>
+          <section className="ds ds-tip">
+            <span className="ds-eyebrow">Feature Tip</span>
+            <p className="ds-tip-text">{card.featureTip}</p>
+          </section>
         )}
 
-        {/* 코치 멘트 */}
-        <div className={`detail-card coach-card ${isAvoid ? 'avoid-coach' : ''}`}>
-          <p className="card-label">{isAvoid ? 'Why Avoid' : 'Coach Note'}</p>
-          <p className="coach-text">{card.coachComment}</p>
-        </div>
+        {/* ── 코치 멘트 ─────────────────────────── */}
+        <section className={`ds ds-coach ${isAvoid ? 'ds-coach--avoid' : ''}`}>
+          <span className="ds-eyebrow">{isAvoid ? 'Why Avoid' : 'Coach Note'}</span>
+          <p className="ds-coach-text">{card.coachComment}</p>
+        </section>
+
       </div>
 
-      {/* 적용 사진 */}
+      {/* ── 적용 사진 ─────────────────────────── */}
       {!isAvoid && (
         <div className="photo-section">
-          <p className="card-label">내 얼굴에 적용해보기</p>
+          <span className="ds-eyebrow">내 얼굴에 적용해보기</span>
 
           {styledPhoto ? (
             <img src={styledPhoto} alt="스타일 적용 사진" className="styled-photo" />

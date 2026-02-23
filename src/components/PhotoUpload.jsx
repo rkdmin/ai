@@ -128,10 +128,10 @@ export default function PhotoUpload({ onAnalyze }) {
             <span className="tip tip--key">기본 카메라</span>
             <span className="tip tip--key">포니테일 필수</span>
           </div>
-          <button className="guide-btn" onClick={() => setShowGuide(true)}>
-            촬영가이드 확인하기
-          </button>
         </div>
+        <button className="guide-btn" onClick={() => setShowGuide(true)}>
+          촬영가이드 확인하기
+        </button>
 
         <div className="color-divider" />
 

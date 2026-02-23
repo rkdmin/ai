@@ -144,13 +144,16 @@ export const MAKEUP_CARDS_FORMAT = `[
     "makeup": {
       "lip": "립 컬러명", "lipReason": "왜 어울리는지 1문장",
       "blush": "블러셔", "blushReason": "왜 어울리는지 1문장",
-      "eyeshadow": "아이섀도우", "eyeshadowReason": "왜 어울리는지 1문장"
+      "eyeshadow": "아이섀도우", "eyeshadowReason": "왜 어울리는지 1문장",
+      "eyebrow": "눈썹 스타일", "eyebrowReason": "왜 어울리는지 1문장",
+      "eyeliner": "아이라이너 스타일", "eyelinerReason": "왜 어울리는지 1문장",
+      "highlighter": "하이라이터 스타일", "highlighterReason": "왜 어울리는지 1문장"
     },
     "featureTip": "이목구비 특징 기반 메이크업 팁 1문장 (특징 없으면 null)",
     "coachComment": "메이크업 중심 전체 조언 2-3문장"
   },
-  { "type": "recommend", "rank": 2, "cardType": "makeup", "mood": "...", "emoji": "...", "makeup": { "lip": "...", "lipReason": "...", "blush": "...", "blushReason": "...", "eyeshadow": "...", "eyeshadowReason": "..." }, "featureTip": "...", "coachComment": "..." },
-  { "type": "recommend", "rank": 3, "cardType": "makeup", "mood": "...", "emoji": "...", "makeup": { "lip": "...", "lipReason": "...", "blush": "...", "blushReason": "...", "eyeshadow": "...", "eyeshadowReason": "..." }, "featureTip": "...", "coachComment": "..." },
+  { "type": "recommend", "rank": 2, "cardType": "makeup", "mood": "...", "emoji": "...", "makeup": { "lip": "...", "lipReason": "...", "blush": "...", "blushReason": "...", "eyeshadow": "...", "eyeshadowReason": "...", "eyebrow": "...", "eyebrowReason": "...", "eyeliner": "...", "eyelinerReason": "...", "highlighter": "...", "highlighterReason": "..." }, "featureTip": "...", "coachComment": "..." },
+  { "type": "recommend", "rank": 3, "cardType": "makeup", "mood": "...", "emoji": "...", "makeup": { "lip": "...", "lipReason": "...", "blush": "...", "blushReason": "...", "eyeshadow": "...", "eyeshadowReason": "...", "eyebrow": "...", "eyebrowReason": "...", "eyeliner": "...", "eyelinerReason": "...", "highlighter": "...", "highlighterReason": "..." }, "featureTip": "...", "coachComment": "..." },
   {
     "type": "avoid",
     "cardType": "makeup",
@@ -159,7 +162,10 @@ export const MAKEUP_CARDS_FORMAT = `[
     "makeup": {
       "lip": "피해야 할 립", "lipReason": "왜 안 어울리는지 1문장",
       "blush": "피해야 할 블러셔", "blushReason": "왜 안 어울리는지 1문장",
-      "eyeshadow": "피해야 할 아이섀도우", "eyeshadowReason": "왜 안 어울리는지 1문장"
+      "eyeshadow": "피해야 할 아이섀도우", "eyeshadowReason": "왜 안 어울리는지 1문장",
+      "eyebrow": "피해야 할 눈썹", "eyebrowReason": "왜 안 어울리는지 1문장",
+      "eyeliner": "피해야 할 아이라이너", "eyelinerReason": "왜 안 어울리는지 1문장",
+      "highlighter": "피해야 할 하이라이터", "highlighterReason": "왜 안 어울리는지 1문장"
     },
     "featureTip": null,
     "coachComment": "왜 이 메이크업이 맞지 않는지 2-3문장"
@@ -178,13 +184,16 @@ export const TOTAL_CARDS_FORMAT = `[
     "makeup": {
       "lip": "립 컬러명", "lipReason": "왜 어울리는지 1문장",
       "blush": "블러셔", "blushReason": "왜 어울리는지 1문장",
-      "eyeshadow": "아이섀도우", "eyeshadowReason": "왜 어울리는지 1문장"
+      "eyeshadow": "아이섀도우", "eyeshadowReason": "왜 어울리는지 1문장",
+      "eyebrow": "눈썹 스타일", "eyebrowReason": "왜 어울리는지 1문장",
+      "eyeliner": "아이라이너 스타일", "eyelinerReason": "왜 어울리는지 1문장",
+      "highlighter": "하이라이터 스타일", "highlighterReason": "왜 어울리는지 1문장"
     },
     "featureTip": "이목구비 종합 팁 1문장 (특징 없으면 null)",
     "coachComment": "헤어+메이크업 종합 전체 조언 2-3문장"
   },
-  { "type": "recommend", "rank": 2, "cardType": "total", "mood": "...", "emoji": "...", "hair": "...", "hairReason": "...", "makeup": { "lip": "...", "lipReason": "...", "blush": "...", "blushReason": "...", "eyeshadow": "...", "eyeshadowReason": "..." }, "featureTip": "...", "coachComment": "..." },
-  { "type": "recommend", "rank": 3, "cardType": "total", "mood": "...", "emoji": "...", "hair": "...", "hairReason": "...", "makeup": { "lip": "...", "lipReason": "...", "blush": "...", "blushReason": "...", "eyeshadow": "...", "eyeshadowReason": "..." }, "featureTip": "...", "coachComment": "..." },
+  { "type": "recommend", "rank": 2, "cardType": "total", "mood": "...", "emoji": "...", "hair": "...", "hairReason": "...", "makeup": { "lip": "...", "lipReason": "...", "blush": "...", "blushReason": "...", "eyeshadow": "...", "eyeshadowReason": "...", "eyebrow": "...", "eyebrowReason": "...", "eyeliner": "...", "eyelinerReason": "...", "highlighter": "...", "highlighterReason": "..." }, "featureTip": "...", "coachComment": "..." },
+  { "type": "recommend", "rank": 3, "cardType": "total", "mood": "...", "emoji": "...", "hair": "...", "hairReason": "...", "makeup": { "lip": "...", "lipReason": "...", "blush": "...", "blushReason": "...", "eyeshadow": "...", "eyeshadowReason": "...", "eyebrow": "...", "eyebrowReason": "...", "eyeliner": "...", "eyelinerReason": "...", "highlighter": "...", "highlighterReason": "..." }, "featureTip": "...", "coachComment": "..." },
   {
     "type": "avoid",
     "cardType": "total",
@@ -195,7 +204,10 @@ export const TOTAL_CARDS_FORMAT = `[
     "makeup": {
       "lip": "피해야 할 립", "lipReason": "왜 안 어울리는지 1문장",
       "blush": "피해야 할 블러셔", "blushReason": "왜 안 어울리는지 1문장",
-      "eyeshadow": "피해야 할 아이섀도우", "eyeshadowReason": "왜 안 어울리는지 1문장"
+      "eyeshadow": "피해야 할 아이섀도우", "eyeshadowReason": "왜 안 어울리는지 1문장",
+      "eyebrow": "피해야 할 눈썹", "eyebrowReason": "왜 안 어울리는지 1문장",
+      "eyeliner": "피해야 할 아이라이너", "eyelinerReason": "왜 안 어울리는지 1문장",
+      "highlighter": "피해야 할 하이라이터", "highlighterReason": "왜 안 어울리는지 1문장"
     },
     "featureTip": null,
     "coachComment": "왜 이 스타일 조합이 맞지 않는지 2-3문장"
