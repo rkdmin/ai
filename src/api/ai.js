@@ -16,7 +16,10 @@ function getProvider() {
 const provider = getProvider()
 
 export const analyzeFace = (imageBase64) => provider.analyzeFace(imageBase64)
-export const generateCards = (analysis) => provider.generateCards(analysis)
+export const generateHairCards = (analysis) => provider.generateHairCards(analysis)
+export const generateMakeupCards = (analysis) => provider.generateMakeupCards(analysis)
+export const generateTotalCards = (analysis) => provider.generateTotalCards(analysis)
+export const generateAllCards = (analysis) => provider.generateAllCards(analysis)
 export const generateStyledPhoto = (imageBase64, card) =>
   import.meta.env.VITE_MOCK === 'true'
     ? mock.generateStyledPhoto(imageBase64, card)

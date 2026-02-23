@@ -42,7 +42,7 @@
 }
 
 /* 섹션 */
-section {
+.card-section {
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -51,10 +51,14 @@ section {
 .section-label {
   font-size: 13px;
   font-weight: 600;
-  color: #b0b0bc;
   letter-spacing: 0.2px;
-  text-transform: uppercase;
+  color: #b0b0bc;
 }
+
+.section-label--hair   { color: #7C9B6A; }
+.section-label--makeup { color: #B06AAA; }
+.section-label--total  { color: #6A7CB0; }
+.section-label--avoid  { color: #b0b0bc; margin-top: 4px; }
 
 /* 순위 뱃지 */
 .rank-badge {
@@ -66,20 +70,9 @@ section {
   letter-spacing: 0.1px;
 }
 
-.rank-1 {
-  background: #FFF3CD;
-  color: #A07800;
-}
-
-.rank-2 {
-  background: #F2F2F6;
-  color: #6B6B7A;
-}
-
-.rank-3 {
-  background: #FFF0E8;
-  color: #9B5B2A;
-}
+.rank-1 { background: #FFF3CD; color: #A07800; }
+.rank-2 { background: #F2F2F6; color: #6B6B7A; }
+.rank-3 { background: #FFF0E8; color: #9B5B2A; }
 
 /* 카드 공통 */
 .card-item {
@@ -95,13 +88,8 @@ section {
   transition: transform 0.15s, box-shadow 0.15s;
 }
 
-.card-item:hover {
-  transform: translateY(-2px);
-}
-
-.card-item:active {
-  transform: translateY(0);
-}
+.card-item:hover  { transform: translateY(-2px); }
+.card-item:active { transform: translateY(0); }
 
 /* 추천 카드 */
 .card-item.recommend {
@@ -123,9 +111,7 @@ section {
   box-shadow: 0 8px 28px rgba(220, 53, 69, 0.13);
 }
 
-.card-item.avoid .card-mood {
-  color: #c0392b;
-}
+.card-item.avoid .card-mood { color: #c0392b; }
 
 /* 카드 내용 */
 .card-emoji {

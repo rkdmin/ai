@@ -35,31 +35,52 @@ export default function CardDetail({ card, image, onBack }) {
         }
       </div>
 
-      {/* 헤어 */}
-      <div className="detail-card">
-        <p className="card-label">💇 헤어스타일</p>
-        <p className="detail-value">{card.hair}</p>
-        <p className="detail-reason">{card.hairReason}</p>
-      </div>
+      {/* 헤어 (hair / total 카드) */}
+      {card.hair && (
+        <div className="detail-card">
+          <p className="card-label">💇 헤어스타일</p>
+          <p className="detail-value">{card.hair}</p>
+          <p className="detail-reason">{card.hairReason}</p>
+        </div>
+      )}
 
-      {/* 메이크업 */}
-      <div className="detail-card">
-        <p className="card-label">💄 메이크업</p>
-        <div className="makeup-list">
-          <div className="makeup-row">
-            <span className="makeup-key">립</span>
-            <span className="makeup-val">{card.makeup.lip}</span>
-          </div>
-          <div className="makeup-row">
-            <span className="makeup-key">블러셔</span>
-            <span className="makeup-val">{card.makeup.blush}</span>
-          </div>
-          <div className="makeup-row">
-            <span className="makeup-key">아이섀도우</span>
-            <span className="makeup-val">{card.makeup.eyeshadow}</span>
+      {/* 메이크업 (makeup / total 카드) */}
+      {card.makeup && (
+        <div className="detail-card">
+          <p className="card-label">💄 메이크업</p>
+          <div className="makeup-list">
+            <div className="makeup-item">
+              <div className="makeup-row">
+                <span className="makeup-key">립</span>
+                <span className="makeup-val">{card.makeup.lip}</span>
+              </div>
+              {card.makeup.lipReason && <p className="makeup-reason">{card.makeup.lipReason}</p>}
+            </div>
+            <div className="makeup-item">
+              <div className="makeup-row">
+                <span className="makeup-key">블러셔</span>
+                <span className="makeup-val">{card.makeup.blush}</span>
+              </div>
+              {card.makeup.blushReason && <p className="makeup-reason">{card.makeup.blushReason}</p>}
+            </div>
+            <div className="makeup-item">
+              <div className="makeup-row">
+                <span className="makeup-key">아이섀도우</span>
+                <span className="makeup-val">{card.makeup.eyeshadow}</span>
+              </div>
+              {card.makeup.eyeshadowReason && <p className="makeup-reason">{card.makeup.eyeshadowReason}</p>}
+            </div>
           </div>
         </div>
-      </div>
+      )}
+
+      {/* 이목구비 팁 */}
+      {card.featureTip && (
+        <div className="detail-card feature-card">
+          <p className="card-label">👁 이목구비 팁</p>
+          <p className="detail-reason">{card.featureTip}</p>
+        </div>
+      )}
 
       {/* 코치 멘트 */}
       <div className={`detail-card coach-card ${isAvoid ? 'avoid-coach' : ''}`}>

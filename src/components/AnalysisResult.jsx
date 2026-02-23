@@ -26,8 +26,8 @@ export default function AnalysisResult({ image, analysis, knowsPersonalColor, on
   const faceInfo = FACE_TYPE_LABEL[analysis.faceType] ?? { emoji: '✨', desc: '' }
   const canProceed = !knowsPersonalColor || personalColor !== null
 
-  const handleNext = () => {
-    onNext(knowsPersonalColor ? personalColor : null)
+  const handleNext = (cardType) => {
+    onNext(knowsPersonalColor ? personalColor : null, cardType)
   }
 
   return (
@@ -86,9 +86,17 @@ export default function AnalysisResult({ image, analysis, knowsPersonalColor, on
         </div>
       )}
 
-      <button className="next-btn" disabled={!canProceed} onClick={handleNext}>
-        코디 카드 받기 →
-      </button>
+      <div className="card-btn-group">
+        <button className="card-btn card-btn--hair" disabled={!canProceed} onClick={() => handleNext('hair')}>
+          💇 헤어 카드 받기
+        </button>
+        <button className="card-btn card-btn--makeup" disabled={!canProceed} onClick={() => handleNext('makeup')}>
+          💄 메이크업 카드 받기
+        </button>
+        <button className="card-btn card-btn--total" disabled={!canProceed} onClick={() => handleNext('total')}>
+          ✨ 종합 카드 받기
+        </button>
+      </div>
     </div>
   )
 }

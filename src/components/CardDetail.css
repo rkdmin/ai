@@ -115,7 +115,13 @@
 .makeup-list {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 14px;
+}
+
+.makeup-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .makeup-row {
@@ -137,6 +143,18 @@
   font-weight: 500;
   color: #1a1a1a;
   letter-spacing: -0.2px;
+}
+
+.makeup-reason {
+  font-size: 13px;
+  color: #8a8a96;
+  line-height: 1.5;
+  padding-left: 72px;
+}
+
+/* 이목구비 팁 */
+.feature-card {
+  background: #f3f7f0;
 }
 
 /* 코치 멘트 */

@@ -3,14 +3,14 @@ import PhotoUpload from './components/PhotoUpload'
 import AnalysisResult from './components/AnalysisResult'
 import CardList from './components/CardList'
 import CardDetail from './components/CardDetail'
-import { analyzeFace, generateCards } from './api/ai'
+import { analyzeFace, generateHairCards, generateMakeupCards, generateTotalCards } from './api/ai'
 import './App.css'
 
 export default function App() {
   const [step, setStep] = useState('upload') // upload | analyzing | result | generatingCards | cards | cardDetail
   const [image, setImage] = useState(null)
   const [analysis, setAnalysis] = useState(null)
-  const [cards, setCards] = useState([])
+  const [cardSets, setCardSets] = useState(null) // { hair: [], makeup: [], total: [] }
   const [selectedCard, setSelectedCard] = useState(null)
   const [error, setError] = useState(null)
   const [knowsPersonalColor, setKnowsPersonalColor] = useState(null)
@@ -30,14 +30,15 @@ export default function App() {
     }
   }
 
-  const handleGenerateCards = async (confirmedColor) => {
+  const handleGenerateCards = async (confirmedColor, cardType) => {
     const finalAnalysis = { ...analysis, personalColor: confirmedColor }
     setAnalysis(finalAnalysis)
     setError(null)
     setStep('generatingCards')
     try {
-      const result = await generateCards(finalAnalysis)
-      setCards(result)
+      const generators = { hair: generateHairCards, makeup: generateMakeupCards, total: generateTotalCards }
+      const result = await generators[cardType](finalAnalysis)
+      setCardSets({ [cardType]: result })
       setStep('cards')
     } catch (err) {
       setError(err.message)
@@ -49,7 +50,7 @@ export default function App() {
     setStep('upload')
     setImage(null)
     setAnalysis(null)
-    setCards([])
+    setCardSets(null)
     setSelectedCard(null)
     setError(null)
     setKnowsPersonalColor(null)
@@ -77,10 +78,10 @@ export default function App() {
     )
   }
 
-  if (step === 'cards' && cards.length > 0) {
+  if (step === 'cards' && cardSets) {
     return (
       <CardList
-        cards={cards}
+        cardSets={cardSets}
         analysis={analysis}
         onSelectCard={(card) => { setSelectedCard(card); setStep('cardDetail') }}
         onReset={handleReset}

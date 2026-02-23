@@ -12,74 +12,193 @@ export const COLOR_MAP = {
   '가을웜': 'autumn_warm', '겨울쿨': 'winter_cool',
 }
 
-export function buildRagContext(analysis) {
+function getHairData(analysis) {
   const faceKey = FACE_TYPE_MAP[analysis.faceType]
+  return hairData.hairByFaceType.find(h => h.faceType === faceKey) ?? {}
+}
+
+function getMakeupData(analysis) {
   const colorKey = analysis.personalColor ? COLOR_MAP[analysis.personalColor] : null
+  return colorKey ? makeupData.makeupByPersonalColor.find(m => m.personalColor === colorKey) ?? {} : null
+}
 
-  const hair = hairData.hairByFaceType.find(h => h.faceType === faceKey) ?? {}
-  const makeup = colorKey
-    ? makeupData.makeupByPersonalColor.find(m => m.personalColor === colorKey) ?? {}
-    : null
-
-  const tips = (analysis.features ?? [])
+function getFeatureTips(analysis) {
+  return (analysis.features ?? [])
     .map(f => featureTipsData.featureTips.find(t => t.label.includes(f)))
     .filter(Boolean)
+}
 
-  const hairCtx = `
-[헤어 — ${analysis.faceType}]
+export function buildHairContext(analysis) {
+  const hair = getHairData(analysis)
+  const tips = getFeatureTips(analysis)
+
+  const hairCtx = `[헤어 — ${analysis.faceType}]
 추천: ${(hair.recommend ?? []).map(r => `${r.style}(${r.reason})`).join(' / ')}
 피해야 할: ${(hair.avoid ?? []).map(a => `${a.style}(${a.reason})`).join(' / ')}
 코치: ${hair.coachComment ?? ''}`
 
-  // 퍼스널컬러 없을 때: featureTips의 makeupTip을 보완 데이터로 활용
+  const tipsCtx = tips.length
+    ? '\n[이목구비 헤어 팁]\n' + tips.map(t => `${t.label}: ${t.hairTip}`).join('\n')
+    : ''
+
+  return hairCtx + tipsCtx
+}
+
+export function buildMakeupContext(analysis) {
+  const makeup = getMakeupData(analysis)
+  const tips = getFeatureTips(analysis)
+
   const allMakeupTips = featureTipsData.featureTips
     .filter(t => tips.some(tip => tip.feature === t.feature))
     .map(t => t.makeupTip)
 
   const makeupCtx = makeup
-    ? `
-[메이크업 — ${analysis.personalColor}]
-립: ${(makeup.lip ?? []).map(l => l.style).join(' / ')}
-블러셔: ${(makeup.blush ?? []).map(b => b.style).join(' / ')}
-아이섀도우: ${(makeup.eyeshadow ?? []).map(e => e.style).join(' / ')}
-눈썹: ${(makeup.eyebrow ?? []).map(e => e.style).join(' / ')}
-아이라이너: ${(makeup.eyeliner ?? []).map(e => e.style).join(' / ')}
-쉐딩: ${(makeup.shading ?? []).map(s => s.style).join(' / ')}
-하이라이터: ${(makeup.highlighter ?? []).map(h => h.style).join(' / ')}
+    ? `[메이크업 — ${analysis.personalColor}]
+립: ${(makeup.lip ?? []).map(l => `${l.style}(${l.reason})`).join(' / ')}
+블러셔: ${(makeup.blush ?? []).map(b => `${b.style}(${b.reason})`).join(' / ')}
+아이섀도우: ${(makeup.eyeshadow ?? []).map(e => `${e.style}(${e.reason})`).join(' / ')}
+눈썹: ${(makeup.eyebrow ?? []).map(e => `${e.style}(${e.reason})`).join(' / ')}
+아이라이너: ${(makeup.eyeliner ?? []).map(e => `${e.style}(${e.reason})`).join(' / ')}
+쉐딩: ${(makeup.shading ?? []).map(s => `${s.style}(${s.reason})`).join(' / ')}
+하이라이터: ${(makeup.highlighter ?? []).map(h => `${h.style}(${h.reason})`).join(' / ')}
 피해야 할: ${(makeup.avoid ?? []).map(a => a.style).join(' / ')}
 코치: ${makeup.coachComment ?? ''}`
-    : `
-[메이크업 — 퍼스널컬러 미정]
+    : `[메이크업 — 퍼스널컬러 미정]
 색상 대신 이목구비 보정 효과와 질감 위주로 추천하세요.${allMakeupTips.length > 0 ? '\n이목구비 메이크업 팁:\n' + allMakeupTips.join('\n') : '\n얼굴형 특징에 맞는 이목구비 보정 메이크업을 질감·효과 중심으로 구성하세요.'}`
 
   const tipsCtx = tips.length
-    ? '\n[이목구비 팁]\n' + tips.map(t => `${t.label}: 메이크업-${t.makeupTip} / 헤어-${t.hairTip}`).join('\n')
+    ? '\n[이목구비 메이크업 팁]\n' + tips.map(t => `${t.label}: ${t.makeupTip}`).join('\n')
+    : ''
+
+  return makeupCtx + tipsCtx
+}
+
+export function buildTotalContext(analysis) {
+  const hair = getHairData(analysis)
+  const makeup = getMakeupData(analysis)
+  const tips = getFeatureTips(analysis)
+
+  const allMakeupTips = featureTipsData.featureTips
+    .filter(t => tips.some(tip => tip.feature === t.feature))
+    .map(t => t.makeupTip)
+
+  const hairCtx = `[헤어 — ${analysis.faceType}]
+추천: ${(hair.recommend ?? []).map(r => `${r.style}(${r.reason})`).join(' / ')}
+피해야 할: ${(hair.avoid ?? []).map(a => `${a.style}(${a.reason})`).join(' / ')}
+코치: ${hair.coachComment ?? ''}`
+
+  const makeupCtx = makeup
+    ? `\n[메이크업 — ${analysis.personalColor}]
+립: ${(makeup.lip ?? []).map(l => `${l.style}(${l.reason})`).join(' / ')}
+블러셔: ${(makeup.blush ?? []).map(b => `${b.style}(${b.reason})`).join(' / ')}
+아이섀도우: ${(makeup.eyeshadow ?? []).map(e => `${e.style}(${e.reason})`).join(' / ')}
+눈썹: ${(makeup.eyebrow ?? []).map(e => `${e.style}(${e.reason})`).join(' / ')}
+아이라이너: ${(makeup.eyeliner ?? []).map(e => `${e.style}(${e.reason})`).join(' / ')}
+쉐딩: ${(makeup.shading ?? []).map(s => `${s.style}(${s.reason})`).join(' / ')}
+하이라이터: ${(makeup.highlighter ?? []).map(h => `${h.style}(${h.reason})`).join(' / ')}
+피해야 할: ${(makeup.avoid ?? []).map(a => a.style).join(' / ')}
+코치: ${makeup.coachComment ?? ''}`
+    : `\n[메이크업 — 퍼스널컬러 미정]
+색상 대신 이목구비 보정 효과와 질감 위주로 추천하세요.${allMakeupTips.length > 0 ? '\n이목구비 메이크업 팁:\n' + allMakeupTips.join('\n') : '\n얼굴형 특징에 맞는 이목구비 보정 메이크업을 질감·효과 중심으로 구성하세요.'}`
+
+  const tipsCtx = tips.length
+    ? '\n[이목구비 종합 팁]\n' + tips.map(t => `${t.label}: 헤어-${t.hairTip} / 메이크업-${t.makeupTip}`).join('\n')
     : ''
 
   return hairCtx + makeupCtx + tipsCtx
 }
 
-export const CARDS_OUTPUT_FORMAT = `[
+export const HAIR_CARDS_FORMAT = `[
   {
     "type": "recommend",
     "rank": 1,
-    "mood": "스타일 무드명 (예: 청순 내추럴)",
+    "cardType": "hair",
+    "mood": "스타일 무드명",
+    "emoji": "이모지 1개",
+    "hair": "헤어스타일명",
+    "hairReason": "얼굴형 기준으로 왜 어울리는지 1문장",
+    "featureTip": "이목구비 특징 기반 헤어 팁 1문장 (특징 없으면 null)",
+    "coachComment": "헤어 중심 전체 조언 2-3문장"
+  },
+  { "type": "recommend", "rank": 2, "cardType": "hair", "mood": "...", "emoji": "...", "hair": "...", "hairReason": "...", "featureTip": "...", "coachComment": "..." },
+  { "type": "recommend", "rank": 3, "cardType": "hair", "mood": "...", "emoji": "...", "hair": "...", "hairReason": "...", "featureTip": "...", "coachComment": "..." },
+  {
+    "type": "avoid",
+    "cardType": "hair",
+    "mood": "피해야 할 헤어스타일",
+    "emoji": "⚠️",
+    "hair": "피해야 할 헤어스타일명",
+    "hairReason": "왜 안 어울리는지 1문장",
+    "featureTip": null,
+    "coachComment": "왜 이 헤어가 맞지 않는지 2-3문장"
+  }
+]`
+
+export const MAKEUP_CARDS_FORMAT = `[
+  {
+    "type": "recommend",
+    "rank": 1,
+    "cardType": "makeup",
+    "mood": "스타일 무드명",
+    "emoji": "이모지 1개",
+    "makeup": {
+      "lip": "립 컬러명", "lipReason": "왜 어울리는지 1문장",
+      "blush": "블러셔", "blushReason": "왜 어울리는지 1문장",
+      "eyeshadow": "아이섀도우", "eyeshadowReason": "왜 어울리는지 1문장"
+    },
+    "featureTip": "이목구비 특징 기반 메이크업 팁 1문장 (특징 없으면 null)",
+    "coachComment": "메이크업 중심 전체 조언 2-3문장"
+  },
+  { "type": "recommend", "rank": 2, "cardType": "makeup", "mood": "...", "emoji": "...", "makeup": { "lip": "...", "lipReason": "...", "blush": "...", "blushReason": "...", "eyeshadow": "...", "eyeshadowReason": "..." }, "featureTip": "...", "coachComment": "..." },
+  { "type": "recommend", "rank": 3, "cardType": "makeup", "mood": "...", "emoji": "...", "makeup": { "lip": "...", "lipReason": "...", "blush": "...", "blushReason": "...", "eyeshadow": "...", "eyeshadowReason": "..." }, "featureTip": "...", "coachComment": "..." },
+  {
+    "type": "avoid",
+    "cardType": "makeup",
+    "mood": "피해야 할 메이크업",
+    "emoji": "⚠️",
+    "makeup": {
+      "lip": "피해야 할 립", "lipReason": "왜 안 어울리는지 1문장",
+      "blush": "피해야 할 블러셔", "blushReason": "왜 안 어울리는지 1문장",
+      "eyeshadow": "피해야 할 아이섀도우", "eyeshadowReason": "왜 안 어울리는지 1문장"
+    },
+    "featureTip": null,
+    "coachComment": "왜 이 메이크업이 맞지 않는지 2-3문장"
+  }
+]`
+
+export const TOTAL_CARDS_FORMAT = `[
+  {
+    "type": "recommend",
+    "rank": 1,
+    "cardType": "total",
+    "mood": "스타일 무드명",
     "emoji": "이모지 1개",
     "hair": "헤어스타일명",
     "hairReason": "왜 어울리는지 1문장",
-    "makeup": { "lip": "립 컬러명", "blush": "블러셔", "eyeshadow": "아이섀도우" },
-    "coachComment": "왜 이 스타일이 나한테 맞는지 2-3문장 전문가 설명"
+    "makeup": {
+      "lip": "립 컬러명", "lipReason": "왜 어울리는지 1문장",
+      "blush": "블러셔", "blushReason": "왜 어울리는지 1문장",
+      "eyeshadow": "아이섀도우", "eyeshadowReason": "왜 어울리는지 1문장"
+    },
+    "featureTip": "이목구비 종합 팁 1문장 (특징 없으면 null)",
+    "coachComment": "헤어+메이크업 종합 전체 조언 2-3문장"
   },
-  { "type": "recommend", "rank": 2, "mood": "...", "emoji": "...", "hair": "...", "hairReason": "...", "makeup": { "lip": "...", "blush": "...", "eyeshadow": "..." }, "coachComment": "..." },
-  { "type": "recommend", "rank": 3, "mood": "...", "emoji": "...", "hair": "...", "hairReason": "...", "makeup": { "lip": "...", "blush": "...", "eyeshadow": "..." }, "coachComment": "..." },
+  { "type": "recommend", "rank": 2, "cardType": "total", "mood": "...", "emoji": "...", "hair": "...", "hairReason": "...", "makeup": { "lip": "...", "lipReason": "...", "blush": "...", "blushReason": "...", "eyeshadow": "...", "eyeshadowReason": "..." }, "featureTip": "...", "coachComment": "..." },
+  { "type": "recommend", "rank": 3, "cardType": "total", "mood": "...", "emoji": "...", "hair": "...", "hairReason": "...", "makeup": { "lip": "...", "lipReason": "...", "blush": "...", "blushReason": "...", "eyeshadow": "...", "eyeshadowReason": "..." }, "featureTip": "...", "coachComment": "..." },
   {
     "type": "avoid",
+    "cardType": "total",
     "mood": "피해야 할 스타일",
     "emoji": "⚠️",
     "hair": "피해야 할 헤어스타일",
     "hairReason": "왜 안 어울리는지 1문장",
-    "makeup": { "lip": "피해야 할 립", "blush": "피해야 할 블러셔", "eyeshadow": "피해야 할 아이섀도우" },
-    "coachComment": "왜 이 스타일이 나한테 맞지 않는지 2-3문장 전문가 설명"
+    "makeup": {
+      "lip": "피해야 할 립", "lipReason": "왜 안 어울리는지 1문장",
+      "blush": "피해야 할 블러셔", "blushReason": "왜 안 어울리는지 1문장",
+      "eyeshadow": "피해야 할 아이섀도우", "eyeshadowReason": "왜 안 어울리는지 1문장"
+    },
+    "featureTip": null,
+    "coachComment": "왜 이 스타일 조합이 맞지 않는지 2-3문장"
   }
 ]`
 

@@ -161,29 +161,31 @@
   color: #636370;
 }
 
-/* 코디 카드 받기 버튼 */
-.next-btn {
+/* 코디 카드 받기 버튼 그룹 */
+.card-btn-group {
   width: 100%;
-  padding: 18px;
-  border-radius: 16px;
-  border: none;
-  background: #1a1a1a;
-  color: #ffffff;
-  font-size: 17px;
-  font-weight: 600;
-  cursor: pointer;
-  letter-spacing: -0.3px;
-  transition: background 0.2s, transform 0.15s, box-shadow 0.15s;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
   margin-top: 4px;
 }
 
-.next-btn:hover {
-  background: #111111;
-  transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
+.card-btn {
+  width: 100%;
+  padding: 16px;
+  border-radius: 16px;
+  border: none;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: -0.3px;
+  transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
 }
 
-.next-btn:active {
-  transform: translateY(0);
-  box-shadow: none;
-}
+.card-btn:hover  { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,0,0,0.13); }
+.card-btn:active { transform: translateY(0); box-shadow: none; }
+.card-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+
+.card-btn--hair   { background: #EEF6EA; color: #4A7C3F; }
+.card-btn--makeup { background: #F5EEF8; color: #8B4AAA; }
+.card-btn--total  { background: #1a1a1a; color: #ffffff;  }
