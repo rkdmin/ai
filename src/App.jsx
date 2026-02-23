@@ -61,7 +61,11 @@ export default function App() {
     const isCards = step === 'generatingCards'
     return (
       <div className="loading-screen">
-        <div className="spinner" />
+        <p className="loading-emblem">Beauté AI</p>
+        <div className="loading-bars">
+          <span/><span/><span/><span/><span/>
+        </div>
+        <div className="loading-divider" />
         <p className="loading-title">{isCards ? '코디 카드를 만들고 있어요' : '얼굴을 분석하고 있어요'}</p>
         <p className="loading-sub">잠시만 기다려주세요...</p>
       </div>

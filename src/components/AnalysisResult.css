@@ -1,122 +1,114 @@
+/* ─── AnalysisResult ──────────────────────────── */
 .result-page {
   min-height: 100vh;
+  background: var(--bg);
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 48px 24px 48px;
-  max-width: 480px;
-  margin: 0 auto;
-  gap: 16px;
+  padding-bottom: 60px;
 }
 
-/* 헤더 */
+/* ─── Header ──────────────────────────────────── */
 .result-header {
   width: 100%;
+  max-width: 480px;
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 4px;
+  justify-content: space-between;
+  padding: 20px 28px 16px;
+  border-bottom: 1px solid var(--border);
 }
 
 .back-btn {
-  background: none;
-  border: none;
-  font-size: 14px;
-  color: #9b9ba4;
-  cursor: pointer;
-  padding: 0;
-  flex-shrink: 0;
+  font-size: 11px;
+  color: var(--gray-mid);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 6px 0;
+  transition: color 0.2s;
 }
 
 .back-btn:hover {
-  color: #636370;
+  color: var(--black);
 }
 
 .result-title {
-  font-size: 22px;
-  font-weight: 700;
-  color: #1a1a1a;
-  letter-spacing: -0.5px;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 300;
+  font-size: 16px;
+  color: var(--gray-dark);
+  letter-spacing: 0.05em;
 }
 
-/* 사진 썸네일 */
+/* ─── Photo ───────────────────────────────────── */
 .result-photo {
   width: 100%;
-  max-height: 280px;
+  max-width: 480px;
+  max-height: 340px;
   object-fit: cover;
-  object-position: top;
-  border-radius: 20px;
 }
 
-/* 결과 카드 */
-.result-card {
+/* ─── Body ────────────────────────────────────── */
+.result-body {
   width: 100%;
-  background: #ffffff;
-  border-radius: 20px;
-  padding: 20px;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+  max-width: 480px;
+  padding: 0 28px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 0;
+}
+
+/* ─── Result Card ─────────────────────────────── */
+.result-card {
+  padding: 24px 0;
+  border-bottom: 1px solid var(--border);
 }
 
 .card-label {
-  font-size: 13px;
-  font-weight: 600;
-  color: #b0b0bc;
-  letter-spacing: 0.3px;
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.25em;
   text-transform: uppercase;
+  color: var(--gray-light);
+  margin-bottom: 14px;
 }
 
-/* 얼굴형 */
+/* ─── Face Type ───────────────────────────────── */
 .face-type-row {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 16px;
 }
 
 .face-emoji {
-  font-size: 36px;
+  font-size: 28px;
   flex-shrink: 0;
 }
 
 .face-name {
-  font-size: 20px;
-  font-weight: 700;
-  color: #1a1a1a;
-  letter-spacing: -0.3px;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--black);
+  line-height: 1.1;
 }
 
 .face-desc {
-  font-size: 13px;
-  color: #9b9ba4;
-  margin-top: 2px;
+  font-size: 12px;
+  color: var(--gray-mid);
+  margin-top: 4px;
+  letter-spacing: 0.04em;
+  font-weight: 300;
 }
 
-/* 퍼스널컬러 배지 */
-.color-badge {
-  display: inline-block;
-  padding: 10px 18px;
-  border-radius: 12px;
-  font-size: 16px;
-  font-weight: 600;
-  letter-spacing: -0.2px;
-  align-self: flex-start;
-}
-
-/* 퍼스널컬러 직접 선택 */
-.color-confirm {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding-top: 4px;
-  border-top: 1px solid #f0f0f5;
-}
-
+/* ─── Personal Color ──────────────────────────── */
 .confirm-notice {
-  font-size: 13px;
-  color: #9b9ba4;
-  line-height: 1.6;
+  font-size: 12px;
+  color: var(--gray-mid);
+  margin-bottom: 14px;
+  font-weight: 300;
 }
 
 .color-options {
@@ -126,27 +118,27 @@
 }
 
 .color-option {
-  padding: 10px;
-  border-radius: 12px;
-  border: 1.5px solid #e8e8f0;
-  background: #fafafa;
-  font-size: 14px;
-  font-weight: 500;
-  color: #636370;
-  cursor: pointer;
-  transition: all 0.15s;
+  padding: 11px 8px;
+  border: 1px solid var(--border-dark);
+  font-size: 12px;
+  color: var(--gray-mid);
+  letter-spacing: 0.04em;
+  transition: all 0.2s;
+  background: var(--bg-card);
 }
 
 .color-option:hover {
-  border-color: #c0c0cc;
+  border-color: var(--black);
+  color: var(--black);
 }
 
 .color-option.selected {
-  font-weight: 600;
-  border-width: 2px;
+  background: var(--black) !important;
+  border-color: var(--black) !important;
+  color: #fff !important;
 }
 
-/* 이목구비 특징 태그 */
+/* ─── Feature Tags ────────────────────────────── */
 .feature-tags {
   display: flex;
   flex-wrap: wrap;
@@ -154,38 +146,58 @@
 }
 
 .feature-tag {
-  background: #f5f5f9;
-  border-radius: 20px;
-  padding: 7px 14px;
-  font-size: 13px;
-  color: #636370;
+  font-size: 12px;
+  color: var(--gray-dark);
+  border: 1px solid var(--border);
+  padding: 5px 12px;
+  font-weight: 300;
+  letter-spacing: 0.04em;
 }
 
-/* 코디 카드 받기 버튼 그룹 */
+/* ─── Card Button Group ───────────────────────── */
 .card-btn-group {
   width: 100%;
+  max-width: 480px;
+  padding: 28px 28px 0;
   display: flex;
   flex-direction: column;
   gap: 10px;
-  margin-top: 4px;
 }
 
 .card-btn {
   width: 100%;
-  padding: 16px;
-  border-radius: 16px;
-  border: none;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  letter-spacing: -0.3px;
-  transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
+  padding: 15px;
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  font-weight: 400;
+  transition: all 0.2s;
 }
 
-.card-btn:hover  { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,0,0,0.13); }
-.card-btn:active { transform: translateY(0); box-shadow: none; }
-.card-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+.card-btn--hair,
+.card-btn--makeup {
+  background: var(--bg-card);
+  border: 1px solid var(--border-dark);
+  color: var(--gray-dark);
+}
 
-.card-btn--hair   { background: #EEF6EA; color: #4A7C3F; }
-.card-btn--makeup { background: #F5EEF8; color: #8B4AAA; }
-.card-btn--total  { background: #1a1a1a; color: #ffffff;  }
+.card-btn--hair:hover:not(:disabled),
+.card-btn--makeup:hover:not(:disabled) {
+  border-color: var(--black);
+  color: var(--black);
+}
+
+.card-btn--total {
+  background: var(--black);
+  border: 1px solid var(--black);
+  color: #fff;
+}
+
+.card-btn--total:hover:not(:disabled) {
+  background: #333;
+}
+
+.card-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}

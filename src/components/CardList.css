@@ -1,147 +1,251 @@
+/* ─── CardList ────────────────────────────────── */
 .card-list-page {
   min-height: 100vh;
+  background: var(--bg);
   display: flex;
   flex-direction: column;
-  padding: 48px 24px 48px;
-  max-width: 480px;
-  margin: 0 auto;
-  gap: 28px;
+  align-items: center;
+  padding-bottom: 60px;
+  animation: pageEnter 0.5s ease both;
 }
 
-/* 헤더 */
+@keyframes pageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ─── Header ──────────────────────────────────── */
 .list-header {
+  width: 100%;
+  max-width: 480px;
   display: flex;
-  align-items: flex-start;
-  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 28px 16px;
+  border-bottom: 1px solid var(--border);
 }
-
-.back-btn {
-  background: none;
-  border: none;
-  font-size: 14px;
-  color: #9b9ba4;
-  cursor: pointer;
-  padding: 0;
-  flex-shrink: 0;
-  margin-top: 4px;
-}
-
-.back-btn:hover { color: #636370; }
 
 .list-title {
-  font-size: 24px;
-  font-weight: 700;
-  color: #1a1a1a;
-  letter-spacing: -0.5px;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 300;
+  font-size: 18px;
+  color: var(--black);
+  letter-spacing: 0.04em;
 }
 
 .list-sub {
-  font-size: 14px;
-  color: #9b9ba4;
-  margin-top: 4px;
+  font-size: 11px;
+  color: var(--gray-light);
+  letter-spacing: 0.1em;
+  margin-top: 2px;
 }
 
-/* 섹션 */
+/* ─── Section ─────────────────────────────────── */
 .card-section {
+  width: 100%;
+  max-width: 480px;
+  padding: 32px 28px 0;
+}
+
+.section-heading {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-bottom: 6px;
+  animation: fadeSlideIn 0.6s ease both;
+}
+
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.section-heading-thin {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 300;
+  font-size: 26px;
+  color: var(--gray-mid);
+}
+
+.section-heading-bold {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 700;
+  font-size: 28px;
+  color: var(--black);
+}
+
+.section-sub {
+  font-size: 11px;
+  color: var(--gray-light);
+  letter-spacing: 0.08em;
+  margin-bottom: 18px;
+  font-weight: 300;
+}
+
+/* ─── Card Grid ───────────────────────────────── */
+.card-grid {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 0;
 }
 
-.section-label {
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.2px;
-  color: #b0b0bc;
-}
-
-.section-label--hair   { color: #7C9B6A; }
-.section-label--makeup { color: #B06AAA; }
-.section-label--total  { color: #6A7CB0; }
-.section-label--avoid  { color: #b0b0bc; margin-top: 4px; }
-
-/* 순위 뱃지 */
-.rank-badge {
-  flex-shrink: 0;
-  font-size: 11px;
-  font-weight: 700;
-  border-radius: 10px;
-  padding: 3px 8px;
-  letter-spacing: 0.1px;
-}
-
-.rank-1 { background: #FFF3CD; color: #A07800; }
-.rank-2 { background: #F2F2F6; color: #6B6B7A; }
-.rank-3 { background: #FFF0E8; color: #9B5B2A; }
-
-/* 카드 공통 */
+/* ─── Card Item ───────────────────────────────── */
 .card-item {
   width: 100%;
   display: flex;
   align-items: center;
-  gap: 16px;
-  padding: 18px 20px;
-  border-radius: 20px;
-  border: none;
-  cursor: pointer;
+  gap: 0;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--border);
   text-align: left;
-  transition: transform 0.15s, box-shadow 0.15s;
+  background: transparent;
+  transition: background 0.15s;
+  position: relative;
 }
 
-.card-item:hover  { transform: translateY(-2px); }
-.card-item:active { transform: translateY(0); }
-
-/* 추천 카드 */
-.card-item.recommend {
-  background: #ffffff;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.07);
+.card-item:hover {
+  background: #F5F5F3;
 }
 
-.card-item.recommend:hover {
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.11);
+.card-item:first-child {
+  border-top: 1px solid var(--border);
 }
 
-/* 비추천 카드 */
-.card-item.avoid {
-  background: #fff5f5;
-  box-shadow: 0 4px 20px rgba(220, 53, 69, 0.08);
-}
-
-.card-item.avoid:hover {
-  box-shadow: 0 8px 28px rgba(220, 53, 69, 0.13);
-}
-
-.card-item.avoid .card-mood { color: #c0392b; }
-
-/* 카드 내용 */
-.card-emoji {
-  font-size: 32px;
+/* Ghost rank number */
+.ghost-number {
+  font-family: var(--font-serif);
+  font-weight: 700;
+  font-size: 56px;
+  color: #EBEBEB;
+  line-height: 1;
+  width: 64px;
   flex-shrink: 0;
+  text-align: center;
+  letter-spacing: -0.02em;
+  user-select: none;
 }
 
-.card-info {
+.card-content {
   flex: 1;
-  min-width: 0;
+  padding: 0 12px;
+}
+
+.rank-badge {
+  display: inline-block;
+  font-size: 9px;
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #fff;
+  background: var(--black);
+  padding: 3px 8px;
+  margin-bottom: 6px;
+}
+
+.rank-badge.rank-2 {
+  background: #888;
+}
+
+.rank-badge.rank-3 {
+  background: #AAA;
 }
 
 .card-mood {
-  font-size: 16px;
-  font-weight: 700;
-  color: #1a1a1a;
-  letter-spacing: -0.3px;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--black);
+  line-height: 1.2;
 }
 
 .card-preview {
-  font-size: 13px;
-  color: #9b9ba4;
+  font-size: 12px;
+  color: var(--gray-mid);
   margin-top: 4px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  font-weight: 300;
+  letter-spacing: 0.03em;
+}
+
+.card-emoji {
+  font-size: 18px;
+  margin-right: 4px;
 }
 
 .card-arrow {
-  font-size: 20px;
-  color: #c8c8d0;
-  flex-shrink: 0;
+  font-size: 18px;
+  color: var(--gray-light);
+  padding-right: 4px;
+}
+
+/* ─── Section Divider ─────────────────────────── */
+.section-divider {
+  width: 100%;
+  max-width: 480px;
+  height: 1px;
+  background: var(--border);
+  margin-top: 32px;
+}
+
+/* ─── Avoid Section Label ─────────────────────── */
+.section-label--avoid {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 28px 0 14px;
+}
+
+.avoid-label-text {
+  font-size: 10px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--red);
+  font-weight: 400;
+}
+
+.avoid-label-line {
+  flex: 1;
+  height: 1px;
+  background: rgba(200, 75, 106, 0.2);
+}
+
+/* Avoid card */
+.card-item.avoid {
+  border-left: 3px solid var(--red);
+  padding-left: 16px;
+  background: var(--red-bg);
+}
+
+.card-item.avoid:hover {
+  background: #fcedf1;
+}
+
+.card-item.avoid .ghost-number {
+  color: rgba(200, 75, 106, 0.12);
+}
+
+.card-item.avoid .rank-badge {
+  background: var(--red);
+  color: #fff;
+}
+
+.card-item.avoid .card-mood {
+  color: var(--red);
 }
