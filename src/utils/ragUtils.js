@@ -62,6 +62,7 @@ export function buildRagContext(analysis) {
 export const CARDS_OUTPUT_FORMAT = `[
   {
     "type": "recommend",
+    "rank": 1,
     "mood": "스타일 무드명 (예: 청순 내추럴)",
     "emoji": "이모지 1개",
     "hair": "헤어스타일명",
@@ -69,8 +70,8 @@ export const CARDS_OUTPUT_FORMAT = `[
     "makeup": { "lip": "립 컬러명", "blush": "블러셔", "eyeshadow": "아이섀도우" },
     "coachComment": "왜 이 스타일이 나한테 맞는지 2-3문장 전문가 설명"
   },
-  { },
-  { },
+  { "type": "recommend", "rank": 2, "mood": "...", "emoji": "...", "hair": "...", "hairReason": "...", "makeup": { "lip": "...", "blush": "...", "eyeshadow": "..." }, "coachComment": "..." },
+  { "type": "recommend", "rank": 3, "mood": "...", "emoji": "...", "hair": "...", "hairReason": "...", "makeup": { "lip": "...", "blush": "...", "eyeshadow": "..." }, "coachComment": "..." },
   {
     "type": "avoid",
     "mood": "피해야 할 스타일",

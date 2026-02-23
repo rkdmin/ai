@@ -29,7 +29,10 @@ export default function CardDetail({ card, image, onBack }) {
       <div className={`detail-hero ${isAvoid ? 'avoid-hero' : ''}`}>
         <span className="detail-emoji">{card.emoji}</span>
         <h1 className="detail-mood">{card.mood}</h1>
-        {isAvoid && <p className="avoid-badge">피해야 할 스타일</p>}
+        {isAvoid
+          ? <p className="avoid-badge">피해야 할 스타일</p>
+          : card.rank && <p className={`rank-badge-hero rank-${card.rank}`}>{card.rank}위 추천</p>
+        }
       </div>
 
       {/* 헤어 */}

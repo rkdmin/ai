@@ -17,16 +17,20 @@ export default function CardList({ cards, analysis, onSelectCard, onReset }) {
       <section>
         <p className="section-label">✨ 추천 스타일</p>
         <div className="card-grid">
-          {recommend.map((card, i) => (
-            <button key={i} className="card-item recommend" onClick={() => onSelectCard(card)}>
-              <span className="card-emoji">{card.emoji}</span>
-              <div className="card-info">
-                <p className="card-mood">{card.mood}</p>
-                <p className="card-preview">{card.hair} · {card.makeup.lip}</p>
-              </div>
-              <span className="card-arrow">›</span>
-            </button>
-          ))}
+          {recommend.map((card, i) => {
+            const rank = card.rank ?? (i + 1)
+            return (
+              <button key={i} className="card-item recommend" onClick={() => onSelectCard(card)}>
+                <span className={`rank-badge rank-${rank}`}>{rank}위</span>
+                <span className="card-emoji">{card.emoji}</span>
+                <div className="card-info">
+                  <p className="card-mood">{card.mood}</p>
+                  <p className="card-preview">{card.hair} · {card.makeup.lip}</p>
+                </div>
+                <span className="card-arrow">›</span>
+              </button>
+            )
+          })}
         </div>
       </section>
 

@@ -58,6 +58,28 @@
   padding: 4px 12px;
 }
 
+.rank-badge-hero {
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: 20px;
+  padding: 4px 14px;
+}
+
+.rank-badge-hero.rank-1 {
+  color: #A07800;
+  background: #FFF3CD;
+}
+
+.rank-badge-hero.rank-2 {
+  color: #6B6B7A;
+  background: #F2F2F6;
+}
+
+.rank-badge-hero.rank-3 {
+  color: #9B5B2A;
+  background: #FFF0E8;
+}
+
 /* 상세 카드 */
 .detail-card {
   background: #ffffff;
