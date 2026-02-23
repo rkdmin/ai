@@ -2,7 +2,7 @@ import { useState, useRef } from 'react'
 import { validateImage } from '../utils/validateImage'
 import './PhotoUpload.css'
 
-const MIN_FILE_SIZE = 10 * 1024 // Layer 1: 10KB 미만은 사진이 아닐 가능성 높음
+const MIN_FILE_SIZE = 10 * 1024
 
 export default function PhotoUpload({ onAnalyze }) {
   const [preview, setPreview] = useState(null)
@@ -14,24 +14,15 @@ export default function PhotoUpload({ onAnalyze }) {
   const handleFile = (file) => {
     if (!file || !file.type.startsWith('image/')) return
     setUploadError(null)
-
-    // Layer 1: 파일 크기 검사
     if (file.size < MIN_FILE_SIZE) {
       setUploadError('파일이 너무 작아요. 실제 사진 파일을 올려주세요.')
       return
     }
-
     const reader = new FileReader()
     reader.onload = async (e) => {
       const base64 = e.target.result
-
-      // Layer 2: Canvas 밝기·해상도·균일도 검사
       const validation = await validateImage(base64)
-      if (!validation.valid) {
-        setUploadError(validation.reason)
-        return
-      }
-
+      if (!validation.valid) { setUploadError(validation.reason); return }
       setPreview(base64)
     }
     reader.readAsDataURL(file)
@@ -52,18 +43,20 @@ export default function PhotoUpload({ onAnalyze }) {
   return (
     <div className="upload-page">
       <header className="upload-header">
-        <div className="logo">💄</div>
-        <h1 className="title">AI 뷰티 코치</h1>
+        <span className="header-overline">AI Beauty Coach</span>
+        <div className="hero-headline">
+          <span className="hero-line-thin">Find your</span>
+          <span className="hero-line-bold">Beauty.</span>
+        </div>
         <p className="subtitle">사진 한 장으로 나만의 스타일 찾기</p>
+        <div className="header-divider" />
       </header>
 
       <div className="upload-card">
         {preview ? (
           <div className="preview-wrap">
             <img src={preview} alt="업로드된 사진" className="preview-img" />
-            <button className="change-btn" onClick={handleReset}>
-              다른 사진 선택하기
-            </button>
+            <button className="change-btn" onClick={handleReset}>다른 사진 선택하기</button>
           </div>
         ) : (
           <div
@@ -92,10 +85,12 @@ export default function PhotoUpload({ onAnalyze }) {
         />
 
         <div className="tips">
-          <span className="tip">✓ 정면 사진</span>
-          <span className="tip">✓ 자연광</span>
-          <span className="tip">✓ 민낯 권장</span>
+          <span className="tip">정면 사진</span>
+          <span className="tip">자연광</span>
+          <span className="tip">민낯 권장</span>
         </div>
+
+        <div className="color-divider" />
 
         <div className="color-question">
           <p className="color-question-label">퍼스널컬러를 알고 계신가요?</p>
@@ -103,15 +98,11 @@ export default function PhotoUpload({ onAnalyze }) {
             <button
               className={`color-q-btn ${knowsColor === true ? 'selected' : ''}`}
               onClick={() => setKnowsColor(true)}
-            >
-              알아요
-            </button>
+            >알아요</button>
             <button
               className={`color-q-btn ${knowsColor === false ? 'selected' : ''}`}
               onClick={() => setKnowsColor(false)}
-            >
-              몰라요
-            </button>
+            >몰라요</button>
           </div>
         </div>
 
