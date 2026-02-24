@@ -3,12 +3,13 @@ import { generateStyledPhoto } from '../api/ai'
 import './CardDetail.css'
 
 const MAKEUP_ITEMS = [
-  { key: 'lip',         label: 'Lip',   color: '#A88890', reasonKey: 'lipReason' },
-  { key: 'blush',       label: 'Blush', color: '#B098A0', reasonKey: 'blushReason' },
-  { key: 'eyeshadow',   label: 'Eye',   color: '#8898A8', reasonKey: 'eyeshadowReason' },
-  { key: 'eyebrow',     label: 'Brow',  color: '#9A8878', reasonKey: 'eyebrowReason' },
-  { key: 'eyeliner',    label: 'Liner', color: '#787890', reasonKey: 'eyelinerReason' },
-  { key: 'highlighter', label: 'Glow',  color: '#A8A082', reasonKey: 'highlighterReason' },
+  { key: 'shading',   label: 'Shading', color: '#8A8A90', reasonKey: 'shadingReason' },
+  { key: 'highlight', label: 'Glow',    color: '#A8A082', reasonKey: 'highlightReason' },
+  { key: 'blush',     label: 'Blush',   color: '#B098A0', reasonKey: 'blushReason' },
+  { key: 'eyebrow',   label: 'Brow',    color: '#9A8878', reasonKey: 'eyebrowReason' },
+  { key: 'lip',       label: 'Lip',     color: '#A88890', reasonKey: 'lipReason' },
+  { key: 'eyeshadow', label: 'Eye',     color: '#8898A8', reasonKey: 'eyeshadowReason' },
+  { key: 'eyeliner',  label: 'Liner',   color: '#787890', reasonKey: 'eyelinerReason' },
 ]
 
 export default function CardDetail({ card, image, onBack }) {
@@ -57,6 +58,7 @@ export default function CardDetail({ card, image, onBack }) {
           <section className={`ds ds-hair ${isAvoid ? 'ds-hair--avoid' : ''}`}>
             <span className="ds-eyebrow">Hair Style</span>
             <p className="ds-title">{card.hair}</p>
+            {card.bangs && <p className="ds-desc" style={{ opacity: 0.7 }}>앞머리: {card.bangs}</p>}
             <p className="ds-desc">{card.hairReason}</p>
           </section>
         )}
@@ -65,6 +67,9 @@ export default function CardDetail({ card, image, onBack }) {
         {card.makeup && (
           <section className="ds ds-makeup">
             <span className="ds-eyebrow">Makeup</span>
+            {card.baseSkin && (
+              <p className="ds-desc" style={{ marginBottom: '0.75rem', opacity: 0.75 }}>Base: {card.baseSkin}</p>
+            )}
             <ul className="mup-list">
               {MAKEUP_ITEMS.map(({ key, label, color, reasonKey }) => {
                 const val = card.makeup[key]

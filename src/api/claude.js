@@ -94,18 +94,14 @@ export async function generateHairCards(analysis) {
 
 // ─── 메이크업 카드 4장 생성 ───────────────────────────────────────
 export async function generateMakeupCards(analysis) {
-  const colorRule = analysis.personalColor
-    ? '추천 3장은 서로 다른 분위기(예: 데일리/글램/오피스)로 구성하세요.'
-    : '퍼스널컬러 정보가 없으므로 메이크업은 특정 색상 대신 질감·효과 위주로 표현하세요. 추천 3장은 서로 다른 분위기로 구성하세요.'
+  const colorRule = 'RAG 카드의 priority 순서를 유지하고, 얼굴형(위치/방법)과 퍼스널컬러(컬러)를 컨텍스트의 병합 규칙에 따라 통합하세요. reason/coachComment는 표현만 자연스럽게 변형하고 내용 추가·삭제는 금지합니다.'
   const prompt = buildCardsPrompt(analysis, buildMakeupContext(analysis), MAKEUP_CARDS_FORMAT, '메이크업', colorRule)
   return parseCards(await callClaude([{ role: 'user', content: prompt }], 2048))
 }
 
 // ─── 종합 카드 4장 생성 ───────────────────────────────────────────
 export async function generateTotalCards(analysis) {
-  const colorRule = analysis.personalColor
-    ? '추천 3장은 서로 다른 분위기(예: 데일리/글램/오피스)로 구성하세요.'
-    : '퍼스널컬러 정보가 없으므로 메이크업은 특정 색상 대신 질감·효과 위주로 표현하세요. 추천 3장은 서로 다른 분위기로 구성하세요.'
+  const colorRule = 'RAG 카드의 priority 순서를 유지하고, 얼굴형(위치/방법)·퍼스널컬러(컬러)·헤어를 컨텍스트의 병합 규칙에 따라 통합하세요. reason/coachComment는 표현만 자연스럽게 변형하고 내용 추가·삭제는 금지합니다.'
   const prompt = buildCardsPrompt(analysis, buildTotalContext(analysis), TOTAL_CARDS_FORMAT, '헤어+메이크업 종합', colorRule)
   return parseCards(await callClaude([{ role: 'user', content: prompt }], 2048))
 }

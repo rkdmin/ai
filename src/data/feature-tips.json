@@ -1,0 +1,559 @@
+{
+  "featureTips": [
+    {
+      "feature": "wide_eye_spacing",
+      "label": "눈 간격 넓음 (미간 넓음)",
+      "category": "eye",
+      "makeupTip": {
+        "content": "눈 앞머리에 음영을 주거나 앞트임 아이라인을 그려 미간을 좁혀 보이게 하세요. 눈썹 앞머리를 조금 더 안쪽까지 그려주는 것도 효과적입니다.",
+        "overrideTargets": ["eyeliner", "eyebrow"],
+        "reason": "미간 사이 거리를 시각적으로 좁혀야 하므로 아이라인과 눈썹 위치가 핵심 보정 포인트"
+      },
+      "hairTip": {
+        "content": "앞머리가 없으면 미간이 더 넓어 보일 수 있어요. 시스루뱅이나 사이드뱅을 내려 시선을 중앙으로 모아주세요.",
+        "overrideTargets": ["bangs"],
+        "reason": "앞머리로 시선을 얼굴 중앙에 집중시켜야 미간이 넓어 보이는 것을 완화할 수 있음"
+      }
+    },
+    {
+      "feature": "narrow_eye_spacing",
+      "label": "눈 간격 좁음 (미간 좁음)",
+      "category": "eye",
+      "makeupTip": {
+        "content": "눈 앞머리 쪽 쉐딩은 생략하고 밝은 하이라이터를 발라 트여 보이게 하세요. 아이라인은 눈꼬리 쪽을 길게 빼서 시선을 바깥으로 분산시키세요.",
+        "overrideTargets": ["eyeliner", "highlight"],
+        "reason": "눈 앞머리를 밝게, 꼬리를 길게 빼는 것이 미간을 넓어 보이게 하는 핵심 기법"
+      },
+      "hairTip": {
+        "content": "답답해 보일 수 있는 풀뱅보다는 이마를 드러내는 스타일이나 가벼운 시스루뱅이 좋습니다.",
+        "overrideTargets": ["bangs"],
+        "reason": "이마를 드러내야 시선이 분산되어 미간이 좁아 보이는 것을 완화할 수 있음"
+      }
+    },
+    {
+      "feature": "low_nose",
+      "label": "코 낮음",
+      "category": "nose",
+      "makeupTip": {
+        "content": "콧대와 코끝에 하이라이터를 주고, 앞볼 쪽에 광(Glow)을 더하면 얼굴의 입체감이 살아나 코가 상대적으로 오뚝해 보입니다.",
+        "overrideTargets": ["highlight", "shading"],
+        "reason": "하이라이터로 콧대를 세우는 것이 낮은 코를 보완하는 가장 효과적인 방법"
+      },
+      "hairTip": {
+        "content": "생머리보다는 웨이브를 넣어 얼굴 전체에 입체감을 주는 것이 코가 눌려 보이는 느낌을 덜어줍니다.",
+        "overrideTargets": [],
+        "reason": "웨이브로 얼굴 전체 입체감을 살리면 코만 따로 납작해 보이는 느낌이 줄어듦"
+      }
+    },
+    {
+      "feature": "high_nose",
+      "label": "코 높음 (T존 강함)",
+      "category": "nose",
+      "makeupTip": {
+        "content": "코 쉐딩을 진하게 하면 남성적이거나 인상이 강해 보일 수 있어요. 눈썹 컬러를 연하게 빼서 T존의 존재감을 부드럽게 중화시키세요.",
+        "overrideTargets": ["shading", "eyebrow"],
+        "reason": "T존이 강한 경우 쉐딩을 추가하면 역효과가 나므로 오히려 눈썹 컬러로 인상을 부드럽게 조절"
+      },
+      "hairTip": {
+        "content": "앞머리로 T존 부위를 가려주면 강한 인상이 훨씬 부드러워집니다. 시스루뱅이 베스트입니다.",
+        "overrideTargets": ["bangs"],
+        "reason": "시스루뱅이 T존을 자연스럽게 커버하면서 답답하지 않게 인상을 부드럽게 만들어줌"
+      }
+    },
+    {
+      "feature": "big_nose",
+      "label": "코 큼 (복코/넓은 코)",
+      "category": "nose",
+      "makeupTip": {
+        "content": "코에 시선이 가지 않도록 눈이나 입술에 포인트를 주세요. 특히 눈썹을 아치형으로 그려 시선을 위로 분산시키는 것이 좋습니다.",
+        "overrideTargets": ["eyebrow"],
+        "reason": "시선을 코에서 눈/눈썹 쪽으로 분산시키는 것이 넓은 코를 덜 부각시키는 핵심"
+      },
+      "hairTip": {
+        "content": "풀뱅 앞머리는 코만 부각시킬 수 있어요. 이마를 드러내거나 가벼운 사이드뱅으로 시선을 분산시키세요.",
+        "overrideTargets": ["bangs"],
+        "reason": "풀뱅은 얼굴 중앙(코)으로 시선을 몰아주므로 넓은 코를 더 부각시킬 수 있음"
+      }
+    },
+    {
+      "feature": "wide_forehead",
+      "label": "이마 넓음",
+      "category": "forehead",
+      "makeupTip": {
+        "content": "헤어라인 쪽에 쉐딩을 넣어 이마 면적을 줄여주세요. 눈썹을 너무 얇게 그리면 이마가 더 넓어 보일 수 있으니 적당한 두께감을 유지하세요.",
+        "overrideTargets": ["shading", "eyebrow"],
+        "reason": "헤어라인 쉐딩으로 이마 면적을 시각적으로 줄이는 것이 가장 직접적인 보정 방법"
+      },
+      "hairTip": {
+        "content": "앞머리를 내리는 것이 가장 확실한 솔루션입니다. 풀뱅이나 시스루뱅 모두 잘 어울립니다.",
+        "overrideTargets": ["bangs"],
+        "reason": "앞머리로 이마를 물리적으로 가리는 것이 가장 효과적인 보정 방법"
+      }
+    },
+    {
+      "feature": "narrow_forehead",
+      "label": "이마 좁음",
+      "category": "forehead",
+      "makeupTip": {
+        "content": "이마 중앙에 하이라이터를 발라 볼륨감을 주고 넓어 보이게 연출하세요. 눈썹 산을 너무 높게 잡지 않는 것이 좋습니다.",
+        "overrideTargets": ["highlight", "eyebrow"],
+        "reason": "이마 중앙의 하이라이터가 이마를 넓어 보이게 하는 시각적 효과를 줌"
+      },
+      "hairTip": {
+        "content": "앞머리 없이 이마를 시원하게 드러내는 올백 스타일이나 5:5 가르마를 추천해요.",
+        "overrideTargets": ["bangs"],
+        "reason": "이마를 드러내야 좁은 이마가 더 넓고 시원해 보임"
+      }
+    },
+    {
+      "feature": "small_eyes",
+      "label": "눈 작음",
+      "category": "eye",
+      "makeupTip": {
+        "content": "아이라인을 길게 빼고 삼각존을 채워 눈의 범위를 확장하세요. 속눈썹을 바짝 컬링하거나 가닥 속눈썹을 붙여 눈을 위아래로 커 보이게 하세요.",
+        "overrideTargets": ["eyeliner"],
+        "reason": "아이라인으로 눈의 가로를, 속눈썹으로 세로를 확장해야 눈이 커 보임"
+      },
+      "hairTip": {
+        "content": "눈을 가리는 답답한 앞머리는 피하고, 눈 주변을 깔끔하게 정돈해 주는 스타일이 눈을 돋보이게 합니다.",
+        "overrideTargets": ["bangs"],
+        "reason": "앞머리가 눈을 가리면 작은 눈이 더 묻혀 보일 수 있음"
+      }
+    },
+    {
+      "feature": "wide_cheekbones",
+      "label": "광대 넓음 (옆광대)",
+      "category": "cheek",
+      "makeupTip": {
+        "content": "블러셔를 광대 바깥쪽까지 넓게 바르지 말고, 앞볼 쪽에 좁게 넣어 시선을 중앙으로 모으세요.",
+        "overrideTargets": ["blush", "shading"],
+        "reason": "블러셔 위치를 앞볼 중앙으로 당겨야 광대가 넓어 보이는 것을 완화할 수 있음"
+      },
+      "hairTip": {
+        "content": "광대 라인을 타고 흐르는 사이드뱅이 필수입니다. 옆머리 없이 머리를 묶으면 광대가 그대로 드러나니 주의하세요.",
+        "overrideTargets": ["bangs"],
+        "reason": "사이드뱅이 광대를 자연스럽게 커버하는 가장 효과적인 방법"
+      }
+    },
+    {
+      "feature": "thin_lips",
+      "label": "입술 얇음",
+      "category": "lip",
+      "makeupTip": {
+        "content": "글로시한 립 제품을 사용하여 입술의 볼륨감을 살려주세요. 립 라이너로 입술 라인을 살짝 오버하게 그리는 것도 좋습니다.",
+        "overrideTargets": ["lip"],
+        "reason": "글로시 텍스처와 오버립이 얇은 입술을 도톰하게 보이게 하는 핵심 기법"
+      },
+      "hairTip": {
+        "content": "입술로 시선이 너무 가지 않도록 아이 메이크업에 포인트를 주는 것이 균형이 맞습니다.",
+        "overrideTargets": [],
+        "reason": "입술 대신 눈에 포인트를 주면 얇은 입술이 덜 부각됨"
+      }
+    },
+    {
+      "feature": "thick_lips",
+      "label": "입술 두꺼움",
+      "category": "lip",
+      "makeupTip": {
+        "content": "풀립(Full-lip)보다는 그라데이션 립으로 연출하여 부담스럽지 않게 표현하세요. 입술 라인을 컨실러로 정리해 주는 것이 좋습니다.",
+        "overrideTargets": ["lip"],
+        "reason": "그라데이션 립이 입술 경계를 부드럽게 풀어주어 두꺼운 입술을 자연스럽게 보이게 함"
+      },
+      "hairTip": {
+        "content": "입술의 볼륨감이 돋보이도록 얼굴 라인을 깔끔하게 드러내는 스타일이 좋아요.",
+        "overrideTargets": [],
+        "reason": "턱선을 드러내면 도톰한 입술이 주는 세련되고 섹시한 분위기가 극대화됨"
+      }
+    },
+    {
+      "feature": "long_mid_face",
+      "label": "중안부 긴 유형",
+      "category": "midface",
+      "makeupTip": {
+        "content": "언더 래쉬와 애교살을 강조해 눈의 위치를 낮아 보이게 하세요. 블러셔는 가로로 끊어주듯 발라 시선을 끊어주는 것이 중요합니다.",
+        "overrideTargets": ["blush", "eyeliner"],
+        "reason": "블러셔를 가로로 배치해 시선을 끊어주면 중안부가 짧아 보이는 효과가 생김"
+      },
+      "hairTip": {
+        "content": "긴 생머리는 얼굴을 더 길어 보이게 해요. 턱선 기장의 단발이나 옆 볼륨을 살린 웨이브 스타일로 시선을 가로로 분산시키세요.",
+        "overrideTargets": [],
+        "reason": "가로 볼륨을 살려야 긴 중안부를 시각적으로 균형 있게 보정할 수 있음"
+      }
+    },
+    {
+      "feature": "short_mid_face",
+      "label": "중안부 짧은 유형",
+      "category": "midface",
+      "makeupTip": {
+        "content": "눈썹을 살짝 아치형으로 그려 이마와 중안부의 공간을 확보하세요. 쉐딩으로 코 길이를 너무 짧게 끊지 않도록 주의하세요.",
+        "overrideTargets": ["eyebrow", "shading"],
+        "reason": "눈썹 아치로 공간감을 주고 코 쉐딩을 길게 이어야 중안부가 길어 보임"
+      },
+      "hairTip": {
+        "content": "앞머리가 있으면 얼굴이 더 답답해 보일 수 있어요. 이마를 드러내거나 사이드뱅으로 관자놀이 쪽 여백을 커버하는 것이 좋아요.",
+        "overrideTargets": ["bangs"],
+        "reason": "이마를 드러내야 세로 공간이 확보되어 중안부가 답답해 보이지 않음"
+      }
+    },
+    {
+      "feature": "narrow_eyelid_space",
+      "label": "눈두덩이 좁음",
+      "category": "eye",
+      "makeupTip": {
+        "content": "눈썹 색을 밝게 염색하여 눈두덩이 공간이 넓어 보이게 착시 효과를 주세요. 짙은 섀도우보다는 맑은 펄이나 속눈썹 강조가 좋습니다.",
+        "overrideTargets": ["eyebrow", "eyeshadow"],
+        "reason": "밝은 눈썹 컬러가 눈두덩이 공간을 시각적으로 넓혀주는 효과를 줌"
+      },
+      "hairTip": {
+        "content": "앞머리로 눈썹을 가리면 강한 인상이 중화되어 훨씬 부드러워 보입니다.",
+        "overrideTargets": ["bangs"],
+        "reason": "앞머리로 눈썹을 살짝 가리면 좁은 눈두덩이의 답답함이 완화됨"
+      }
+    },
+    {
+      "feature": "wide_eyelid_space",
+      "label": "눈두덩이 넓음",
+      "category": "eye",
+      "makeupTip": {
+        "content": "음영 섀도우를 눈두덩이에 넓게 깔아 그윽함을 주세요. 아이라인을 도톰하게 그리거나 속눈썹을 강조해 여백을 채워주세요.",
+        "overrideTargets": ["eyeshadow", "eyeliner"],
+        "reason": "넓은 눈두덩이 여백을 섀도우로 채워야 눈이 그윽하고 매력적으로 보임"
+      },
+      "hairTip": {
+        "content": "앞머리에 컬을 넣은 히피펌 스타일이나 눈썹 위로 올라오는 처피뱅이 넓은 눈두덩이를 매력적으로 커버해 줍니다.",
+        "overrideTargets": ["bangs"],
+        "reason": "처피뱅이나 컬뱅이 넓은 눈두덩이 여백을 자연스럽게 채워줌"
+      }
+    },
+    {
+      "feature": "wide_temples",
+      "label": "관자놀이 여백 넓음",
+      "category": "forehead",
+      "makeupTip": {
+        "content": "눈꼬리 아이라인을 길게 빼서 여백을 채워주세요. 쉐딩으로 관자놀이 쪽 헤어라인을 자연스럽게 채워주는 것도 좋습니다.",
+        "overrideTargets": ["eyeliner", "shading"],
+        "reason": "눈꼬리를 길게 빼면 관자놀이 여백으로 시선이 자연스럽게 흐르며 여백감이 줄어듦"
+      },
+      "hairTip": {
+        "content": "머리를 묶을 때 '애교머리(사이드뱅)'를 반드시 내주세요.",
+        "overrideTargets": ["bangs"],
+        "reason": "사이드뱅이 관자놀이 여백을 자연스럽게 채워주는 가장 효과적인 방법"
+      }
+    },
+    {
+      "feature": "square_jaw",
+      "label": "사각턱 (하관 발달)",
+      "category": "jaw",
+      "makeupTip": {
+        "content": "턱 쉐딩으로 음영을 주고, 시선을 눈이나 입술 등 얼굴 상부나 중앙으로 끌어올리는 포인트 메이크업을 하세요.",
+        "overrideTargets": ["shading"],
+        "reason": "턱 라인에 음영을 주고 시선을 위로 분산시켜야 사각턱이 덜 부각됨"
+      },
+      "hairTip": {
+        "content": "턱선에서 딱 끊기는 일자 단발은 피하세요. 턱을 감싸는 레이어드 컷이나 굵은 웨이브 펌이 베스트입니다.",
+        "overrideTargets": [],
+        "reason": "턱선과 평행한 직선 헤어라인은 각진 턱을 더욱 강조하므로 피해야 함"
+      }
+    },
+    {
+      "feature": "protruding_mouth",
+      "label": "돌출입",
+      "category": "lip",
+      "makeupTip": {
+        "content": "글로시한 립은 입술 부피를 키워 입을 더 튀어나와 보이게 해요. 매트한 제형이나 그라데이션 립으로 입술 경계를 풀어주세요.",
+        "overrideTargets": ["lip"],
+        "reason": "매트 텍스처가 입술 볼륨을 눌러주어 돌출입을 완화하는 효과가 있음"
+      },
+      "hairTip": {
+        "content": "웨이브를 주어 시선을 분산시키거나 화려한 귀걸이로 시선을 뺏는 것도 팁입니다.",
+        "overrideTargets": [],
+        "reason": "입 주변으로 시선이 집중되지 않도록 다른 포인트로 분산시키는 것이 핵심"
+      }
+    },
+    {
+      "feature": "short_neck",
+      "label": "목 짧음",
+      "category": "neck",
+      "makeupTip": {
+        "content": "목까지 파운데이션을 꼼꼼히 발라 톤 차이가 나지 않게 하세요. 쉐딩으로 턱 밑 음영을 주어 턱과 목을 분리해주세요.",
+        "overrideTargets": ["shading"],
+        "reason": "턱과 목의 경계를 쉐딩으로 분리해야 목이 길어 보이는 효과가 생김"
+      },
+      "hairTip": {
+        "content": "어깨에 닿는 어중간한 기장이나 풍성한 컬은 목을 더 짧아 보이게 해요. 목선이 드러나는 숏컷이나 긴 머리가 시원해 보입니다.",
+        "overrideTargets": [],
+        "reason": "목선을 드러내야 짧은 목이 더 길어 보이는 효과를 줄 수 있음"
+      }
+    },
+    {
+      "feature": "double_eyelid_none",
+      "label": "무쌍 (외꺼풀)",
+      "category": "eye",
+      "makeupTip": {
+        "content": "아이라인을 두껍게 그리면 눈이 답답해 보일 수 있어요. 라인보다는 속눈썹을 바짝 컬링하여 눈을 위아래로 확장하고 섀도우로 그윽한 음영을 주세요.",
+        "overrideTargets": ["eyeliner", "eyeshadow"],
+        "reason": "무쌍은 두꺼운 아이라인보다 속눈썹과 섀도우 음영으로 눈을 확장하는 것이 효과적"
+      },
+      "hairTip": {
+        "content": "칠흑 같은 검은 머리보다는 부드러운 브라운 컬러가 인상을 부드럽게 만들어줍니다.",
+        "overrideTargets": [],
+        "reason": "밝은 헤어 컬러가 무쌍으로 인한 강한 인상을 부드럽게 중화시켜줌"
+      }
+    },
+    {
+      "feature": "double_eyelid_inner",
+      "label": "속쌍꺼풀",
+      "category": "eye",
+      "makeupTip": {
+        "content": "눈을 뜨면 라인이 말려 들어가므로 붓펜보다는 펜슬 라이너로 점막을 채우고 꼬리를 살짝 빼주세요.",
+        "overrideTargets": ["eyeliner"],
+        "reason": "속쌍은 라인이 묻히기 쉬우므로 점막 채움과 꼬리 연장이 핵심 보정 포인트"
+      },
+      "hairTip": {
+        "content": "눈썹이 진한 경우 인상이 강해 보일 수 있으므로 앞머리를 내리거나 눈썹을 밝게 염색하여 부드러운 이미지를 연출하세요.",
+        "overrideTargets": ["bangs"],
+        "reason": "앞머리나 밝은 눈썹 컬러로 속쌍으로 인한 강한 인상을 부드럽게 조절할 수 있음"
+      }
+    },
+    {
+      "feature": "droopy_eye_tail",
+      "label": "눈꼬리 처짐",
+      "category": "eye",
+      "makeupTip": {
+        "content": "아이라인 꼬리를 살짝 올려 그려 섹시하고 도도한 이미지를 연출할 수 있습니다. 언더 삼각존을 채우면 처진 느낌이 보완됩니다.",
+        "overrideTargets": ["eyeliner"],
+        "reason": "눈꼬리 방향을 올려 그리는 것이 처진 눈매를 보정하는 가장 직접적인 방법"
+      },
+      "hairTip": {
+        "content": "풀뱅 앞머리로 눈썹을 가려 눈매 교정 메이크업의 효과를 극대화하세요.",
+        "overrideTargets": ["bangs"],
+        "reason": "처진 눈썹을 앞머리로 가리면 교정 아이라인의 효과가 더 극대화됨"
+      }
+    },
+    {
+      "feature": "raised_eye_tail",
+      "label": "눈꼬리 올라감 (고양이상)",
+      "category": "eye",
+      "makeupTip": {
+        "content": "눈꼬리를 내려 그리기보다 눈썹 컬러를 밝게 염색하여 강한 인상을 부드럽게 중화시키는 것이 훨씬 세련돼 보입니다.",
+        "overrideTargets": ["eyebrow"],
+        "reason": "눈꼬리를 억지로 내리면 부자연스러울 수 있어 눈썹 컬러로 전체 인상을 부드럽게 조절하는 것이 효과적"
+      },
+      "hairTip": {
+        "content": "웨이브 스타일이나 밝은 브라운 염색으로 부드러운 분위기를 더해주세요.",
+        "overrideTargets": [],
+        "reason": "웨이브와 밝은 컬러가 올라간 눈꼬리로 인한 차가운 인상을 완화해줌"
+      }
+    },
+    {
+      "feature": "blocked_eye_tail",
+      "label": "눈꼬리 막힘",
+      "category": "eye",
+      "makeupTip": {
+        "content": "뒤트임 메이크업으로 눈꼬리 뒤쪽을 터주어 눈이 길어 보이게 연출하세요.",
+        "overrideTargets": ["eyeliner"],
+        "reason": "눈꼬리 뒤쪽을 터주는 뒤트임 기법이 막힌 눈꼬리를 가장 효과적으로 보정함"
+      },
+      "hairTip": {
+        "content": "옆머리를 귀 뒤로 넘겨 관자놀이를 드러내는 스타일이나 업스타일로 눈꼬리 주변을 시원하게 오픈해주세요.",
+        "overrideTargets": [],
+        "reason": "눈꼬리 주변을 오픈해야 막힌 눈꼬리의 답답함이 완화됨"
+      }
+    },
+    {
+      "feature": "puffy_eyelid",
+      "label": "눈두덩이 살 두꺼움",
+      "category": "eye",
+      "makeupTip": {
+        "content": "펄이 강한 섀도우나 붉은 기가 도는 컬러는 눈을 더 부어 보이게 합니다. 매트한 브라운 계열의 음영 섀도우를 사용하여 차분하게 눌러주세요.",
+        "overrideTargets": ["eyeshadow"],
+        "reason": "매트한 음영 섀도우가 부은 눈두덩이를 눌러주는 가장 효과적인 보정 방법"
+      },
+      "hairTip": {
+        "content": "정수리 볼륨을 살리거나 앞머리를 올려 이마를 드러내면 시선이 위로 모여 눈두덩이의 부기가 덜 부각됩니다.",
+        "overrideTargets": ["bangs"],
+        "reason": "시선을 위로 올려야 부은 눈두덩이에 집중되는 시선을 분산시킬 수 있음"
+      }
+    },
+    {
+      "feature": "hollow_eyelid",
+      "label": "눈두덩이 살 얇음/꺼짐",
+      "category": "eye",
+      "makeupTip": {
+        "content": "눈두덩이에 진한 음영을 주면 피곤해 보일 수 있습니다. 밝은 베이지나 피치 톤 섀도우로 꺼진 부분을 화사하게 채워주세요.",
+        "overrideTargets": ["eyeshadow"],
+        "reason": "밝은 톤 섀도우로 꺼진 눈두덩이를 채워야 생기 있고 어려 보이는 효과가 생김"
+      },
+      "hairTip": {
+        "content": "앞머리를 내려 눈두덩이의 그림자를 커버하면 훨씬 어려 보이고 생기 있어 보입니다.",
+        "overrideTargets": ["bangs"],
+        "reason": "앞머리가 꺼진 눈두덩이의 그림자를 자연스럽게 커버해줌"
+      }
+    },
+    {
+      "feature": "round_eye",
+      "label": "눈 모양 - 둥근 눈",
+      "category": "eye",
+      "makeupTip": {
+        "content": "눈 중앙보다는 눈꼬리 쪽에 포인트를 주어 눈매를 길어 보이게 하세요. 아이라인도 꼬리 부분을 길게 빼주면 귀여운 인상에 세련됨이 더해집니다.",
+        "overrideTargets": ["eyeliner"],
+        "reason": "둥근 눈은 꼬리를 강조해야 세련되고 길어 보이는 눈매로 보정됨"
+      },
+      "hairTip": {
+        "content": "딥한 브라운이나 다크 컬러로 염색하면 전체적인 눈매가 더 선명해 보입니다.",
+        "overrideTargets": [],
+        "reason": "어두운 헤어 컬러가 둥근 눈의 귀여운 인상을 또렷하게 만들어줌"
+      }
+    },
+    {
+      "feature": "almond_eye",
+      "label": "눈 모양 - 아몬드 눈",
+      "category": "eye",
+      "makeupTip": {
+        "content": "가장 균형 잡힌 눈 형태로 다양한 메이크업을 잘 소화합니다. 원하는 이미지에 따라 스모키, 그라데이션, 컬러 섀도우 등 폭넓게 시도해보세요.",
+        "overrideTargets": [],
+        "reason": "제약 없이 다양한 스타일을 소화할 수 있는 가장 이상적인 눈 형태"
+      },
+      "hairTip": {
+        "content": "어떤 헤어스타일도 잘 어울리는 편입니다. 원하는 이미지와 얼굴형에 맞춰 자유롭게 선택하세요.",
+        "overrideTargets": [],
+        "reason": "눈 형태의 제약이 없으므로 얼굴형과 퍼컬 기준으로만 헤어를 선택하면 됨"
+      }
+    },
+    {
+      "feature": "long_eye",
+      "label": "눈 모양 - 긴 눈",
+      "category": "eye",
+      "makeupTip": {
+        "content": "속눈썹 컬링으로 눈에 세로 볼륨을 주고 언더라인보다는 위쪽 음영에 집중해 눈의 깊이감을 살려주세요.",
+        "overrideTargets": ["eyeshadow", "eyeliner"],
+        "reason": "긴 눈은 가로보다 세로 볼륨을 살려야 날카로운 인상이 부드럽게 보정됨"
+      },
+      "hairTip": {
+        "content": "자연스러운 브라운 톤 염색이나 가벼운 웨이브로 전체 인상을 부드럽게 중화시켜주세요.",
+        "overrideTargets": [],
+        "reason": "웨이브와 밝은 컬러가 선명한 긴 눈의 강한 인상을 부드럽게 만들어줌"
+      }
+    },
+    {
+      "feature": "sanbaekgan",
+      "label": "삼백안 (작은 눈동자)",
+      "category": "eye",
+      "makeupTip": {
+        "content": "진한 블랙 아이라인은 흰자와의 대비를 높여 인상을 날카롭게 합니다. 부드러운 브라운 펜슬 라이너와 섀도우로 경계를 풀어주세요.",
+        "overrideTargets": ["eyeliner"],
+        "reason": "브라운 라이너가 흰자와의 대비를 낮춰 삼백안의 강한 인상을 완화함"
+      },
+      "hairTip": {
+        "content": "따뜻한 브라운 계열로 염색하고 가벼운 웨이브나 시스루뱅으로 인상을 부드럽게 만들어주세요.",
+        "overrideTargets": ["bangs"],
+        "reason": "따뜻한 헤어 컬러와 웨이브가 삼백안의 차갑고 강한 인상을 부드럽게 중화시켜줌"
+      }
+    },
+    {
+      "feature": "long_philtrum",
+      "label": "인중 긺",
+      "category": "midface",
+      "makeupTip": {
+        "content": "오버립으로 윗입술을 도톰하게 그리고 애교살과 언더 래쉬를 강조해 눈의 시각적 위치를 아래로 낮추세요.",
+        "overrideTargets": ["lip", "eyeliner"],
+        "reason": "오버립과 언더 래쉬 강조로 눈과 입술의 거리를 시각적으로 좁혀 인중이 짧아 보이게 함"
+      },
+      "hairTip": {
+        "content": "긴 생머리는 얼굴을 더 길어 보이게 합니다. 턱선 기장의 단발이나 옴브레 염색으로 시선을 끊어주면 인중이 짧아 보입니다.",
+        "overrideTargets": [],
+        "reason": "시선을 끊어주는 헤어 기장이나 컬러가 긴 인중을 시각적으로 보정해줌"
+      }
+    },
+    {
+      "feature": "short_philtrum",
+      "label": "인중 짧음",
+      "category": "midface",
+      "makeupTip": {
+        "content": "언더 래쉬와 애교살은 생략하거나 최소화하고 립 라인은 윗입술 중앙을 살짝 내려 그리는 언더립으로 표현하면 인중이 길어 보이는 효과를 줍니다.",
+        "overrideTargets": ["lip", "eyeliner"],
+        "reason": "언더립과 언더 래쉬 최소화로 눈과 입술의 거리를 시각적으로 늘려 인중이 길어 보이게 함"
+      },
+      "hairTip": {
+        "content": "이마를 드러내는 스타일이나 가벼운 사이드뱅으로 얼굴의 세로 비율을 확보해주세요.",
+        "overrideTargets": ["bangs"],
+        "reason": "이마를 드러내야 세로 공간이 확보되어 짧은 인중이 덜 답답해 보임"
+      }
+    },
+    {
+      "feature": "weak_chin",
+      "label": "무턱 (턱이 작음)",
+      "category": "jaw",
+      "makeupTip": {
+        "content": "글로우 베이스는 중안부를 튀어나와 보이게 하여 상대적으로 턱을 더 빈약하게 만듭니다. 매트한 피부 표현으로 얼굴의 입체감을 조절하세요.",
+        "overrideTargets": ["highlight"],
+        "reason": "매트한 피부 표현이 중안부를 강조하지 않아 무턱이 덜 부각됨"
+      },
+      "hairTip": {
+        "content": "턱 주변을 감싸는 헤어스타일보다는 목선이 드러나는 스타일이 턱 라인을 선명하게 보여줍니다.",
+        "overrideTargets": [],
+        "reason": "목선을 드러내야 턱 라인이 선명하게 보여 무턱이 덜 부각됨"
+      }
+    },
+    {
+      "feature": "prognathism",
+      "label": "주걱턱 (턱이 앞으로 나옴)",
+      "category": "jaw",
+      "makeupTip": {
+        "content": "입술에 진한 포인트를 주면 턱이 부각됩니다. 립은 누디하게 표현하고 이마와 앞볼에 하이라이터를 주어 시선을 위로 끌어올리세요.",
+        "overrideTargets": ["lip", "highlight"],
+        "reason": "시선을 얼굴 위쪽으로 끌어올려야 앞으로 나온 턱이 덜 부각됨"
+      },
+      "hairTip": {
+        "content": "이마를 드러내거나 시선을 분산시키는 웨이브 스타일을 추천합니다.",
+        "overrideTargets": ["bangs"],
+        "reason": "이마를 드러내야 시선이 위로 분산되어 주걱턱으로 쏠리지 않음"
+      }
+    },
+    {
+      "feature": "conehead",
+      "label": "콘헤드 (긴 정수리)",
+      "category": "forehead",
+      "makeupTip": {
+        "content": "헤어라인 가장자리에 쉐딩을 살짝 넣어 이마 각도를 부드럽게 보이게 하세요. 눈썹을 너무 높게 그리면 정수리 길이가 강조될 수 있으니 자연스러운 아치형이 좋습니다.",
+        "overrideTargets": ["shading", "eyebrow"],
+        "reason": "헤어라인 쉐딩과 낮은 눈썹 아치가 정수리 길이를 시각적으로 줄여줌"
+      },
+      "hairTip": {
+        "content": "가르마를 지그재그나 둥글게 타서 정수리 길이를 시각적으로 짧게 보이게 하고 이마에 가까운 앞쪽 볼륨만 살려주세요.",
+        "overrideTargets": [],
+        "reason": "앞쪽 볼륨을 살리면 정수리 길이가 짧아 보이는 시각적 효과가 생김"
+      }
+    },
+    {
+      "feature": "wide_shoulders",
+      "label": "어깨 너비 넓음",
+      "category": "body",
+      "makeupTip": {
+        "content": "목선과 쇄골을 드러내는 네크라인에 하이라이터를 얹어 목이 길고 가늘어 보이게 하면 넓은 어깨와의 시각적 대비가 줄어듭니다.",
+        "overrideTargets": ["highlight"],
+        "reason": "목을 길어 보이게 하면 넓은 어깨와의 비율 차이가 줄어들어 균형이 맞음"
+      },
+      "hairTip": {
+        "content": "목선과 쇄골을 드러내는 스타일이 시선을 분산시켜 어깨를 좁아 보이게 합니다.",
+        "overrideTargets": [],
+        "reason": "목선을 드러내야 시선이 분산되어 넓은 어깨가 덜 강조됨"
+      }
+    },
+    {
+      "feature": "trapezius",
+      "label": "승모근 발달",
+      "category": "body",
+      "makeupTip": {
+        "content": "쇄골과 목선을 드러내는 네크라인에 하이라이터나 쉐딩을 활용해 목이 길어 보이게 만들면 어깨 라인과의 균형이 잡힙니다.",
+        "overrideTargets": ["highlight"],
+        "reason": "목을 길어 보이게 해야 발달한 승모근과의 경계가 자연스러워짐"
+      },
+      "hairTip": {
+        "content": "목과 어깨 경계가 강조되는 단발보다는 쇄골 아래로 내려오는 미디엄~롱 기장을 추천합니다.",
+        "overrideTargets": [],
+        "reason": "헤어가 어깨선 위에서 끝나면 승모근이 더 부각되므로 쇄골 아래 기장이 필수"
+      }
+    }
+  ]
+}

@@ -1,0 +1,314 @@
+{
+  "makeupByPersonalColor": [
+    {
+      "personalColor": "spring_warm",
+      "label": "봄 웜톤 (Spring Warm)",
+      "description": "사랑스럽고 생기 넘치는 이미지가 강점인 유형입니다. 탁한 느낌을 배제하고 '투명함'과 '반짝임'을 살리는 것이 핵심입니다. (참조: 안유진, 윤아)",
+      "exampleCelebrity": ["안유진", "윤아", "수지"],
+      "colorCards": [
+        {
+          "priority": 1,
+          "title": "생기 과즙 룩 (Juicy Glow)",
+          "lip": {
+            "colorVibe": "코랄/피치",
+            "texture": "Glossy",
+            "reason": "글로시한 제형은 입술의 볼륨감을 살려주며 봄 웜톤 특유의 생동감을 극대화합니다.",
+            "promptKeyword": "glossy coral lips"
+          },
+          "blush": {
+            "colorVibe": "살구/피치",
+            "reason": "앞볼 위주로 맑게 올려 혈색을 줍니다. 탁한 컬러보다는 흰 끼가 도는 맑은 컬러가 투명한 피부를 강조합니다.",
+            "promptKeyword": "apricot blush"
+          },
+          "eyeshadow": {
+            "colorVibe": "샴페인 골드",
+            "reason": "눈두덩이나 애교살에 가벼운 펄을 더해 눈매를 트여 보이게 하고 맑은 느낌을 유지합니다.",
+            "promptKeyword": "champagne gold shimmer"
+          },
+          "coachComment": "봄 웜톤의 생명은 '맑음'입니다. 텁텁한 파우더보다는 촉촉한 쿠션을 사용하여 속광을 살려주세요."
+        },
+        {
+          "priority": 2,
+          "title": "퓨어 클린 룩 (Soft & Clear)",
+          "lip": {
+            "colorVibe": "라이트 살몬",
+            "texture": "Moist",
+            "reason": "진한 립보다는 입술 본연의 색 같은 자연스러운 컬러로 청순함을 강조합니다.",
+            "promptKeyword": "soft salmon lip"
+          },
+          "eyebrow": {
+            "colorVibe": "라이트 브라운",
+            "reason": "눈썹 컬러를 밝게 빼면 이목구비 경계가 부드러워져 청순하고 여리여리한 이미지가 살아납니다.",
+            "promptKeyword": "light brown brows"
+          },
+          "eyeliner": {
+            "colorVibe": "브라운",
+            "reason": "블랙 아이라인은 자칫 답답해 보일 수 있으므로 브라운으로 점막만 채워 또렷함만 줍니다.",
+            "promptKeyword": "brown eyeliner"
+          },
+          "coachComment": "눈썹 색을 밝히는 것이 신의 한 수입니다. 인상이 훨씬 부드럽고 환해 보일 거예요."
+        },
+        {
+          "priority": 3,
+          "title": "러블리 동안 룩 (Lovely Pop)",
+          "lip": {
+            "colorVibe": "핑크 코랄",
+            "texture": "Satin",
+            "reason": "채도가 살짝 있는 핑크 코랄로 발랄함을 더해 동안 이미지를 연출합니다.",
+            "promptKeyword": "pink coral lip"
+          },
+          "blush": {
+            "colorVibe": "웜 핑크",
+            "reason": "애플존(앞볼)에 동그랗게 넣어 웃을 때의 사랑스러움을 강조합니다.",
+            "promptKeyword": "round pink blush"
+          },
+          "highlighter": {
+            "colorVibe": "웜 아이보리",
+            "reason": "코 끝과 앞볼에 살짝 터치하여 입체감을 주되, 과하지 않게 자연스러운 광을 냅니다.",
+            "promptKeyword": "natural highlight"
+          },
+          "coachComment": "블러셔를 광대 옆이 아닌 '눈 밑 앞볼'에 동그랗게 넣어보세요. 얼굴이 짧아 보이고 훨씬 귀여워 보입니다."
+        }
+      ],
+      "avoid": [
+        { "style": "진한 스모키", "reason": "눈매가 답답해 보이고 봄 웜톤의 장점인 맑은 느낌을 해칩니다." },
+        { "style": "카키/버건디 등 탁한 컬러", "reason": "피부 톤을 칙칙하게 만들고 나이 들어 보일 수 있습니다." }
+      ],
+      "coachComment": "과한 음영보다는 속눈썹을 바짝 올려 눈매를 시원하게 트여주세요. 섀도우를 덜어낼수록 예쁜 유형입니다."
+    },
+    {
+      "personalColor": "summer_cool",
+      "label": "여름 쿨톤 (Summer Cool)",
+      "description": "청초하고 깨끗한 이미지가 매력적인 유형입니다. 대비감이 강한 메이크업보다는 부드럽고 은은한 파스텔 톤이 베스트입니다. (참조: 장원영, 태연)",
+      "exampleCelebrity": ["장원영", "태연", "손예진"],
+      "colorCards": [
+        {
+          "priority": 1,
+          "title": "청초 쿨 핑크 룩 (Cool Pink)",
+          "lip": {
+            "colorVibe": "베이비 핑크/라벤더",
+            "texture": "Glossy",
+            "reason": "투명하고 유리알 같은 핑크 립이 피부의 맑음을 극대화합니다.",
+            "promptKeyword": "glossy cool pink lips"
+          },
+          "blush": {
+            "colorVibe": "라벤더/페일 핑크",
+            "reason": "홍조를 잡아주면서 피부를 하얗게 밝혀주는 라벤더 계열 블러셔를 넓게 펴 바릅니다.",
+            "promptKeyword": "lavender blush"
+          },
+          "baseSkin": {
+            "colorVibe": "핑크 베이스",
+            "reason": "노란 기를 잡는 화사한 핑크 베이스로 피부 톤을 균일하고 깨끗하게 정돈합니다.",
+            "promptKeyword": "bright cool skin"
+          },
+          "coachComment": "색조를 올린다기보다 '물들인다'는 느낌으로 접근하세요. 블러셔는 수채화처럼 경계 없이 퍼트리는 게 중요합니다."
+        },
+        {
+          "priority": 2,
+          "title": "소프트 뮤트 룩 (Soft Mute)",
+          "lip": {
+            "colorVibe": "모브(Mauve)/로즈",
+            "texture": "Satin/Matte",
+            "reason": "채도를 살짝 낮춘 모브 컬러로 차분하고 지적인 분위기를 연출합니다.",
+            "promptKeyword": "mauve rose lip"
+          },
+          "eyeshadow": {
+            "colorVibe": "회끼 도는 브라운",
+            "reason": "노란 기가 빠진 쿨 브라운이나 그레이 브라운으로 눈매에 가벼운 깊이감만 줍니다.",
+            "promptKeyword": "cool grey brown eyeshadow"
+          },
+          "eyebrow": {
+            "colorVibe": "그레이/애쉬",
+            "reason": "눈썹 색을 헤어 컬러에 맞춰 애쉬 톤으로 맞추면 인상이 훨씬 세련돼 보입니다.",
+            "promptKeyword": "ash grey brows"
+          },
+          "coachComment": "너무 쨍한 핑크가 부담스럽다면, 회색빛이 한 방울 섞인 '모브' 컬러를 선택하세요. 우아함이 배가됩니다."
+        },
+        {
+          "priority": 3,
+          "title": "속광 내추럴 룩 (Clear Glow)",
+          "baseSkin": {
+            "colorVibe": "투명 속광",
+            "reason": "여름 쿨톤은 피부 결이 좋아 보일 때 가장 예쁩니다. 45도 광대 쪽에만 래디언스 밤을 사용하여 맑은 윤광을 줍니다.",
+            "promptKeyword": "natural skin glow"
+          },
+          "lip": {
+            "colorVibe": "틴티드 밤",
+            "texture": "Balm",
+            "reason": "혈색만 살짝 주는 립밤으로 꾸민 듯 안 꾸민 듯한 청순함을 연출합니다.",
+            "promptKeyword": "tinted lip balm"
+          },
+          "eyeliner": {
+            "colorVibe": "생략/점막만",
+            "reason": "아이라인을 생략하고 마스카라로 속눈썹만 강조하여 눈매를 깨끗하게 만듭니다.",
+            "promptKeyword": "clean eyes"
+          },
+          "coachComment": "파운데이션을 두껍게 올리지 마세요. 잡티가 살짝 보이더라도 투명한 피부 표현이 여름 쿨톤의 무기입니다."
+        }
+      ],
+      "avoid": [
+        { "style": "오렌지/코랄", "reason": "피부의 노란 기를 부각시켜 안색이 더워 보이고 칙칙해질 수 있습니다." },
+        {
+          "style": "강한 컨투어링(쉐딩)",
+          "reason": "여름 쿨톤 피부는 푸른빛이 도는 밝고 균일한 톤이 특징입니다. 웜 브라운 계열 쉐딩을 올리면 피부의 쿨한 색감과 쉐딩 컬러가 따로 놀아 경계가 인위적으로 드러나고, 햇볕에 탄 자국처럼 지저분해 보일 수 있습니다. 꼭 윤곽을 잡고 싶다면 그레이 베이스의 쿨톤 쉐딩을 소량만 사용하세요."
+        }
+      ],
+      "coachComment": "여름 쿨톤에게 '더워 보인다'는 것은 치명적입니다. 오렌지, 골드 펄, 진한 쉐딩은 피하고 시원한 컬러감을 유지하세요."
+    },
+    {
+      "personalColor": "autumn_warm",
+      "label": "가을 웜톤 (Autumn Warm)",
+      "description": "그윽하고 성숙한 '분위기'가 독보적인 유형입니다. 쨍한 컬러보다는 깊이 있는 음영과 누드 톤이 베스트입니다. (참조: 탕웨이, 제니)",
+      "exampleCelebrity": ["탕웨이", "제니", "이효리"],
+      "colorCards": [
+        {
+          "priority": 1,
+          "title": "우아한 분위기 룩 (Atmosphere)",
+          "lip": {
+            "colorVibe": "MLBB/누드 베이지",
+            "texture": "Glow/Satin",
+            "reason": "입술 경계를 립 펜슬이나 그라데이션으로 풀어주면 특유의 우아하고 따뜻한 분위기가 극대화됩니다.",
+            "promptKeyword": "nude beige lips"
+          },
+          "eyeshadow": {
+            "colorVibe": "음영 브라운",
+            "reason": "눈두덩이에 깊이감을 주는 음영 메이크업이 가장 잘 어울립니다. 아이라인 꼬리를 스머징하여 그윽함을 더하세요.",
+            "promptKeyword": "brown smokey eye"
+          },
+          "eyebrow": {
+            "colorVibe": "내추럴 아치형",
+            "reason": "인위적인 일자 눈썹보다는 본연의 결을 살린 아치형 눈썹이 이국적인 매력을 더해줍니다.",
+            "promptKeyword": "natural arch brows"
+          },
+          "coachComment": "선명함보다는 '부드러운 번짐'이 핵심입니다. 아이라인도, 립 라인도 스머징하여 분위기 미녀가 되어보세요."
+        },
+        {
+          "priority": 2,
+          "title": "딥 무드 포인트 룩 (Deep & Sexy)",
+          "lip": {
+            "colorVibe": "칠리/브릭 레드",
+            "texture": "Matte",
+            "reason": "채도를 낮춘 딥한 레드나 벽돌색 립으로 고혹적인 섹시함을 연출합니다.",
+            "promptKeyword": "chili red lips"
+          },
+          "blush": {
+            "colorVibe": "베이지/브라운",
+            "reason": "광대 라인을 감싸듯 사선으로 넣어 얼굴의 입체감을 살리고 성숙미를 더합니다.",
+            "promptKeyword": "beige contour blush"
+          },
+          "baseSkin": {
+            "colorVibe": "세미 매트",
+            "reason": "번들거리는 광보다는 고급스러운 세미 매트 피부 표현이 깊은 색조와 잘 어울립니다.",
+            "promptKeyword": "semi-matte skin"
+          },
+          "coachComment": "가을 웜톤의 딥한 립은 최고의 액세서리입니다. 입술에 포인트를 줄 때는 아이 메이크업의 색감을 살짝 덜어내세요."
+        },
+        {
+          "priority": 3,
+          "title": "소프트 음영 룩 (Daily Shade)",
+          "eyeshadow": {
+            "colorVibe": "피치 브라운/진저",
+            "reason": "너무 진하지 않은 진저 컬러 하나만 넓게 펴 발라도 눈매가 깊어 보입니다.",
+            "promptKeyword": "ginger eyeshadow"
+          },
+          "lip": {
+            "colorVibe": "로즈 브라운",
+            "texture": "Velvet",
+            "reason": "말린 장미 컬러로 혈색과 분위기를 동시에 잡는 데일리 메이크업입니다.",
+            "promptKeyword": "dried rose lips"
+          },
+          "shading": {
+            "colorVibe": "웜 브라운",
+            "reason": "턱선과 코 벽에 자연스러운 쉐딩을 넣어 얼굴 윤곽을 잡아줍니다.",
+            "promptKeyword": "soft contouring"
+          },
+          "coachComment": "쉐딩이 가장 자연스럽게 어울리는 톤입니다. 턱선뿐만 아니라 코 벽 음영을 통해 이목구비의 입체감을 살려주세요."
+        }
+      ],
+      "avoid": [
+        { "style": "쨍한 핫핑크/형광 컬러", "reason": "피부와 따로 놀고 가을 웜톤 특유의 고급스러운 분위기를 가볍게 만듭니다." },
+        {
+          "style": "과한 글리터/홀로그램 물광",
+          "reason": "가을 웜톤은 글로시·세미매트 베이스가 잘 어울리는 톤입니다. 다만 입자가 굵은 글리터 펄이나 홀로그램 물광은 깊이 있는 음영 색조와 따로 놀아 전체 메이크업이 들뜬 느낌을 줄 수 있습니다. 자연스러운 윤기는 오히려 환영이니, 인위적인 반짝임만 피하세요."
+        }
+      ],
+      "coachComment": "과한 펄이나 형광기는 피하세요. 차분하고 깊이 있는 컬러가 당신을 가장 빛나게 합니다."
+    },
+    {
+      "personalColor": "winter_cool",
+      "label": "겨울 쿨톤 (Winter Cool)",
+      "description": "선명하고 차가운 대비감(Contrast)이 생명인 유형입니다. 애매한 색보다는 확실한 블랙 & 화이트, 혹은 비비드한 포인트가 베스트입니다. (참조: 김지원, 카리나)",
+      "exampleCelebrity": ["김지원", "카리나", "임지연"],
+      "colorCards": [
+        {
+          "priority": 1,
+          "title": "시크 콘트라스트 룩 (Chic Contrast)",
+          "hair": {
+            "colorVibe": "블랙/다크 브라운",
+            "reason": "어두운 헤어 컬러는 얼굴 테두리 라인을 선명하게 잡아주어 이목구비를 더욱 또렷하게 만듭니다.",
+            "promptKeyword": "black hair"
+          },
+          "lip": {
+            "colorVibe": "쿨 레드/푸시아",
+            "texture": "Matte/Satin",
+            "reason": "피부 톤과 대비되는 선명한 립 컬러 하나만으로도 얼굴이 환하게 켜집니다. 흑발에 레드립은 대비감을 극대화합니다.",
+            "promptKeyword": "cool red lips"
+          },
+          "baseSkin": {
+            "colorVibe": "페일/창백함",
+            "reason": "잡티 없이 깨끗하고 창백할 정도로 하얀 피부 표현이 대비감을 살리는 캔버스가 됩니다.",
+            "promptKeyword": "pale porcelain skin"
+          },
+          "coachComment": "겨울 쿨톤의 핵심은 '대비'입니다. 머리는 더 검게, 피부는 더 하얗게, 입술은 더 붉게 연출해 보세요."
+        },
+        {
+          "priority": 2,
+          "title": "도회적 냉미녀 룩 (Cold City Vibe)",
+          "eyebrow": {
+            "colorVibe": "그레이/블랙 (아치형)",
+            "reason": "눈썹 산을 살린 아치형 눈썹은 세련되고 샤프한 이미지를 줍니다.",
+            "promptKeyword": "sharp arched brows"
+          },
+          "eyeliner": {
+            "colorVibe": "블랙 (캣츠아이)",
+            "reason": "눈꼬리를 날렵하게 뺀 블랙 아이라인으로 눈매의 선명도를 높입니다.",
+            "promptKeyword": "black winged eyeliner"
+          },
+          "lip": {
+            "colorVibe": "플럼/버건디",
+            "texture": "Velvet",
+            "reason": "보랏빛이 도는 딥한 컬러로 차갑고 도도한 도시 여성의 이미지를 완성합니다.",
+            "promptKeyword": "plum burgundy lip"
+          },
+          "coachComment": "애매한 갈색 눈썹보다는 차라리 짙은 그레이나 블랙 눈썹이 훨씬 세련돼 보입니다. 선을 강조하세요."
+        },
+        {
+          "priority": 3,
+          "title": "깔끔 미니멀 룩 (Clean Minimal)",
+          "eyeshadow": {
+            "colorVibe": "생략/화이트 펄",
+            "reason": "눈두덩이에 음영을 많이 넣으면 퀭해 보일 수 있습니다. 섀도우는 과감히 덜어내거나 아주 맑은 펄만 소량 사용하세요.",
+            "promptKeyword": "minimal eyeshadow"
+          },
+          "lip": {
+            "colorVibe": "마젠타 핑크",
+            "texture": "Point",
+            "reason": "아이 메이크업을 최소화하고 립에만 쨍한 핑크로 포인트를 주어 깔끔함을 살립니다.",
+            "promptKeyword": "magenta pink lip"
+          },
+          "blush": {
+            "colorVibe": "생략/페일 라벤더",
+            "reason": "홍조가 있다면 블러셔는 생략하는 것이 낫습니다. 하려면 아주 연한 라벤더로 투명함만 더하세요.",
+            "promptKeyword": "no blush"
+          },
+          "coachComment": "겨울 쿨톤은 블랙 아이라인·캣츠아이처럼 선명한 라인 메이크업은 잘 어울립니다. 다만 눈두덩 전체를 덮는 풀 스모키까지 가면 오히려 무거워질 수 있으니, 아이라인은 살리되 섀도는 덜어내고 립 원포인트로 마무리하는 것이 가장 세련된 선택입니다."
+        }
+      ],
+      "avoid": [
+        { "style": "웜한 브라운 음영", "reason": "눈가가 멍든 것처럼 보이고 안색이 급격히 어두워집니다." },
+        { "style": "누디한 베이지 립", "reason": "아파 보이거나 얼굴의 생기를 잃어버리게 합니다. 단독 사용은 피하세요." }
+      ],
+      "coachComment": "금발이나 밝은 갈색 염색보다는 흑발이 이목구비를 훨씬 또렷하게 만듭니다. 흐릿한 색보다는 확실한 색을 선택하세요."
+    }
+  ]
+}
