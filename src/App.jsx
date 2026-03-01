@@ -15,13 +15,13 @@ export default function App() {
   const [error, setError] = useState(null)
   const [knowsPersonalColor, setKnowsPersonalColor] = useState(null)
 
-  const handleAnalyze = async (imageBase64, knowsColor) => {
+  const handleAnalyze = async (imageBase64, additionalImages, knowsColor) => {
     setImage(imageBase64)
     setKnowsPersonalColor(knowsColor)
     setError(null)
     setStep('analyzing')
     try {
-      const result = await analyzeFace(imageBase64)
+      const result = await analyzeFace(imageBase64, additionalImages)
       setAnalysis(result)
       setStep('result')
     } catch (err) {

@@ -1,44 +1,55 @@
-/* ─── AnalysisResult ──────────────────────────── */
+/* ─── AnalysisResult Page ─────────────────────── */
 .result-page {
   min-height: 100vh;
-  background: var(--bg);
+  background: var(--cream);
   display: flex;
   flex-direction: column;
   align-items: center;
   padding-bottom: 60px;
 }
 
-/* ─── Header ──────────────────────────────────── */
+/* ─── Sticky Header / Top-bar ─────────────────── */
+/* position:sticky acts as containing block for the absolutely-centered title */
 .result-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
   width: 100%;
   max-width: 480px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 20px 28px 16px;
-  border-bottom: 1px solid var(--border);
+  padding: 16px 20px;
+  background: rgba(250, 247, 244, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--sand);
 }
 
-.back-btn {
-  font-size: 11px;
-  color: var(--gray-mid);
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  padding: 6px 0;
+.result-header .back-btn {
+  font-size: 13px;
+  color: var(--mink2);
+  letter-spacing: 0.02em;
+  padding: 4px 0;
   transition: color 0.2s;
 }
 
-.back-btn:hover {
-  color: var(--black);
+.result-header .back-btn:hover {
+  color: var(--espr);
 }
 
+/* mockup: top-title is centered via 3-item flex (back / title / spacer) */
+/* CSS-only fix: absolute center */
 .result-title {
-  font-family: var(--font-serif);
-  font-style: italic;
-  font-weight: 300;
-  font-size: 16px;
-  color: var(--gray-dark);
-  letter-spacing: 0.05em;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--espr);
+  white-space: nowrap;
 }
 
 /* ─── Photo ───────────────────────────────────── */
@@ -54,62 +65,63 @@
 .result-body {
   width: 100%;
   max-width: 480px;
-  padding: 0 28px;
+  padding: 0 20px;
   display: flex;
   flex-direction: column;
-  gap: 0;
+  gap: 12px;
+  margin-top: 16px;
 }
 
 /* ─── Result Card ─────────────────────────────── */
 .result-card {
-  padding: 24px 0;
-  border-bottom: 1px solid var(--border);
+  padding: 16px;
+  background: var(--white);
+  border: 1px solid var(--sand);
 }
 
 .card-label {
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 400;
-  letter-spacing: 0.25em;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--gray-light);
-  margin-bottom: 14px;
+  color: var(--blush);
+  margin-bottom: 12px;
 }
 
 /* ─── Face Type ───────────────────────────────── */
 .face-type-row {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
 }
 
 .face-emoji {
-  font-size: 28px;
+  font-size: 32px;
   flex-shrink: 0;
 }
 
 .face-name {
   font-family: var(--font-serif);
-  font-style: italic;
-  font-size: 28px;
-  font-weight: 600;
-  color: var(--black);
-  line-height: 1.1;
+  font-size: 20px;
+  color: var(--espr);
+  margin-bottom: 2px;
+  line-height: 1.2;
 }
 
 .face-desc {
-  font-size: 12px;
-  color: var(--gray-mid);
-  margin-top: 4px;
-  letter-spacing: 0.04em;
+  font-size: 11px;
+  color: var(--mink);
+  line-height: 1.5;
   font-weight: 300;
 }
 
 /* ─── Personal Color ──────────────────────────── */
 .confirm-notice {
-  font-size: 12px;
-  color: var(--gray-mid);
-  margin-bottom: 14px;
+  font-size: 11px;
+  color: var(--mink);
+  margin-bottom: 12px;
   font-weight: 300;
+  line-height: 1.6;
 }
 
 .color-options {
@@ -119,86 +131,109 @@
 }
 
 .color-option {
-  padding: 11px 8px;
-  border: 1px solid var(--border-dark);
-  font-size: 12px;
-  color: var(--gray-mid);
+  padding: 12px 8px;
+  border: 1px solid var(--stone);
+  font-size: 11px;
+  color: var(--mink2);
   letter-spacing: 0.04em;
   transition: all 0.2s;
-  background: var(--bg-card);
+  background: transparent;
+  font-family: var(--font-body);
+  text-align: left;
 }
 
 .color-option:hover {
-  border-color: var(--black);
-  color: var(--black);
+  border-color: var(--mink2);
+  color: var(--espr);
 }
 
 .color-option.selected {
-  background: var(--black) !important;
-  border-color: var(--black) !important;
-  color: #fff !important;
+  background: var(--espr) !important;
+  border-color: var(--espr) !important;
+  color: var(--white) !important;
 }
 
 /* ─── Feature Tags ────────────────────────────── */
 .feature-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 6px;
 }
 
 .feature-tag {
-  font-size: 12px;
-  color: var(--gray-dark);
-  border: 1px solid var(--border);
-  padding: 5px 12px;
-  font-weight: 300;
-  letter-spacing: 0.04em;
+  font-size: 11px;
+  color: var(--mink2);
+  background: var(--sand);
+  padding: 5px 10px;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  border-radius: 2px;
 }
 
 /* ─── Card Button Group ───────────────────────── */
 .card-btn-group {
   width: 100%;
   max-width: 480px;
-  padding: 28px 28px 0;
+  padding: 0 20px;
+  margin-top: 4px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
+  padding-bottom: 8px;
 }
 
 .card-btn {
   width: 100%;
-  padding: 15px;
-  font-size: 11px;
-  letter-spacing: 0.22em;
+  padding: 15px 20px;
+  font-size: 12px;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   font-weight: 400;
   transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: var(--font-body);
+}
+
+.card-btn::after {
+  content: '›';
+  font-size: 20px;
+  color: var(--stone);
+  font-family: var(--font-body);
+  line-height: 1;
+  letter-spacing: 0;
+  font-weight: 300;
+}
+
+.card-btn--total::after {
+  color: rgba(255, 255, 255, 0.4);
 }
 
 .card-btn--hair,
 .card-btn--makeup {
-  background: var(--bg-card);
-  border: 1px solid var(--border-dark);
-  color: var(--gray-dark);
+  background: var(--white);
+  border: 1px solid var(--sand);
+  color: var(--espr);
 }
 
 .card-btn--hair:hover:not(:disabled),
 .card-btn--makeup:hover:not(:disabled) {
-  border-color: var(--black);
-  color: var(--black);
+  border-color: var(--stone);
+  background: var(--cream);
 }
 
 .card-btn--total {
-  background: var(--black);
-  border: 1px solid var(--black);
-  color: #fff;
+  background: var(--espr);
+  border: 1px solid var(--espr);
+  color: var(--white);
 }
 
 .card-btn--total:hover:not(:disabled) {
-  background: #333;
+  opacity: 0.88;
 }
 
 .card-btn:disabled {
-  opacity: 0.3;
+  opacity: 0.35;
   cursor: not-allowed;
 }

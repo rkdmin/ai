@@ -1,19 +1,33 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600;1,700&family=Noto+Sans+KR:wght@300;400;500&family=Inter:wght@300;400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=Inter:wght@300;400;500&display=swap');
 
 :root {
-  --bg: #FAF9F7;
-  --bg-card: #FFFFFF;
-  --black: #111111;
-  --gray-dark: #444444;
-  --gray-mid: #888888;
-  --gray-light: #BBBBBB;
-  --border: #E4E4E0;
-  --border-dark: #CCCCCC;
-  --red: #C84B6A;
-  --red-bg: #FDF5F7;
+  /* ─── Rare Beauty Palette ─────────────────────── */
+  --cream:  #FAF7F4;
+  --sand:   #EDE8E1;
+  --stone:  #C9BFB4;
+  --mink:   #8E7F74;
+  --mink2:  #6B5E55;
+  --espr:   #3D2B23;
+  --blush:  #D4A5A0;
+  --rose:   #B07A76;
+  --avoid:  #F4EDEC;
+  --white:  #FFFFFF;
 
-  --font-serif: 'Cormorant Garamond', 'Georgia', serif;
-  --font-body: 'Noto Sans KR', 'Inter', -apple-system, sans-serif;
+  /* ─── Backwards-compat aliases ────────────────── */
+  --bg:          var(--cream);
+  --bg-card:     var(--white);
+  --black:       var(--espr);
+  --gray-dark:   var(--mink2);
+  --gray-mid:    var(--mink);
+  --gray-light:  var(--stone);
+  --border:      var(--sand);
+  --border-dark: var(--stone);
+  --red:         var(--rose);
+  --red-bg:      var(--avoid);
+
+  /* ─── Typography ─────────────────────────────── */
+  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-body:  'Inter', -apple-system, sans-serif;
 }
 
 * {
@@ -28,9 +42,9 @@ html {
 
 body {
   font-family: var(--font-body);
-  background: var(--bg);
+  background: var(--cream);
   min-height: 100vh;
-  color: var(--black);
+  color: var(--espr);
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
   min-width: 320px;

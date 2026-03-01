@@ -15,7 +15,7 @@ function getProvider() {
 
 const provider = getProvider()
 
-export const analyzeFace = (imageBase64) => provider.analyzeFace(imageBase64)
+export const analyzeFace = (imageBase64, additionalImages) => provider.analyzeFace(imageBase64, additionalImages)
 export const generateHairCards = (analysis) => provider.generateHairCards(analysis)
 export const generateMakeupCards = (analysis) => provider.generateMakeupCards(analysis)
 export const generateTotalCards = (analysis) => provider.generateTotalCards(analysis)

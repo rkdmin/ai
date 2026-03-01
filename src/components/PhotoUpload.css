@@ -2,7 +2,7 @@
 .upload-page {
   min-height: 100vh;
   width: 100%;
-  background: var(--bg);
+  background: var(--cream);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -11,151 +11,218 @@
 }
 
 @keyframes pageEnter {
-  from {
-    opacity: 0;
-    transform: translateY(16px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ─── Header / Masthead ───────────────────────── */
+/* ─── Sticky Top Bar ─────────────────────────── */
+/* mockup: .top-bar */
+.upload-top-bar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  width: 100%;
+  max-width: 520px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  background: rgba(250, 247, 244, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--sand);
+}
+
+.upload-top-bar-logo {
+  font-family: var(--font-serif);
+  font-size: 17px;
+  letter-spacing: 0.1em;
+  color: var(--espr);
+}
+
+.upload-top-bar-right {
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--mink);
+}
+
+/* ─── Hero Section ────────────────────────────── */
+/* mockup: .hero-section → padding:28px 20px 20px; border-bottom:1px solid sand */
 .upload-header {
   width: 100%;
   max-width: 520px;
-  padding: 56px 28px 36px;
-  text-align: left;
+  padding: 28px 20px 20px;
+  border-bottom: 1px solid var(--sand);
 }
 
+/* mockup: .eyebrow */
 .header-overline {
   display: block;
-  font-family: var(--font-body);
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 400;
-  letter-spacing: 0.3em;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--gray-light);
-  margin-bottom: 16px;
-  animation: fadeSlideIn 0.7s ease 0.1s both;
+  color: var(--blush);
+  margin-bottom: 8px;
 }
 
-@keyframes fadeSlideIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Hero headline: thin italic line + bold line */
 .hero-headline {
-  margin-bottom: 12px;
-  line-height: 1.05;
+  margin-bottom: 6px;
+  line-height: 1.1;
 }
 
+/* mockup: .hero-title (plain text) */
 .hero-line-thin {
   display: block;
   font-family: var(--font-serif);
-  font-style: italic;
-  font-weight: 300;
-  font-size: 40px;
-  color: var(--gray-mid);
-  letter-spacing: 0.02em;
-  animation: fadeSlideIn 0.8s ease 0.25s both;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 34px;
+  color: var(--espr);
+  letter-spacing: 0.01em;
 }
 
+/* mockup: .hero-title em → italic, rose */
 .hero-line-bold {
   display: block;
   font-family: var(--font-serif);
   font-style: italic;
-  font-weight: 700;
-  font-size: 52px;
-  color: var(--black);
-  letter-spacing: -0.01em;
-  animation: fadeSlideIn 0.8s ease 0.4s both;
+  font-weight: 400;
+  font-size: 34px;
+  color: var(--rose);
+  letter-spacing: 0.01em;
 }
 
+/* mockup subtitle: font-size:12px; color:mink; line-height:1.7 */
 .subtitle {
   font-size: 12px;
   font-weight: 300;
-  color: var(--gray-light);
-  letter-spacing: 0.08em;
-  margin-top: 4px;
+  color: var(--mink);
+  letter-spacing: 0.01em;
+  line-height: 1.7;
+  margin-top: 6px;
 }
 
 .header-divider {
-  width: 100%;
-  height: 1px;
-  background: var(--border);
-  margin-top: 28px;
+  display: none;
 }
 
 /* ─── Upload Card ─────────────────────────────── */
+/* mockup: .upload-section → padding:20px 20px 0 */
 .upload-card {
   width: 100%;
   max-width: 520px;
-  padding: 0 28px;
+  padding: 0 20px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 0;
+  margin-top: 0;
 }
 
-/* ─── Upload Area ─────────────────────────────── */
+/* ─── Photo Section ───────────────────────────── */
+.photo-section {
+  display: flex;
+  flex-direction: column;
+  padding: 20px 0 0;
+}
+
+.photo-section-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+/* mockup: .section-row-label span */
+.photo-section-label {
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--mink);
+  font-weight: 400;
+}
+
+/* mockup: side-toggle-btn-left span:first-child → color:espr (darker than front section) */
+.side-toggle .photo-section-label {
+  color: var(--espr);
+}
+
+/* mockup: .badge */
+.photo-badge {
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 2px;
+  border: none;
+}
+
+/* mockup: .badge-req → background:espr; color:white */
+.photo-badge--required {
+  background: var(--espr);
+  color: var(--white);
+}
+
+/* mockup: .badge-rec → background:sand; color:mink2 */
+.photo-badge--recommended {
+  background: var(--sand);
+  color: var(--mink2);
+}
+
+/* ─── Upload Area (정면) ───────────────────────── */
+/* mockup: .upload-main-box → height:220px; dashed border */
 .upload-area {
-  border: 1px solid var(--border-dark);
-  padding: 48px 24px;
+  border: 1px dashed var(--stone);
+  height: 220px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  justify-content: center;
+  gap: 10px;
   cursor: pointer;
-  transition: border-color 0.25s, background 0.25s;
-  background: var(--bg-card);
-  animation: fadeSlideIn 0.7s ease 0.55s both;
+  transition: border-color 0.2s, background 0.2s;
+  background: var(--white);
+  margin-bottom: 12px;
 }
 
-.upload-area:hover {
-  border-color: var(--black);
-}
+.upload-area:hover    { border-color: var(--mink2); }
+.upload-area.dragging { border-color: var(--espr); background: var(--cream); }
+.upload-area.error    { border-color: var(--rose); border-style: solid; }
 
-.upload-area.dragging {
-  border-color: var(--black);
-  background: #F5F5F3;
-}
-
-.upload-area.error {
-  border-color: var(--red);
-}
-
+/* mockup: .upload-plus-circle → 40x40, rounded, stone border */
 .upload-icon {
-  font-size: 22px;
-  opacity: 0.5;
-  margin-bottom: 4px;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--stone);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 300;
+  color: var(--mink);
+  line-height: 1;
+  font-family: var(--font-body);
 }
 
+/* mockup: p:first-of-type → 12px mink2 */
 .upload-title {
-  font-family: var(--font-serif);
-  font-style: italic;
-  font-size: 17px;
-  color: var(--black);
-  letter-spacing: 0.02em;
+  font-size: 12px;
+  color: var(--mink2);
+  letter-spacing: 0.04em;
+  font-family: var(--font-body);
 }
 
+/* mockup: p:last-of-type → 10px stone */
 .upload-desc {
-  font-size: 12px;
-  color: var(--gray-light);
-  letter-spacing: 0.06em;
+  font-size: 10px;
+  color: var(--stone);
+  letter-spacing: 0.04em;
 }
 
 .upload-error-msg {
-  color: var(--red);
+  color: var(--rose);
 }
 
 /* ─── Preview ─────────────────────────────────── */
@@ -164,6 +231,7 @@
   flex-direction: column;
   align-items: center;
   gap: 12px;
+  margin-bottom: 12px;
 }
 
 .preview-img {
@@ -171,92 +239,344 @@
   aspect-ratio: 3 / 4;
   object-fit: cover;
   object-position: top center;
-  border: 1px solid var(--border);
+  border: 1px solid var(--sand);
 }
 
 .change-btn {
-  font-size: 11px;
-  color: var(--gray-mid);
-  letter-spacing: 0.15em;
+  font-size: 10px;
+  color: var(--mink);
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  padding: 6px 14px;
-  border: 1px solid var(--border);
+  padding: 10px 20px;
+  border: 1px solid var(--stone);
   transition: all 0.2s;
+  background: transparent;
+  font-family: var(--font-body);
 }
 
 .change-btn:hover {
-  color: var(--black);
-  border-color: var(--border-dark);
+  color: var(--espr);
+  border-color: var(--mink2);
 }
 
 /* ─── Tips Row ────────────────────────────────── */
+/* mockup: .tips-row → padding:0 (no horizontal pad, already inside upload-card) */
 .tips-row {
+  padding: 0;
+  margin: 4px 0 0;
   display: flex;
-  justify-content: center;
+  flex-wrap: wrap;
+  gap: 6px;
 }
 
 .tips {
   display: flex;
-  gap: 4px;
+  gap: 6px;
   align-items: center;
+  flex-wrap: wrap;
 }
 
-.tip {
-  font-size: 11px;
-  color: var(--gray-mid);
-  letter-spacing: 0.05em;
-}
-
+/* mockup: .tip-chip → sand bg, mink2 text, 9px */
+.tip,
 .tip--key {
-  color: #8B6DC0;
-  font-weight: 500;
+  font-size: 9px;
+  color: var(--mink2);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 5px 10px;
+  background: var(--sand);
+  border-radius: 2px;
 }
 
-.tip:not(:last-child)::after {
-  content: '·';
-  margin-left: 4px;
-  color: var(--gray-light);
+/* ─── Side Toggle Section ─────────────────────── */
+/* mockup: .side-toggle-row → margin:16px 20px 0; border:1px solid sand */
+/* In JSX the side photo-section is the second .photo-section → use sibling selector */
+.upload-card .photo-section + .photo-section {
+  border: 1px solid var(--sand);
+  padding: 0;
+  margin-top: 16px;
+}
+
+/* mockup: .side-toggle-btn → white bg, no border, padding:14px 16px */
+.side-toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--white);
+  border: none;
+  padding: 14px 16px;
+  cursor: pointer;
+}
+
+.side-toggle-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* mockup: .side-toggle-chevron */
+.side-toggle-chevron {
+  font-size: 16px;
+  color: var(--stone);
+  line-height: 1;
+  transition: transform 0.22s ease, color 0.2s;
+  display: inline-block;
+}
+
+.side-toggle-chevron.open {
+  transform: rotate(90deg);
+  color: var(--mink);
+}
+
+/* hidden */
+.side-photos-desc {
+  display: none;
+}
+
+/* mockup: .side-grid → grid 1fr 1fr; gap:1px; bg:sand; border-top:1px solid sand */
+.side-photos-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: var(--sand);
+  border-top: 1px solid var(--sand);
+}
+
+.side-slot {
+  display: flex;
+  flex-direction: column;
+  background: var(--cream);
+}
+
+/* angle label above slot area */
+.side-slot-angle {
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--mink);
+  padding: 8px 12px 4px;
+}
+
+/* mockup: .side-slot → height:100px; cream bg; flex center */
+.side-slot-area {
+  height: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+  background: var(--cream);
+}
+
+.side-slot-area:hover {
+  background: var(--sand);
+}
+
+.side-slot-area.error {
+  outline: 1px solid var(--rose);
+}
+
+/* mockup: + icon */
+.side-slot-icon {
+  font-size: 20px;
+  line-height: 1;
+  color: var(--stone);
+}
+
+/* mockup: label text in slot */
+.side-slot-label {
+  font-size: 9px;
+  color: var(--mink);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+/* ─── Uploaded thumbnail ──────────────────────── */
+.side-slot-thumb {
+  position: relative;
+  height: 100px;
+}
+
+.side-thumb-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  display: block;
+}
+
+.side-thumb-remove {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 22px;
+  height: 22px;
+  background: rgba(61, 43, 35, 0.65);
+  color: var(--white);
+  border: none;
+  font-size: 9px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: background 0.15s;
+  border-radius: 50%;
+}
+
+.side-thumb-remove:hover { background: rgba(61, 43, 35, 0.9); }
+
+.side-error-msg {
+  font-size: 10px;
+  color: var(--rose);
+  letter-spacing: 0.02em;
+  line-height: 1.4;
+  padding: 4px 12px;
 }
 
 /* ─── Guide Button ────────────────────────────── */
+/* mockup: .guide-btn → full width (calc 100%-40px), stone border, 12px pad */
 .guide-btn {
   font-size: 10px;
-  color: #8B6DC0;
-  letter-spacing: 0.18em;
+  color: var(--mink2);
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  padding: 4px 0;
-  border-bottom: 1px solid #C4AEE8;
-  transition: color 0.2s, border-color 0.2s;
-  background: none;
-  border-top: none;
-  border-left: none;
-  border-right: none;
+  padding: 12px;
+  border: 1px solid var(--stone);
+  background: transparent;
   cursor: pointer;
+  width: 100%;
+  text-align: center;
+  transition: border-color 0.2s, color 0.2s;
+  font-family: var(--font-body);
   user-select: none;
   -webkit-user-select: none;
+  margin-top: 12px;
 }
 
 .guide-btn:hover {
-  color: #6B4EA0;
-  border-bottom-color: #8B6DC0;
+  border-color: var(--mink2);
+  color: var(--espr);
+}
+
+/* ─── Divider ─────────────────────────────────── */
+/* mockup has no divider between guide-btn and color-block — hide it */
+.color-divider {
+  display: none;
+}
+
+/* ─── Personal Color ──────────────────────────── */
+/* mockup: .color-block → margin:20px 20px 0; padding:16px; white bg; sand border */
+.color-question {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  background: var(--white);
+  border: 1px solid var(--sand);
+  margin-top: 20px;
+}
+
+.color-question-label {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--espr);
+  letter-spacing: 0.02em;
+}
+
+/* mockup: .color-btns-row → grid 1fr 1fr */
+.color-question-btns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+/* mockup: .c-btn → stone border, mink text */
+.color-q-btn {
+  padding: 12px;
+  border: 1px solid var(--stone);
+  font-size: 11px;
+  color: var(--mink);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  transition: all 0.2s;
+  background: transparent;
+  font-family: var(--font-body);
+}
+
+.color-q-btn:hover {
+  border-color: var(--mink2);
+  color: var(--espr);
+}
+
+/* mockup: .c-btn.on → espr bg */
+.color-q-btn.selected {
+  background: var(--espr);
+  border-color: var(--espr);
+  color: var(--white);
+}
+
+/* ─── Analyze Button ──────────────────────────── */
+/* mockup: .cta-btn → espr bg, 17px pad, 11px 500 0.2em */
+.analyze-btn {
+  width: 100%;
+  padding: 17px;
+  background: var(--espr);
+  color: var(--white);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  transition: opacity 0.2s;
+  border: none;
+  font-family: var(--font-body);
+  margin-top: 20px;
+}
+
+.analyze-btn:hover:not(:disabled) { opacity: 0.88; }
+
+/* mockup: .cta-btn:disabled → stone bg */
+.analyze-btn:disabled {
+  background: var(--stone);
+  color: var(--white);
+  cursor: not-allowed;
 }
 
 /* ─── Guide Sheet ─────────────────────────────── */
 .guide-sheet {
   position: fixed;
   inset: 0;
-  background: rgba(10, 10, 10, 0.55);
+  background: rgba(61, 43, 35, 0.5);
   display: flex;
   align-items: flex-end;
   z-index: 100;
+  animation: sheetBgIn 0.25s ease both;
+}
+
+@keyframes sheetBgIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
 .guide-inner {
   width: 100%;
-  max-height: 88vh;
-  background: var(--bg);
-  padding: 24px 28px 44px;
+  max-height: 90vh;
+  background: var(--cream);
+  padding: 24px 24px 52px;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  animation: sheetSlideUp 0.3s cubic-bezier(0.32, 0.72, 0, 1) both;
+}
+
+@keyframes sheetSlideUp {
+  from { transform: translateY(40px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
 }
 
 .guide-header {
@@ -264,70 +584,123 @@
   align-items: center;
   justify-content: space-between;
   padding-bottom: 16px;
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 20px;
+  border-bottom: 1px solid var(--sand);
 }
 
 .guide-title {
   font-family: var(--font-serif);
   font-style: italic;
   font-size: 22px;
-  font-weight: 600;
-  color: var(--black);
+  font-weight: 400;
+  color: var(--espr);
   letter-spacing: 0.02em;
 }
 
 .guide-close {
   font-size: 14px;
-  color: var(--gray-mid);
+  color: var(--mink);
   background: none;
   border: none;
   cursor: pointer;
   padding: 4px 8px;
   transition: color 0.2s;
+  font-family: var(--font-body);
 }
 
-.guide-close:hover {
-  color: var(--black);
-}
+.guide-close:hover { color: var(--espr); }
 
-.guide-body {
+/* ─── Guide Image Section ─────────────────────── */
+.guide-img-section {
   display: flex;
-  gap: 20px;
+  gap: 16px;
   align-items: flex-start;
 }
 
-/* ─── Guide Illustration ──────────────────────── */
+.guide-img-tabs {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: 2px;
+}
+
+.guide-img-tab {
+  width: 48px;
+  padding: 8px 0;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--stone);
+  background: none;
+  border: 1px solid var(--sand);
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+  font-family: var(--font-body);
+}
+
+.guide-img-tab.active {
+  background: var(--espr);
+  border-color: var(--espr);
+  color: var(--white);
+}
+
+.guide-img-tab:hover:not(.active) {
+  border-color: var(--stone);
+  color: var(--mink2);
+}
+
+.guide-img-frame {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+}
+
 .guide-illustration {
-  width: 120px;
-  flex-shrink: 0;
-  border: 1px solid var(--border);
+  width: 100%;
+  max-width: 200px;
+  border: 1px solid var(--sand);
   cursor: zoom-in;
   user-select: none;
   -webkit-user-select: none;
+  display: block;
+  transition: border-color 0.2s;
 }
 
-/* ─── Guide Image Zoom Overlay ────────────────── */
+.guide-illustration:hover { border-color: var(--stone); }
+
+.guide-img-hint {
+  font-size: 9px;
+  color: var(--stone);
+  letter-spacing: 0.1em;
+}
+
+/* ─── Guide Image Zoom ────────────────────────── */
 .guide-img-zoom {
   position: fixed;
   inset: 0;
-  background: rgba(10, 10, 10, 0.85);
+  background: rgba(61, 43, 35, 0.92);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 200;
+  animation: fadeIn 0.15s ease both;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
 .guide-img-zoom-img {
-  max-width: 90vw;
-  max-height: 90vh;
+  max-width: 88vw;
+  max-height: 88vh;
   object-fit: contain;
-  border: 1px solid rgba(255,255,255,0.1);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 /* ─── Guide List ──────────────────────────────── */
 .guide-list {
-  flex: 1;
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -341,106 +714,21 @@
 
 .guide-section-label {
   font-size: 9px;
-  letter-spacing: 0.25em;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--gray-light);
+  color: var(--blush);
   margin-bottom: 4px;
 }
 
 .guide-section-item {
   font-size: 12px;
-  color: var(--gray-dark);
+  color: var(--mink2);
   line-height: 1.6;
   font-weight: 300;
   letter-spacing: 0.02em;
 }
 
 .guide-section-item--key {
-  color: #8B6DC0;
+  color: var(--espr);
   font-weight: 500;
-}
-
-/* ─── Divider ─────────────────────────────────── */
-.color-divider {
-  height: 1px;
-  background: var(--border);
-}
-
-/* ─── Personal Color ──────────────────────────── */
-.color-question {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.color-question-label {
-  font-size: 12px;
-  font-weight: 400;
-  color: var(--gray-dark);
-  letter-spacing: 0.06em;
-}
-
-.color-question-btns {
-  display: flex;
-  gap: 8px;
-}
-
-.color-q-btn {
-  flex: 1;
-  padding: 12px;
-  border: 1px solid var(--border-dark);
-  font-size: 13px;
-  color: var(--gray-mid);
-  letter-spacing: 0.05em;
-  transition: all 0.2s;
-  background: var(--bg-card);
-}
-
-.color-q-btn:hover {
-  border-color: var(--black);
-  color: var(--black);
-}
-
-.color-q-btn.selected {
-  background: var(--black);
-  border-color: var(--black);
-  color: #fff;
-}
-
-/* ─── Analyze Button ──────────────────────────── */
-.analyze-btn {
-  width: 100%;
-  padding: 16px;
-  background: var(--black);
-  color: #fff;
-  font-size: 12px;
-  font-weight: 400;
-  letter-spacing: 0.25em;
-  text-transform: uppercase;
-  transition: background 0.2s, opacity 0.2s;
-  position: relative;
-  overflow: hidden;
-}
-
-.analyze-btn::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(105deg, transparent 40%, rgba(255, 255, 255, 0.15) 50%, transparent 60%);
-  transform: translateX(-100%);
-  transition: transform 0.5s ease;
-}
-
-.analyze-btn:hover:not(:disabled)::after {
-  transform: translateX(100%);
-}
-
-.analyze-btn:hover:not(:disabled) {
-  background: #333;
-}
-
-.analyze-btn:disabled {
-  background: var(--border);
-  color: var(--gray-light);
-  cursor: not-allowed;
 }

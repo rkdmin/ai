@@ -54,17 +54,40 @@ ${outputFormat}
 }
 
 // ─── 얼굴 분석 ────────────────────────────────────────────────────
-export async function analyzeFace(imageBase64) {
+export async function analyzeFace(imageBase64, additionalImages = []) {
   const base64Data = imageBase64.split(',')[1]
   const mediaType = imageBase64.split(';')[0].split(':')[1]
 
-  const response = await callClaude([{
-    role: 'user',
-    content: [
-      { type: 'image', source: { type: 'base64', media_type: mediaType, data: base64Data } },
-      { type: 'text', text: ANALYZE_PROMPT },
-    ],
-  }])
+  const content = [
+    { type: 'image', source: { type: 'base64', media_type: mediaType, data: base64Data } },
+  ]
+
+  additionalImages.forEach(img => {
+    const raw = img.data
+    const data = raw.split(',')[1]
+    const type = raw.split(';')[0].split(':')[1]
+    content.push({ type: 'image', source: { type: 'base64', media_type: type, data } })
+  })
+
+  let promptText = ANALYZE_PROMPT
+  if (additionalImages.length > 0) {
+    const imageMap = additionalImages
+      .map((img, i) => `- 이미지 ${i + 2}: ${img.angle}`)
+      .join('\n')
+    promptText = `[이미지 구성]
+- 이미지 1: 정면 사진 — 분석 기준
+${imageMap}
+
+정면 사진(이미지 1)을 기준으로 분석하세요.
+측면 사진은 얼굴형 판단(턱선 각도, 코 높이, 두상 앞뒤 길이, 광대 돌출)을 보조하는 용도로만 사용하세요.
+아래 거부 조건은 이미지 1에만 적용됩니다.
+
+${ANALYZE_PROMPT}`
+  }
+
+  content.push({ type: 'text', text: promptText })
+
+  const response = await callClaude([{ role: 'user', content }])
 
   if (!response.ok) {
     const err = await response.json().catch(() => ({}))

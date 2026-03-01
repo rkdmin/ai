@@ -1,7 +1,7 @@
-/* ─── CardList ────────────────────────────────── */
+/* ─── CardList Page ───────────────────────────── */
 .card-list-page {
   min-height: 100vh;
-  background: var(--bg);
+  background: var(--cream);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -10,92 +10,148 @@
 }
 
 @keyframes pageEnter {
-  from {
-    opacity: 0;
-    transform: translateY(14px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ─── Header ──────────────────────────────────── */
+/* ─── Back button (scoped — overrides CardDetail.css global) ── */
+.list-header .back-btn {
+  position: static;
+  align-self: auto;
+  display: inline;
+  background: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  font-size: 13px;
+  color: var(--mink2);
+  letter-spacing: 0.02em;
+  padding: 4px 0;
+  transition: color 0.2s;
+  z-index: auto;
+}
+
+.list-header .back-btn:hover {
+  color: var(--espr);
+}
+
+/* ─── Sticky Header ───────────────────────────── */
 .list-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
   width: 100%;
   max-width: 480px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 20px 28px 16px;
-  border-bottom: 1px solid var(--border);
+  padding: 16px 20px;
+  background: rgba(250, 247, 244, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--sand);
+}
+
+/* mockup: title centered (3-item flex: back / title / spacer) — CSS-only centering */
+.list-header > div {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
 }
 
 .list-title {
-  font-family: var(--font-serif);
-  font-style: italic;
-  font-weight: 300;
-  font-size: 18px;
-  color: var(--black);
-  letter-spacing: 0.04em;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--espr);
 }
 
 .list-sub {
-  font-size: 11px;
-  color: var(--gray-light);
+  font-size: 10px;
+  color: var(--stone);
   letter-spacing: 0.1em;
   margin-top: 2px;
+}
+
+/* ─── Cards Header Info Block ─────────────────── */
+.cards-header-info {
+  width: 100%;
+  max-width: 480px;
+  padding: 16px 20px 20px;
+  background: var(--white);
+  border-bottom: 1px solid var(--sand);
+}
+
+.cards-header-info .eyebrow {
+  display: block;
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--blush);
+  margin-bottom: 6px;
+}
+
+.cards-header-title {
+  font-family: var(--font-serif);
+  font-size: 22px;
+  color: var(--espr);
+  margin-bottom: 4px;
+  line-height: 1.2;
+}
+
+.cards-header-title em {
+  font-style: italic;
+  color: var(--rose);
+}
+
+.cards-header-sub {
+  font-size: 11px;
+  color: var(--mink);
+  letter-spacing: 0.04em;
 }
 
 /* ─── Section ─────────────────────────────────── */
 .card-section {
   width: 100%;
   max-width: 480px;
-  padding: 32px 28px 0;
+  padding: 0;
 }
 
+/* Section heading (thin + bold inline) */
+/* mockup: .card-section-head → padding:24px 20px 12px */
 .section-heading {
   display: flex;
   align-items: baseline;
   gap: 6px;
-  margin-bottom: 6px;
+  padding: 24px 20px 12px;
   animation: fadeSlideIn 0.6s ease both;
 }
 
 @keyframes fadeSlideIn {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 .section-heading-thin {
-  font-family: var(--font-serif);
-  font-style: italic;
-  font-weight: 300;
-  font-size: 26px;
-  color: var(--gray-mid);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--mink);
+  font-family: var(--font-body);
 }
 
 .section-heading-bold {
   font-family: var(--font-serif);
-  font-style: italic;
-  font-weight: 700;
-  font-size: 28px;
-  color: var(--black);
+  font-size: 22px;
+  color: var(--espr);
 }
 
 .section-sub {
-  font-size: 11px;
-  color: var(--gray-light);
-  letter-spacing: 0.08em;
-  margin-bottom: 18px;
+  font-size: 10px;
+  color: var(--mink);
+  letter-spacing: 0.06em;
+  padding: 0 20px 12px;
   font-weight: 300;
 }
 
@@ -103,85 +159,94 @@
 .card-grid {
   display: flex;
   flex-direction: column;
-  gap: 0;
 }
 
-/* ─── Card Item ───────────────────────────────── */
+/* ─── Card Item (row) ─────────────────────────── */
 .card-item {
   width: 100%;
   display: flex;
   align-items: center;
-  gap: 0;
-  padding: 20px 0;
-  border-bottom: 1px solid var(--border);
+  padding: 16px 20px;
+  background: var(--white);
+  border-bottom: 1px solid var(--sand);
   text-align: left;
-  background: transparent;
   transition: background 0.15s;
   position: relative;
-}
-
-.card-item:hover {
-  background: #F5F5F3;
+  overflow: hidden;
+  gap: 14px;
+  cursor: pointer;
 }
 
 .card-item:first-child {
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--sand);
+}
+
+.card-item:hover {
+  background: var(--cream);
 }
 
 /* Ghost rank number */
 .ghost-number {
   font-family: var(--font-serif);
-  font-weight: 700;
-  font-size: 56px;
-  color: #EBEBEB;
-  line-height: 1;
-  width: 64px;
-  flex-shrink: 0;
-  text-align: center;
-  letter-spacing: -0.02em;
+  font-size: 52px;
+  color: rgba(61, 43, 35, 0.05);
+  position: absolute;
+  right: -4px;
+  top: -8px;
   user-select: none;
+  line-height: 1;
+  pointer-events: none;
 }
 
 .card-content {
   flex: 1;
-  padding: 0 12px;
+  min-width: 0;
 }
 
+/* Rank badge */
 .rank-badge {
   display: inline-block;
   font-size: 9px;
   font-weight: 400;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #fff;
-  background: var(--black);
-  padding: 3px 8px;
-  margin-bottom: 6px;
+  padding: 4px 8px;
+  border-radius: 2px;
+  margin-bottom: 4px;
+  flex-shrink: 0;
+  min-width: 44px;
+  text-align: center;
 }
 
-.rank-badge.rank-2 {
-  background: #888;
+/* rank 1 → espr (best) */
+.rank-badge:not(.rank-2):not(.rank-3) {
+  background: var(--espr);
+  color: var(--white);
 }
 
+/* rank 2 / 3 → sand */
+.rank-badge.rank-2,
 .rank-badge.rank-3 {
-  background: #AAA;
+  background: var(--sand);
+  color: var(--mink2);
 }
 
 .card-mood {
   font-family: var(--font-serif);
-  font-style: italic;
-  font-size: 18px;
-  font-weight: 600;
-  color: var(--black);
+  font-size: 16px;
+  color: var(--espr);
+  margin-bottom: 2px;
   line-height: 1.2;
 }
 
 .card-preview {
-  font-size: 12px;
-  color: var(--gray-mid);
-  margin-top: 4px;
+  font-size: 11px;
+  color: var(--mink);
   font-weight: 300;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .card-emoji {
@@ -191,8 +256,8 @@
 
 .card-arrow {
   font-size: 18px;
-  color: var(--gray-light);
-  padding-right: 4px;
+  color: var(--stone);
+  flex-shrink: 0;
 }
 
 /* ─── Section Divider ─────────────────────────── */
@@ -200,52 +265,53 @@
   width: 100%;
   max-width: 480px;
   height: 1px;
-  background: var(--border);
-  margin-top: 32px;
+  background: var(--sand);
+  margin-top: 8px;
 }
 
 /* ─── Avoid Section Label ─────────────────────── */
 .section-label--avoid {
+  width: 100%;
+  max-width: 480px;
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin: 28px 0 14px;
+  gap: 12px;
+  padding: 20px 20px 10px;
 }
 
 .avoid-label-text {
   font-size: 10px;
-  letter-spacing: 0.25em;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--red);
+  color: var(--rose);
   font-weight: 400;
+  flex-shrink: 0;
 }
 
 .avoid-label-line {
   flex: 1;
   height: 1px;
-  background: rgba(200, 75, 106, 0.2);
+  background: rgba(176, 122, 118, 0.25);
 }
 
-/* Avoid card */
+/* ─── Avoid Card ──────────────────────────────── */
 .card-item.avoid {
-  border-left: 3px solid var(--red);
-  padding-left: 16px;
-  background: var(--red-bg);
+  background: var(--avoid);
 }
 
 .card-item.avoid:hover {
-  background: #fcedf1;
+  background: #EFE4E2;
 }
 
 .card-item.avoid .ghost-number {
-  color: rgba(200, 75, 106, 0.12);
+  color: rgba(176, 122, 118, 0.08);
 }
 
 .card-item.avoid .rank-badge {
-  background: var(--red);
-  color: #fff;
+  background: var(--blush);
+  color: var(--white);
 }
 
 .card-item.avoid .card-mood {
-  color: var(--red);
+  color: var(--rose);
 }

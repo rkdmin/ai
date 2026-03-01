@@ -1,5 +1,9 @@
 import './CardList.css'
 
+const COLOR_LABEL = {
+  봄웜: '봄 웜톤', 여름쿨: '여름 쿨톤', 가을웜: '가을 웜톤', 겨울쿨: '겨울 쿨톤',
+}
+
 const SECTIONS = [
   { key: 'hair', thin: 'Hair', bold: 'Style', sub: '헤어 추천 스타일 3가지', avoidSub: '피해야 할 헤어 스타일' },
   { key: 'makeup', thin: 'Makeup', bold: 'Look', sub: '메이크업 추천 룩 3가지', avoidSub: '피해야 할 메이크업 룩' },
@@ -18,12 +22,18 @@ export default function CardList({ cardSets, analysis, onSelectCard, onReset }) 
       <header className="list-header">
         <button className="back-btn" onClick={onReset}>← 처음으로</button>
         <div>
-          <h1 className="list-title">Your Style Cards</h1>
-          <p className="list-sub">
-            {analysis.faceType}{analysis.personalColor ? ` · ${analysis.personalColor}` : ''}
-          </p>
+          <h1 className="list-title">Style Cards</h1>
         </div>
       </header>
+
+      <div className="cards-header-info">
+        <span className="eyebrow">Your Analysis</span>
+        <p className="cards-header-title">
+          {analysis.faceType}
+          {analysis.personalColor && <> · <em>{COLOR_LABEL[analysis.personalColor] ?? analysis.personalColor}</em></>}
+        </p>
+        <p className="cards-header-sub">나만의 스타일 카드를 확인해보세요</p>
+      </div>
 
       {SECTIONS.map(({ key, thin, bold, sub, avoidSub }) => {
         const cards = cardSets[key] ?? []
