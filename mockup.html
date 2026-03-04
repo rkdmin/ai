@@ -828,6 +828,64 @@ body{
   font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#FDFAF7;cursor:pointer;
 }
 
+/* ── CTA hint (disabled 이유) ── */
+.cta-hint{
+  margin-top:8px;text-align:center;
+  font-size:10px;color:var(--text3);letter-spacing:.04em;line-height:1.5;
+}
+
+/* ── Upload: 정면 사진 업로드 완료 상태 ── */
+.upload-preview{
+  border:1px solid var(--border);background:var(--card);
+  height:210px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:12px;
+  border-radius:4px;margin-bottom:6px;position:relative;overflow:hidden;
+}
+.upload-preview-ph{
+  font-family:'Cormorant Garamond',serif;
+  font-size:52px;font-style:italic;color:rgba(28,20,16,.07);
+}
+.upload-preview-check{
+  position:absolute;bottom:10px;right:10px;
+  background:var(--accent);color:#FDFAF7;
+  font-size:9px;letter-spacing:.12em;text-transform:uppercase;
+  padding:4px 10px;border-radius:2px;
+}
+.upload-reset{
+  font-size:10px;color:var(--text3);letter-spacing:.06em;
+  text-decoration:underline;text-underline-offset:2px;cursor:pointer;
+  text-align:right;padding:0 2px 8px;
+}
+
+/* ── Cards: 잠금 해제 후 상태 ── */
+.card-row-unlocked{
+  display:flex;align-items:center;
+  padding:16px 22px;
+  border-bottom:1px solid var(--border);
+  border-left:3px solid var(--accent);
+  gap:14px;cursor:pointer;position:relative;overflow:hidden;
+  background:linear-gradient(90deg,rgba(196,137,106,.07) 0%,var(--card) 60%);
+}
+.unlock-badge{
+  position:absolute;top:8px;right:10px;
+  font-size:9px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--accent);display:flex;align-items:center;gap:3px;
+}
+
+/* ── Trend: 매칭 이유 배지 ── */
+.trend-match{
+  font-size:9px;letter-spacing:.06em;
+  padding:2px 7px;background:rgba(196,137,106,.1);color:var(--accent);
+  border-radius:2px;display:inline-flex;align-items:center;gap:2px;white-space:nowrap;
+}
+
+/* ── Result: 퍼스널컬러 몰라요 안내 ── */
+.pc-skip-note{
+  padding:12px 14px;background:var(--surface);border-radius:4px;
+  font-size:11px;color:var(--text3);line-height:1.65;
+  border:1px dashed var(--border2);
+}
+
 </style>
 </head>
 <body>
@@ -927,14 +985,15 @@ body{
       <div class="color-q">
         <p class="color-q-text">퍼스널컬러를 알고 계신가요?</p>
         <div class="color-q-btns">
-          <button class="cq-btn on">알아요</button>
+          <button class="cq-btn">알아요</button>
           <button class="cq-btn">몰라요</button>
         </div>
       </div>
 
-      <!-- CTA -->
+      <!-- CTA — 두 조건 미충족 → 비활성화 -->
       <div class="cta-wrap">
-        <button class="cta">분석 시작하기</button>
+        <button class="cta" disabled>분석 시작하기</button>
+        <p class="cta-hint">정면 사진과 퍼스널컬러를 선택해주세요</p>
       </div>
 
       <!-- Tab Bar -->
@@ -957,6 +1016,86 @@ body{
 </div>
 
 <!-- ══════════════════════════════
+     B2 — UPLOAD (정면 완료 → 측면 자동 펼침)
+══════════════════════════════ -->
+<div>
+  <p class="pg-label">01b — Upload (정면 완료 → 측면 자동 펼침)</p>
+  <div class="phone">
+    <div class="di"></div>
+    <div class="pb">
+      <div class="topbar">
+        <span class="logo">Beauté AI</span>
+        <span class="topbar-right">Beauty Coach</span>
+      </div>
+
+      <div class="upload-hero">
+        <span class="eyebrow">AI Beauty Coach</span>
+        <h1 class="upload-title">Find your<br><em>best look.</em></h1>
+        <p class="upload-desc">사진 한 장으로 얼굴형과 이목구비를 분석하고<br>나만의 코디 카드를 받아보세요.</p>
+      </div>
+
+      <!-- 정면 사진 — 업로드 완료 -->
+      <div class="section-wrap">
+        <div class="row-label">
+          <span class="row-label-text">정면 사진</span>
+          <span class="badge badge-req">필수</span>
+        </div>
+        <div class="upload-preview">
+          <p class="upload-preview-ph">Photo</p>
+          <span class="upload-preview-check">✓ 업로드 완료</span>
+        </div>
+        <p class="upload-reset">다른 사진 선택하기</p>
+      </div>
+
+      <!-- 측면 사진 — 정면 완료 후 자동 펼침 -->
+      <div class="side-toggle">
+        <div class="side-head" style="background:rgba(196,137,106,.05)">
+          <div class="side-head-left">
+            <span>측면 사진</span>
+            <span class="badge badge-rec">권장</span>
+          </div>
+          <span class="side-caret" style="transform:rotate(90deg);display:inline-block;">›</span>
+        </div>
+        <p class="side-note" style="color:var(--accent);">✓ 정면 완료 — 측면을 추가하면 얼굴형 정확도가 더 올라가요</p>
+        <div class="side-slots">
+          <div class="side-slot">
+            <span class="side-slot-icon">+</span>
+            <span>90° 측면</span>
+          </div>
+          <div class="side-slot">
+            <span class="side-slot-icon">+</span>
+            <span>45° 반측면</span>
+          </div>
+        </div>
+      </div>
+
+      <button class="guide-btn">📷 촬영 가이드 확인하기</button>
+
+      <!-- 퍼스널컬러 — 미선택 -->
+      <div class="color-q">
+        <p class="color-q-text">퍼스널컬러를 알고 계신가요?</p>
+        <div class="color-q-btns">
+          <button class="cq-btn">알아요</button>
+          <button class="cq-btn">몰라요</button>
+        </div>
+      </div>
+
+      <!-- CTA — 퍼스널컬러 미선택으로 비활성화 -->
+      <div class="cta-wrap">
+        <button class="cta" disabled>분석 시작하기</button>
+        <p class="cta-hint">퍼스널컬러를 선택해주세요</p>
+      </div>
+
+      <div class="tabbar">
+        <div class="tab active"><span class="tab-icon">🏠</span><span class="tab-label">홈</span></div>
+        <div class="tab"><span class="tab-icon">✨</span><span class="tab-label">트렌드</span></div>
+        <div class="tab"><span class="tab-icon">📋</span><span class="tab-label">히스토리</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
      C — ANALYZING
 ══════════════════════════════ -->
 <div>
@@ -971,7 +1110,28 @@ body{
         </div>
         <p class="an-step">Step 1 of 2 — 얼굴 측정 중</p>
         <p class="an-title">얼굴을 분석하고 있어요</p>
-        <p class="an-sub">잠시만 기다려주세요...</p>
+        <p class="an-sub">Step 1: MediaPipe 랜드마크 측정  ·  Step 2: AI 스타일 분석</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     C2 — ANALYZING (Step 2)
+══════════════════════════════ -->
+<div>
+  <p class="pg-label">02b — Analyzing (Step 2)</p>
+  <div class="phone">
+    <div class="di"></div>
+    <div class="pb">
+      <div class="analyzing-bg">
+        <p class="an-logo">Beauté AI</p>
+        <div class="an-bars">
+          <span></span><span></span><span></span><span></span><span></span>
+        </div>
+        <p class="an-step">Step 2 of 2 — AI 스타일 분석 중</p>
+        <p class="an-title">코디 카드를 만들고 있어요</p>
+        <p class="an-sub">Step 1: 얼굴 측정 완료 ✓  ·  Step 2: AI 스타일 분석 중</p>
       </div>
     </div>
   </div>
@@ -1058,6 +1218,82 @@ body{
             <span class="ct-icon">✨</span>
             <span class="ct-text">종합 카드 받기</span>
           </div>
+          <span class="ct-arr">›</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     D2 — RESULT (퍼스널컬러 몰라요)
+══════════════════════════════ -->
+<div>
+  <p class="pg-label">03b — Result (퍼스널컬러 모름)</p>
+  <div class="phone">
+    <div class="di"></div>
+    <div class="pb">
+      <div class="topbar">
+        <div class="back-btn">
+          <span class="chevron">‹</span>
+          <span>다시 찍기</span>
+        </div>
+        <span class="topbar-title">Your Profile</span>
+        <div style="width:60px"></div>
+      </div>
+
+      <div class="result-photo">
+        <p class="result-photo-ph">Photo</p>
+        <span class="result-photo-tag">분석 완료</span>
+      </div>
+
+      <div class="result-card">
+        <span class="rc-label">Face Type</span>
+        <div class="face-row">
+          <span class="face-emoji">🥚</span>
+          <div>
+            <p class="face-name">계란형</p>
+            <p class="face-desc">균형 잡힌 갸름한 얼굴형, 대부분의 스타일이 잘 어울려요</p>
+          </div>
+        </div>
+        <div class="celebrity-row">
+          닮은 스타: <strong>카리나, 윈터, 고윤정 스타일</strong>
+        </div>
+      </div>
+
+      <!-- 퍼스널컬러 — 몰라요 상태: 선택 UI 없음, 안내 메시지만 -->
+      <div class="result-card">
+        <span class="rc-label">Personal Color</span>
+        <div class="pc-skip-note">
+          퍼스널컬러 없이도 얼굴형 기반 추천을 받을 수 있어요 🎨<br>
+          나중에 알게 되면 히스토리에서 다시 시도해 보세요.
+        </div>
+      </div>
+
+      <div class="result-card">
+        <span class="rc-label">Features</span>
+        <div class="feature-tags">
+          <span class="ftag">눈 간격 넓음</span>
+          <span class="ftag">광대 평탄</span>
+          <span class="ftag">턱선 갸름</span>
+        </div>
+      </div>
+
+      <!-- 카드 버튼 — 퍼컬 선택 없어도 바로 활성화 -->
+      <div class="ct-group">
+        <button class="ct-btn primary">
+          <div class="ct-left">
+            <span class="ct-icon">💇</span>
+            <span class="ct-text" style="color:#FDFAF7">헤어 카드 받기</span>
+          </div>
+          <span class="ct-arr" style="color:rgba(255,255,255,.3)">›</span>
+        </button>
+        <button class="ct-btn">
+          <div class="ct-left"><span class="ct-icon">💄</span><span class="ct-text">메이크업 카드 받기</span></div>
+          <span class="ct-arr">›</span>
+        </button>
+        <button class="ct-btn">
+          <div class="ct-left"><span class="ct-icon">✨</span><span class="ct-text">종합 카드 받기</span></div>
           <span class="ct-arr">›</span>
         </button>
       </div>
@@ -1157,6 +1393,7 @@ body{
           <div class="card-info">
             <p class="card-mood avoid-mood">Heavy Volume</p>
             <p class="card-preview">무거운 풀뱅 · 볼륨매직</p>
+            <p style="font-size:10px;color:var(--avoid);margin-top:3px;">갸름한 얼굴이 더 넓어 보여요</p>
           </div>
           <span class="card-arr">›</span>
         </div>
@@ -1184,10 +1421,111 @@ body{
 </div>
 
 <!-- ══════════════════════════════
+     E2 — CARDS (Best Pick 잠금 해제 후)
+══════════════════════════════ -->
+<div>
+  <p class="pg-label">04b — Cards (Best Pick 잠금 해제 후)</p>
+  <div class="phone">
+    <div class="di"></div>
+    <div class="pb">
+      <div class="topbar">
+        <div class="back-btn">
+          <span class="chevron">‹</span>
+          <span>처음으로</span>
+        </div>
+        <span class="topbar-title">Style Cards</span>
+        <div style="width:60px"></div>
+      </div>
+
+      <div class="cards-info">
+        <span class="eyebrow" style="display:block;margin-bottom:6px;">Hair Style</span>
+        <p class="cards-info-title">계란형 · <em>여름 쿨톤</em></p>
+        <p class="cards-info-sub">카리나, 윈터 스타일과 유사합니다</p>
+      </div>
+
+      <div class="style-label-row">
+        <p class="style-label-text">클래식 오벌 · 썸머쿨 시크</p>
+        <div class="share-btn">↑ 공유</div>
+      </div>
+
+      <div class="section-head">
+        <span class="sh-thin">추천</span>
+        <span class="sh-bold">Style</span>
+      </div>
+
+      <div class="card-list">
+        <!-- 1st — 잠금 해제됨 (accent 테두리 + 해제 배지) -->
+        <div class="card-row-unlocked">
+          <span class="ghost-num">01</span>
+          <span class="rank-badge rb-best">Best</span>
+          <div class="card-info">
+            <p class="card-mood">Soft Romantic</p>
+            <p class="card-preview">레이어드 미디 · 사이드뱅</p>
+          </div>
+          <span class="card-arr">›</span>
+          <span class="unlock-badge">✓ 해제됨</span>
+        </div>
+
+        <!-- 2nd — 여전히 잠금 -->
+        <div class="card-row-locked">
+          <span class="ghost-num">02</span>
+          <span class="rank-badge rb-2nd">2nd</span>
+          <div class="card-info">
+            <p class="card-mood">Cool Classic</p>
+            <p class="card-preview">C컬 단발 · 앞머리 없음</p>
+          </div>
+          <span class="card-arr">›</span>
+          <div class="lock-blur">
+            <span class="lock-icon">🔒</span>
+            <span class="lock-text">2nd Pick</span>
+            <span class="lock-cta">광고 보고 확인하기</span>
+          </div>
+        </div>
+
+        <!-- 3rd — 무료 -->
+        <div class="card-row">
+          <span class="ghost-num">03</span>
+          <span class="rank-badge rb-3rd">3rd</span>
+          <div class="card-info">
+            <p class="card-mood">Modern Edge</p>
+            <p class="card-preview">쇼트 텍스처 · 시스루뱅</p>
+          </div>
+          <span class="card-arr">›</span>
+        </div>
+      </div>
+
+      <div class="avoid-divider">
+        <span>Avoid</span><hr/>
+      </div>
+      <div class="card-list">
+        <div class="card-row avoid">
+          <span class="ghost-num" style="font-size:44px;opacity:.06">✕</span>
+          <span class="rank-badge rb-avoid">피하기</span>
+          <div class="card-info">
+            <p class="card-mood avoid-mood">Heavy Volume</p>
+            <p class="card-preview">무거운 풀뱅 · 볼륨매직</p>
+            <p style="font-size:10px;color:var(--avoid);margin-top:3px;">갸름한 얼굴이 더 넓어 보여요</p>
+          </div>
+          <span class="card-arr">›</span>
+        </div>
+      </div>
+
+      <div style="height:16px"></div>
+
+      <div class="tabbar">
+        <div class="tab active"><span class="tab-icon">🏠</span><span class="tab-label">홈</span></div>
+        <div class="tab"><span class="tab-icon">✨</span><span class="tab-label">트렌드</span></div>
+        <div class="tab"><span class="tab-icon">📋</span><span class="tab-label">히스토리</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
      F — CARD DETAIL (추천)
 ══════════════════════════════ -->
 <div>
-  <p class="pg-label">05 — Card Detail</p>
+  <p class="pg-label">05 — Card Detail (구독자 · AI 사진 적용 후)</p>
   <div class="phone">
     <div class="di"></div>
     <div class="pb">
@@ -1303,15 +1641,80 @@ body{
         <div class="ba-regen"><span>↻ 다시 생성하기</span></div>
       </div>
 
-      <!-- 유료 유도 (비구독자) -->
-      <div class="tryon-premium">
+      <div style="height:24px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     F2 — CARD DETAIL (비구독자)
+══════════════════════════════ -->
+<div>
+  <p class="pg-label">05b — Card Detail (비구독자 · AI 사진 유도)</p>
+  <div class="phone">
+    <div class="di"></div>
+    <div class="pb">
+      <div class="topbar" style="background:rgba(28,20,16,.92)">
+        <div class="back-btn">
+          <span class="chevron" style="color:rgba(255,255,255,.4)">‹</span>
+          <span style="color:rgba(255,255,255,.4)">목록으로</span>
+        </div>
+        <div style="width:60px"></div>
+      </div>
+
+      <div class="detail-hero">
+        <div class="detail-hero-top">
+          <span class="detail-emoji">🌿</span>
+          <span class="rank-pill">Best Pick</span>
+        </div>
+        <p class="detail-mood">Soft Romantic</p>
+        <p class="detail-celeb">카리나, 고윤정 스타일과 유사</p>
+      </div>
+
+      <div class="ds">
+        <span class="ds-label">Hair Style</span>
+        <p class="ds-title">레이어드 미디컷</p>
+        <p class="ds-bangs">앞머리: 사이드 긴 앞머리</p>
+        <p class="ds-reason">얼굴형의 갸름한 라인을 살리면서 자연스러운 볼륨감을 더해주는 스타일입니다.</p>
+      </div>
+
+      <div class="ds">
+        <span class="ds-label">Coach Note</span>
+        <p class="ds-reason">여름 쿨톤의 투명하고 깨끗한 피부톤을 극대화하는 스타일입니다. 쿨한 로즈 계열이 훨씬 잘 어울려요.</p>
+      </div>
+
+      <div class="coupang-box">
+        <div class="coupang-head">🛍️ 내 퍼스널컬러 립 추천 TOP 3</div>
+        <div class="coupang-list">
+          <div class="coupang-item">
+            <span class="coupang-rank">1</span>
+            <span class="coupang-name">로즈 핑크 립틴트</span>
+            <span class="coupang-price">₩15,900</span>
+            <span class="coupang-arr">›</span>
+          </div>
+          <div class="coupang-item">
+            <span class="coupang-rank">2</span>
+            <span class="coupang-name">모브 쿨톤 립스틱</span>
+            <span class="coupang-price">₩18,500</span>
+            <span class="coupang-arr">›</span>
+          </div>
+          <div class="coupang-item">
+            <span class="coupang-rank">3</span>
+            <span class="coupang-name">쿨 누드 립글로스</span>
+            <span class="coupang-price">₩12,000</span>
+            <span class="coupang-arr">›</span>
+          </div>
+        </div>
+        <p class="coupang-legal">쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.</p>
+      </div>
+
+      <!-- 비구독자: before-after 없이 유료 유도만 -->
+      <div class="tryon-premium" style="margin:12px 22px 24px">
         <div class="premium-icon">✨</div>
         <p class="premium-title">AI 스타일 적용 사진</p>
         <p class="premium-desc">내 얼굴에 이 스타일을 직접 적용해보세요.<br>유료 플랜에서 이용 가능합니다.</p>
         <button class="premium-cta">유료 플랜 시작하기 · ₩2,900/월</button>
       </div>
-
-      <div style="height:24px"></div>
     </div>
   </div>
 </div>
@@ -1346,6 +1749,7 @@ body{
             <span class="trend-dot"></span>
             <span class="trend-date">2026.03.04</span>
             <span class="trend-tag">여름쿨톤</span>
+            <span class="trend-match">✓ 내 퍼스널컬러</span>
           </div>
           <p class="trend-title">2026 봄 컬러 트렌드, 쿨톤에 어울리는 라벤더·로즈</p>
           <p class="trend-summary">이번 시즌 패션위크에서 주목받은 쿨톤 컬러 팔레트를 소개합니다. 라벤더, 블루 핑크, 소프트 화이트가 핵심 컬러로 떠올랐습니다.</p>
@@ -1360,6 +1764,7 @@ body{
             <span class="trend-dot"></span>
             <span class="trend-date">2026.03.03</span>
             <span class="trend-tag">계란형</span>
+            <span class="trend-match">✓ 내 얼굴형</span>
           </div>
           <p class="trend-title">계란형 얼굴에 잘 어울리는 봄 헤어스타일 TOP 5</p>
           <p class="trend-summary">갸름한 얼굴형을 더욱 돋보이게 해주는 레이어드컷부터 칼단발까지, 이번 봄 트렌드 헤어를 정리했습니다.</p>
@@ -1429,7 +1834,7 @@ body{
           <div class="history-thumb">🔵</div>
           <div class="history-info">
             <p class="history-date">2026.02.20</p>
-            <p class="history-face">계란형 · 퍼컬 미확인</p>
+            <p class="history-face">계란형 · 퍼스널컬러 미선택</p>
             <div class="history-tags">
               <span class="htag">종합</span>
             </div>
