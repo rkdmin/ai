@@ -5,10 +5,26 @@
 
 ---
 
+## 앱 탭 구조
+
+하단 탭바 3개 (항상 표시):
+
+```
+[홈] [트렌드] [히스토리]
+```
+
+- **홈 탭**: 얼굴 분석 → 카드 추천 메인 플로우
+- **트렌드 탭**: 주간 뷰티 트렌드 피드 (얼굴형/퍼컬 필터)
+- **히스토리 탭**: 최근 분석 기록 5회 (로그인 필요)
+
+---
+
 ## 전체 흐름 개요
 
 ```
-upload → analyzing → result → generatingCards → cards → cardDetail
+[홈 탭] upload → analyzing → result → generatingCards → cards → cardDetail
+[트렌드 탭] 트렌드 피드 (독립)
+[히스토리 탭] 히스토리 목록 → 히스토리 상세
 ```
 
 뒤로가기:
@@ -119,17 +135,23 @@ upload → analyzing → result → generatingCards → cards → cardDetail
 - sticky 상단 바: "Style Cards" 타이틀만 표시
 - 상단 바 아래 `cards-header-info` 블록 (항상 표시):
   - eyebrow: "YOUR ANALYSIS"
-  - 타이틀: `{faceType} · {personalColor}` — 퍼스널컬러는 이탤릭 로즈(var(--rose))
-  - 퍼스널컬러 표시 시 `COLOR_LABEL` 매핑 사용 (`봄웜→봄 웜톤`, `여름쿨→여름 쿨톤` 등)
+  - 타이틀: `{faceType} · {personalColor}`
   - personalColor가 null이면 faceType만 표시
+- **감성 레이블 블록** (카드 목록 최상단, 헤더 바로 아래):
+  - 카드 데이터의 `styleLabel` 필드 표시
+  - 예: "클래식 오벌 · 봄웜 비비드" — 공유 욕구 자극용 감성 네이밍
+  - 공유 버튼 옆에 배치
+- **결과 카드 공유 버튼**:
+  - `react-native-view-shot`으로 감성 레이블 + 분석 결과 캡처
+  - 인스타그램 스토리 / 카카오톡 / 이미지 저장 공유
 - 선택한 카드 타입의 섹션만 렌더링 (hair / makeup / total)
-- 각 섹션 구성:
-  - 추천 카드 3장: rank 1(Best) / rank 2(2nd) / rank 3(3rd)
-  - Avoid 카드 1장: Worst 배지
-- 카드 미리보기:
-  - 헤어: 헤어스타일명
-  - 메이크업: `립 · 블러셔`
-  - 종합: `헤어스타일 · 립`
+- **카드 잠금 구조**:
+  - Rank 3 (3rd) → 무료 공개
+  - Rank 1 (Best) → 🔒 블러 처리 + "광고 보고 확인하기"
+  - Rank 2 (2nd) → 🔒 블러 처리 + "광고 보고 확인하기"
+  - Avoid 카드 → 무료 공개
+  - 유료 구독자 → 전체 잠금 해제
+- 광고 시청 완료 → 해당 rank 카드 세션 내 해금
 - 카드 클릭 → `cardDetail`로 이동
 
 ---
@@ -153,12 +175,44 @@ upload → analyzing → result → generatingCards → cards → cardDetail
 - "적용 사진" 섹션 없음
 - Coach Note → "Why Avoid"로 레이블 변경
 
-### 적용 사진 생성 (추천 카드만)
+### 적용 사진 생성 + 전후 비교 (추천 카드만, 유료)
 1. "이 스타일을 내 얼굴에 적용해볼까요?" + "사진 생성하기" 버튼 표시
-2. 버튼 클릭 → `generateStyledPhoto(image, card)` 호출 (Gemini API)
-3. 생성 중: 스피너 + "사진을 생성하고 있어요..."
-4. 성공: 생성된 사진 표시 + "다시 생성하기" 버튼
-5. 실패: 에러 메시지 표시
+2. 유료 플랜 아닌 경우 → 구독 유도 모달
+3. 버튼 클릭 → `generateStyledPhoto(image, card)` 호출 (Gemini API)
+4. 생성 중: 스피너 + "사진을 생성하고 있어요..."
+5. 성공:
+   - **전후 비교 토글 UI** 표시
+   - [전] 탭: 원본 업로드 사진
+   - [후] 탭: Gemini 적용 사진
+   - 탭 전환 시 슬라이드 애니메이션
+   - "다시 생성하기" 버튼
+6. 실패: 에러 메시지 표시
+
+---
+
+---
+
+## 트렌드 탭 (`tab: 'trends'`)
+
+**컴포넌트:** `TrendsScreen`
+
+- 주 1회 업데이트 (백엔드 cron 수집)
+- 내 얼굴형 · 퍼스널컬러 태그와 일치하는 기사만 필터링
+- 분석 기록 없는 경우 전체 트렌드 표시
+- 카드 형태: 기사 제목 + 요약 (Gemini 생성) + 원문 링크
+- 배너 광고: 피드 3번째 카드 사이에 삽입
+
+---
+
+## 히스토리 탭 (`tab: 'history'`)
+
+**컴포넌트:** `HistoryScreen`
+
+- 로그인 필요: 비로그인 시 로그인 유도 화면 표시
+- 최근 5회 분석 기록 목록
+  - 날짜 / 얼굴형 / 퍼스널컬러 / 생성한 카드 타입
+- 항목 탭 → 당시 카드 목록(`cards`)으로 이동
+- 사진 만료(30일) 시 "사진이 만료되었습니다" 표시
 
 ---
 

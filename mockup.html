@@ -1,0 +1,1512 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Beauté AI — UI Mockup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --bg:       #F5F0EB;
+  --surface:  #FDFAF7;
+  --card:     #FFFFFF;
+  --border:   #E8E0D8;
+  --border2:  #D4C9BE;
+  --text1:    #1C1410;
+  --text2:    #6B5B4E;
+  --text3:    #A89688;
+  --accent:   #C4896A;
+  --accent2:  #9B6B50;
+  --blush:    #E8C4B4;
+  --avoid-bg: #FBF0EE;
+  --avoid:    #C47A6A;
+  --lock-bg:  rgba(28,20,16,.55);
+  --tab-h:    68px;
+}
+
+body{
+  background:#E0D8D0;
+  min-height:100vh;
+  font-family:'DM Sans',sans-serif;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  padding:48px 24px 80px;
+  gap:64px;
+}
+
+/* ── Page label ── */
+.pg-label{
+  font-size:10px;
+  letter-spacing:.22em;
+  text-transform:uppercase;
+  color:#8E7D72;
+  margin-bottom:14px;
+  text-align:center;
+}
+
+/* ── Phone shell ── */
+.phone{
+  width:393px;
+  background:var(--surface);
+  border-radius:52px;
+  overflow:hidden;
+  box-shadow:
+    0 0 0 11px #1C1410,
+    0 0 0 13px #2A2018,
+    0 48px 96px rgba(0,0,0,.32),
+    0 16px 32px rgba(0,0,0,.18);
+  position:relative;
+  user-select:none;
+}
+
+/* Dynamic Island */
+.di{
+  position:absolute;
+  top:14px;left:50%;
+  transform:translateX(-50%);
+  width:126px;height:36px;
+  background:#1C1410;
+  border-radius:22px;
+  z-index:30;
+}
+
+/* Phone body */
+.pb{
+  height:852px;
+  overflow-y:auto;
+  overflow-x:hidden;
+  scrollbar-width:none;
+  background:var(--surface);
+  position:relative;
+}
+.pb::-webkit-scrollbar{display:none}
+
+/* ── Top bar ── */
+.topbar{
+  position:sticky;top:0;z-index:20;
+  background:rgba(253,250,247,.88);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);
+  padding:56px 22px 14px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  min-height:98px;
+}
+.logo{
+  font-family:'Cormorant Garamond',serif;
+  font-size:19px;
+  font-weight:400;
+  letter-spacing:.12em;
+  color:var(--text1);
+}
+.topbar-right{
+  font-size:10px;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  color:var(--text3);
+}
+.back-btn{
+  display:flex;align-items:center;gap:5px;
+  font-size:13px;color:var(--text2);
+}
+.back-btn .chevron{font-size:20px;color:var(--text3);}
+.topbar-title{
+  font-size:12px;
+  font-weight:500;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  color:var(--text1);
+}
+
+/* ── Bottom tab bar ── */
+.tabbar{
+  position:sticky;bottom:0;z-index:20;
+  height:var(--tab-h);
+  background:rgba(253,250,247,.95);
+  backdrop-filter:blur(20px);
+  border-top:1px solid var(--border);
+  display:flex;
+  padding-bottom:10px;
+}
+.tab{
+  flex:1;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  gap:4px;
+  cursor:pointer;
+}
+.tab-icon{font-size:20px;opacity:.4;}
+.tab-label{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);}
+.tab.active .tab-icon{opacity:1;}
+.tab.active .tab-label{color:var(--accent);}
+
+/* ── Eyebrow ── */
+.eyebrow{
+  font-size:9px;
+  letter-spacing:.22em;
+  text-transform:uppercase;
+  color:var(--accent);
+}
+
+/* ── Divider ── */
+.hr{height:1px;background:var(--border);margin:0 22px;}
+
+/* ════════════════════════════════
+   SCREEN A — LOGIN
+════════════════════════════════ */
+.login-bg{
+  height:852px;
+  background:linear-gradient(170deg,#2A1F18 0%,#3D2B20 50%,#1C1410 100%);
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:0 28px;
+  gap:0;
+}
+.login-mark{
+  font-family:'Cormorant Garamond',serif;
+  font-size:11px;
+  letter-spacing:.4em;
+  text-transform:uppercase;
+  color:rgba(255,255,255,.3);
+  margin-bottom:28px;
+}
+.login-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:44px;
+  font-weight:300;
+  line-height:1.05;
+  color:#FDFAF7;
+  text-align:center;
+  margin-bottom:8px;
+}
+.login-title em{font-style:italic;color:var(--blush);}
+.login-sub{
+  font-size:12px;
+  color:rgba(255,255,255,.4);
+  text-align:center;
+  line-height:1.8;
+  letter-spacing:.02em;
+  margin-bottom:52px;
+}
+.login-btns{width:100%;display:flex;flex-direction:column;gap:10px;}
+.login-btn{
+  width:100%;padding:16px;
+  border:none;border-radius:2px;
+  font-family:'DM Sans',sans-serif;
+  font-size:13px;
+  font-weight:500;
+  letter-spacing:.06em;
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:10px;
+}
+.btn-kakao{background:#FEE500;color:#1C1410;}
+.btn-google{background:rgba(255,255,255,.08);color:rgba(255,255,255,.85);border:1px solid rgba(255,255,255,.12);}
+.btn-guest{background:transparent;color:rgba(255,255,255,.35);font-size:11px;letter-spacing:.1em;text-transform:uppercase;margin-top:8px;}
+.login-line{width:32px;height:1px;background:rgba(255,255,255,.12);margin:28px auto 0;}
+
+/* ════════════════════════════════
+   SCREEN B — UPLOAD
+════════════════════════════════ */
+.upload-hero{
+  padding:30px 22px 24px;
+  border-bottom:1px solid var(--border);
+}
+.upload-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:38px;
+  font-weight:300;
+  line-height:1.08;
+  color:var(--text1);
+  margin:10px 0 8px;
+}
+.upload-title em{font-style:italic;color:var(--accent);}
+.upload-desc{font-size:12px;color:var(--text2);line-height:1.75;}
+
+.section-wrap{padding:20px 22px 0;}
+.row-label{
+  display:flex;align-items:center;gap:8px;
+  margin-bottom:10px;
+}
+.row-label-text{
+  font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--text2);
+}
+.badge{
+  font-size:9px;letter-spacing:.1em;text-transform:uppercase;
+  padding:3px 8px;border-radius:2px;
+}
+.badge-req{background:var(--text1);color:#FDFAF7;}
+.badge-rec{background:var(--border);color:var(--text2);}
+
+.upload-box{
+  border:1px dashed var(--border2);
+  background:var(--card);
+  height:210px;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  gap:12px;
+  cursor:pointer;
+  border-radius:4px;
+  margin-bottom:10px;
+}
+.upload-circle{
+  width:44px;height:44px;
+  border:1px solid var(--border2);
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  color:var(--text3);font-size:20px;
+}
+.upload-box p{font-size:12px;color:var(--text2);}
+.upload-box small{font-size:10px;color:var(--text3);letter-spacing:.04em;}
+
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:4px;}
+.chip{
+  font-size:9px;letter-spacing:.1em;text-transform:uppercase;
+  padding:5px 10px;background:var(--border);color:var(--text2);border-radius:2px;
+}
+
+.side-toggle{
+  margin:14px 22px 0;
+  border:1px solid var(--border);border-radius:4px;
+  overflow:hidden;
+}
+.side-head{
+  padding:14px 16px;
+  display:flex;align-items:center;justify-content:space-between;
+  background:var(--card);cursor:pointer;
+}
+.side-head-left{display:flex;align-items:center;gap:8px;}
+.side-head-left span{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--text1);}
+.side-caret{color:var(--text3);font-size:16px;}
+.side-note{
+  padding:10px 16px;
+  font-size:10px;color:var(--text3);
+  line-height:1.6;
+  background:var(--surface);
+  border-top:1px solid var(--border);
+}
+.side-slots{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:1px;background:var(--border);
+  border-top:1px solid var(--border);
+}
+.side-slot{
+  height:96px;background:var(--surface);
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:6px;
+  cursor:pointer;
+}
+.side-slot-icon{font-size:18px;color:var(--text3);}
+.side-slot span{font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);}
+
+.guide-btn{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  width:calc(100% - 44px);
+  margin:12px 22px 0;
+  padding:13px;
+  border:1px solid var(--border2);
+  background:transparent;
+  font-family:'DM Sans',sans-serif;
+  font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--text2);cursor:pointer;
+  border-radius:2px;
+}
+
+.color-q{
+  margin:16px 22px 0;
+  padding:18px;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:4px;
+}
+.color-q-text{font-size:12px;color:var(--text1);margin-bottom:14px;line-height:1.6;}
+.color-q-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.cq-btn{
+  padding:13px;
+  border:1px solid var(--border2);background:transparent;
+  font-family:'DM Sans',sans-serif;
+  font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--text2);cursor:pointer;border-radius:2px;
+}
+.cq-btn.on{background:var(--text1);border-color:var(--text1);color:#FDFAF7;}
+
+.cta-wrap{padding:18px 22px 20px;}
+.cta{
+  width:100%;padding:17px;
+  background:var(--text1);border:none;
+  font-family:'DM Sans',sans-serif;
+  font-size:11px;font-weight:500;letter-spacing:.2em;text-transform:uppercase;
+  color:#FDFAF7;cursor:pointer;border-radius:2px;
+}
+.cta:disabled{background:var(--border2);}
+
+/* ════════════════════════════════
+   SCREEN C — ANALYZING
+════════════════════════════════ */
+.analyzing-bg{
+  height:852px;
+  background:var(--text1);
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  gap:0;
+  padding:0 32px;
+}
+.an-logo{
+  font-family:'Cormorant Garamond',serif;
+  font-size:26px;font-weight:300;
+  letter-spacing:.25em;text-transform:uppercase;
+  color:rgba(255,255,255,.15);
+  margin-bottom:52px;
+}
+.an-bars{display:flex;gap:6px;margin-bottom:44px;}
+.an-bars span{
+  width:3px;height:44px;background:var(--blush);border-radius:3px;
+  animation:anbar .8s ease-in-out infinite;
+}
+.an-bars span:nth-child(2){animation-delay:.1s}
+.an-bars span:nth-child(3){animation-delay:.2s}
+.an-bars span:nth-child(4){animation-delay:.3s}
+.an-bars span:nth-child(5){animation-delay:.4s}
+@keyframes anbar{0%,100%{transform:scaleY(.3);opacity:.3}50%{transform:scaleY(1);opacity:1}}
+.an-step{
+  font-size:11px;letter-spacing:.08em;
+  color:rgba(255,255,255,.3);
+  margin-bottom:16px;
+  text-align:center;
+}
+.an-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:24px;font-style:italic;font-weight:300;
+  color:#FDFAF7;text-align:center;
+  margin-bottom:8px;
+}
+.an-sub{font-size:11px;color:rgba(255,255,255,.35);letter-spacing:.06em;text-align:center;}
+
+/* ════════════════════════════════
+   SCREEN D — RESULT
+════════════════════════════════ */
+.result-photo{
+  height:268px;
+  background:linear-gradient(150deg,var(--border) 0%,#D8CEC4 100%);
+  position:relative;
+  display:flex;align-items:center;justify-content:center;
+}
+.result-photo-ph{
+  font-family:'Cormorant Garamond',serif;
+  font-size:52px;font-style:italic;
+  color:rgba(28,20,16,.08);
+}
+.result-photo-tag{
+  position:absolute;bottom:14px;right:14px;
+  background:rgba(253,250,247,.9);
+  padding:6px 12px;
+  font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--text1);
+  border-radius:2px;
+}
+
+.result-card{
+  margin:14px 22px 0;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:6px;
+  padding:16px;
+}
+.rc-label{
+  font-size:9px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:12px;display:block;
+}
+.face-row{display:flex;align-items:center;gap:14px;}
+.face-emoji{font-size:34px;}
+.face-name{
+  font-family:'Cormorant Garamond',serif;
+  font-size:22px;font-weight:400;color:var(--text1);
+  margin-bottom:3px;
+}
+.face-desc{font-size:11px;color:var(--text2);line-height:1.6;}
+
+.celebrity-row{
+  margin-top:12px;padding-top:12px;
+  border-top:1px solid var(--border);
+  font-size:11px;color:var(--text3);
+}
+.celebrity-row strong{color:var(--text2);}
+
+.pc-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.pc-btn{
+  padding:13px 10px;
+  border:1px solid var(--border2);background:transparent;
+  font-family:'DM Sans',sans-serif;
+  font-size:11px;color:var(--text2);letter-spacing:.02em;
+  cursor:pointer;border-radius:2px;text-align:left;
+}
+.pc-btn.on{border-color:var(--text1);background:var(--text1);color:#FDFAF7;}
+
+.feature-tags{display:flex;gap:6px;flex-wrap:wrap;}
+.ftag{
+  padding:5px 10px;
+  background:var(--border);color:var(--text2);
+  font-size:11px;border-radius:2px;
+}
+
+.ct-group{padding:14px 22px 22px;display:flex;flex-direction:column;gap:8px;}
+.ct-btn{
+  width:100%;padding:16px 18px;
+  background:var(--card);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  cursor:pointer;border-radius:4px;
+}
+.ct-left{display:flex;align-items:center;gap:12px;}
+.ct-icon{font-size:18px;}
+.ct-text{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--text1);}
+.ct-arr{color:var(--text3);font-size:20px;}
+.ct-btn.primary{background:var(--text1);border-color:var(--text1);}
+.ct-btn.primary .ct-text{color:#FDFAF7;}
+.ct-btn.primary .ct-arr{color:rgba(255,255,255,.3);}
+
+/* ════════════════════════════════
+   SCREEN E — CARDS
+════════════════════════════════ */
+.cards-info{
+  padding:16px 22px 18px;
+  background:var(--card);
+  border-bottom:1px solid var(--border);
+}
+.cards-info-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:24px;font-weight:400;color:var(--text1);margin-bottom:4px;
+}
+.cards-info-title em{font-style:italic;color:var(--accent);}
+.cards-info-sub{font-size:11px;color:var(--text3);letter-spacing:.04em;}
+
+.style-label-row{
+  padding:14px 22px;
+  background:var(--surface);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.style-label-text{
+  font-family:'Cormorant Garamond',serif;
+  font-size:17px;font-style:italic;color:var(--text1);
+}
+.share-btn{
+  font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--accent);
+  display:flex;align-items:center;gap:4px;
+}
+
+.section-head{
+  padding:22px 22px 10px;
+  display:flex;align-items:baseline;gap:6px;
+}
+.sh-thin{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--text3);}
+.sh-bold{font-family:'Cormorant Garamond',serif;font-size:24px;color:var(--text1);}
+
+.card-list{display:flex;flex-direction:column;}
+
+/* 무료 카드 (3rd, avoid) */
+.card-row{
+  display:flex;align-items:center;
+  padding:16px 22px;
+  background:var(--card);
+  border-bottom:1px solid var(--border);
+  gap:14px;cursor:pointer;position:relative;overflow:hidden;
+}
+.card-row.avoid{background:var(--avoid-bg);}
+.ghost-num{
+  font-family:'Cormorant Garamond',serif;
+  font-size:56px;color:rgba(28,20,16,.04);
+  position:absolute;right:-2px;top:-10px;
+  line-height:1;user-select:none;
+}
+.rank-badge{
+  min-width:42px;padding:4px 8px;text-align:center;
+  font-size:9px;letter-spacing:.1em;text-transform:uppercase;
+  border-radius:2px;flex-shrink:0;
+}
+.rb-best{background:var(--text1);color:#FDFAF7;}
+.rb-2nd{background:var(--border);color:var(--text2);}
+.rb-3rd{background:var(--border);color:var(--text2);}
+.rb-avoid{background:var(--avoid);color:#FDFAF7;}
+.card-info{flex:1;min-width:0;}
+.card-mood{
+  font-family:'Cormorant Garamond',serif;
+  font-size:17px;color:var(--text1);margin-bottom:2px;
+}
+.card-mood.avoid-mood{color:var(--avoid);}
+.card-preview{
+  font-size:11px;color:var(--text3);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.card-arr{font-size:18px;color:var(--border2);flex-shrink:0;}
+
+/* 잠금 카드 (1st, 2nd) */
+.card-row-locked{
+  display:flex;align-items:center;
+  padding:16px 22px;
+  border-bottom:1px solid var(--border);
+  gap:14px;position:relative;overflow:hidden;cursor:pointer;
+}
+.lock-blur{
+  position:absolute;inset:0;
+  background:var(--lock-bg);
+  backdrop-filter:blur(6px);
+  -webkit-backdrop-filter:blur(6px);
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  gap:8px;
+}
+.lock-icon{font-size:18px;}
+.lock-text{
+  font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+  color:rgba(255,255,255,.7);
+}
+.lock-cta{
+  padding:7px 16px;
+  border:1px solid rgba(255,255,255,.25);
+  border-radius:2px;
+  font-size:9px;letter-spacing:.12em;text-transform:uppercase;
+  color:rgba(255,255,255,.85);
+}
+.card-row-locked .card-mood{filter:blur(5px);}
+.card-row-locked .card-preview{filter:blur(4px);}
+
+.avoid-divider{
+  display:flex;align-items:center;gap:12px;
+  padding:20px 22px 10px;
+}
+.avoid-divider span{
+  font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--avoid);flex-shrink:0;
+}
+.avoid-divider hr{flex:1;border:none;border-top:1px solid #DDD0CE;}
+
+/* ════════════════════════════════
+   SCREEN F — CARD DETAIL
+════════════════════════════════ */
+.detail-hero{
+  padding:26px 22px 22px;
+  background:var(--text1);
+}
+.detail-hero-top{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.detail-emoji{font-size:26px;}
+.rank-pill{
+  padding:5px 12px;
+  background:rgba(255,255,255,.12);border-radius:2px;
+  font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.7);
+}
+.detail-mood{
+  font-family:'Cormorant Garamond',serif;
+  font-size:30px;font-weight:300;font-style:italic;
+  color:#FDFAF7;line-height:1.1;
+}
+.detail-celeb{
+  margin-top:8px;
+  font-size:10px;color:rgba(255,255,255,.3);letter-spacing:.06em;
+}
+
+.ds{
+  margin:12px 22px 0;
+  background:var(--card);border:1px solid var(--border);border-radius:6px;padding:16px;
+}
+.ds-label{
+  font-size:9px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:10px;display:block;
+}
+.ds-title{
+  font-family:'Cormorant Garamond',serif;font-size:19px;color:var(--text1);margin-bottom:5px;
+}
+.ds-bangs{font-size:11px;color:var(--text3);margin-bottom:6px;}
+.ds-reason{font-size:12px;color:var(--text2);line-height:1.7;}
+
+.mup-list{display:flex;flex-direction:column;gap:12px;}
+.mup-item{}
+.mup-row{display:flex;align-items:center;gap:8px;margin-bottom:4px;}
+.mup-badge{
+  font-size:9px;letter-spacing:.08em;text-transform:uppercase;
+  padding:3px 8px;border-radius:2px;color:#FDFAF7;flex-shrink:0;
+}
+.mup-name{font-size:12px;font-weight:500;color:var(--text1);}
+.mup-reason{font-size:11px;color:var(--text2);line-height:1.6;}
+
+.coupang-box{
+  margin:12px 22px 0;
+  background:var(--card);border:1px solid var(--border);border-radius:6px;overflow:hidden;
+}
+.coupang-head{
+  padding:12px 16px;background:#F5F0EB;
+  border-bottom:1px solid var(--border);
+  font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--text2);
+  display:flex;align-items:center;gap:6px;
+}
+.coupang-list{display:flex;flex-direction:column;}
+.coupang-item{
+  padding:12px 16px;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  cursor:pointer;
+}
+.coupang-item:last-child{border-bottom:none;}
+.coupang-rank{
+  font-size:10px;font-weight:500;color:var(--accent);
+  min-width:20px;
+}
+.coupang-name{font-size:12px;color:var(--text1);flex:1;padding:0 10px;}
+.coupang-price{font-size:11px;color:var(--text3);}
+.coupang-arr{font-size:16px;color:var(--border2);}
+.coupang-legal{
+  padding:8px 16px;
+  font-size:9px;color:var(--text3);line-height:1.5;
+  background:var(--surface);border-top:1px solid var(--border);
+}
+
+.before-after{
+  margin:12px 22px 0;
+  background:var(--card);border:1px solid var(--border);border-radius:6px;overflow:hidden;
+}
+.ba-tabs{
+  display:grid;grid-template-columns:1fr 1fr;
+  border-bottom:1px solid var(--border);
+}
+.ba-tab{
+  padding:12px;text-align:center;
+  font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);
+  cursor:pointer;border-bottom:2px solid transparent;
+}
+.ba-tab.active{color:var(--text1);border-color:var(--text1);}
+.ba-img{
+  height:220px;
+  background:linear-gradient(150deg,var(--border) 0%,#D8CEC4 100%);
+  display:flex;align-items:center;justify-content:center;
+}
+.ba-img p{
+  font-family:'Cormorant Garamond',serif;
+  font-size:40px;font-style:italic;color:rgba(28,20,16,.08);
+}
+.ba-regen{
+  padding:12px 16px;
+  display:flex;align-items:center;justify-content:flex-end;
+  border-top:1px solid var(--border);
+}
+.ba-regen span{
+  font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);cursor:pointer;
+}
+
+.tryon-box{
+  margin:12px 22px 24px;
+  border:1px dashed var(--border2);border-radius:4px;
+  height:200px;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:10px;
+  background:var(--surface);
+}
+.tryon-box p{font-size:12px;color:var(--text2);}
+.tryon-btn{
+  padding:11px 24px;
+  background:var(--text1);border:none;border-radius:2px;
+  font-family:'DM Sans',sans-serif;
+  font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#FDFAF7;cursor:pointer;
+}
+.tryon-premium{
+  margin:12px 22px 24px;
+  padding:20px;
+  background:var(--card);border:1px solid var(--border);border-radius:6px;
+  text-align:center;
+}
+.premium-icon{font-size:28px;margin-bottom:10px;}
+.premium-title{font-size:13px;font-weight:500;color:var(--text1);margin-bottom:6px;}
+.premium-desc{font-size:11px;color:var(--text3);line-height:1.6;margin-bottom:14px;}
+.premium-cta{
+  padding:12px 24px;
+  background:var(--accent);border:none;border-radius:2px;
+  font-family:'DM Sans',sans-serif;
+  font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#FDFAF7;cursor:pointer;
+}
+
+/* ════════════════════════════════
+   SCREEN G — TRENDS
+════════════════════════════════ */
+.trends-filter{
+  padding:14px 22px;
+  background:var(--card);border-bottom:1px solid var(--border);
+  display:flex;gap:8px;overflow-x:auto;
+  scrollbar-width:none;
+}
+.trends-filter::-webkit-scrollbar{display:none}
+.filter-chip{
+  padding:7px 14px;border-radius:20px;
+  font-size:10px;letter-spacing:.08em;
+  white-space:nowrap;cursor:pointer;flex-shrink:0;
+}
+.filter-chip.on{background:var(--text1);color:#FDFAF7;}
+.filter-chip:not(.on){background:var(--border);color:var(--text2);}
+
+.trend-card{
+  margin:0 22px;
+  padding:18px 0;
+  border-bottom:1px solid var(--border);
+  cursor:pointer;
+}
+.trend-card:last-child{border-bottom:none;}
+.trend-meta{
+  display:flex;align-items:center;gap:8px;margin-bottom:8px;
+}
+.trend-source{
+  font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--text3);
+}
+.trend-dot{width:3px;height:3px;border-radius:50%;background:var(--border2);}
+.trend-date{font-size:9px;color:var(--text3);}
+.trend-tag{
+  font-size:9px;letter-spacing:.08em;text-transform:uppercase;
+  padding:2px 7px;background:var(--blush);color:var(--text1);border-radius:2px;
+}
+.trend-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:18px;font-weight:400;color:var(--text1);
+  margin-bottom:6px;line-height:1.3;
+}
+.trend-summary{font-size:11px;color:var(--text2);line-height:1.7;}
+.trend-link{
+  margin-top:8px;
+  font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);
+}
+
+.ad-banner{
+  margin:0 22px;
+  height:56px;
+  background:var(--border);border-radius:4px;
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:4px;margin-top:4px;
+}
+.ad-banner span{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--text3);}
+
+/* ════════════════════════════════
+   SCREEN H — HISTORY
+════════════════════════════════ */
+.history-item{
+  padding:18px 22px;
+  background:var(--card);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:14px;cursor:pointer;
+}
+.history-thumb{
+  width:52px;height:52px;border-radius:4px;
+  background:linear-gradient(135deg,var(--border) 0%,#D8CEC4 100%);
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;flex-shrink:0;
+}
+.history-info{flex:1;}
+.history-date{font-size:10px;color:var(--text3);letter-spacing:.04em;margin-bottom:4px;}
+.history-face{
+  font-family:'Cormorant Garamond',serif;
+  font-size:17px;color:var(--text1);margin-bottom:3px;
+}
+.history-tags{display:flex;gap:5px;flex-wrap:wrap;}
+.htag{
+  font-size:9px;letter-spacing:.08em;text-transform:uppercase;
+  padding:2px 7px;background:var(--border);color:var(--text2);border-radius:2px;
+}
+.history-arr{font-size:18px;color:var(--border2);}
+.history-expired{
+  font-size:9px;color:var(--avoid);letter-spacing:.06em;margin-top:3px;
+}
+
+.login-prompt{
+  padding:60px 32px;
+  display:flex;flex-direction:column;align-items:center;text-align:center;
+}
+.login-prompt-icon{font-size:40px;margin-bottom:20px;opacity:.3;}
+.login-prompt-title{
+  font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--text1);margin-bottom:8px;
+}
+.login-prompt-desc{font-size:12px;color:var(--text3);line-height:1.7;margin-bottom:24px;}
+.login-prompt-btn{
+  padding:14px 32px;background:var(--text1);border:none;border-radius:2px;
+  font-family:'DM Sans',sans-serif;
+  font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#FDFAF7;cursor:pointer;
+}
+
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════
+     A — LOGIN
+══════════════════════════════ -->
+<div>
+  <p class="pg-label">00 — Login</p>
+  <div class="phone">
+    <div class="di"></div>
+    <div class="pb">
+      <div class="login-bg">
+        <p class="login-mark">Beauté AI</p>
+        <h1 class="login-title">Find your<br><em>most beautiful</em><br>self.</h1>
+        <p class="login-sub">사진 한 장으로 얼굴형을 분석하고<br>나만의 헤어·메이크업 카드를 받아보세요</p>
+        <div class="login-btns">
+          <button class="login-btn btn-kakao">
+            <span>💬</span> 카카오로 시작하기
+          </button>
+          <button class="login-btn btn-google">
+            <span>G</span> 구글로 시작하기
+          </button>
+          <button class="login-btn btn-guest">로그인 없이 1회 체험</button>
+        </div>
+        <div class="login-line"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     B — UPLOAD (홈 탭)
+══════════════════════════════ -->
+<div>
+  <p class="pg-label">01 — Upload</p>
+  <div class="phone">
+    <div class="di"></div>
+    <div class="pb">
+      <div class="topbar">
+        <span class="logo">Beauté AI</span>
+        <span class="topbar-right">Beauty Coach</span>
+      </div>
+
+      <!-- hero -->
+      <div class="upload-hero">
+        <span class="eyebrow">AI Beauty Coach</span>
+        <h1 class="upload-title">Find your<br><em>best look.</em></h1>
+        <p class="upload-desc">사진 한 장으로 얼굴형과 이목구비를 분석하고<br>나만의 코디 카드를 받아보세요.</p>
+      </div>
+
+      <!-- 정면 사진 -->
+      <div class="section-wrap">
+        <div class="row-label">
+          <span class="row-label-text">정면 사진</span>
+          <span class="badge badge-req">필수</span>
+        </div>
+        <div class="upload-box">
+          <div class="upload-circle">+</div>
+          <p>정면 사진을 올려주세요</p>
+          <small>탭 또는 드래그 · JPG / PNG</small>
+        </div>
+      </div>
+      <div class="chips" style="padding:0 22px;">
+        <span class="chip">포니테일</span>
+        <span class="chip">검정 민소매</span>
+        <span class="chip">자연광</span>
+        <span class="chip">안경 제거</span>
+      </div>
+
+      <!-- 측면 사진 토글 -->
+      <div class="side-toggle">
+        <div class="side-head">
+          <div class="side-head-left">
+            <span>측면 사진</span>
+            <span class="badge badge-rec">권장</span>
+          </div>
+          <span class="side-caret">›</span>
+        </div>
+        <p class="side-note">두 앵글 모두 제출하면 얼굴형 분석 정확도가 높아집니다</p>
+        <div class="side-slots">
+          <div class="side-slot">
+            <span class="side-slot-icon">+</span>
+            <span>90° 측면</span>
+          </div>
+          <div class="side-slot">
+            <span class="side-slot-icon">+</span>
+            <span>45° 반측면</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 촬영 가이드 -->
+      <button class="guide-btn">📷 촬영 가이드 확인하기</button>
+
+      <!-- 퍼스널컬러 -->
+      <div class="color-q">
+        <p class="color-q-text">퍼스널컬러를 알고 계신가요?</p>
+        <div class="color-q-btns">
+          <button class="cq-btn on">알아요</button>
+          <button class="cq-btn">몰라요</button>
+        </div>
+      </div>
+
+      <!-- CTA -->
+      <div class="cta-wrap">
+        <button class="cta">분석 시작하기</button>
+      </div>
+
+      <!-- Tab Bar -->
+      <div class="tabbar">
+        <div class="tab active">
+          <span class="tab-icon">🏠</span>
+          <span class="tab-label">홈</span>
+        </div>
+        <div class="tab">
+          <span class="tab-icon">✨</span>
+          <span class="tab-label">트렌드</span>
+        </div>
+        <div class="tab">
+          <span class="tab-icon">📋</span>
+          <span class="tab-label">히스토리</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     C — ANALYZING
+══════════════════════════════ -->
+<div>
+  <p class="pg-label">02 — Analyzing</p>
+  <div class="phone">
+    <div class="di"></div>
+    <div class="pb">
+      <div class="analyzing-bg">
+        <p class="an-logo">Beauté AI</p>
+        <div class="an-bars">
+          <span></span><span></span><span></span><span></span><span></span>
+        </div>
+        <p class="an-step">Step 1 of 2 — 얼굴 측정 중</p>
+        <p class="an-title">얼굴을 분석하고 있어요</p>
+        <p class="an-sub">잠시만 기다려주세요...</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     D — RESULT
+══════════════════════════════ -->
+<div>
+  <p class="pg-label">03 — Result</p>
+  <div class="phone">
+    <div class="di"></div>
+    <div class="pb">
+      <div class="topbar">
+        <div class="back-btn">
+          <span class="chevron">‹</span>
+          <span>다시 찍기</span>
+        </div>
+        <span class="topbar-title">Your Profile</span>
+        <div style="width:60px"></div>
+      </div>
+
+      <!-- photo -->
+      <div class="result-photo">
+        <p class="result-photo-ph">Photo</p>
+        <span class="result-photo-tag">분석 완료</span>
+      </div>
+
+      <!-- face type -->
+      <div class="result-card">
+        <span class="rc-label">Face Type</span>
+        <div class="face-row">
+          <span class="face-emoji">🥚</span>
+          <div>
+            <p class="face-name">계란형</p>
+            <p class="face-desc">균형 잡힌 갸름한 얼굴형, 대부분의 스타일이 잘 어울려요</p>
+          </div>
+        </div>
+        <div class="celebrity-row">
+          닮은 스타: <strong>카리나, 윈터, 고윤정 스타일</strong>
+        </div>
+      </div>
+
+      <!-- personal color -->
+      <div class="result-card">
+        <span class="rc-label">Personal Color</span>
+        <p style="font-size:11px;color:var(--text2);margin-bottom:12px;line-height:1.6;">본인의 퍼스널컬러를 선택해주세요</p>
+        <div class="pc-grid">
+          <button class="pc-btn">🌸 봄 웜톤</button>
+          <button class="pc-btn on">🌷 여름 쿨톤</button>
+          <button class="pc-btn">🍂 가을 웜톤</button>
+          <button class="pc-btn">❄️ 겨울 쿨톤</button>
+        </div>
+      </div>
+
+      <!-- features -->
+      <div class="result-card">
+        <span class="rc-label">Features</span>
+        <div class="feature-tags">
+          <span class="ftag">눈 간격 넓음</span>
+          <span class="ftag">광대 평탄</span>
+          <span class="ftag">턱선 갸름</span>
+        </div>
+      </div>
+
+      <!-- card type -->
+      <div class="ct-group">
+        <button class="ct-btn primary">
+          <div class="ct-left">
+            <span class="ct-icon">💇</span>
+            <span class="ct-text" style="color:#FDFAF7">헤어 카드 받기</span>
+          </div>
+          <span class="ct-arr" style="color:rgba(255,255,255,.3)">›</span>
+        </button>
+        <button class="ct-btn">
+          <div class="ct-left">
+            <span class="ct-icon">💄</span>
+            <span class="ct-text">메이크업 카드 받기</span>
+          </div>
+          <span class="ct-arr">›</span>
+        </button>
+        <button class="ct-btn">
+          <div class="ct-left">
+            <span class="ct-icon">✨</span>
+            <span class="ct-text">종합 카드 받기</span>
+          </div>
+          <span class="ct-arr">›</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     E — CARDS (잠금 포함)
+══════════════════════════════ -->
+<div>
+  <p class="pg-label">04 — Style Cards</p>
+  <div class="phone">
+    <div class="di"></div>
+    <div class="pb">
+      <div class="topbar">
+        <div class="back-btn">
+          <span class="chevron">‹</span>
+          <span>처음으로</span>
+        </div>
+        <span class="topbar-title">Style Cards</span>
+        <div style="width:60px"></div>
+      </div>
+
+      <!-- header -->
+      <div class="cards-info">
+        <span class="eyebrow" style="display:block;margin-bottom:6px;">Hair Style</span>
+        <p class="cards-info-title">계란형 · <em>여름 쿨톤</em></p>
+        <p class="cards-info-sub">카리나, 윈터 스타일과 유사합니다</p>
+      </div>
+
+      <!-- style label + share -->
+      <div class="style-label-row">
+        <p class="style-label-text">클래식 오벌 · 썸머쿨 시크</p>
+        <div class="share-btn">↑ 공유</div>
+      </div>
+
+      <div class="section-head">
+        <span class="sh-thin">추천</span>
+        <span class="sh-bold">Style</span>
+      </div>
+
+      <div class="card-list">
+        <!-- 1st — 잠금 -->
+        <div class="card-row-locked">
+          <span class="ghost-num">01</span>
+          <span class="rank-badge rb-best">Best</span>
+          <div class="card-info">
+            <p class="card-mood">Soft Romantic</p>
+            <p class="card-preview">레이어드 미디 · 사이드뱅</p>
+          </div>
+          <span class="card-arr">›</span>
+          <div class="lock-blur">
+            <span class="lock-icon">🔒</span>
+            <span class="lock-text">Best Pick</span>
+            <span class="lock-cta">광고 보고 확인하기</span>
+          </div>
+        </div>
+
+        <!-- 2nd — 잠금 -->
+        <div class="card-row-locked">
+          <span class="ghost-num">02</span>
+          <span class="rank-badge rb-2nd">2nd</span>
+          <div class="card-info">
+            <p class="card-mood">Cool Classic</p>
+            <p class="card-preview">C컬 단발 · 앞머리 없음</p>
+          </div>
+          <span class="card-arr">›</span>
+          <div class="lock-blur">
+            <span class="lock-icon">🔒</span>
+            <span class="lock-text">2nd Pick</span>
+            <span class="lock-cta">광고 보고 확인하기</span>
+          </div>
+        </div>
+
+        <!-- 3rd — 무료 -->
+        <div class="card-row">
+          <span class="ghost-num">03</span>
+          <span class="rank-badge rb-3rd">3rd</span>
+          <div class="card-info">
+            <p class="card-mood">Modern Edge</p>
+            <p class="card-preview">쇼트 텍스처 · 시스루뱅</p>
+          </div>
+          <span class="card-arr">›</span>
+        </div>
+      </div>
+
+      <!-- avoid -->
+      <div class="avoid-divider">
+        <span>Avoid</span>
+        <hr/>
+      </div>
+      <div class="card-list">
+        <div class="card-row avoid">
+          <span class="ghost-num" style="font-size:44px;opacity:.06">✕</span>
+          <span class="rank-badge rb-avoid">피하기</span>
+          <div class="card-info">
+            <p class="card-mood avoid-mood">Heavy Volume</p>
+            <p class="card-preview">무거운 풀뱅 · 볼륨매직</p>
+          </div>
+          <span class="card-arr">›</span>
+        </div>
+      </div>
+
+      <div style="height:16px"></div>
+
+      <!-- Tab Bar -->
+      <div class="tabbar">
+        <div class="tab active">
+          <span class="tab-icon">🏠</span>
+          <span class="tab-label">홈</span>
+        </div>
+        <div class="tab">
+          <span class="tab-icon">✨</span>
+          <span class="tab-label">트렌드</span>
+        </div>
+        <div class="tab">
+          <span class="tab-icon">📋</span>
+          <span class="tab-label">히스토리</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     F — CARD DETAIL (추천)
+══════════════════════════════ -->
+<div>
+  <p class="pg-label">05 — Card Detail</p>
+  <div class="phone">
+    <div class="di"></div>
+    <div class="pb">
+      <div class="topbar" style="background:rgba(28,20,16,.92)">
+        <div class="back-btn">
+          <span class="chevron" style="color:rgba(255,255,255,.4)">‹</span>
+          <span style="color:rgba(255,255,255,.4)">목록으로</span>
+        </div>
+        <div style="width:60px"></div>
+      </div>
+
+      <!-- hero -->
+      <div class="detail-hero">
+        <div class="detail-hero-top">
+          <span class="detail-emoji">🌿</span>
+          <span class="rank-pill">Best Pick</span>
+        </div>
+        <p class="detail-mood">Soft Romantic</p>
+        <p class="detail-celeb">카리나, 고윤정 스타일과 유사</p>
+      </div>
+
+      <!-- hair -->
+      <div class="ds">
+        <span class="ds-label">Hair Style</span>
+        <p class="ds-title">레이어드 미디컷</p>
+        <p class="ds-bangs">앞머리: 사이드 긴 앞머리</p>
+        <p class="ds-reason">얼굴형의 갸름한 라인을 살리면서 자연스러운 볼륨감을 더해주는 스타일입니다.</p>
+      </div>
+
+      <!-- makeup -->
+      <div class="ds">
+        <span class="ds-label">Makeup</span>
+        <p style="font-size:11px;color:var(--text3);margin-bottom:14px;">Base: 쿨톤 세미무광 · Center Glow</p>
+        <div class="mup-list">
+          <div class="mup-item">
+            <div class="mup-row">
+              <span class="mup-badge" style="background:#8A8A90">Shading</span>
+              <span class="mup-name">그레이 브라운 셰이딩</span>
+            </div>
+            <p class="mup-reason">쿨톤에 맞는 그레이 계열로 자연스러운 음영을 연출합니다.</p>
+          </div>
+          <div class="mup-item">
+            <div class="mup-row">
+              <span class="mup-badge" style="background:#B4A0B0">Blush</span>
+              <span class="mup-name">쿨 핑크 블러셔 · 광대 사선형</span>
+            </div>
+            <p class="mup-reason">쿨톤 피부에 자연스러운 혈색을 더해주는 모브 핑크입니다.</p>
+          </div>
+          <div class="mup-item">
+            <div class="mup-row">
+              <span class="mup-badge" style="background:#C4896A">Lip</span>
+              <span class="mup-name">로즈 핑크 그라데이션</span>
+            </div>
+            <p class="mup-reason">여름 쿨톤의 투명한 피부에 화사함을 더해주는 블루 베이스 핑크입니다.</p>
+          </div>
+          <div class="mup-item">
+            <div class="mup-row">
+              <span class="mup-badge" style="background:#6A6A6A">Eyebrow</span>
+              <span class="mup-name">내추럴 아치형 · 쿨그레이</span>
+            </div>
+            <p class="mup-reason">본연의 눈썹 결을 살린 아치형으로 이국적이고 따뜻한 아우라를 만듭니다.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- feature tip -->
+      <div class="ds">
+        <span class="ds-label">Feature Tip</span>
+        <p class="ds-reason">눈 간격이 넓은 편이므로, 아이라이너 꼬리를 안쪽으로 살짝 모아 그려 눈매를 모으는 효과를 주세요.</p>
+      </div>
+
+      <!-- coach note -->
+      <div class="ds">
+        <span class="ds-label">Coach Note</span>
+        <p class="ds-reason">여름 쿨톤의 투명하고 깨끗한 피부톤을 극대화하는 스타일입니다. 과한 웜톤 컬러보다 쿨한 로즈 계열이 훨씬 잘 어울려요. 레이어드컷의 사이드뱅이 갸름한 얼굴형을 더욱 돋보이게 해줄 거예요.</p>
+      </div>
+
+      <!-- 쿠팡 파트너스 -->
+      <div class="coupang-box">
+        <div class="coupang-head">
+          🛍️ 내 퍼스널컬러 립 추천 TOP 3
+        </div>
+        <div class="coupang-list">
+          <div class="coupang-item">
+            <span class="coupang-rank">1</span>
+            <span class="coupang-name">로즈 핑크 립틴트</span>
+            <span class="coupang-price">₩15,900</span>
+            <span class="coupang-arr">›</span>
+          </div>
+          <div class="coupang-item">
+            <span class="coupang-rank">2</span>
+            <span class="coupang-name">모브 쿨톤 립스틱</span>
+            <span class="coupang-price">₩18,500</span>
+            <span class="coupang-arr">›</span>
+          </div>
+          <div class="coupang-item">
+            <span class="coupang-rank">3</span>
+            <span class="coupang-name">쿨 누드 립글로스</span>
+            <span class="coupang-price">₩12,000</span>
+            <span class="coupang-arr">›</span>
+          </div>
+        </div>
+        <p class="coupang-legal">쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.</p>
+      </div>
+
+      <!-- 전후 비교 (유료) -->
+      <div class="before-after" style="margin:12px 22px 0">
+        <div class="ba-tabs">
+          <div class="ba-tab">전 (원본)</div>
+          <div class="ba-tab active">후 (AI 적용)</div>
+        </div>
+        <div class="ba-img"><p>After</p></div>
+        <div class="ba-regen"><span>↻ 다시 생성하기</span></div>
+      </div>
+
+      <!-- 유료 유도 (비구독자) -->
+      <div class="tryon-premium">
+        <div class="premium-icon">✨</div>
+        <p class="premium-title">AI 스타일 적용 사진</p>
+        <p class="premium-desc">내 얼굴에 이 스타일을 직접 적용해보세요.<br>유료 플랜에서 이용 가능합니다.</p>
+        <button class="premium-cta">유료 플랜 시작하기 · ₩2,900/월</button>
+      </div>
+
+      <div style="height:24px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     G — TRENDS TAB
+══════════════════════════════ -->
+<div>
+  <p class="pg-label">06 — Trends</p>
+  <div class="phone">
+    <div class="di"></div>
+    <div class="pb">
+      <div class="topbar">
+        <span class="logo">트렌드</span>
+        <span class="topbar-right">Weekly</span>
+      </div>
+
+      <!-- filter -->
+      <div class="trends-filter">
+        <span class="filter-chip on">전체</span>
+        <span class="filter-chip">계란형</span>
+        <span class="filter-chip">여름 쿨톤</span>
+        <span class="filter-chip">헤어</span>
+        <span class="filter-chip">메이크업</span>
+      </div>
+
+      <!-- trend cards -->
+      <div style="padding:0 0 8px">
+        <div class="trend-card">
+          <div class="trend-meta">
+            <span class="trend-source">얼루어 코리아</span>
+            <span class="trend-dot"></span>
+            <span class="trend-date">2026.03.04</span>
+            <span class="trend-tag">여름쿨톤</span>
+          </div>
+          <p class="trend-title">2026 봄 컬러 트렌드, 쿨톤에 어울리는 라벤더·로즈</p>
+          <p class="trend-summary">이번 시즌 패션위크에서 주목받은 쿨톤 컬러 팔레트를 소개합니다. 라벤더, 블루 핑크, 소프트 화이트가 핵심 컬러로 떠올랐습니다.</p>
+          <p class="trend-link">자세히 보기 →</p>
+        </div>
+
+        <div class="ad-banner"><span>Advertisement</span></div>
+
+        <div class="trend-card">
+          <div class="trend-meta">
+            <span class="trend-source">뷰티누리</span>
+            <span class="trend-dot"></span>
+            <span class="trend-date">2026.03.03</span>
+            <span class="trend-tag">계란형</span>
+          </div>
+          <p class="trend-title">계란형 얼굴에 잘 어울리는 봄 헤어스타일 TOP 5</p>
+          <p class="trend-summary">갸름한 얼굴형을 더욱 돋보이게 해주는 레이어드컷부터 칼단발까지, 이번 봄 트렌드 헤어를 정리했습니다.</p>
+          <p class="trend-link">자세히 보기 →</p>
+        </div>
+
+        <div class="trend-card">
+          <div class="trend-meta">
+            <span class="trend-source">얼루어 코리아</span>
+            <span class="trend-dot"></span>
+            <span class="trend-date">2026.03.01</span>
+            <span class="trend-tag">메이크업</span>
+          </div>
+          <p class="trend-title">글로시 립의 귀환, 2026 봄 립 메이크업 트렌드</p>
+          <p class="trend-summary">무광 립 대신 촉촉하고 윤기 있는 글로시 립이 올봄 핵심 트렌드로 자리잡았습니다.</p>
+          <p class="trend-link">자세히 보기 →</p>
+        </div>
+      </div>
+
+      <!-- Tab Bar -->
+      <div class="tabbar">
+        <div class="tab">
+          <span class="tab-icon">🏠</span>
+          <span class="tab-label">홈</span>
+        </div>
+        <div class="tab active">
+          <span class="tab-icon">✨</span>
+          <span class="tab-label">트렌드</span>
+        </div>
+        <div class="tab">
+          <span class="tab-icon">📋</span>
+          <span class="tab-label">히스토리</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     H — HISTORY TAB
+══════════════════════════════ -->
+<div>
+  <p class="pg-label">07 — History</p>
+  <div class="phone">
+    <div class="di"></div>
+    <div class="pb">
+      <div class="topbar">
+        <span class="logo">히스토리</span>
+        <span class="topbar-right">최근 5회</span>
+      </div>
+
+      <div class="card-list" style="margin-top:8px">
+        <div class="history-item">
+          <div class="history-thumb">🥚</div>
+          <div class="history-info">
+            <p class="history-date">2026.03.04</p>
+            <p class="history-face">계란형 · 여름 쿨톤</p>
+            <div class="history-tags">
+              <span class="htag">헤어</span>
+              <span class="htag">메이크업</span>
+            </div>
+          </div>
+          <span class="history-arr">›</span>
+        </div>
+
+        <div class="history-item">
+          <div class="history-thumb">🔵</div>
+          <div class="history-info">
+            <p class="history-date">2026.02.20</p>
+            <p class="history-face">계란형 · 퍼컬 미확인</p>
+            <div class="history-tags">
+              <span class="htag">종합</span>
+            </div>
+          </div>
+          <span class="history-arr">›</span>
+        </div>
+
+        <div class="history-item">
+          <div class="history-thumb" style="opacity:.4">📷</div>
+          <div class="history-info">
+            <p class="history-date">2026.01.15</p>
+            <p class="history-face">계란형 · 봄 웜톤</p>
+            <div class="history-tags">
+              <span class="htag">헤어</span>
+            </div>
+            <p class="history-expired">사진이 만료되었습니다 (30일)</p>
+          </div>
+          <span class="history-arr">›</span>
+        </div>
+      </div>
+
+      <!-- Tab Bar -->
+      <div class="tabbar">
+        <div class="tab">
+          <span class="tab-icon">🏠</span>
+          <span class="tab-label">홈</span>
+        </div>
+        <div class="tab">
+          <span class="tab-icon">✨</span>
+          <span class="tab-label">트렌드</span>
+        </div>
+        <div class="tab active">
+          <span class="tab-icon">📋</span>
+          <span class="tab-label">히스토리</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     H2 — HISTORY (비로그인)
+══════════════════════════════ -->
+<div>
+  <p class="pg-label">07b — History (비로그인)</p>
+  <div class="phone">
+    <div class="di"></div>
+    <div class="pb">
+      <div class="topbar">
+        <span class="logo">히스토리</span>
+      </div>
+
+      <div class="login-prompt">
+        <div class="login-prompt-icon">📋</div>
+        <p class="login-prompt-title">로그인이 필요해요</p>
+        <p class="login-prompt-desc">로그인하면 분석 기록을<br>언제든지 다시 볼 수 있어요</p>
+        <button class="login-prompt-btn">로그인하기</button>
+      </div>
+
+      <!-- Tab Bar -->
+      <div class="tabbar">
+        <div class="tab">
+          <span class="tab-icon">🏠</span>
+          <span class="tab-label">홈</span>
+        </div>
+        <div class="tab">
+          <span class="tab-icon">✨</span>
+          <span class="tab-label">트렌드</span>
+        </div>
+        <div class="tab active">
+          <span class="tab-icon">📋</span>
+          <span class="tab-label">히스토리</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

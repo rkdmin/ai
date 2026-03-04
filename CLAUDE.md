@@ -11,7 +11,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 | 파일 | 업데이트 시점 |
 |------|-------------|
 | `CLAUDE.md` (이 파일) | 구조·흐름·스키마·파일명 변경 시 |
-| `src/data/ui-flow.md` | step 추가/삭제, 컴포넌트 동작·조건·state 변경 시 |
+| `docs/ui-flow.md` | step 추가/삭제, 컴포넌트 동작·조건·state 변경 시 |
 | `src/data/rag_usage_guide.md` | RAG 데이터 구조·병합 규칙·우선순위 변경 시 |
 
 변경 후 MD와 코드가 불일치하면 다음 세션에서 잘못된 컨텍스트로 작업하게 됩니다.
@@ -28,12 +28,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 | 영역 | 기술 |
 |------|------|
-| 프론트엔드 | React + Vite |
-| AI 분석 | Claude Vision API (`claude-sonnet-4-6`) |
-| 이미지 생성 | Gemini (`gemini-2.5-flash-preview-image-generation`) |
-| 조명 정규화 | Canvas API (브라우저 내 처리) |
+| 프론트엔드 (웹) | React + Vite |
+| 앱 | React Native (Expo) |
+| 얼굴 측정 | MediaPipe (Python, 백엔드) |
+| AI 분석 + 카드 생성 | Gemini 2.5 Flash |
+| 이미지 생성 | Gemini 2.5 Flash (이미지 생성 모드, 유료 전용) |
 | RAG 지식베이스 | JSON 파일 기반 |
-| 배포 | Vercel |
+| 백엔드 | Python + FastAPI |
+| DB / 인증 | Supabase |
+| 배포 | Vercel (웹) / Railway (백엔드) |
 
 ---
 
@@ -101,15 +104,32 @@ additionalImages: { data: string /* base64 */, angle: string }[]
 
 ## 핵심 데이터 구조
 
-### Claude Vision API 응답 스키마
+### Gemini 분석 API 응답 스키마
 ```json
 {
   "faceType": "계란형 | 둥근형 | 사각형 | 하트형 | 긴형 | 다이아몬드형 | 땅콩형",
   "features": ["눈 간격 넓음", "광대 넓음"]
 }
 ```
-- `colorConfidence` 없음 — 퍼스널컬러는 별도 질문 흐름으로 확정
+
+### 카드 공통 필드 (추가)
+```json
+{
+  "styleLabel": "클래식 오벌 · 봄웜 비비드",
+  "celebrityMatch": "아이유, 윈터 스타일과 유사합니다"
+}
+```
+- `styleLabel`: 카드 목록 최상단 감성 레이블 (공유 이미지용), Gemini 생성
+
+### 연예인 매칭 데이터 위치 (별도 필드 불필요)
+- `face-hair.json[].exampleCelebrity` → 얼굴형별 연예인 목록 (이미 존재)
+  - 예: oval → ["카리나", "윈터", "고윤정", "수지"]
+- `face-makeup.json[].recommendCards[].title` → 카드 타이틀에 이미 포함
+  - 예: "우아한 분위기 룩 (탕웨이 st)", "시크 도회적 룩 (김지원 st)"
+- → RAG에서 그대로 가져와 UI에 표시, Gemini 추가 호출 불필요
+- MediaPipe 수치(이마/광대/턱 비율, 얼굴길이/폭, 턱 각도)를 함께 전달하여 정확도 향상
 - `features`는 0~3개, 확신도 80% 미만이면 포함하지 않음
+- 퍼스널컬러는 별도 질문 흐름으로 확정
 
 ### RAG JSON 파일 역할
 
@@ -129,9 +149,10 @@ additionalImages: { data: string /* base64 */, angle: string }[]
 ## 주요 데이터 흐름
 
 1. `PhotoUpload` → 정면 + 측면 사진(선택) 수집
-2. `analyzeFace(imageBase64, additionalImages)` → Claude Vision API → `{ faceType, features }` 반환
-   - 측면 사진이 있으면 이미지 구성 컨텍스트를 프롬프트 앞에 자동 삽입
-   - 거부 조건은 이미지 1(정면)에만 적용
+2. 백엔드 `/api/analyze` 호출
+   - MediaPipe (Python) → 얼굴 랜드마크 수치 추출
+   - Gemini 2.5 Flash → 수치 + 이미지 → `{ faceType, features }` 반환
+   - 측면 사진은 Gemini에게 보조 분석용으로 전달
 3. `AnalysisResult` → 퍼스널컬러 확정 (알면 직접 선택 / 모르면 질문 3개)
-4. `generateHairCards` / `generateMakeupCards` / `generateTotalCards` → RAG 컨텍스트 + 분석 결과 → 카드 4장 생성
-5. 카드 선택 시 → `generateStyledPhoto(imageBase64, card)` → Gemini → 스타일 적용 이미지 반환
+4. `generateHairCards` / `generateMakeupCards` / `generateTotalCards` → RAG 컨텍스트 + 분석 결과 → Gemini → 카드 4장 생성
+5. 카드 선택 시 → `generateStyledPhoto(imageBase64, card)` → Gemini (이미지 생성 모드, 유료) → 스타일 적용 이미지 반환
