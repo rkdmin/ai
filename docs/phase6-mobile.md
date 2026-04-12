@@ -1,42 +1,33 @@
-# Phase 6 — 모바일 앱 출시 (Android / iOS)
+# Phase 6 — 모바일 앱 출시 (Android 우선, iOS 후속)
 
-> 목표: Google Play Store + Apple App Store 정식 출시
-> 전략: React Native (Expo) — 앱 퍼스트, 확장성 우선
-> 선행 조건: Phase 2~5 완료 (백엔드, 인증, UX, 수익화)
+> 목표: 기존 React + Vite 앱을 `Capacitor`로 패키징해 Play Store에 먼저 출시한다.
+> 선행 조건: Phase 2~5 완료
 
 ---
 
 ## 출시 순서
 
 ```
-1차 출시: Android (Google Play) ← MVP 목표
-2차 출시: iOS (App Store)       ← v1.1 목표
+1차 출시: Android (MVP)
+2차 출시: iOS (Android 지표 검증 후)
 ```
 
 ---
 
-## 모바일 전략: React Native (Expo) ✅
+## 모바일 전략: React + Capacitor
 
 ### 선택 이유
-- 앱 퍼스트 기준, 확장성 고려
-- 네이티브 수준 성능 + UX
-- 향후 실시간 카메라 AR 기능 확장 가능
-- 앱스토어 심사 거절 리스크 없음
-- iOS/Android 단일 코드베이스
 
-### 현재 웹 코드베이스와 관계
-```
-현재 React + Vite 웹 앱
-    ↓
-재사용 가능:           재작성 필요:
-- src/utils/ragUtils.js  - 모든 컴포넌트 (.jsx → RN StyleSheet)
-- src/data/*.json        - CSS 전부
-- src/api/*.js           - PhotoUpload, CardList, CardDetail 등
-- 비즈니스 로직
-```
+- 기존 React 컴포넌트와 상태 흐름을 그대로 재사용할 수 있다
+- React Native처럼 화면 전체를 재작성할 필요가 없다
+- 유지보수 포인트가 웹과 앱으로 이원화되지 않는다
+- 콘텐츠 중심 앱이어서 WebView 기반 성능으로 충분하다
 
-> 웹 버전은 Vercel 배포 유지 (랜딩/소개 페이지용)
-> 앱은 RN으로 별도 개발
+### 핵심 원칙
+
+- 웹 앱이 곧 앱 UI다
+- 모바일 전용 기능만 Capacitor 플러그인으로 브리지한다
+- Android를 먼저 내고, iOS는 빌드 환경과 심사 준비가 갖춰진 뒤 간다
 
 ---
 
@@ -44,254 +35,174 @@
 
 ```
 /
-├── web/          ← 현재 React + Vite (웹 유지)
-└── app/          ← React Native (Expo) 새로 생성
-    ├── src/
-    │   ├── screens/
-    │   │   ├── UploadScreen.tsx
-    │   │   ├── AnalysisScreen.tsx
-    │   │   ├── CardListScreen.tsx
-    │   │   ├── CardDetailScreen.tsx
-    │   │   ├── HistoryScreen.tsx
-    │   │   └── LoginScreen.tsx
-    │   ├── components/
-    │   ├── api/          ← web/src/api 재사용 (백엔드 호출)
-    │   ├── utils/        ← ragUtils.js 이식
-    │   ├── data/         ← JSON 파일 그대로 복사
-    │   └── navigation/   ← React Navigation
-    ├── app.json
-    └── package.json
+├── src/                  ← 현재 React + Vite 앱
+├── public/
+├── backend/
+├── capacitor.config.ts
+├── android/
+└── ios/
 ```
+
+- 별도의 `app/` 디렉터리를 만들지 않는다
+- `npm run build` 결과물을 Capacitor가 감싼다
 
 ---
 
-## 6-1. Expo 초기 세팅
+## 6-1. Capacitor 초기 세팅
 
 ```bash
-npx create-expo-app app --template blank-typescript
-cd app
-npx expo install expo-image-picker expo-camera expo-file-system
-npx expo install expo-router  # 네비게이션
+npm install @capacitor/core @capacitor/cli
+npx cap init
+npm install @capacitor/android @capacitor/ios
+npx cap add android
+npx cap add ios
 ```
 
-### 주요 패키지
-
-| 패키지 | 기능 |
-|--------|------|
-| `expo-router` | 파일 기반 네비게이션 |
-| `expo-image-picker` | 갤러리/카메라 접근 |
-| `expo-camera` | 카메라 직접 제어 |
-| `react-native-purchases` | 인앱결제 (RevenueCat) |
-| `react-native-google-mobile-ads` | AdMob |
-| `@react-native-google-signin/google-signin` | 구글 로그인 |
-| `@react-native-seoul/kakao-login` | 카카오 로그인 |
-| `expo-splash-screen` | 스플래시 스크린 |
-| `@sentry/react-native` | 에러 트래킹 |
-
----
-
-## 6-2. MediaPipe 전략 (React Native 환경)
-
-> MediaPipe WebAssembly는 RN에서 직접 실행 불가
-> → **백엔드에서 실행**하는 방식으로 전환
-
-### 변경된 흐름
-
-```
-기존 계획 (Capacitor):
-  앱 → MediaPipe (WebAssembly, 앱 내) → 수치 → Claude
-
-변경 (React Native):
-  앱 → 백엔드 /api/analyze
-         ├─ MediaPipe (Python, 서버) → 수치 계산
-         └─ Claude API → 수치 + 이미지 → 얼굴형 + features
-```
-
-### 백엔드 Python MediaPipe
-
-```python
-# backend/services/mediapipe_service.py
-import mediapipe as mp
-import numpy as np
-
-def extract_face_ratios(image_bytes):
-    mp_face_mesh = mp.solutions.face_mesh
-    with mp_face_mesh.FaceMesh(static_image_mode=True) as face_mesh:
-        results = face_mesh.process(image)
-        if not results.multi_face_landmarks:
-            return None
-        landmarks = results.multi_face_landmarks[0].landmark
-        return {
-            "foreheadRatio": calc_forehead_ratio(landmarks),
-            "jawRatio":      calc_jaw_ratio(landmarks),
-            "aspectRatio":   calc_aspect_ratio(landmarks),
-            "jawAngle":      calc_jaw_angle(landmarks),
-            "upperFaceRatio": calc_upper_ratio(landmarks),
-            "midFaceRatio":   calc_mid_ratio(landmarks),
-            "lowerFaceRatio": calc_lower_ratio(landmarks),
-        }
-```
-
-> 백엔드를 Python으로 변경하거나, Node 백엔드에서 Python 서비스를 별도로 실행
-> 또는 Node.js에서 `@mediapipe/tasks-vision` Node 어댑터 사용 가능
-
-### 장점
-- RN 앱 번들 크기 증가 없음
-- 서버에서 실행 → 더 안정적
-- 향후 더 강력한 분석 모델로 교체 용이
-
----
-
-## 6-3. 네비게이션 구조 (Expo Router)
-
-```
-app/
-├── (auth)/
-│   └── login.tsx          # 로그인
-├── (tabs)/
-│   ├── index.tsx           # 홈 탭 (업로드)
-│   ├── trends.tsx          # 트렌드 탭 (뷰티 피드)
-│   └── history.tsx         # 히스토리 탭
-├── analysis.tsx            # 분석 결과
-├── cards.tsx               # 카드 목록
-├── card/[id].tsx           # 카드 상세
-└── history/[id].tsx        # 히스토리 상세
-```
-
-> 탭바는 `analyzing` / `generatingCards` 단계에서 숨김 처리
-
----
-
-## 6-4. 인앱결제 (RevenueCat)
-
-> Google Play Billing + Apple IAP를 RevenueCat으로 추상화
-> → 플랫폼별 코드 분기 없이 단일 API
+### 기본 개발 루프
 
 ```bash
-npm install react-native-purchases
-```
-
-```ts
-import Purchases from 'react-native-purchases'
-
-// 구독 여부 확인
-const customerInfo = await Purchases.getCustomerInfo()
-const isPremium = customerInfo.entitlements.active['premium']
-
-// 구독 구매
-const offerings = await Purchases.getOfferings()
-await Purchases.purchasePackage(offerings.current.monthly)
+npm run build
+npx cap sync
+npx cap open android
 ```
 
 ---
 
-## 6-5. 앱 권한 설정
+## 6-2. 필수 플러그인/브리지
 
-### Android (`app.json`)
-```json
-{
-  "android": {
-    "permissions": [
-      "CAMERA",
-      "READ_EXTERNAL_STORAGE",
-      "WRITE_EXTERNAL_STORAGE"
-    ]
-  }
-}
-```
+| 기능 | 선택 |
+|------|------|
+| 사진 접근 | `@capacitor/camera` |
+| 공유 | `html2canvas` + `@capacitor/share` |
+| 구글 로그인 | `@codetrix-studio/capacitor-google-auth` |
+| 카카오 로그인 | Supabase OAuth + InAppBrowser |
+| 애플 로그인 | `@capacitor-community/apple-sign-in` |
+| 광고 | `@capacitor-community/admob` |
+| 에러 트래킹 | `@sentry/browser` |
 
-### iOS (`app.json`)
-```json
-{
-  "ios": {
-    "infoPlist": {
-      "NSCameraUsageDescription": "얼굴 분석을 위해 카메라 접근이 필요합니다",
-      "NSPhotoLibraryUsageDescription": "갤러리에서 사진을 선택하기 위해 필요합니다"
-    }
-  }
-}
-```
+### 구현 원칙
+
+- `src` 내부 공용 로직은 유지
+- 플랫폼 의존 기능만 별도 브리지 파일로 분리
+- 브라우저에서도 동작해야 하므로 fallback 분기 필요
 
 ---
 
-## 6-6. 앱 아이콘 + 스플래시
+## 6-3. MediaPipe / 분석 구조
 
-```json
-// app.json
-{
-  "icon": "./assets/icon.png",          // 1024×1024
-  "splash": {
-    "image": "./assets/splash.png",     // 1284×2778
-    "backgroundColor": "#FAFAFA"
-  }
-}
 ```
+Capacitor 앱
+   ↓
+/api/analyze
+   ├─ MediaPipe (Python, 백엔드)
+   └─ Gemini 2.5 Flash
+```
+
+- 모바일에서도 분석은 백엔드 수행
+- 앱은 사진 촬영/선택과 결과 표시만 담당
+- 따라서 React Native 전용 MediaPipe 대응은 더 이상 필요 없다
 
 ---
 
-## 6-7. Android 출시
+## 6-4. 인증 / 광고 / 외부 링크 구조
 
-- [ ] Google Play Console 계정 ($25 일회성)
-- [ ] `eas build --platform android` (Expo EAS Build)
-- [ ] `.aab` 파일 생성 후 Play Console 업로드
+### 인증
+
+- 카카오: Supabase OAuth + 브라우저 기반 인증 플로우
+- 구글: Capacitor Google Auth
+- 애플: iOS 출시 전 추가
+
+### 광고
+
+- AdMob 배너 + 보상형 광고 우선
+- 전면 광고는 빈도 제한 후 보수적으로 적용
+
+### 외부 링크
+
+- 메이크업 카드 CTA는 시스템 브라우저에서 쿠팡파트너스 링크를 연다
+- 외부 이동 전 고지 문구와 링크 목적을 명확히 표시한다
+
+---
+
+## 6-5. 빌드 및 배포
+
+### Android
+
+1. `npm run build`
+2. `npx cap sync android`
+3. `npx cap open android`
+4. Android Studio에서 signed `.aab` 생성
+5. Play Console 업로드
+
+### iOS
+
+1. Mac 환경 준비
+2. `npm run build`
+3. `npx cap sync ios`
+4. `npx cap open ios`
+5. Xcode archive 후 App Store Connect 업로드
+
+> iOS는 Mac 필수. Mac이 없으면 GitHub Actions + Fastlane 클라우드 빌드를 별도 검토한다.
+
+---
+
+## 6-6. 배포 인프라 연계
+
+- 개발·실기기 테스트 단계: `Render 무료` 백엔드 사용 가능
+- Play Store 제출 전: `Railway Hobby`로 이전해 슬립 제거
+- 앱 심사/초기 운영 동안은 Railway + Supabase 무료 조합 유지
+
+---
+
+## 6-7. 스토어 준비물
+
+### Android
+
+- [ ] Google Play Console 계정
 - [ ] 개인정보처리방침 URL
-- [ ] 스크린샷 최소 2장, 기능 그래픽 (1024×500)
-- [ ] 데이터 보안 섹션 작성
-- [ ] 심사 기간: 1~3일
+- [ ] 앱 설명 / 키워드 / 카테고리
+- [ ] 스크린샷
+- [ ] 데이터 보안 설문
+
+### iOS
+
+- [ ] Apple Developer 계정
+- [ ] Apple Sign In
+- [ ] App Store Connect 메타데이터
+- [ ] 6.5인치 / 5.5인치 스크린샷
 
 ---
 
-## 6-8. iOS 출시
+## 6-8. 운영 모니터링
 
-- [ ] Apple Developer 계정 ($99/년, Mac 필요)
-- [ ] Apple Sign In 구현 (소셜 로그인 있을 경우 필수)
-- [ ] `eas build --platform ios`
-- [ ] App Store Connect 업로드
-- [ ] 스크린샷 (6.5인치, 5.5인치 각 3장 이상)
-- [ ] 심사 기간: 1~7일
+- Sentry로 런타임 오류 수집
+- Play Console Android Vitals 모니터링
+- 심사 후 1주 동안 크래시 / 광고 / 외부 링크 콜백 집중 확인
 
 ---
 
-## 6-9. 앱스토어 최적화 (ASO)
+## 6-9. 테스트 전략
 
-### 키워드
-```
-주요: 얼굴형 분석, 메이크업 추천, 헤어 추천, AI 뷰티
-서브: 퍼스널컬러, 얼굴형 테스트, 뷰티 코치, 얼굴 분석
-```
-
-### 스크린샷 순서
-```
-1. "내 얼굴형을 AI가 분석해드려요" + 메인 화면
-2. "얼굴형별 헤어 추천" + 카드 화면
-3. "퍼스널컬러에 맞는 메이크업" + 메이크업 카드
-4. "AI가 내 얼굴에 적용해봤어요" + 생성 사진
-5. "내 스타일 기록 저장" + 히스토리
-```
-
----
-
-## 6-10. 출시 후 운영
-
-- Firebase Crashlytics + Sentry 이중 모니터링
-- 1~2성 리뷰 72시간 내 응답
-- 핫픽스: 즉시 / 마이너: 2주~1개월 / 메이저: 2~3개월
+- [ ] Capacitor 브리지별 device smoke checklist 유지
+- [ ] 카메라 / OAuth / 공유 / 광고 / 외부 링크 실기기 테스트
+- [ ] Play Console Pre-launch Report 확인
+- [ ] release candidate마다 smoke test 재실행
+- [ ] iOS smoke checklist는 문서만 먼저 유지하고 Android 출시 후 강화
 
 ---
 
 ## Phase 6 완료 기준 체크리스트
 
-- [ ] Expo 프로젝트 초기 세팅
-- [ ] 백엔드 MediaPipe (Python) 연동 확인
-- [ ] 전체 화면 RN으로 재작성 완료
+- [ ] Capacitor 초기 세팅 완료
+- [ ] Android / iOS 플랫폼 생성 완료
+- [ ] 카메라 업로드 동작 확인
+- [ ] 결과 카드 공유 동작 확인
 - [ ] 카카오 / 구글 로그인 동작 확인
-- [ ] 인앱결제 (RevenueCat) Android 테스트
 - [ ] AdMob 광고 동작 확인
-- [ ] 쿠팡 파트너스 링크 동작 확인
-- [ ] Apple Sign In 구현 (iOS 출시 전)
-- [ ] EAS Build Android 빌드 성공
-- [ ] Google Play 심사 통과
-- [ ] EAS Build iOS 빌드 성공 (Mac 필요)
-- [ ] App Store 심사 통과
-- [ ] Crashlytics 연동 확인
-- [ ] 출시 후 1주 모니터링
+- [ ] 쿠팡 외부 링크 동작 확인
+- [ ] Render 백엔드로 실기기 QA 완료
+- [ ] Railway Hobby 이전 완료
+- [ ] Android Studio signed `.aab` 생성 성공
+- [ ] Play Store 심사 통과
+- [ ] iOS 출시용 Apple Sign In 준비 완료
+- [ ] Android device smoke test 통과

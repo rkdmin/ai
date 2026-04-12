@@ -1,47 +1,57 @@
 # Phase 1 — 얼굴 인식 정확도 + RAG 품질 개선
 
-> 가장 먼저 해야 할 것. 추천의 신뢰도가 앱의 핵심 가치.
+> 가장 먼저 해야 할 것. 추천의 신뢰도가 앱의 핵심 가치다.
 > 목표: 얼굴형 분석 정확도 90%+
+
+> 참고: 이 단계에서도 MediaPipe 검증용 **최소 백엔드**는 필요하다.
+> 정식 API, 보안, 배포, Rate Limit 체계는 Phase 2에서 완성한다.
 
 ---
 
 ## 현재 문제점
 
-**Gemini Vision이 "사진 보고 추정"** → 조명/각도/헤어에 흔들리는 구조적 한계.
-프롬프트 개선만으로는 해결 불가.
+**Gemini Vision이 사진만 보고 추정**하면 조명/각도/헤어에 흔들린다.
+프롬프트 개선만으로는 한계가 있다.
 
 ---
 
 ## 확정된 해결 방식: MediaPipe + Gemini 하이브리드
 
-> 레어리(Rarelee)와 동일한 구조 — MediaPipe는 수치 측정, Gemini는 수치 + 이미지 종합 해석
+> MediaPipe는 수치 측정, Gemini는 수치 + 이미지 종합 해석
 
 ```
 사진 업로드
     ↓
 [1단계] MediaPipe Face Mesh (백엔드 Python)
     → 468개 랜드마크 좌표 추출
-    → 핵심 비율값 계산 (참고 지표)
+    → 핵심 비율값 계산
     ↓
 [2단계] Gemini 2.5 Flash
-    → 정면 수치 + 정면 이미지 + (측면 이미지) 함께 전달
-    → 수치는 참고 지표, Gemini가 종합 판단으로 얼굴형 확정
-    → 이목구비 특징 분석 (features)
+    → 정면 수치 + 정면 이미지 + 측면 이미지 전달
+    → 얼굴형 확정
+    → 이목구비 특징 분석
     → RAG 카드 생성
 ```
 
 ### MediaPipe 실행 위치
-- React Native에서 WebAssembly 직접 실행 불가
-- → **백엔드(Python)에서 실행** 후 수치만 앱으로 반환
-- Python `mediapipe` 패키지 사용 (무료, 오픈소스)
-- 앱 번들 크기 증가 없음, 서버에서 안정적으로 실행
+
+- 웹과 Capacitor 앱 모두 **백엔드(Python)** 에서 실행
+- 모바일 패키징 방식과 무관하게 분석 파이프라인은 동일
+- 앱 번들 크기를 늘리지 않고 안정적으로 운영 가능
+- 여기서의 백엔드는 **정확도 검증용 최소 실행 환경**으로 보면 된다
 
 ---
 
 ## 1-1. MediaPipe 세팅
 
 **실행 위치:** 백엔드 (Python)
-**패키지:** `mediapipe` (pip)
+**패키지:** `mediapipe`
+
+### 이 단계의 범위
+
+- Phase 1은 MediaPipe 계산과 Gemini 판정 품질 검증이 목적이다
+- 따라서 로컬 또는 임시 서버 수준의 최소 API만 있어도 된다
+- 인증, 사용량 제한, 운영 배포, 광고/제휴 연동은 아직 범위 밖이다
 
 ### 추출할 핵심 랜드마크
 
@@ -61,164 +71,79 @@
 
 ```python
 ratios = {
-    "foreheadRatio": forehead_width / cheek_width,   # 이마/광대
-    "jawRatio":      jaw_width / cheek_width,         # 턱/광대
-    "aspectRatio":   face_height / cheek_width,       # 얼굴 길이/폭
-    "jawAngle":      calc_jaw_angle(landmarks),        # 턱 각도 (°)
-    "upperFaceRatio": upper / face_height,            # 상안부 비율
-    "midFaceRatio":   mid / face_height,              # 중안부 비율
-    "lowerFaceRatio": lower / face_height,            # 하안부 비율
+    "foreheadRatio": forehead_width / cheek_width,
+    "jawRatio": jaw_width / cheek_width,
+    "aspectRatio": face_height / cheek_width,
+    "jawAngle": calc_jaw_angle(landmarks),
+    "upperFaceRatio": upper / face_height,
+    "midFaceRatio": mid / face_height,
+    "lowerFaceRatio": lower / face_height,
 }
 ```
 
 ### 파일 위치
+
 ```
-backend/services/mediapipe_service.py  ← 랜드마크 추출 + 수치 계산
-backend/services/gemini_service.py     ← 수치를 프롬프트에 포함하여 Gemini 호출
+backend/services/mediapipe_service.py
+backend/services/gemini_service.py
 ```
 
 ---
 
 ## 1-2. Gemini 프롬프트 설계
 
-### 수치 전달 방식 — Gemini에 위임
+### 수치 전달 방식
 
-수치에 절대적 임계값을 정하지 않음. MediaPipe 수치는 **참고 지표**로만 제공하고,
-Gemini가 수치 + 이미지 + RAG 얼굴형 정의를 종합해서 최종 얼굴형을 확정.
-
-```
-[정면 얼굴 측정값 — 참고 지표]
-- 이마폭/광대폭 = 0.91
-- 턱폭/광대폭   = 0.73
-- 얼굴길이/광대폭 = 1.48
-- 턱 각도 = 134°
-- 중안부 비율 = 0.38
-
-아래 얼굴형 정의를 참고하여, 수치와 이미지를 종합해 가장 가까운 얼굴형 하나를 확정하세요.
-수치가 경계에 걸쳐 있을 경우, 이미지에서 더 강하게 드러나는 특징을 우선하세요.
-```
-
-### 얼굴형 정의 (Gemini 프롬프트에 포함)
-
-> RAG 데이터(face-hair.json, face-makeup.json) 얼굴형 정의 기준
-
-```
-계란형:  이마가 약간 넓고 턱으로 갈수록 자연스럽게 좁아지는 균형 잡힌 형태
-         (foreheadRatio ~0.90, jawRatio ~0.75, aspectRatio 1.3~1.5)
-
-둥근형:  얼굴 폭과 길이가 비슷하고 전체 윤곽이 부드러우며 볼살이 있는 형태
-         (aspectRatio ~1.0, 턱선 부드러움)
-
-사각형:  이마와 턱의 폭이 비슷하며 하관 골격이 뚜렷하게 각진 형태. 육각형 포함
-         (jawAngle < 125°, jawRatio ~0.90)
-
-하트형:  이마·광대가 넓고 턱 끝이 뾰족하게 좁아지는 형태. 얼굴 길이 짧은 경우 포함
-         (foreheadRatio > 1.0, jawRatio < 0.70)
-
-긴형:    얼굴 세로 길이가 가로 폭보다 확연히 긴 형태. 중안부가 긴 경우 포함
-         (aspectRatio > 1.5)
-
-다이아몬드형: 옆광대가 가장 넓고 이마와 턱이 모두 좁은 형태. 턱 근육 없이 뾰족함
-              (foreheadRatio < 0.75, jawRatio < 0.75)
-
-땅콩형:  옆광대와 하관(사각턱)이 모두 발달하고 볼이 패여 얼굴 라인이 울퉁불퉁한 형태
-         (foreheadRatio ~0.90, jawRatio > 0.85, 광대도 발달)
-         → 볼 패임 여부는 이미지에서 시각적으로 확인 필수
-```
-
-### 응답 스키마
-```json
-{
-  "faceType": "계란형",
-  "features": ["눈 간격 넓음", "광대 넓음"]
-}
-```
-- 사용자 수정 UI 없음 — AI가 정확하게 분석하는 것이 목표
+수치에 절대 임계값을 박아넣지 않고, **참고 지표**로 전달한다.
+최종 얼굴형 판정은 Gemini가 수치 + 이미지 + 얼굴형 정의를 종합해 결정한다.
 
 ---
 
 ## 1-3. 측면 사진 활용
 
-### 정면 vs 측면 역할 분리
-
 | 구분 | MediaPipe | Gemini |
 |------|-----------|--------|
-| 정면 | ✅ 수치 추출 (7개 비율값) | ✅ 수치 + 이미지 종합 → 얼굴형 확정 |
-| 90도 측면 | ❌ 랜드마크 절반 가려짐, 사용 안 함 | ✅ 이미지만 전달 → 시각 판단 |
-| 45도 반측면 | ❌ 사용 안 함 | ✅ 이미지만 전달 → 시각 판단 |
-
-### 측면에서 Gemini가 판단하는 것
-
-```
-[90도 측면 이미지]
-- 두상 앞뒤 깊이 (콘헤드 여부)
-- 턱선 각도와 길이
-- 코 높이·기울기
-- 이마 기울기
-
-[45도 반측면 이미지]
-- 광대 돌출도 (다이아몬드형/땅콩형 구별 핵심)
-- 볼 패임 여부 (땅콩형 확정 핵심)
-- 눈 간격·눈 크기 보조 확인
-```
-
-### 얼굴형별 측면 활용
-
-| 얼굴형 | 측면이 필요한 이유 |
-|--------|------------------|
-| 땅콩형 | 볼 패임이 정의의 핵심 — 45도 없이 확정 어려움 |
-| 다이아몬드형 vs 땅콩형 | 광대 돌출 + 턱 발달 여부 구별 — 45도로 판단 |
-| 사각형 | 턱선 각도 보완 — 90도로 확인 |
-
-### 프롬프트 전달 구조
-
-```python
-# 정면만 있는 경우
-prompt = f"[정면 얼굴 측정값]\n{ratios_text}\n\n{face_type_definitions}"
-images = [front_image]
-
-# 측면 있는 경우
-prompt = f"[정면 얼굴 측정값]\n{ratios_text}\n\n[추가 이미지 구성]\n- 이미지1: 정면\n- 이미지2: {angle}\n\n{face_type_definitions}"
-images = [front_image, side_image]
-```
+| 정면 | 수치 추출 | 수치 + 이미지 종합 |
+| 90도 측면 | 사용 안 함 | 턱선/두상 보조 판단 |
+| 45도 반측면 | 사용 안 함 | 광대/볼 패임 보조 판단 |
 
 ---
 
 ## 1-4. RAG 데이터 검증 및 보강
 
-**파일:** `src/data/` 내 JSON 파일들
-
-- [ ] 각 얼굴형별 추천/비추천 카드 내용 전문가 검토
-  - 뷰티 전문가 자문 또는 레퍼런스 20개 이상 수집
-- [ ] feature-tips.json 케이스 확장
-  ```
-  추가 필요: 미간 넓음, 코 넓음, 입술 얇음, 눈 작음, 눈 큼, 쌍꺼풀 있음/없음
-  ```
+- [ ] 얼굴형별 추천/비추천 카드 검토
+- [ ] `feature-tips.json` 케이스 확장
 - [ ] 모순 케이스 테스트
-  ```
-  예: 둥근형 + 광대 넓음 → blush 충돌 검증
-  ```
-- [ ] 퍼스널컬러 미정 시 카드 품질 검증
+- [ ] 퍼스널컬러 미정 상태 카드 품질 검증
 
 ---
 
 ## 1-5. 분석 품질 피드백 수집
 
-- [ ] 카드 상세 하단 "이 추천이 도움이 됐나요?" 👍 / 👎
-- [ ] 👎 선택 시 이유 선택 (얼굴형 오분석 / 추천 불만족 / 기타)
-- [ ] localStorage 임시 저장 → 백엔드 구축 후 서버로 이관
+- [ ] 카드 상세 하단 도움 여부 피드백
+- [ ] 부정 피드백 사유 수집
+- [ ] 초기엔 localStorage, 이후 서버 저장
+
+---
+
+## 1-6. 테스트 전략
+
+- [ ] 얼굴형 골든셋 10~15장으로 시작
+- [ ] 샘플별 기대 얼굴형 / feature / 메모 기준 정리
+- [ ] 프롬프트 또는 RAG 변경 시 eval 재실행
+- [ ] exact match보다 납득률/금지 출력/충돌 여부를 회귀 기준으로 사용
 
 ---
 
 ## Phase 1 완료 기준 체크리스트
 
-- [ ] MediaPipe 랜드마크 추출 구현 (`mediapipe_service.py`)
-- [ ] 수치 계산 로직 구현 (7가지 비율값)
-- [ ] Gemini 프롬프트에 수치 참고 지표로 포함
-- [ ] 얼굴형 정의 프롬프트에 명시 (RAG 기준)
-- [ ] 측면 이미지 Gemini 전달 구조 구현
-- [ ] Android 실기기에서 MediaPipe 백엔드 연동 확인
-- [ ] RAG 데이터 전문가 검토 완료
-- [ ] feature-tips 케이스 확장
+- [ ] MediaPipe 랜드마크 추출 구현
+- [ ] 수치 계산 로직 구현
+- [ ] Gemini 프롬프트에 수치 포함
+- [ ] 측면 이미지 전달 구조 구현
+- [ ] Android 실기기에서 백엔드 분석 연동 확인
+- [ ] RAG 데이터 검토 완료
+- [ ] feature-tips 확장
 - [ ] 피드백 수집 UI 추가
-- [ ] 다양한 얼굴형 사진 10장으로 정확도 테스트 (목표: 9/10)
+- [ ] 10장 테스트에서 9장 이상 납득
+- [ ] AI eval 골든셋 회귀 통과

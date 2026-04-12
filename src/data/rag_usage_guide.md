@@ -38,6 +38,8 @@ feature-tips.json       → 부위별 보정 팁 (보정 레이어)
 사용자 입력: 얼굴형
 → face-makeup.json에서 해당 faceType 조회
 → baseSkin + recommendCards[] 3개 + avoidCard 반환
+→ 카드별 메이크업 파트 기준 추천 제품 키워드 후보 추출
+→ 쿠팡파트너스 링크는 별도 매핑 레이어에서 주입
 → AI가 각 카드의 파트별 reason + coachComment 표현만 변형하여 전달
 ```
 
@@ -57,6 +59,8 @@ feature-tips.json       → 부위별 보정 팁 (보정 레이어)
 → 두 데이터를 파트별로 병합
   - 위치/방법 → face-makeup 기준
   - 컬러(colorVibe) → personalcolor-makeup으로 오버라이드
+→ 병합 결과에서 제품 추천 키워드 후보 추출
+→ 쿠팡파트너스 링크는 별도 매핑 레이어에서 주입
 → AI가 병합된 정보를 카드 형태로 자연스럽게 전달
 ```
 
@@ -107,6 +111,11 @@ feature-tips.json       → 부위별 보정 팁 (보정 레이어)
 featureTip > personalcolor-makeup > face-makeup > face-hair
 ```
 
+**제품 키워드 반영 우선순위:**
+```
+featureTip > personalcolor-makeup > face-makeup
+```
+
 **예시:**
 ```
 얼굴형: 둥근형 → face-makeup: "블러셔 앞볼 원형"
@@ -128,6 +137,9 @@ feature: 광대 넓음 → featureTip: "블러셔 앞볼에 더 좁게"
 4. 카드 구조(priority 순서) 변경 금지
 5. avoid/avoidCard는 반드시 함께 전달
 6. ai 는 모순이 생기면(충돌 발생) 모순을 해결해야함
+7. AI는 쿠팡파트너스 링크를 직접 생성하거나 수정하지 않음
+8. 제품 추천은 메이크업 파트 + 퍼스널컬러 기반 키워드까지만 다루고, 실제 상품 매핑은 후처리 레이어에서 수행
+9. 카드 잠금, 광고 노출, 사진 생성 사용량 제한은 RAG가 아니라 UI/백엔드 정책에서 관리
 ```
 
 ---
@@ -140,3 +152,5 @@ feature: 광대 넓음 → featureTip: "블러셔 앞볼에 더 좁게"
 | `face-hair.json` | 헤어 스타일 추천 베이스 | featureTip에 의해 bangs 등 일부 오버라이드 됨 |
 | `personalcolor-makeup.json` | 컬러 팔레트 레이어 | featureTip에 의해 일부 오버라이드 됨 |
 | `feature-tips.json` | 개인 부위 보정 레이어 | 최우선순위, 오버라이드 당하지 않음 |
+
+- 메이크업 카드의 `recommendedProducts`는 위 3개 레이어에서 추출한 키워드를 바탕으로 구성하며, 쿠팡파트너스 URL은 RAG 범위 밖의 운영 데이터다.

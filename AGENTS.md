@@ -1,4 +1,4 @@
-# CLAUDE.md
+# AGENTS.md
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
@@ -8,11 +8,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 > **기능이 변경될 때마다 아래 모든 MD 파일을 반드시 함께 수정하세요.**
 
-| 파일 | 업데이트 시점 |
-|------|-------------|
-| `CLAUDE.md` (이 파일) | 구조·흐름·스키마·파일명 변경 시 |
-| `docs/ui-flow.md` | step 추가/삭제, 컴포넌트 동작·조건·state 변경 시 |
-| `docs/test.md` | 테스트 구조·품질 게이트 변경 시 |
+| 파일                            | 업데이트 시점 |
+|-------------------------------|-------------|
+| `AGENTS.md` (이 파일)            | 구조·흐름·스키마·파일명 변경 시 |
+| `docs/ui-flow.md`             | step 추가/삭제, 컴포넌트 동작·조건·state 변경 시 |
+| `docs/test.md`                | 테스트 구조·품질 게이트 변경 시 |
 | `src/data/rag_usage_guide.md` | RAG 데이터 구조·병합 규칙·우선순위 변경 시 |
 
 변경 후 MD와 코드가 불일치하면 다음 세션에서 잘못된 컨텍스트로 작업하게 됩니다.
@@ -21,7 +21,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## 💄 AI 뷰티 코치
 
-사진 최대 3장(정면 1 + 측면 2)으로 얼굴형을 분석하고, 헤어/메이크업 코디 카드 4장(추천 3장 + 비추천 1장)과 전문가 피드백을 제공하는 AI 뷰티 코치 앱입니다.
+사진 최대 3장(정면 1 + 측면 2)으로 얼굴형을 분석하고, 헤어/메이크업 코디 카드 4장(추천 3장 + 비추천 1장), 전문가 피드백, 메이크업 카드용 추천 제품 + 쿠팡파트너스 링크를 제공하는 AI 뷰티 코치 앱입니다.
 
 ---
 
@@ -33,7 +33,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 | 앱 | React + Capacitor |
 | 얼굴 측정 | MediaPipe (Python, 백엔드) |
 | AI 분석 + 카드 생성 | Gemini 2.5 Flash |
-| 이미지 생성 | Gemini 2.5 Flash (이미지 생성 모드, 유료 전용) |
+| 이미지 생성 | Gemini 2.5 Flash (헤어/종합 카드 스타일 적용 이미지) |
 | RAG 지식베이스 | JSON 파일 기반 |
 | 백엔드 | Python + FastAPI |
 | DB / 인증 | Supabase |
@@ -70,7 +70,7 @@ src/
 │   ├── PhotoUpload.jsx    # 사진 업로드 (정면 필수 + 측면 90도·45도 선택)
 │   ├── AnalysisResult.jsx # 분석 결과 + 퍼스널컬러 확정 UI
 │   ├── CardList.jsx       # 코디 카드 4장 목록 (추천 3 + 비추천 1)
-│   └── CardDetail.jsx     # 카드 상세 (피드백 + 적용 사진)
+│   └── CardDetail.jsx     # 카드 상세 (피드백 + 적용 사진 / 메이크업 추천 제품)
 ├── data/
 │   ├── face-hair.json           # 얼굴형별 헤어 추천
 │   ├── face-makeup.json         # 얼굴형별 메이크업 베이스 (위치/방법)
@@ -121,6 +121,23 @@ additionalImages: { data: string /* base64 */, angle: string }[]
 ```
 - `styleLabel`: 카드 목록 최상단 감성 레이블 (공유 이미지용), Gemini 생성
 
+### 메이크업 카드 전용 필드 (추가)
+```json
+{
+  "recommendedProducts": [
+    {
+      "slot": "lip | blush | eyeshadow | base",
+      "label": "봄웜 코랄 립틴트",
+      "searchKeyword": "봄웜 코랄 립틴트",
+      "coupangPartnersUrl": "https://link.coupang.com/..."
+    }
+  ]
+}
+```
+- `recommendedProducts`: 메이크업 카드 상세 하단 상품 블록용. 초기 범위는 추천 카드 기준 2~4개
+- `searchKeyword`: 퍼스널컬러 + 메이크업 파트 기반 추천 키워드. AI가 자유 생성하지 않고 RAG/후처리 규칙에 맞춰 구성
+- `coupangPartnersUrl`: 쿠팡파트너스 링크. AI가 직접 생성하지 않고 별도 상품 매핑 또는 운영 데이터에서 주입
+
 ### 연예인 매칭 데이터 위치 (별도 필드 불필요)
 - `face-hair.json[].exampleCelebrity` → 얼굴형별 연예인 목록 (이미 존재)
   - 예: oval → ["카리나", "윈터", "고윤정", "수지"]
@@ -140,6 +157,8 @@ additionalImages: { data: string /* base64 */, angle: string }[]
 | `personal-color-makeup.json` | 컬러 팔레트 레이어 | `makeupByPersonalColor[].personalColor` (spring_warm/summer_cool/autumn_warm/winter_cool) |
 | `feature-tips.json` | 이목구비 보정 팁 (최우선) | `featureTips[].label` (한국어 매칭) |
 
+- 메이크업 추천 제품은 `face-makeup.json`의 파트 정보 + `personal-color-makeup.json`의 컬러 키워드를 조합해 검색 키워드를 만들고, 실제 쿠팡파트너스 URL은 별도 링크 매핑 레이어에서 붙입니다.
+
 ### 한국어 → 영문 키 매핑 (`ragUtils.js` 내 상수)
 - 얼굴형: `계란형→oval`, `둥근형→round`, `사각형→square`, `하트형→heart`, `긴형→long`, `다이아몬드형→diamond`, `땅콩형→peanut`
 - 퍼스널컬러: `봄웜→spring_warm`, `여름쿨→summer_cool`, `가을웜→autumn_warm`, `겨울쿨→winter_cool`
@@ -155,4 +174,6 @@ additionalImages: { data: string /* base64 */, angle: string }[]
    - 측면 사진은 Gemini에게 보조 분석용으로 전달
 3. `AnalysisResult` → 퍼스널컬러 확정 (알면 직접 선택 / 모르면 질문 3개)
 4. `generateHairCards` / `generateMakeupCards` / `generateTotalCards` → RAG 컨텍스트 + 분석 결과 → Gemini → 카드 4장 생성
-5. 카드 선택 시 → `generateStyledPhoto(imageBase64, card)` → Gemini (이미지 생성 모드, 유료) → 스타일 적용 이미지 반환
+5. 카드 선택 시 → `CardDetail` 진입
+   - 메이크업 카드: `recommendedProducts` + 쿠팡파트너스 링크 + 고지 문구 노출
+   - 헤어/종합 추천 카드: `generateStyledPhoto(imageBase64, card)` → Gemini (이미지 생성 모드) → 스타일 적용 이미지 반환

@@ -115,6 +115,9 @@ font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
 
 ### 온보딩 화면 구성 (스와이프 슬라이드 3장)
 
+- 온보딩은 첫 방문 사용자에게 핵심 가치만 빠르게 설명하는 보조 플로우다.
+- 메인 분석 흐름과 분리되며, 완료 후에는 바로 `upload` 단계로 진입한다.
+
 ```
 슬라이드 1:
 ┌──────────────────────────────┐
@@ -139,11 +142,11 @@ font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
 슬라이드 3:
 ┌──────────────────────────────┐
 │   ✨                         │
-│   추천 스타일을               │
-│   내 얼굴에 바로 적용해봐요   │
+│   추천 메이크업에 맞는         │
+│   제품까지 바로 확인해요       │
 │                              │
-│   AI 합성 사진으로            │
-│   미리 확인하세요             │
+│   메이크업 카드는              │
+│   추천 제품과 구매 링크 제공   │
 └──────────────────────────────┘
 
 하단: [건너뛰기]  ○○● [시작하기]
@@ -152,6 +155,7 @@ font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
 ### 구현 방법
 - `localStorage`에 온보딩 완료 여부 저장
 - 이후 방문 시 스킵
+- 슬라이드 3은 메이크업 카드의 `추천 제품 + 쿠팡파트너스 링크` 정책과 일치해야 함
 
 ---
 
@@ -224,6 +228,13 @@ font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
   립: [●] 코랄 레드  ← 실제 색상 원
   블러셔: [●] 피치
   ```
+- [ ] 메이크업 카드 하단 추천 제품 블록 UI 정리
+  ```
+  [추천 제품 1] [쿠팡에서 보기]
+  [추천 제품 2] [쿠팡에서 보기]
+  ```
+- [ ] 쿠팡파트너스 고지 문구를 CTA 근처에 자연스럽게 배치
+- [ ] 메이크업 카드에서는 AI 사진 생성 CTA를 노출하지 않음
 
 ---
 
@@ -247,6 +258,16 @@ font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
 
 ---
 
+## 4-10. 테스트 전략
+
+- [ ] 핵심 화면 상태 전이 unit test 추가
+- [ ] 업로드 → 분석 → 결과 → 카드 E2E 시나리오 추가
+- [ ] 접근성 회귀 체크 추가
+- [ ] 모바일 viewport 회귀 체크 추가
+- [ ] visual/golden 회귀는 MVP 이후 필요 시 추가
+
+---
+
 ## Phase 4 완료 기준 체크리스트
 
 - [ ] 하단 탭바 구현 (홈 / 트렌드 / 히스토리)
@@ -260,3 +281,4 @@ font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
 - [ ] 카드 공유 기능 (이미지 저장)
 - [ ] Lighthouse 성능 점수 80+
 - [ ] iOS/Android 실기기 테스트 완료
+- [ ] 핵심 UX E2E 테스트 그린
