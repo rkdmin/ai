@@ -136,7 +136,7 @@
           "style": "시스루뱅",
           "reason": "이마가 넓은 경우 답답하지 않게 시스루뱅으로 이마 면적을 조절해 줌",
           "promptKeyword": "long wavy hair, see-through bangs, airy fringe, soft look",
-          "priority": 2,
+          "priority": 3,
           "bangs": "시스루뱅"
         }
       ],
@@ -164,14 +164,14 @@
           "style": "단발 (턱선 기장)",
           "reason": "턱선 기장으로 시선을 끊어주고, 앞머리를 내려 얼굴의 세로 길이를 물리적으로 줄여줌",
           "promptKeyword": "chin length bob, full bangs, straight bob, chic look",
-          "priority": 1,
+          "priority": 2,
           "bangs": "있음 (풀뱅 또는 시스루뱅)"
         },
         {
           "style": "긴 머리 웨이브 + 뱅",
           "reason": "긴 머리를 유지하고 싶다면 반드시 앞머리를 내리고 옆 볼륨을 풍성하게 넣어 시선을 가로로 확장시켜야 함",
           "promptKeyword": "long wavy hair, full bangs, voluminous curls, rich texture",
-          "priority": 2,
+          "priority": 3,
           "bangs": "있음 (풀뱅)"
         }
       ],
