@@ -25,12 +25,21 @@
 
 ### 제공자별 구현 전략
 
-| 제공자 | 우선도 | 구현 방식 |
-|--------|--------|----------|
-| 카카오 | MUST | Supabase OAuth + Capacitor InAppBrowser |
-| 구글 | MUST | `@codetrix-studio/capacitor-google-auth` |
-| 애플 | iOS 출시 시 MUST | `@capacitor-community/apple-sign-in` |
-| 네이버 | NICE | 출시 후 추가 검토 |
+| 제공자 | 우선도 | 도입 시점 | 구현 방식 |
+|--------|--------|---------|----------|
+| 카카오 | MUST | v1.0 (Phase 3) | Supabase OAuth + Capacitor InAppBrowser |
+| 구글 | MUST | v1.0 (Phase 3) | `@codetrix-studio/capacitor-google-auth` |
+| 애플 | iOS 출시 시 MUST | Phase 7 | `@capacitor-community/apple-sign-in` |
+| 네이버 | NICE | 출시 후 추가 검토 | — |
+
+### 카카오 OAuth PoC (Phase 3 시작 전 1일)
+
+카카오는 카카오톡 앱 deep link / 미설치 시 모바일 웹 폴백 / redirect URI 화이트리스트 등 함정이 많다.
+Phase 3 본격 작업 전에 Android 실기기에서 다음 케이스를 PoC로 검증한다.
+
+- 카카오톡 앱 설치 + 로그인 성공 콜백
+- 카카오톡 앱 미설치 + 모바일 웹 폴백 콜백
+- 백그라운드 → 포그라운드 복귀 시 세션 유지
 
 ### 게스트 모드
 
@@ -48,21 +57,26 @@
 ```sql
 id                    uuid PRIMARY KEY DEFAULT gen_random_uuid()
 user_id               uuid REFERENCES auth.users(id) ON DELETE CASCADE
-face_type             text NOT NULL
-face_type_confidence  int
+face_type             text NOT NULL                    -- 7가지 얼굴형 또는 '판정 어려움'
+face_ratios           jsonb                            -- MediaPipe 비율값 (디버깅/회귀용)
 personal_color        text
 features              text[]
 front_image_url       text
+side_image_urls       jsonb       -- [{"angle": "90도 측면 (프로필)", "url": "..."}, ...]
 created_at            timestamptz DEFAULT now()
+photo_expires_at      timestamptz -- 사진 만료 시각 (분석 메타는 보존, photo URL만 NULL 처리)
 ```
+
+> `face_type_confidence`는 보류. Gemini가 confidence를 안정적으로 반환하지 않으면 컬럼을 두지 않는다.
+> 필요 시 Phase 1에서 Gemini 응답 스키마에 추가하고 본 컬럼을 다시 도입한다.
 
 ### `cards`
 
 ```sql
 id           uuid PRIMARY KEY DEFAULT gen_random_uuid()
 analysis_id  uuid REFERENCES analyses(id) ON DELETE CASCADE
-card_type    text NOT NULL
-card_data    jsonb NOT NULL
+card_type    text NOT NULL          -- 'hair' | 'makeup' | 'total'
+card_data    jsonb NOT NULL         -- styleLabel, recommendedProducts(makeup만), Hero/HairStyle/Makeup/FeatureTip/CoachNote 등
 created_at   timestamptz DEFAULT now()
 ```
 
@@ -77,7 +91,7 @@ detail      text
 created_at  timestamptz DEFAULT now()
 ```
 
-### `usage_counters`
+### `usage_counters` — 일일 누적 카운트
 
 ```sql
 user_id        uuid REFERENCES auth.users(id) ON DELETE CASCADE
@@ -88,6 +102,22 @@ photo_count    int DEFAULT 0
 PRIMARY KEY (user_id, date)
 ```
 
+### `generated_photos` — 분석당 카드 종류별 1회 가드
+
+```sql
+id           uuid PRIMARY KEY DEFAULT gen_random_uuid()
+analysis_id  uuid REFERENCES analyses(id) ON DELETE CASCADE
+card_type    text NOT NULL          -- 'hair' | 'total'
+storage_url  text NOT NULL
+created_at   timestamptz DEFAULT now()
+expires_at   timestamptz            -- created_at + 30일
+UNIQUE (analysis_id, card_type)
+```
+
+> `UNIQUE (analysis_id, card_type)` 제약으로 "분석당 카드 종류별 1회" 정책을 DB 레벨에서 강제.
+> 같은 (analysis, card_type) 재요청은 백엔드가 기존 레코드의 `storage_url`을 그대로 반환 (캐시 동작).
+> 메이크업 카드는 사진 생성하지 않으므로 `card_type`은 `hair` / `total`만.
+
 ---
 
 ## 3-3. 프론트 인증 UI
@@ -95,6 +125,7 @@ PRIMARY KEY (user_id, date)
 ### 로그인 화면
 
 ```
+v1.0 (Android):
 ┌──────────────────────────────┐
 │      💄 AI 뷰티 코치         │
 │                              │
@@ -103,11 +134,13 @@ PRIMARY KEY (user_id, date)
 │                              │
 │  [카카오로 시작하기 🟡]      │
 │  [구글로 시작하기  ⬜]       │
-│  [애플로 시작하기  ⬛]       │
 │                              │
 │  ─────── 또는 ───────        │
 │  [로그인 없이 1회 체험하기]  │
 └──────────────────────────────┘
+
+Phase 7 (iOS 출시) 추가:
+│  [애플로 시작하기  ⬛]       │
 ```
 
 ### 파일 구성
@@ -162,7 +195,7 @@ async def require_user(authorization: str | None = Header(default=None)):
 ```
 
 - 게스트 허용 엔드포인트는 별도 dependency로 분리
-- 사진 생성 가능 여부는 `usage_counters`와 로그인 상태로 확인
+- 사진 생성 가능 여부는 `usage_counters`(일일 누적) + `generated_photos`(분석당 카드 종류별 UNIQUE) + 로그인 상태로 확인
 
 ---
 
@@ -170,21 +203,57 @@ async def require_user(authorization: str | None = Header(default=None)):
 
 ```
 1. 프론트: 분석 완료
-2. /api/analyze 응답에 analysisId 포함 (로그인 시)
+2. /api/analyze 호출 시 백엔드가:
+   - 정면 사진을 Storage에 업로드 → analyses.front_image_url
+   - 측면 사진을 Storage에 업로드 → analyses.side_image_urls (jsonb 배열)
+   - analyses INSERT (expires_at = now + 90일 포함)
+   - 응답에 analysisId 포함 (로그인 시)
 3. 카드 생성 후 /api/history 저장
-4. 백엔드: analyses + cards INSERT
-5. 사진은 Supabase Storage에 업로드, URL만 DB 저장
+4. 백엔드: cards INSERT (analysis_id 참조)
+5. 사진 생성(/api/photo/generate) 시 generated_photos INSERT (UNIQUE 제약)
 ```
+
+---
+
+## 3-6a. 사진 보관 / 만료 정책
+
+### 보관 기간
+
+| 대상 | 정책 |
+|------|------|
+| 게스트 | Supabase Storage에 업로드하지 않는다. 분석 응답 즉시 폐기 |
+| 로그인 유저 (정면/측면 원본) | **90일 보관**. 만료 후 Storage에서 삭제 |
+| 로그인 유저 (Gemini 생성 스타일 사진) | **30일 보관** (재생성 비용 낮음, 저장 부담 큼) |
+
+### 운영 흐름
+
+- INSERT 시 `analyses.photo_expires_at = created_at + 90일` 기록 (정면·측면 원본 기준)
+- 생성 사진은 `generated_photos.expires_at = created_at + 30일`로 관리
+- 일 1회 cron이 만료 시각 지난 Storage 객체를 삭제
+- 삭제 후 `analyses.front_image_url` / `side_image_urls`는 NULL 처리 (분석 메타·카드 데이터는 보존)
+- 히스토리 상세에서 사진이 만료된 항목은 `"사진이 만료되었습니다"` 안내 + 카드 정보만 표시
+
+### 사용자 안내
+
+- 회원가입 약관/개인정보 처리방침에 보관 기간 명시
+- 히스토리 상세 화면에서 "이 분석의 내 사진 즉시 삭제" 옵션 제공 (별도 마이페이지 도입 없이 항목 단위 삭제로 처리)
+
+### 비용 가드
+
+- 최근 1년 사용량을 기준으로 90일 보관 정책의 Storage 비용 추적
+- Supabase 무료 티어 한도(현재 1GB) 초과 전에 보관 기간 단축 또는 Pro 전환 검토
 
 ---
 
 ## 3-7. 앱/웹 네비게이션 구조
 
 ```
-하단 탭바 3개:
+v1.0 하단 탭바 2개:
   홈 탭       → 업로드 → 분석 → 결과 → 카드 → 카드 상세
-  트렌드 탭   → 개인화 뷰티 피드
   히스토리 탭 → 내 분석 기록
+
+v1.1+ 추가 예정:
+  트렌드 탭   → 개인화 뷰티 피드
 
 별도 화면:
   /login
@@ -209,12 +278,44 @@ async def require_user(authorization: str | None = Header(default=None)):
 ## Phase 3 완료 기준 체크리스트
 
 - [ ] Supabase Auth 설정 완료
+- [ ] 카카오 OAuth PoC 통과 (카카오톡 설치/미설치, 백그라운드 복귀)
 - [ ] 카카오 OAuth + InAppBrowser 플로우 동작 확인
 - [ ] 구글 로그인 동작 확인
-- [ ] 애플 로그인 준비 완료 (iOS 출시 전)
 - [ ] 게스트 1회 체험 가능
 - [ ] 로그인 시 분석 결과 자동 저장
 - [ ] 히스토리 목록 / 상세 조회 가능
 - [ ] 로그인/비로그인 Rate Limit 차등 적용 확인
 - [ ] RLS로 본인 데이터만 조회 가능 확인
 - [ ] 인증/RLS 테스트 그린
+
+---
+
+## 🙋 사용자 직접 테스트 체크리스트 (Phase 3)
+
+### 카카오 로그인 — 디바이스 케이스 매트릭스
+- [ ] Android 실기기 + 카카오톡 앱 설치된 상태 → 로그인 → 콜백 성공
+- [ ] Android 실기기 + 카카오톡 앱 미설치(또는 다른 폰) → 모바일 웹 폴백 → 콜백 성공
+- [ ] 로그인 도중 앱을 백그라운드로 보냈다 다시 포그라운드 → 세션 유지 또는 재시도 가능
+- [ ] 카카오에서 "취소" 누른 경우 → 앱이 멈추지 않고 로그인 화면으로 복귀
+
+### 구글 로그인
+- [ ] 첫 로그인 시 구글 계정 선택 → 가입 → 분석 화면 진입
+- [ ] 로그아웃 후 다시 같은 계정으로 로그인 → 기존 히스토리가 그대로 보이는가
+- [ ] 구글 계정 2개로 각각 로그인해보고 데이터가 섞이지 않는가
+
+### 게스트 흐름
+- [ ] 시크릿 모드로 게스트 분석 1회 → 정상 동작
+- [ ] 같은 IP로 두 번째 분석 시도 → "1회 한도" 안내 + 로그인 CTA
+- [ ] 게스트가 "사진 생성하기" 누르면 로그인 CTA 모달
+
+### 히스토리
+- [ ] 로그인 후 분석 1회 → 히스토리 탭에 즉시 노출
+- [ ] 분석을 6회 한 후 히스토리에 가장 오래된 1건이 빠지는지 (최근 5회)
+- [ ] 히스토리 항목 탭 → 당시 카드와 사진 다시 보임
+- [ ] 91일 지난 분석을 강제로 만들어 (혹은 SQL로 `photo_expires_at`을 어제로 바꿔) cron 동작 후 사진 만료 안내가 노출되는지
+- [ ] 히스토리 상세 → "이 분석의 내 사진 즉시 삭제" 버튼 → 사진만 사라지고 카드 데이터는 남는가
+
+### 보안
+- [ ] 다른 계정 토큰으로 `/api/history` 호출 시 빈 응답 (RLS 동작)
+- [ ] 로그아웃 직후 `/api/history` 호출 시 401
+- [ ] 만료된 JWT로 호출 시 401

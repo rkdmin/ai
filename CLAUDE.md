@@ -7,6 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## ⚠️ 문서 업데이트 규칙
 
 > **기능이 변경될 때마다 아래 모든 MD 파일을 반드시 함께 수정하세요.**
+> 본 파일이 단일 진실 소스이며, `AGENTS.md`는 이 파일을 가리키는 포인터입니다.
 
 | 파일 | 업데이트 시점 |
 |------|-------------|
@@ -21,7 +22,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## 💄 AI 뷰티 코치
 
-사진 최대 3장(정면 1 + 측면 2)으로 얼굴형을 분석하고, 헤어/메이크업 코디 카드 4장(추천 3장 + 비추천 1장)과 전문가 피드백을 제공하는 AI 뷰티 코치 앱입니다.
+사진 최대 3장(정면 1 + 측면 2)으로 얼굴형을 분석하고, 헤어/메이크업 코디 카드 4장(추천 3장 + 비추천 1장), 전문가 피드백, 메이크업 카드용 추천 제품 + 쿠팡파트너스 링크를 제공하는 AI 뷰티 코치 앱입니다.
 
 ---
 
@@ -32,8 +33,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 | 프론트엔드 (웹) | React + Vite |
 | 앱 | React + Capacitor |
 | 얼굴 측정 | MediaPipe (Python, 백엔드) |
-| AI 분석 + 카드 생성 | Gemini 2.5 Flash |
-| 이미지 생성 | Gemini 2.5 Flash (이미지 생성 모드, 유료 전용) |
+| AI 분석 + 카드 생성 | Gemini 2.5 Flash (목표) — 현재 일부 호출 Claude API, Phase 1에서 Gemini 단일 통합 |
+| 이미지 생성 | Gemini 2.5 Flash (헤어/종합 카드 스타일 적용 이미지) |
 | RAG 지식베이스 | JSON 파일 기반 |
 | 백엔드 | Python + FastAPI |
 | DB / 인증 | Supabase |
@@ -62,15 +63,15 @@ VITE_MOCK=true        # 토큰 소비 없이 UI 테스트 (선택)
 ```
 src/
 ├── api/
-│   ├── ai.js           # 프로바이더 라우터 (claude / gemini / mock 분기)
-│   ├── claude.js       # Claude Vision API 호출 (얼굴 분석 + 카드 생성)
-│   ├── gemini.js       # Gemini API 호출 (스타일 적용 이미지 생성)
+│   ├── ai.js           # AI 프로바이더 라우터 (gemini / mock 분기) — 현재 claude도 분기로 남아있음 (Phase 1에서 제거 예정)
+│   ├── claude.js       # Claude Vision API 호출 (얼굴 분석 + 카드 생성) — Phase 1에서 제거 예정
+│   ├── gemini.js       # Gemini API 호출 (분석 + 카드 생성 + 스타일 적용 이미지) — 분석/카드 생성은 Phase 1에서 이관 예정
 │   └── mock.js         # 더미 데이터 (VITE_MOCK=true 시 사용)
 ├── components/
 │   ├── PhotoUpload.jsx    # 사진 업로드 (정면 필수 + 측면 90도·45도 선택)
 │   ├── AnalysisResult.jsx # 분석 결과 + 퍼스널컬러 확정 UI
 │   ├── CardList.jsx       # 코디 카드 4장 목록 (추천 3 + 비추천 1)
-│   └── CardDetail.jsx     # 카드 상세 (피드백 + 적용 사진)
+│   └── CardDetail.jsx     # 카드 상세 (피드백 + 적용 사진 / 메이크업 추천 제품)
 ├── data/
 │   ├── face-hair.json           # 얼굴형별 헤어 추천
 │   ├── face-makeup.json         # 얼굴형별 메이크업 베이스 (위치/방법)
@@ -107,10 +108,15 @@ additionalImages: { data: string /* base64 */, angle: string }[]
 ### Gemini 분석 API 응답 스키마
 ```json
 {
-  "faceType": "계란형 | 둥근형 | 사각형 | 하트형 | 긴형 | 다이아몬드형 | 땅콩형",
-  "features": ["눈 간격 넓음", "광대 넓음"]
+  "faceType": "계란형 | 둥근형 | 사각형 | 하트형 | 긴형 | 다이아몬드형 | 땅콩형 | 판정 어려움",
+  "features": ["눈 간격 넓음", "광대 넓음"],
+  "faceRatios": { "foreheadRatio": 0.95, "jawRatio": 0.82, "...": "..." },
+  "analysisId": "uuid (로그인 유저만 발급)"
 }
 ```
+- `판정 어려움`은 Gemini가 경계형 얼굴(다이아몬드/하트, 땅콩/사각 등) 사이에서 확신이 부족할 때 반환. 프론트는 이때 카드 생성 대신 `"여러 얼굴형 특징이 섞여 있어요"` 안내 카드를 보여준다.
+- `faceRatios`는 MediaPipe에서 계산한 비율값. 분석 결과 디버깅과 골든셋 회귀 비교용. 프론트는 표시하지 않는다.
+- `analysisId`는 로그인 유저에게만 발급되며, 카드 저장(`POST /api/history`)과 사진 생성(`POST /api/photo/generate`)에 사용된다.
 
 ### 카드 공통 필드 (추가)
 ```json
@@ -120,6 +126,23 @@ additionalImages: { data: string /* base64 */, angle: string }[]
 }
 ```
 - `styleLabel`: 카드 목록 최상단 감성 레이블 (공유 이미지용), Gemini 생성
+
+### 메이크업 카드 전용 필드 (추가)
+```json
+{
+  "recommendedProducts": [
+    {
+      "slot": "lip | blush | eyeshadow | base",
+      "label": "봄웜 코랄 립틴트",
+      "searchKeyword": "봄웜 코랄 립틴트",
+      "coupangPartnersUrl": "https://link.coupang.com/..."
+    }
+  ]
+}
+```
+- `recommendedProducts`: 메이크업 카드 상세 하단 상품 블록용. 초기 범위는 추천 카드 기준 2~4개
+- `searchKeyword`: 퍼스널컬러 + 메이크업 파트 기반 추천 키워드. AI가 자유 생성하지 않고 RAG/후처리 규칙에 맞춰 구성
+- `coupangPartnersUrl`: 쿠팡파트너스 링크. AI가 직접 생성하지 않고 별도 상품 매핑 또는 운영 데이터에서 주입
 
 ### 연예인 매칭 데이터 위치 (별도 필드 불필요)
 - `face-hair.json[].exampleCelebrity` → 얼굴형별 연예인 목록 (이미 존재)
@@ -155,4 +178,6 @@ additionalImages: { data: string /* base64 */, angle: string }[]
    - 측면 사진은 Gemini에게 보조 분석용으로 전달
 3. `AnalysisResult` → 퍼스널컬러 확정 (알면 직접 선택 / 모르면 질문 3개)
 4. `generateHairCards` / `generateMakeupCards` / `generateTotalCards` → RAG 컨텍스트 + 분석 결과 → Gemini → 카드 4장 생성
-5. 카드 선택 시 → `generateStyledPhoto(imageBase64, card)` → Gemini (이미지 생성 모드, 유료) → 스타일 적용 이미지 반환
+5. 카드 선택 시 → `CardDetail` 진입
+   - 메이크업 카드: `recommendedProducts` + 쿠팡파트너스 링크 + 고지 문구 노출
+   - 헤어/종합 추천 카드: `generateStyledPhoto(imageBase64, card)` → Gemini → 스타일 적용 이미지 반환

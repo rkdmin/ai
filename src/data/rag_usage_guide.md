@@ -5,7 +5,7 @@
 ```
 face-makeup.json        → 얼굴형별 메이크업 베이스 (위치/방법)
 face-hair.json          → 얼굴형별 헤어 추천
-personalcolor-makeup.json → 퍼스널컬러별 컬러 팔레트
+personal-color-makeup.json → 퍼스널컬러별 컬러 팔레트
 feature-tips.json       → 부위별 보정 팁 (보정 레이어)
 ```
 
@@ -19,7 +19,7 @@ feature-tips.json       → 부위별 보정 팁 (보정 레이어)
 
 **흐름:**
 ```
-사용자 입력: 얼굴형
+분석 결과 입력: 얼굴형 (Gemini 판정값)
 → face-hair.json에서 해당 faceType 조회
 → recommend[] 전체 + avoid[] 반환
 → AI가 reason/coachComment 표현만 변형하여 전달
@@ -35,7 +35,7 @@ feature-tips.json       → 부위별 보정 팁 (보정 레이어)
 
 **흐름:**
 ```
-사용자 입력: 얼굴형
+분석 결과 입력: 얼굴형 (Gemini 판정값)
 → face-makeup.json에서 해당 faceType 조회
 → baseSkin + recommendCards[] 3개 + avoidCard 반환
 → 카드별 메이크업 파트 기준 추천 제품 키워드 후보 추출
@@ -49,16 +49,16 @@ feature-tips.json       → 부위별 보정 팁 (보정 레이어)
 
 ### 뷰 ③ 얼굴형 + 퍼스널컬러 + 메이크업
 
-**사용 파일:** `face-makeup.json` + `personalcolor-makeup.json`
+**사용 파일:** `face-makeup.json` + `personal-color-makeup.json`
 
 **흐름:**
 ```
-사용자 입력: 얼굴형 + 퍼스널컬러
+분석 결과 입력: 얼굴형 (Gemini 판정값) + 퍼스널컬러 (사용자 확정)
 → face-makeup.json에서 해당 faceType 조회 (위치/방법 레이어)
-→ personalcolor-makeup.json에서 해당 personalColor 조회 (컬러 레이어)
+→ personal-color-makeup.json에서 해당 personalColor 조회 (컬러 레이어)
 → 두 데이터를 파트별로 병합
   - 위치/방법 → face-makeup 기준
-  - 컬러(colorVibe) → personalcolor-makeup으로 오버라이드
+  - 컬러(colorVibe) → personal-color-makeup으로 오버라이드
 → 병합 결과에서 제품 추천 키워드 후보 추출
 → 쿠팡파트너스 링크는 별도 매핑 레이어에서 주입
 → AI가 병합된 정보를 카드 형태로 자연스럽게 전달
@@ -66,10 +66,10 @@ feature-tips.json       → 부위별 보정 팁 (보정 레이어)
 
 **병합 규칙:**
 - `blush.zone`, `blush.shape` → face-makeup 기준 유지
-- `blush.colorVibe` → personalcolor-makeup으로 덮어쓰기
+- `blush.colorVibe` → personal-color-makeup으로 덮어쓰기
 - `lip.texture`, `lip.method` → face-makeup 기준 유지
-- `lip.colorVibe` → personalcolor-makeup으로 덮어쓰기
-- `eyeshadow`, `eyeliner`, `highlighter`, `shading` 컬러 → personalcolor-makeup으로 덮어쓰기
+- `lip.colorVibe` → personal-color-makeup으로 덮어쓰기
+- `eyeshadow`, `eyeliner`, `highlighter`, `shading` 컬러 → personal-color-makeup으로 덮어쓰기
 
 **AI 역할:** 병합 결과를 카드 형태로 자연스럽게 설명, 두 데이터 외 내용 추가 금지
 
@@ -77,11 +77,11 @@ feature-tips.json       → 부위별 보정 팁 (보정 레이어)
 
 ### 뷰 ④ 얼굴형 + 퍼스널컬러 + 메이크업 + 헤어
 
-**사용 파일:** `face-makeup.json` + `personalcolor-makeup.json` + `face-hair.json`
+**사용 파일:** `face-makeup.json` + `personal-color-makeup.json` + `face-hair.json`
 
 **흐름:**
 ```
-사용자 입력: 얼굴형 + 퍼스널컬러
+분석 결과 입력: 얼굴형 (Gemini 판정값) + 퍼스널컬러 (사용자 확정)
 → 뷰 ③과 동일하게 메이크업 카드 구성
 → face-hair.json에서 해당 faceType 조회하여 헤어 추천 추가
 → 메이크업 카드 + 헤어 추천을 함께 전달
@@ -108,12 +108,12 @@ feature-tips.json       → 부위별 보정 팁 (보정 레이어)
 
 **충돌 우선순위:**
 ```
-featureTip > personalcolor-makeup > face-makeup > face-hair
+featureTip > personal-color-makeup > face-makeup > face-hair
 ```
 
 **제품 키워드 반영 우선순위:**
 ```
-featureTip > personalcolor-makeup > face-makeup
+featureTip > personal-color-makeup > face-makeup
 ```
 
 **예시:**
@@ -150,7 +150,7 @@ feature: 광대 넓음 → featureTip: "블러셔 앞볼에 더 좁게"
 |---|---|---|
 | `face-makeup.json` | 메이크업 위치/방법 베이스 | personalcolor, featureTip에 의해 컬러/일부 방법 오버라이드 됨 |
 | `face-hair.json` | 헤어 스타일 추천 베이스 | featureTip에 의해 bangs 등 일부 오버라이드 됨 |
-| `personalcolor-makeup.json` | 컬러 팔레트 레이어 | featureTip에 의해 일부 오버라이드 됨 |
+| `personal-color-makeup.json` | 컬러 팔레트 레이어 | featureTip에 의해 일부 오버라이드 됨 |
 | `feature-tips.json` | 개인 부위 보정 레이어 | 최우선순위, 오버라이드 당하지 않음 |
 
 - 메이크업 카드의 `recommendedProducts`는 위 3개 레이어에서 추출한 키워드를 바탕으로 구성하며, 쿠팡파트너스 URL은 RAG 범위 밖의 운영 데이터다.
