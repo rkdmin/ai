@@ -3,6 +3,15 @@ node_modules/
 
 # 빌드 결과물
 dist/
+dist-prod/
+
+# Python (tools/)
+tools/.venv/
+tools/.cache/
+tools/__pycache__/
+tools/**/__pycache__/
+tools/output/
+*.pyc
 
 # 환경변수 (API 키 포함 — 절대 커밋 금지)
 .env

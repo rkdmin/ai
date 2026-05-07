@@ -9,6 +9,7 @@ const FACE_TYPE_LABEL = {
   긴형: { emoji: '🎭', desc: '지적이고 세련된 인상의 얼굴형' },
   다이아몬드형: { emoji: '💎', desc: '광대가 발달한 입체적인 얼굴형' },
   땅콩형: { emoji: '🥜', desc: '광대와 하관이 모두 발달한 얼굴형' },
+  '판정 어려움': { emoji: '🌀', desc: '여러 얼굴형 특징이 섞여 있어요' },
 }
 
 const PERSONAL_COLOR_STYLE = {
@@ -24,7 +25,8 @@ export default function AnalysisResult({ image, analysis, knowsPersonalColor, on
   const [personalColor, setPersonalColor] = useState(null)
 
   const faceInfo = FACE_TYPE_LABEL[analysis.faceType] ?? { emoji: '✨', desc: '' }
-  const canProceed = !knowsPersonalColor || personalColor !== null
+  const isAmbiguous = analysis.faceType === '판정 어려움'
+  const canProceed = !isAmbiguous && (!knowsPersonalColor || personalColor !== null)
 
   const handleNext = (cardType) => {
     onNext(knowsPersonalColor ? personalColor : null, cardType)
@@ -52,8 +54,19 @@ export default function AnalysisResult({ image, analysis, knowsPersonalColor, on
           </div>
         </div>
 
+        {/* 판정 어려움 안내 */}
+        {isAmbiguous && (
+          <div className="result-card">
+            <p className="card-label">Notice</p>
+            <p className="confirm-notice" style={{ marginBottom: 0 }}>
+              사진만으로는 한 가지 얼굴형으로 단정하기 어려워요.
+              조명·각도·헤어가 더 또렷한 정면 사진으로 다시 시도해 주세요.
+            </p>
+          </div>
+        )}
+
         {/* 퍼스널컬러 */}
-        {knowsPersonalColor && (
+        {!isAmbiguous && knowsPersonalColor && (
           <div className="result-card">
             <p className="card-label">Personal Color</p>
             <p className="confirm-notice">본인의 퍼스널컬러를 선택해주세요.</p>
@@ -85,15 +98,23 @@ export default function AnalysisResult({ image, analysis, knowsPersonalColor, on
       </div>
 
       <div className="card-btn-group">
-        <button className="card-btn card-btn--hair" disabled={!canProceed} onClick={() => handleNext('hair')}>
-          💇 헤어 카드 받기
-        </button>
-        <button className="card-btn card-btn--makeup" disabled={!canProceed} onClick={() => handleNext('makeup')}>
-          💄 메이크업 카드 받기
-        </button>
-        <button className="card-btn card-btn--total" disabled={!canProceed} onClick={() => handleNext('total')}>
-          ✨ 종합 카드 받기
-        </button>
+        {isAmbiguous ? (
+          <button className="card-btn card-btn--total" onClick={onReset}>
+            📷 다시 찍기
+          </button>
+        ) : (
+          <>
+            <button className="card-btn card-btn--hair" disabled={!canProceed} onClick={() => handleNext('hair')}>
+              💇 헤어 카드 받기
+            </button>
+            <button className="card-btn card-btn--makeup" disabled={!canProceed} onClick={() => handleNext('makeup')}>
+              💄 메이크업 카드 받기
+            </button>
+            <button className="card-btn card-btn--total" disabled={!canProceed} onClick={() => handleNext('total')}>
+              ✨ 종합 카드 받기
+            </button>
+          </>
+        )}
       </div>
     </div>
   )

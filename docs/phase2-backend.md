@@ -91,13 +91,8 @@
 ### POST `/api/analyze`
 
 ```python
-class AdditionalImage(BaseModel):
-    data: str       # base64
-    angle: str      # "90도 측면 (프로필)" | "45도 반측면"
-
 class AnalyzeRequest(BaseModel):
     frontImage: str                                  # base64
-    additionalImages: list[AdditionalImage] = []
 
 class AnalyzeResponse(BaseModel):
     faceType: str                                    # 7가지 얼굴형 또는 '판정 어려움'
@@ -105,6 +100,8 @@ class AnalyzeResponse(BaseModel):
     faceRatios: dict | None = None                   # MediaPipe 비율값
     analysisId: str | None = None                    # 로그인 유저만 발급
 ```
+
+> v1.0은 정면 1장만. 측면 도입은 v1.x에서 `additionalImages: list[AdditionalImage]` 추가하는 형태로 검토.
 
 ### POST `/api/cards/hair` · `/api/cards/makeup` · `/api/cards/total`
 

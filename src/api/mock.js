@@ -6,8 +6,7 @@
 const delay = (ms) => new Promise((r) => setTimeout(r, ms))
 
 // ─── 얼굴 분석 ────────────────────────────────────────────────────
-// additionalImages: { data: string, angle: string }[]
-export async function analyzeFace(_imageBase64, _additionalImages = []) {
+export async function analyzeFace(_imageBase64, _faceRatios = null) {
   await delay(1200)
   return {
     faceType: '둥근형',

@@ -22,7 +22,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## 💄 AI 뷰티 코치
 
-사진 최대 3장(정면 1 + 측면 2)으로 얼굴형을 분석하고, 헤어/메이크업 코디 카드 4장(추천 3장 + 비추천 1장), 전문가 피드백, 메이크업 카드용 추천 제품 + 쿠팡파트너스 링크를 제공하는 AI 뷰티 코치 앱입니다.
+정면 사진 1장으로 얼굴형을 분석하고, 헤어/메이크업 코디 카드 4장(추천 3장 + 비추천 1장), 전문가 피드백, 메이크업 카드용 추천 제품 + 쿠팡파트너스 링크를 제공하는 AI 뷰티 코치 앱입니다.
 
 ---
 
@@ -33,7 +33,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 | 프론트엔드 (웹) | React + Vite |
 | 앱 | React + Capacitor |
 | 얼굴 측정 | MediaPipe (Python, 백엔드) |
-| AI 분석 + 카드 생성 | Gemini 2.5 Flash (목표) — 현재 일부 호출 Claude API, Phase 1에서 Gemini 단일 통합 |
+| AI 분석 + 카드 생성 | Gemini 2.5 Flash (단일 통합 완료, Phase 1) |
 | 이미지 생성 | Gemini 2.5 Flash (헤어/종합 카드 스타일 적용 이미지) |
 | RAG 지식베이스 | JSON 파일 기반 |
 | 백엔드 | Python + FastAPI |
@@ -52,8 +52,9 @@ npm run dev
 
 환경변수 (`.env`):
 ```
-VITE_API_URL=
-VITE_MOCK=true        # 토큰 소비 없이 UI 테스트 (선택)
+VITE_GEMINI_API_KEY=    # 필수 (mock 모드 제외)
+VITE_MOCK=true          # 토큰 소비 없이 UI 테스트 (선택)
+VITE_DEV_INSPECTOR=true # 개발자용 프롬프트/응답 인스펙터 노출 (선택, 출시 전 제거)
 ```
 
 ---
@@ -63,13 +64,12 @@ VITE_MOCK=true        # 토큰 소비 없이 UI 테스트 (선택)
 ```
 src/
 ├── api/
-│   ├── ai.js           # AI 프로바이더 라우터 (gemini / mock 분기) — 현재 claude도 분기로 남아있음 (Phase 1에서 제거 예정)
-│   ├── claude.js       # Claude Vision API 호출 (얼굴 분석 + 카드 생성) — Phase 1에서 제거 예정
-│   ├── gemini.js       # Gemini API 호출 (분석 + 카드 생성 + 스타일 적용 이미지) — 분석/카드 생성은 Phase 1에서 이관 예정
+│   ├── ai.js           # AI 프로바이더 라우터 (gemini / mock 분기)
+│   ├── gemini.js       # Gemini API 호출 (분석 + 카드 생성 + 스타일 적용 이미지)
 │   └── mock.js         # 더미 데이터 (VITE_MOCK=true 시 사용)
 ├── components/
-│   ├── PhotoUpload.jsx    # 사진 업로드 (정면 필수 + 측면 90도·45도 선택)
-│   ├── AnalysisResult.jsx # 분석 결과 + 퍼스널컬러 확정 UI
+│   ├── PhotoUpload.jsx    # 사진 업로드 (정면 1장)
+│   ├── AnalysisResult.jsx # 분석 결과 + 퍼스널컬러 확정 UI ("판정 어려움" fallback 포함)
 │   ├── CardList.jsx       # 코디 카드 4장 목록 (추천 3 + 비추천 1)
 │   └── CardDetail.jsx     # 카드 상세 (피드백 + 적용 사진 / 메이크업 추천 제품)
 ├── data/
@@ -78,11 +78,19 @@ src/
 │   ├── personal-color-makeup.json  # 퍼스널컬러별 컬러 팔레트
 │   ├── feature-tips.json        # 이목구비별 보정 팁
 │   ├── 촬영가이드 여자.png        # 정면 촬영 가이드 이미지
-│   ├── 촬영가이드 측면.png        # 측면 촬영 가이드 이미지 (90도·45도)
 │   └── rag_usage_guide.md       # RAG 데이터 사용 가이드
+├── devtools/                   # 개발 전용 — VITE_DEV_INSPECTOR=true 일 때만 활성, 운영 빌드 트리 셰이킹
+│   ├── inspector.js            # Gemini 호출 기록 이벤트 버스 + 인메모리 스토리지
+│   └── PromptInspector.jsx     # 🐞 플로팅 버튼 + 사이드 패널 UI
 └── utils/
     ├── ragUtils.js       # RAG 컨텍스트 빌더 + 카드 출력 포맷 + 프롬프트
     └── validateImage.js  # Canvas API 기반 이미지 유효성 검사
+
+tools/                          # Phase 1 로컬 평가용 — Phase 2에 backend/services/ 로 이관
+├── landmark.py                 # MediaPipe FaceMesh → faceRatios 추출 (정면 전용)
+├── requirements.txt            # mediapipe, opencv-python, numpy
+├── README.md                   # Python 설치 + venv 셋업 가이드
+└── .venv/                      # 가상환경 (gitignore)
 ```
 
 ---
@@ -91,15 +99,9 @@ src/
 
 | 슬롯 | 필수 여부 | 설명 |
 |------|----------|------|
-| 정면 사진 | 필수 | 분석 기준 이미지 |
-| 90도 측면 (프로필) | 권장 | 얼굴형 판단 보조 |
-| 45도 반측면 | 권장 | 얼굴형 판단 보조 |
+| 정면 사진 | 필수 | 분석 기준 이미지 (1장) |
 
-측면 사진은 토글로 접고 펼 수 있으며, 제출 시 아래 형태로 전달됩니다:
-```js
-additionalImages: { data: string /* base64 */, angle: string }[]
-// 예: [{ data: '...', angle: '90도 측면 (프로필)' }, { data: '...', angle: '45도 반측면' }]
-```
+> v1.0은 정면 1장만 받음. 측면(90도·45도)은 v1.x 이후 검토 — Gemini가 측면을 얼마나 잘 활용하는지 데이터로 확인된 이후에 재도입.
 
 ---
 
@@ -171,11 +173,10 @@ additionalImages: { data: string /* base64 */, angle: string }[]
 
 ## 주요 데이터 흐름
 
-1. `PhotoUpload` → 정면 + 측면 사진(선택) 수집
+1. `PhotoUpload` → 정면 사진 1장 수집
 2. 백엔드 `/api/analyze` 호출
    - MediaPipe (Python) → 얼굴 랜드마크 수치 추출
    - Gemini 2.5 Flash → 수치 + 이미지 → `{ faceType, features }` 반환
-   - 측면 사진은 Gemini에게 보조 분석용으로 전달
 3. `AnalysisResult` → 퍼스널컬러 확정 (알면 직접 선택 / 모르면 질문 3개)
 4. `generateHairCards` / `generateMakeupCards` / `generateTotalCards` → RAG 컨텍스트 + 분석 결과 → Gemini → 카드 4장 생성
 5. 카드 선택 시 → `CardDetail` 진입
