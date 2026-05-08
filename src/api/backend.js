@@ -1,0 +1,88 @@
+/**
+ * 백엔드 HTTP 클라이언트.
+ * Phase 2: 모든 AI 호출은 이 모듈을 통해 우리 FastAPI 서버로 간다.
+ *
+ * 환경변수 VITE_API_URL — 로컬 'http://localhost:8000', 개발 Render, 운영 Railway
+ */
+
+const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '')
+
+function getUserId() {
+  // Phase 3 에서 Supabase 세션에서 채움. 지금은 항상 게스트.
+  return null
+}
+
+async function http(path, body) {
+  const headers = { 'content-type': 'application/json' }
+  const userId = getUserId()
+  if (userId) headers['X-User-Id'] = userId
+
+  let resp
+  try {
+    resp = await fetch(`${API_URL}${path}`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(body),
+    })
+  } catch (e) {
+    throw new Error(`서버에 연결할 수 없어요. 잠시 후 다시 시도해주세요. (${e.message})`)
+  }
+
+  if (!resp.ok) {
+    let detail = `요청 실패 (${resp.status})`
+    try {
+      const j = await resp.json()
+      detail = j.detail || j.error || detail
+    } catch { /* non-JSON */ }
+    throw new Error(detail)
+  }
+  return resp.json()
+}
+
+// ─── 얼굴 분석 ─────────────────────────────────────────────────────
+export async function analyzeFace(imageBase64) {
+  return http('/api/analyze', { frontImage: imageBase64 })
+}
+
+// ─── 카드 생성 ────────────────────────────────────────────────────
+function toCardsBody(analysis) {
+  return {
+    analysisId: analysis.analysisId ?? null,
+    faceType: analysis.faceType,
+    personalColor: analysis.personalColor ?? null,
+    features: analysis.features ?? [],
+  }
+}
+
+export async function generateHairCards(analysis) {
+  return http('/api/cards/hair', toCardsBody(analysis))
+}
+
+export async function generateMakeupCards(analysis) {
+  return http('/api/cards/makeup', toCardsBody(analysis))
+}
+
+export async function generateTotalCards(analysis) {
+  return http('/api/cards/total', toCardsBody(analysis))
+}
+
+export async function generateAllCards(analysis) {
+  const [hair, makeup, total] = await Promise.all([
+    generateHairCards(analysis),
+    generateMakeupCards(analysis),
+    generateTotalCards(analysis),
+  ])
+  return { hair, makeup, total }
+}
+
+// ─── 스타일 적용 사진 생성 ────────────────────────────────────────
+// 메이크업 카드는 사진 생성 미지원 — 호출자가 cardType !== 'makeup' 으로 가드.
+export async function generateStyledPhoto(imageBase64, card) {
+  const result = await http('/api/photo/generate', {
+    analysisId: card.analysisId ?? null,
+    cardType: card.cardType,
+    card,
+    frontImage: imageBase64, // Phase 3 (Storage 도입) 에서 제거
+  })
+  return result.generatedImage
+}

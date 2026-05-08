@@ -14,6 +14,7 @@ const MAKEUP_ITEMS = [
 
 export default function CardDetail({ card, image, onBack }) {
   const isAvoid = card.type === 'avoid'
+  const canGeneratePhoto = !isAvoid && card.cardType !== 'makeup'
   const [styledPhoto, setStyledPhoto] = useState(null)
   const [generating, setGenerating] = useState(false)
   const [genError, setGenError] = useState(null)
@@ -107,7 +108,7 @@ export default function CardDetail({ card, image, onBack }) {
       </div>
 
       {/* ── 적용 사진 ─────────────────────────── */}
-      {!isAvoid && (
+      {canGeneratePhoto && (
         <div className="photo-section">
           <span className="ds-eyebrow">내 얼굴에 적용해보기</span>
 

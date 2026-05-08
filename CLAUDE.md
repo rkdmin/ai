@@ -14,7 +14,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 | `CLAUDE.md` (이 파일) | 구조·흐름·스키마·파일명 변경 시 |
 | `docs/ui-flow.md` | step 추가/삭제, 컴포넌트 동작·조건·state 변경 시 |
 | `docs/test.md` | 테스트 구조·품질 게이트 변경 시 |
-| `src/data/rag_usage_guide.md` | RAG 데이터 구조·병합 규칙·우선순위 변경 시 |
+| `backend/data/rag_usage_guide.md` | RAG 데이터 구조·병합 규칙·우선순위 변경 시 |
 
 변경 후 MD와 코드가 불일치하면 다음 세션에서 잘못된 컨텍스트로 작업하게 됩니다.
 
@@ -44,17 +44,37 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## 개발 서버 실행
 
+### 프론트엔드 (웹/Capacitor 공용)
+
 ```bash
 npm install
 npm run dev
 # → http://localhost:5173
 ```
 
-환경변수 (`.env`):
+루트 `.env`:
 ```
-VITE_GEMINI_API_KEY=    # 필수 (mock 모드 제외)
-VITE_MOCK=true          # 토큰 소비 없이 UI 테스트 (선택)
-VITE_DEV_INSPECTOR=true # 개발자용 프롬프트/응답 인스펙터 노출 (선택, 출시 전 제거)
+VITE_API_URL=http://localhost:8000  # 백엔드 주소 (필수)
+VITE_MOCK=                          # true 면 백엔드 호출 없이 더미 데이터
+VITE_DEV_INSPECTOR=                 # true 면 🐞 인스펙터 노출 (Phase 2 부터는 거의 빈 패널)
+```
+
+### 백엔드 (Python + FastAPI)
+
+```bash
+cd backend
+python -m venv .venv
+. .venv/Scripts/activate            # Windows PowerShell: .venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+cp .env.example .env                # GEMINI_API_KEY 채우기
+uvicorn main:app --reload --port 8000
+# → http://localhost:8000/docs (Swagger UI)
+```
+
+`backend/.env`:
+```
+GEMINI_API_KEY=                     # 필수
+ALLOWED_ORIGINS=http://localhost:5173,http://localhost,capacitor://localhost
 ```
 
 ---
@@ -62,10 +82,10 @@ VITE_DEV_INSPECTOR=true # 개발자용 프롬프트/응답 인스펙터 노출 (
 ## 프로젝트 구조
 
 ```
-src/
+src/                            # 프론트엔드 (웹/Capacitor 공용)
 ├── api/
-│   ├── ai.js           # AI 프로바이더 라우터 (gemini / mock 분기)
-│   ├── gemini.js       # Gemini API 호출 (분석 + 카드 생성 + 스타일 적용 이미지)
+│   ├── ai.js           # 프로바이더 라우터 (mock / backend 분기)
+│   ├── backend.js      # FastAPI 백엔드 HTTP 클라이언트
 │   └── mock.js         # 더미 데이터 (VITE_MOCK=true 시 사용)
 ├── components/
 │   ├── PhotoUpload.jsx    # 사진 업로드 (정면 1장)
@@ -73,25 +93,42 @@ src/
 │   ├── CardList.jsx       # 코디 카드 4장 목록 (추천 3 + 비추천 1)
 │   └── CardDetail.jsx     # 카드 상세 (피드백 + 적용 사진 / 메이크업 추천 제품)
 ├── data/
-│   ├── face-hair.json           # 얼굴형별 헤어 추천
-│   ├── face-makeup.json         # 얼굴형별 메이크업 베이스 (위치/방법)
-│   ├── personal-color-makeup.json  # 퍼스널컬러별 컬러 팔레트
-│   ├── feature-tips.json        # 이목구비별 보정 팁
-│   ├── 촬영가이드 여자.png        # 정면 촬영 가이드 이미지
-│   └── rag_usage_guide.md       # RAG 데이터 사용 가이드
-├── devtools/                   # 개발 전용 — VITE_DEV_INSPECTOR=true 일 때만 활성, 운영 빌드 트리 셰이킹
-│   ├── inspector.js            # Gemini 호출 기록 이벤트 버스 + 인메모리 스토리지
-│   └── PromptInspector.jsx     # 🐞 플로팅 버튼 + 사이드 패널 UI
-└── utils/
-    ├── ragUtils.js       # RAG 컨텍스트 빌더 + 카드 출력 포맷 + 프롬프트
-    └── validateImage.js  # Canvas API 기반 이미지 유효성 검사
+│   ├── 촬영가이드 여자.png   # 정면 촬영 가이드 이미지
+│   └── 촬영가이드 측면.png   # (참고용, v1.0 미사용)
+├── utils/
+│   └── validateImage.js   # Canvas API 기반 이미지 유효성 검사
+└── devtools/                   # 개발 전용 — VITE_DEV_INSPECTOR=true 일 때만 활성, 운영 빌드 트리 셰이킹
+    ├── inspector.js            # 호출 기록 이벤트 버스 + 인메모리 스토리지
+    └── PromptInspector.jsx     # 🐞 플로팅 버튼 + 사이드 패널 UI
 
-tools/                          # Phase 1 로컬 평가용 — Phase 2에 backend/services/ 로 이관
-├── landmark.py                 # MediaPipe FaceMesh → faceRatios 추출 (정면 전용)
-├── requirements.txt            # mediapipe, opencv-python, numpy
-├── README.md                   # Python 설치 + venv 셋업 가이드
-└── .venv/                      # 가상환경 (gitignore)
+backend/                        # FastAPI (Phase 2 신규)
+├── main.py                     # 앱 진입점 + CORS + 라우터 등록 + MediaPipe 워밍업
+├── routes/
+│   ├── analyze.py              # POST /api/analyze
+│   ├── cards.py                # POST /api/cards/{hair|makeup|total}
+│   └── photo.py                # POST /api/photo/generate (로그인 전용)
+├── services/
+│   ├── mediapipe_service.py    # MediaPipe FaceMesh → faceRatios (tools/landmark.py 이관)
+│   ├── gemini_service.py       # Gemini 2.5 Flash 호출 (분석/카드/이미지)
+│   └── rag_service.py          # RAG 컨텍스트 빌더 + 카드 포맷 + ANALYZE_PROMPT (ragUtils.js 이관)
+├── middleware/
+│   ├── auth.py                 # X-User-Id 헤더 기반 식별 (Phase 3 전 스텁)
+│   └── rate_limit.py           # 인메모리 IP/유저 카운터 (UTC 일자 단위)
+├── models/
+│   └── schemas.py              # Pydantic 요청/응답 스키마
+├── data/                       # RAG JSON (src/data/ 에서 이관)
+│   ├── face-hair.json
+│   ├── face-makeup.json
+│   ├── personal-color-makeup.json
+│   ├── feature-tips.json
+│   └── rag_usage_guide.md
+└── requirements.txt
+
+tools/                          # Phase 1 로컬 평가 도구 (백엔드 이관 후에도 골든셋 회귀용으로 남김)
+├── landmark.py                 # MediaPipe 단일/배치 추출 CLI
+└── requirements.txt
 ```
+
 
 ---
 
@@ -165,7 +202,7 @@ tools/                          # Phase 1 로컬 평가용 — Phase 2에 backen
 | `personal-color-makeup.json` | 컬러 팔레트 레이어 | `makeupByPersonalColor[].personalColor` (spring_warm/summer_cool/autumn_warm/winter_cool) |
 | `feature-tips.json` | 이목구비 보정 팁 (최우선) | `featureTips[].label` (한국어 매칭) |
 
-### 한국어 → 영문 키 매핑 (`ragUtils.js` 내 상수)
+### 한국어 → 영문 키 매핑 (`backend/services/rag_service.py` 내 상수)
 - 얼굴형: `계란형→oval`, `둥근형→round`, `사각형→square`, `하트형→heart`, `긴형→long`, `다이아몬드형→diamond`, `땅콩형→peanut`
 - 퍼스널컬러: `봄웜→spring_warm`, `여름쿨→summer_cool`, `가을웜→autumn_warm`, `겨울쿨→winter_cool`
 
@@ -173,12 +210,15 @@ tools/                          # Phase 1 로컬 평가용 — Phase 2에 backen
 
 ## 주요 데이터 흐름
 
-1. `PhotoUpload` → 정면 사진 1장 수집
-2. 백엔드 `/api/analyze` 호출
-   - MediaPipe (Python) → 얼굴 랜드마크 수치 추출
-   - Gemini 2.5 Flash → 수치 + 이미지 → `{ faceType, features }` 반환
+1. `PhotoUpload` → 정면 사진 1장 수집 (프론트)
+2. 프론트가 `POST /api/analyze` 호출 (`src/api/backend.js`)
+   - 백엔드: MediaPipe → `faceRatios`
+   - 백엔드: Gemini 2.5 Flash → `{ faceType, features, faceRatios, analysisId? }` 반환
 3. `AnalysisResult` → 퍼스널컬러 확정 (알면 직접 선택 / 모르면 질문 3개)
-4. `generateHairCards` / `generateMakeupCards` / `generateTotalCards` → RAG 컨텍스트 + 분석 결과 → Gemini → 카드 4장 생성
+4. 프론트가 `POST /api/cards/{hair|makeup|total}` 호출
+   - 백엔드: `rag_service.build_*_context` → Gemini → 카드 4장 생성
 5. 카드 선택 시 → `CardDetail` 진입
-   - 메이크업 카드: `recommendedProducts` + 쿠팡파트너스 링크 + 고지 문구 노출
-   - 헤어/종합 추천 카드: `generateStyledPhoto(imageBase64, card)` → Gemini → 스타일 적용 이미지 반환
+   - 메이크업 카드: `recommendedProducts` + 쿠팡파트너스 링크 + 고지 문구 노출 (사진 생성 미지원)
+   - 헤어/종합 추천 카드: `POST /api/photo/generate` (로그인 전용) → Gemini → data URL 반환
+
+> 모든 AI 호출은 백엔드를 경유한다. 프론트엔드는 더 이상 Gemini API 키를 갖지 않는다.

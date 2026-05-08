@@ -20,15 +20,16 @@
 ### 1. Unit
 
 대상:
-- `ragUtils`
-- 이미지 유효성 검사
+- `backend/services/rag_service.py` (build_*_context, FACE_TYPE_MAP)
+- 이미지 유효성 검사 (`src/utils/validateImage.js`)
 - 카드 잠금/해제 규칙
 - 퍼스널컬러 분기
 - 키워드 매핑
 - 메이크업 추천 제품 키워드/쿠팡 링크 매핑 규칙
 
 도구:
-- `Vitest`
+- 프론트: `Vitest`
+- 백엔드: `pytest`
 
 원칙:
 - 순수 함수는 반드시 unit test를 가진다

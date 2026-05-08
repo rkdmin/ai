@@ -1,0 +1,17 @@
+# Render 무료 플랜 (개발/QA 단계).
+# Play Store 제출 직전에 Railway Hobby 로 이전해서 슬립 제거.
+services:
+  - type: web
+    name: beauty-coach-api
+    runtime: python
+    rootDir: backend
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: ALLOWED_ORIGINS
+        sync: false

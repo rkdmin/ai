@@ -128,10 +128,15 @@ class PhotoResponse(BaseModel):
     cached: bool                                     # generated_photos UNIQUE 히트 시 true
 ```
 
-> `frontImage`는 PhotoRequest에 포함하지 않는다. 백엔드가 `analyses.front_image_url`로 원본을 다시 가져와 Gemini에 전달한다.
+> 최종 목표 — `frontImage`는 PhotoRequest에 포함하지 않는다. 백엔드가 `analyses.front_image_url`로 원본을 다시 가져와 Gemini에 전달한다.
 > `(analysisId, cardType)`이 동일하면 `generated_photos` UNIQUE 제약에 의해 캐시 응답을 반환한다.
+>
+> Phase 2 임시 — Supabase Storage 도입 전까지 `frontImage` 를 PhotoRequest 에 포함한다.
+> Phase 3 작업: (1) `frontImage` 필드 제거, (2) `analyses.front_image_url` 로부터 원본 fetch, (3) `(analysisId, cardType)` UNIQUE 캐시 적용.
 
 ### POST `/api/history`
+
+> Phase 2 미구현 — Supabase 인증/스키마가 Phase 3 의존이라 다음 단계로 미룬다. 인터페이스만 합의된 상태로 남긴다.
 
 선택한 카드를 `cards` 테이블에 저장하는 엔드포인트 (로그인 전용).
 
