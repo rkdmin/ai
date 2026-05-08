@@ -1,16 +1,16 @@
-# Render 무료 플랜 (개발/QA 단계).
+# Render Free 플랜 (개발/QA 단계).
 # Play Store 제출 직전에 Railway Hobby 로 이전해서 슬립 제거.
+#
+# Docker 런타임 사용 — MediaPipe 가 필요로 하는 시스템 라이브러리(libGLESv2 등)
+# 가 Render native Python 이미지에 없어서 Docker 로 직접 설치한다.
 services:
   - type: web
     name: beauty-coach-api
-    runtime: python
+    runtime: docker
     rootDir: backend
+    dockerfilePath: ./Dockerfile
     plan: free
-    buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
     envVars:
-      - key: PYTHON_VERSION
-        value: 3.11.9
       - key: GEMINI_API_KEY
         sync: false
       - key: ALLOWED_ORIGINS
