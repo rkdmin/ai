@@ -29,7 +29,7 @@ export default function Onboarding({ idx = 0, onNext, onSkip }) {
   const step = STEPS[idx];
   const isLast = idx === STEPS.length - 1;
   return (
-    <div style={{ width: '100%', height: '100%', background: '#fff', color: '#000', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ width: '100%', minHeight: '100dvh', background: '#fff', color: '#000', display: 'flex', flexDirection: 'column' }}>
       <StatusBar />
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 22px 14px', flexShrink: 0 }}>
         <span className="wm" style={{ fontSize: 18, fontWeight: 300 }}>beaumi</span>
@@ -61,7 +61,7 @@ export default function Onboarding({ idx = 0, onNext, onSkip }) {
         </p>
       </div>
 
-      <div style={{ padding: '24px 28px 36px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexShrink: 0 }}>
+      <div style={{ padding: '24px 28px max(env(safe-area-inset-bottom), 36px)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexShrink: 0 }}>
         <StepDots total={3} current={idx} />
         <button
           onClick={onNext}

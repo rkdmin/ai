@@ -29,7 +29,7 @@ export default function PhotoUpload({ onUpload, onBack }) {
   }
 
   return (
-    <div style={{ width: '100%', height: '100%', background: '#fff', color: '#000', display: 'flex', flexDirection: 'column', position: 'relative' }}>
+    <div style={{ width: '100%', minHeight: '100dvh', background: '#fff', color: '#000', display: 'flex', flexDirection: 'column', position: 'relative' }}>
       <StatusBar />
       <BackHeader label="STEP 01 / 03" title="정면 사진 업로드" onBack={onBack} />
 
@@ -103,7 +103,7 @@ export default function PhotoUpload({ onUpload, onBack }) {
         <div style={{ height: 18 }} />
       </div>
 
-      <div style={{ padding: '14px 24px 28px', borderTop: '1px solid #e8e8e8', display: 'flex', gap: 10, flexShrink: 0 }}>
+      <div style={{ padding: '14px 24px max(env(safe-area-inset-bottom), 28px)', borderTop: '1px solid #e8e8e8', display: 'flex', gap: 10, flexShrink: 0 }}>
         <button
           onClick={onBack}
           style={{ flex: 1, background: '#fff', color: '#000', border: '1px solid #000', padding: '14px 0', fontFamily: 'Jost', fontSize: 11, letterSpacing: '.18em', cursor: 'pointer' }}

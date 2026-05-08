@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import './styles/tokens.css';
 import './styles/globals.css';
 
@@ -20,53 +20,152 @@ import Trend from './components/Trend';
 import History from './components/History';
 import My from './components/My';
 
-// Stage 흐름은 Beaumi Hi-Fi 와이어프레임 25개 화면 순서를 그대로 따른다.
-// 기능이 붙어있는 화면(upload·loading·result·card list·card detail·ad gate·share)은
-// 실제 사진/분석 결과/카드 데이터를 들고 다니고,
-// 아직 백엔드 연결이 없는 화면(splash·onboarding·login·home·personal_color·error·trend·history·my)은
-// 단순히 다음 stage 로 진행한다 — 각 컴포넌트에 // TODO 주석 표시.
+import { analyzeFace, generateHairCards, generateMakeupCards } from './api/ai';
+import { mapCards } from './api/mappers';
+
+/**
+ * 25 화면 흐름. 사용자 액션이 분석 / 카드 생성 / 사진 합성 같은 비동기 작업을 트리거할 때마다
+ * promise 를 만들어 다음 Loading 화면으로 넘긴다. Loading 컴포넌트는 promise 를 받아
+ * 단계 애니메이션을 돌리다가 결과/에러로 onSuccess/onError 호출.
+ *
+ * 백엔드 응답이 'faceType: 판정 어려움' 이면 error_face 화면으로, fetch 실패면 error_network 로 라우팅.
+ *
+ * 카드 잠금은 v1.0 에서는 모두 무료(mappers 가 locked=false 로 정규화). v1.1 광고 게이트는 별도 정책 토글.
+ */
+
+const KO_TO_KEY = {
+  '봄 웜톤': 'spring_warm',
+  '여름 쿨톤': 'summer_cool',
+  '가을 웜톤': 'autumn_warm',
+  '겨울 쿨톤': 'winter_cool',
+};
+const KEY_TO_KO = {
+  spring: '봄 웜톤',
+  summer: '여름 쿨톤',
+  autumn: '가을 웜톤',
+  winter: '겨울 쿨톤',
+};
+function normalizePersonalColor(pick) {
+  if (!pick) return null;
+  return KEY_TO_KO[pick] || pick;
+}
+function backendPersonalColorKey(pickKo) {
+  if (!pickKo) return null;
+  return KO_TO_KEY[pickKo] || null;
+}
+
+const ONBOARDING_FLAG = 'beaumi.onboarded';
+
+function hasOnboarded() {
+  try {
+    return typeof window !== 'undefined' && window.localStorage.getItem(ONBOARDING_FLAG) === '1';
+  } catch {
+    return false;
+  }
+}
+
+function markOnboarded() {
+  try {
+    window.localStorage.setItem(ONBOARDING_FLAG, '1');
+  } catch { /* noop */ }
+}
 
 export default function App() {
   const [stage, setStage] = useState('splash');
 
-  // 기능 상태 — 화면 간에 들고 다님.
-  const [photo, setPhoto] = useState(null);                // { file, dataUrl }
-  const [, setPersonalColor] = useState(null);             // 'spring' | 'summer' | ...
-  const [result, setResult] = useState(null);              // { faceType, features, moodArchetype, ... }
-  const [cardListType, setCardListType] = useState('hair'); // 'hair' | 'makeup'
+  // 입력
+  const [photo, setPhoto] = useState(null); // { file, dataUrl }
+  const [personalColor, setPersonalColor] = useState(null); // 한국어 라벨 (예: '봄 웜톤')
+
+  // 분석 결과 / 카드 / 활성 카드
+  const [result, setResult] = useState(null);
+  const [hairCards, setHairCards] = useState(null);
+  const [makeupCards, setMakeupCards] = useState(null);
   const [activeCard, setActiveCard] = useState(null);
 
-  // 광고 게이트 진입 시 어떤 stage 로 돌아갈지 / 완료 후 어디로 갈지 저장.
+  // 비동기 작업 promise — Loading 화면이 받아 진행 / 결과 처리.
+  const taskRef = useRef(null);
+
+  // 광고 게이트 진입 시 어떤 stage 로 돌아갈지 / 완료 후 어디로 갈지.
   const [adReturn, setAdReturn] = useState({ done: 'card_detail', back: 'result_tabs_hair' });
 
-  function go(next) {
-    setStage(next);
-  }
-  function navTab(tab) {
-    const map = { home: 'home', trend: 'trend', history: 'history', my: 'my' };
-    if (map[tab]) go(map[tab]);
-  }
+  // 분석 / 네트워크 에러 표시용.
+  const [errorInfo, setErrorInfo] = useState({ type: 'face', message: '' });
 
-  // 분석 완료 — Loading 화면이 끝나면 호출됨.
-  // TODO: Claude Code — 아래 mock 을 실제 호출로 교체.
-  //   const r = await apiClient.analyze(photo.file);
-  //   setResult(r);
-  function onAnalysisDone() {
-    setResult({
-      faceType: '계란형',
-      personalColor: '봄 웜톤',
-      features: ['균형잡힌 비율', '입체적인 골격', '부드러운 눈매'],
-      moodArchetype: ['ROMANTIC', 'CLEAN', 'SOFT'],
-      styleLabel: '봄날의 햇살형',
-    });
+  const go = useCallback((next) => setStage(next), []);
+  const navTab = useCallback((tab) => {
+    const allowed = ['home', 'trend', 'history', 'my'];
+    if (allowed.includes(tab)) go(tab);
+  }, [go]);
+
+  const startAnalysis = useCallback(() => {
+    if (!photo?.dataUrl) {
+      setErrorInfo({ type: 'face', message: '사진이 준비되지 않았어요.' });
+      go('error_face');
+      return;
+    }
+    taskRef.current = analyzeFace(photo.dataUrl);
+    go('loading');
+  }, [photo, go]);
+
+  const onAnalysisSuccess = useCallback((r) => {
+    if (!r || r.faceType === '판정 어려움') {
+      setErrorInfo({ type: 'face', message: '여러 얼굴형 특징이 섞여 있어요. 정면 사진을 다시 올려보세요.' });
+      go('error_face');
+      return;
+    }
+    setResult({ ...r, personalColor: r.personalColor || personalColor });
+    setHairCards(null);
+    setMakeupCards(null);
+    setActiveCard(null);
     go('result_home');
-  }
+  }, [personalColor, go]);
+
+  const onAnalysisError = useCallback((e) => {
+    const msg = String(e?.message || e || '');
+    const isNet = /연결|네트워크|fetch|Network|timeout/i.test(msg);
+    setErrorInfo({ type: isNet ? 'network' : 'face', message: msg });
+    go(isNet ? 'error_network' : 'error_face');
+  }, [go]);
+
+  const startCardGeneration = useCallback((type) => {
+    if (!result) return;
+    const payload = {
+      analysisId: result.analysisId ?? null,
+      faceType: result.faceType,
+      personalColor: backendPersonalColorKey(result.personalColor) || null,
+      features: result.features || [],
+    };
+    const fn = type === 'makeup' ? generateMakeupCards : generateHairCards;
+    taskRef.current = fn(payload).then((arr) =>
+      mapCards(arr, type, { result, features: result.features }),
+    );
+    go(type === 'makeup' ? 'makeup_loading' : 'hair_loading');
+  }, [result, go]);
+
+  const onCardsSuccess = useCallback((type, cards) => {
+    if (type === 'makeup') {
+      setMakeupCards(cards);
+      go('result_tabs_makeup');
+    } else {
+      setHairCards(cards);
+      go('result_tabs_hair');
+    }
+  }, [go]);
+
+  const onCardsError = useCallback((e) => {
+    const msg = String(e?.message || e || '');
+    setErrorInfo({ type: 'network', message: msg });
+    go('error_network');
+  }, [go]);
+
+  const photoUrl = photo?.dataUrl || null;
 
   let view;
   switch (stage) {
     // ── A · ONBOARDING ─────────────────────────────────────
     case 'splash':
-      view = <Splash onNext={() => go('onboarding1')} />;
+      view = <Splash onNext={() => go(hasOnboarded() ? 'home' : 'onboarding1')} />;
       break;
     case 'onboarding1':
       view = <Onboarding idx={0} onNext={() => go('onboarding2')} onSkip={() => go('login')} />;
@@ -75,13 +174,13 @@ export default function App() {
       view = <Onboarding idx={1} onNext={() => go('onboarding3')} onSkip={() => go('login')} />;
       break;
     case 'onboarding3':
-      view = <Onboarding idx={2} onNext={() => go('login')} />;
+      view = <Onboarding idx={2} onNext={() => { markOnboarded(); go('login'); }} />;
       break;
     case 'login':
-      view = <Login onNext={() => go('home')} />;
+      view = <Login onNext={() => { markOnboarded(); go('home'); }} />;
       break;
     case 'guest_gate':
-      view = <Login onNext={() => go('home')} mode="guest_gate" />;
+      view = <Login onNext={() => { markOnboarded(); go('home'); }} mode="guest_gate" />;
       break;
 
     // ── B · ANALYZE ────────────────────────────────────────
@@ -103,23 +202,50 @@ export default function App() {
       view = (
         <PersonalColor
           onNext={(pick) => {
-            setPersonalColor(pick);
-            go('loading');
+            setPersonalColor(normalizePersonalColor(pick));
+            startAnalysis();
           }}
           onBack={() => go('upload')}
         />
       );
       break;
     case 'loading':
-      view = <Loading onNext={onAnalysisDone} onCancel={() => go('home')} />;
+      view = (
+        <Loading
+          task={taskRef.current}
+          photoUrl={photoUrl}
+          onSuccess={onAnalysisSuccess}
+          onError={onAnalysisError}
+          onCancel={() => go('home')}
+        />
+      );
       break;
     case 'error_face':
-      // TODO: 분석 응답이 faceType:'판정 어려움' 또는 422 일 때 자동 진입.
-      view = <ErrorScreen type="face" onRetry={() => go('upload')} onBack={() => go('home')} />;
+      view = (
+        <ErrorScreen
+          type="face"
+          message={errorInfo.message}
+          onRetry={() => go('upload')}
+          onBack={() => go('home')}
+        />
+      );
       break;
     case 'error_network':
-      // TODO: fetch 실패 / timeout 시 자동 진입.
-      view = <ErrorScreen type="network" onRetry={() => go('loading')} onBack={() => go('home')} />;
+      view = (
+        <ErrorScreen
+          type="network"
+          message={errorInfo.message}
+          onRetry={() => {
+            // 마지막 작업이 분석이었는지 카드 생성이었는지에 따라 재시도.
+            if (!hairCards && !makeupCards) {
+              startAnalysis();
+            } else {
+              go('result_home');
+            }
+          }}
+          onBack={() => go('home')}
+        />
+      );
       break;
 
     // ── C · RESULT (HAIR) ──────────────────────────────────
@@ -127,10 +253,16 @@ export default function App() {
       view = (
         <AnalysisResult
           result={result}
+          photoUrl={photoUrl}
           onCardList={(type) => {
-            setCardListType(type);
-            setActiveCard(null);
-            go(type === 'makeup' ? 'makeup_loading' : 'hair_loading');
+            // 이미 받아둔 카드가 있으면 재호출 안 함.
+            const cached = type === 'makeup' ? makeupCards : hairCards;
+            if (cached) {
+              setActiveCard(null);
+              go(type === 'makeup' ? 'result_tabs_makeup' : 'result_tabs_hair');
+              return;
+            }
+            startCardGeneration(type);
           }}
           onShare={() => {
             setActiveCard(null);
@@ -142,14 +274,17 @@ export default function App() {
     case 'hair_loading':
       view = (
         <Loading
-          onNext={() => go('result_tabs_hair')}
-          onCancel={() => go('result_home')}
+          task={taskRef.current}
+          photoUrl={photoUrl}
           label="헤어 추천"
           steps={[
             { label: '얼굴형 매칭', en: 'SHAPE MATCH' },
             { label: '레퍼런스 검색', en: 'REFERENCE' },
             { label: '카드 큐레이션', en: 'CURATION' },
           ]}
+          onSuccess={(cards) => onCardsSuccess('hair', cards)}
+          onError={onCardsError}
+          onCancel={() => go('result_home')}
         />
       );
       break;
@@ -157,6 +292,7 @@ export default function App() {
       view = (
         <CardList
           type="hair"
+          cards={hairCards}
           onCard={(card) => {
             setActiveCard(card);
             if (card.locked) {
@@ -174,10 +310,11 @@ export default function App() {
       view = (
         <CardDetail
           card={activeCard}
+          result={result}
+          photoUrl={photoUrl}
           onBack={() => go('result_tabs_hair')}
           onShare={() => go('share_card')}
           onSynthesize={() => {
-            // TODO: 합성 광고 시청 후 POST /api/photo/generate (로그인 전용) 호출.
             setAdReturn({ done: 'card_detail', back: 'card_detail' });
             go('ad_gate');
           }}
@@ -185,7 +322,13 @@ export default function App() {
       );
       break;
     case 'ad_gate':
-      view = <AdGate onDone={() => go(adReturn.done)} onBack={() => go(adReturn.back)} />;
+      view = (
+        <AdGate
+          card={activeCard}
+          onDone={() => go(adReturn.done)}
+          onBack={() => go(adReturn.back)}
+        />
+      );
       break;
     case 'share_card':
       view = (
@@ -193,13 +336,8 @@ export default function App() {
           variant="hair"
           result={result}
           card={activeCard}
+          photoUrl={photoUrl}
           onClose={() => go(activeCard ? 'card_detail' : 'result_home')}
-          onSave={() => {
-            // TODO: html2canvas → blob → download / Web Share API.
-          }}
-          onCopy={() => {
-            // TODO: navigator.clipboard.writeText(공유 링크).
-          }}
         />
       );
       break;
@@ -208,14 +346,17 @@ export default function App() {
     case 'makeup_loading':
       view = (
         <Loading
-          onNext={() => go('result_tabs_makeup')}
-          onCancel={() => go('result_home')}
+          task={taskRef.current}
+          photoUrl={photoUrl}
           label="메이크업 추천"
           steps={[
             { label: '얼굴 특징 분석', en: 'FEATURES' },
             { label: '컬러 팔레트', en: 'PALETTE' },
             { label: '파트별 가이드', en: 'GUIDE' },
           ]}
+          onSuccess={(cards) => onCardsSuccess('makeup', cards)}
+          onError={onCardsError}
+          onCancel={() => go('result_home')}
         />
       );
       break;
@@ -223,6 +364,7 @@ export default function App() {
       view = (
         <CardList
           type="makeup"
+          cards={makeupCards}
           onCard={(card) => {
             setActiveCard(card);
             if (card.locked) {
@@ -240,12 +382,10 @@ export default function App() {
       view = (
         <MakeupDetail
           card={activeCard}
+          result={result}
+          photoUrl={photoUrl}
           onBack={() => go('result_tabs_makeup')}
           onShare={() => go('share_card_makeup')}
-          onSynthesize={() => {
-            // 메이크업 카드는 합성 미지원 정책. 추가 추천 제품 더보기로 대체.
-            // TODO: 쿠팡파트너스 추가 제품 페이지로 연결.
-          }}
         />
       );
       break;
@@ -255,6 +395,7 @@ export default function App() {
           variant="makeup"
           result={result}
           card={activeCard}
+          photoUrl={photoUrl}
           onClose={() => go('makeup_detail')}
         />
       );
@@ -275,23 +416,19 @@ export default function App() {
       view = <Splash onNext={() => go('onboarding1')} />;
   }
 
-  // 사용 안 한 photo 변수 lint 경고 회피용. 실제 분석 호출에 쓰일 자리.
-  void photo;
+  // 데스크톱(≥600px) 에서는 480px 캡 모바일 프레임. 모바일에서는 화면 전체.
+  // 100dvh 로 모바일 브라우저 chrome 변동 대응.
+  const containerStyle = useMemo(() => ({
+    width: '100%',
+    minHeight: '100dvh',
+    maxWidth: 480,
+    margin: '0 auto',
+    background: '#fff',
+    display: 'flex',
+    flexDirection: 'column',
+    position: 'relative',
+    overflowX: 'hidden',
+  }), []);
 
-  // 단일 폰 화면 뷰포트. 데스크톱에서는 480px 캡으로 가운데 정렬.
-  return (
-    <div
-      style={{
-        width: '100%',
-        minHeight: '100vh',
-        maxWidth: 480,
-        margin: '0 auto',
-        background: '#fff',
-        display: 'flex',
-        flexDirection: 'column',
-      }}
-    >
-      {view}
-    </div>
-  );
+  return <div style={containerStyle}>{view}</div>;
 }

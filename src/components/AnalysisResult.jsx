@@ -2,30 +2,7 @@ import { StatusBar } from './common/StatusBar';
 import { Icons } from './common/Icons';
 import { IndexMark, CtaTile } from './common/Layout';
 import { FacePlaceholder } from './common/Placeholders';
-
-// 8개 무드 키워드 → 한글 매핑 (CLAUDE.md MOOD_ARCHETYPES 와 동일).
-const MOOD_KR = {
-  ROMANTIC: '로맨틱',
-  CLEAN: '클린',
-  SOFT: '소프트',
-  ELEGANT: '엘레강트',
-  SHARP: '샤프',
-  CLASSIC: '클래식',
-  FRESH: '프레시',
-  EDGY: '엣지',
-};
-
-// 무드별 추상 무드보드 컬러 — 카드 위 SVG/그라디언트로 사용.
-const MOOD_COLORS = {
-  ROMANTIC: { c1: '#f3d9c8', c2: '#c97b6e' },
-  CLEAN: { c1: '#f5e6d3', c2: '#d4a574' },
-  SOFT: { c1: '#e8d5c4', c2: '#a8896f' },
-  ELEGANT: { c1: '#ede2d0', c2: '#a8896f' },
-  SHARP: { c1: '#dcdcdc', c2: '#5a5a5a' },
-  CLASSIC: { c1: '#e0d4c4', c2: '#7a6549' },
-  FRESH: { c1: '#e8efe2', c2: '#8aa07a' },
-  EDGY: { c1: '#cfcfd2', c2: '#3a3a40' },
-};
+import { MOOD_KR, MOOD_PALETTES as MOOD_COLORS } from '../api/moodPalette';
 
 // 백엔드 응답 → 감성 라벨 ("봄날의 햇살형" 같은) 매핑.
 // TODO: Gemini 가 응답에 styleLabel(또는 emotionalLabel) 을 포함하도록 프롬프트 보강.
@@ -35,7 +12,7 @@ function emotionalLabel(result) {
   return '봄날의 햇살형';
 }
 
-export default function AnalysisResult({ result, onCardList, onShare }) {
+export default function AnalysisResult({ result, photoUrl, onCardList, onShare }) {
   const faceType = result?.faceType || '계란형';
   const personalColor = result?.personalColor || '봄 웜톤';
   const moods = (result?.moodArchetype && result.moodArchetype.length === 3)
@@ -49,7 +26,7 @@ export default function AnalysisResult({ result, onCardList, onShare }) {
   const [labelHead, labelTail] = splitLabel(label);
 
   return (
-    <div style={{ width: '100%', height: '100%', background: '#fff', color: '#000', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ width: '100%', minHeight: '100dvh', background: '#fff', color: '#000', display: 'flex', flexDirection: 'column' }}>
       <StatusBar />
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 22px 14px', flexShrink: 0 }}>
         <span className="label">RESULT</span>
@@ -64,8 +41,16 @@ export default function AnalysisResult({ result, onCardList, onShare }) {
       <div style={{ height: 1, background: '#000', flexShrink: 0 }} />
 
       <div style={{ flex: 1, overflowY: 'auto' }}>
-        <div style={{ position: 'relative', aspectRatio: '1/1.15', background: '#000' }}>
-          <FacePlaceholder w="100%" h="100%" tone="dark" label="" />
+        <div style={{ position: 'relative', aspectRatio: '1/1.15', background: '#000', overflow: 'hidden' }}>
+          {photoUrl ? (
+            <img
+              src={photoUrl}
+              alt="분석한 정면 사진"
+              style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', filter: 'grayscale(0.05) contrast(1.02)' }}
+            />
+          ) : (
+            <FacePlaceholder w="100%" h="100%" tone="dark" label="" />
+          )}
           <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg,transparent 40%,rgba(0,0,0,.85) 100%)' }} />
           <div className="serif-i" style={{ position: 'absolute', top: 18, right: 22, color: 'rgba(255,255,255,.55)', fontSize: 13 }}>
             nº 01 · profile

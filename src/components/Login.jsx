@@ -9,7 +9,7 @@ import { Icons } from './common/Icons';
 export default function Login({ onNext, mode }) {
   const isGate = mode === 'guest_gate';
   return (
-    <div style={{ width: '100%', height: '100%', background: '#fff', color: '#000', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ width: '100%', minHeight: '100dvh', background: '#fff', color: '#000', display: 'flex', flexDirection: 'column' }}>
       <StatusBar />
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 22px 14px', flexShrink: 0 }}>
         <button style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }} aria-label="back">{Icons.back(20)}</button>
@@ -68,7 +68,7 @@ export default function Login({ onNext, mode }) {
       </div>
 
       <div style={{ flex: 1 }} />
-      <div style={{ padding: '0 28px 28px', textAlign: 'center', fontSize: 11, color: '#a8a8a8', lineHeight: 1.7, fontWeight: 300, flexShrink: 0 }}>
+      <div style={{ padding: '0 28px max(env(safe-area-inset-bottom), 28px)', textAlign: 'center', fontSize: 11, color: '#a8a8a8', lineHeight: 1.7, fontWeight: 300, flexShrink: 0 }}>
         가입 시 <span style={{ textDecoration: 'underline' }}>이용약관</span> · <span style={{ textDecoration: 'underline' }}>개인정보처리방침</span>에<br />동의한 것으로 간주됩니다.
       </div>
     </div>

@@ -20,14 +20,26 @@ const FALLBACK_FIT = [
   { kw: '균형잡힌 비율', target: '전체', point: '원포인트 강조 메이크업이 정답' },
 ];
 
-const PARTS = [
-  { part: '베이스', tip: 'Semi-Glow · 결광 살리기', why: '균형잡힌 비율에 윤광이 자연스러워요' },
-  { part: '쉐딩', tip: '눈두덩이 · 코 벽 음영 연결', why: '입체적 골격을 더 선명하게' },
-  { part: '하이라이터', tip: 'C존 · 광대 위 은은한 윤광', why: '부드러운 눈매와 시너지' },
-  { part: '블러셔', tip: '광대 감싸듯 넓은 타원형', why: '앞볼 집중으로 시선 모음' },
-  { part: '아이브로우', tip: '내추럴 아치형', why: '직선 눈썹은 답답해 보일 수' },
-  { part: '립', tip: 'Glow / Satin · 누드 그라데', why: '우아한 분위기와 가장 잘 맞아요' },
+const PART_LABELS = [
+  { key: 'shading', en: 'SHADING', kr: '쉐딩' },
+  { key: 'highlight', en: 'HIGHLIGHT', kr: '하이라이트' },
+  { key: 'blush', en: 'BLUSH', kr: '블러셔' },
+  { key: 'eyebrow', en: 'EYEBROW', kr: '아이브로우' },
+  { key: 'lip', en: 'LIP', kr: '립' },
+  { key: 'eyeshadow', en: 'EYESHADOW', kr: '아이섀도우' },
+  { key: 'eyeliner', en: 'EYELINER', kr: '아이라이너' },
 ];
+
+function buildPartGuide(makeup) {
+  if (!makeup) return [];
+  const out = [];
+  for (const p of PART_LABELS) {
+    const tip = makeup[p.key];
+    if (!tip) continue;
+    out.push({ part: p.kr, en: p.en, tip, why: makeup[`${p.key}Reason`] || null });
+  }
+  return out;
+}
 
 const PRODUCTS_MOCK = [
   { tag: 'BASE', name: '클리오 킬커버 파운웨어 쿠션', price: '28,000원' },
@@ -35,18 +47,20 @@ const PRODUCTS_MOCK = [
   { tag: 'EYES', name: '에뛰드 플레이 컬러 아이즈', price: '15,000원' },
 ];
 
-export default function MakeupDetail({ card, onBack, onShare, onSynthesize }) {
-  const name = card?.name || '우아한 분위기 룩';
+export default function MakeupDetail({ card, result, photoUrl, onBack, onShare, onSynthesize }) {
+  const name = card?.name || '추천 메이크업';
   const rank = card?.rank ?? 1;
-  const commentary =
-    card?.commentary ||
-    '계란형의 균형잡힌 비율은 Semi-Glow 베이스가 가장 자연스러워요. 과하지 않은 윤광으로 피부 생기를 살리고, 넓은 블러셔로 자연스러운 혈색을 더하면 우아하면서도 도도한 ELEGANT 무드를 만들 수 있어요.';
-  const fit = card?.personalFit || FALLBACK_FIT;
+  const commentary = card?.commentary || card?.coachComment || '얼굴형과 퍼스널컬러를 기준으로 가장 자연스러운 메이크업이에요.';
+  const fit = (card?.personalFit && card.personalFit.length) ? card.personalFit : FALLBACK_FIT;
   const products = (card?.recommendedProducts && card.recommendedProducts.length) ? card.recommendedProducts : PRODUCTS_MOCK;
   const headerLabel = `MAKEUP · nº 0${Math.max(rank, 1)}`;
+  const featureTip = card?.featureTip;
+  const moodLabel = card?.moodLabel;
+  const baseSkin = card?.baseSkin;
+  void result; void photoUrl; void onSynthesize; // 정책상 메이크업 카드는 합성 미지원 — props 호환 유지.
 
   return (
-    <div style={{ width: '100%', height: '100%', background: '#fff', color: '#000', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ width: '100%', minHeight: '100dvh', background: '#fff', color: '#000', display: 'flex', flexDirection: 'column' }}>
       <StatusBar />
       <BackHeader
         label={headerLabel}
@@ -80,10 +94,19 @@ export default function MakeupDetail({ card, onBack, onShare, onSynthesize }) {
               <span className="label" style={{ color: 'rgba(255,255,255,.75)' }}>
                 {rank === 1 ? 'ST · BEST MATCH' : `${rank}TH`}
               </span>
-              <span style={{ width: 3, height: 3, borderRadius: '50%', background: 'rgba(255,255,255,.4)' }} />
-              <span className="label" style={{ color: 'rgba(255,255,255,.6)' }}>SEMI-GLOW</span>
+              {baseSkin && (
+                <>
+                  <span style={{ width: 3, height: 3, borderRadius: '50%', background: 'rgba(255,255,255,.4)' }} />
+                  <span className="label" style={{ color: 'rgba(255,255,255,.6)' }}>{baseSkin.toUpperCase()}</span>
+                </>
+              )}
             </div>
             <div className="ko" style={{ fontSize: 24, fontWeight: 300, letterSpacing: '-.01em' }}>{name}</div>
+            {moodLabel && (
+              <div className="ko" style={{ fontSize: 11.5, color: 'rgba(255,255,255,.65)', fontWeight: 300, marginTop: 4 }}>
+                {moodLabel}
+              </div>
+            )}
           </div>
         </div>
 
@@ -111,6 +134,12 @@ export default function MakeupDetail({ card, onBack, onShare, onSynthesize }) {
         </Section>
 
         <Section n="03" en="PERSONAL FIT" kr="내 얼굴 특징 맞춤 포인트">
+          {featureTip && (
+            <div style={{ background: '#fff', border: '1px solid #000', padding: '12px 14px', marginBottom: 12 }}>
+              <div className="label" style={{ marginBottom: 4, color: '#7a7a7a' }}>FEATURE TIP</div>
+              <div className="ko" style={{ fontSize: 12.5, fontWeight: 400, lineHeight: 1.6 }}>{featureTip}</div>
+            </div>
+          )}
           {fit.map((f, i) => (
             <div
               key={i}
@@ -134,17 +163,29 @@ export default function MakeupDetail({ card, onBack, onShare, onSynthesize }) {
 
         <Section n="04" en="PART GUIDE" kr="파트별 가이드">
           <div style={{ borderTop: '1px solid #000' }}>
-            {PARTS.map((p, i) => (
-              <div key={i} style={{ padding: '12px 0', borderBottom: i < PARTS.length - 1 ? '1px solid #e8e8e8' : 'none' }}>
-                <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, marginBottom: 4 }}>
-                  <span className="label" style={{ width: 60, flexShrink: 0, fontSize: 9.5 }}>{p.part}</span>
-                  <span className="ko" style={{ fontSize: 13, fontWeight: 400 }}>{p.tip}</span>
+            {(() => {
+              const partGuide = buildPartGuide(card?.makeup);
+              if (!partGuide.length) {
+                return (
+                  <div style={{ padding: '14px 0', color: '#7a7a7a' }} className="ko">
+                    파트별 가이드를 불러오지 못했어요.
+                  </div>
+                );
+              }
+              return partGuide.map((p, i) => (
+                <div key={i} style={{ padding: '12px 0', borderBottom: i < partGuide.length - 1 ? '1px solid #e8e8e8' : 'none' }}>
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, marginBottom: 4 }}>
+                    <span className="label" style={{ width: 76, flexShrink: 0, fontSize: 9.5 }}>{p.en}</span>
+                    <span className="ko" style={{ fontSize: 13, fontWeight: 400, lineHeight: 1.4 }}>{p.tip}</span>
+                  </div>
+                  {p.why && (
+                    <div className="ko" style={{ fontSize: 11, color: '#7a7a7a', fontWeight: 300, paddingLeft: 88, lineHeight: 1.5 }}>
+                      ↳ {p.why}
+                    </div>
+                  )}
                 </div>
-                <div className="ko" style={{ fontSize: 11, color: '#7a7a7a', fontWeight: 300, paddingLeft: 72, lineHeight: 1.5 }}>
-                  ↳ {p.why}
-                </div>
-              </div>
-            ))}
+              ));
+            })()}
           </div>
         </Section>
 

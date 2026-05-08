@@ -3,26 +3,20 @@ import { BackHeader, IndexMark } from './common/Layout';
 import { Icons } from './common/Icons';
 import { FacePlaceholder, MosaicOverlay } from './common/Placeholders';
 
-// 카드 목록은 백엔드 응답이 오기 전 임시 mock.
-// TODO: POST /api/cards/{hair|makeup} 응답을 cards prop 으로 주입.
-const HAIR_MOCK = [
-  { rank: 1, name: '쿠션 단발', sub: 'C컬 · 시스루 뱅 · ROMANTIC', locked: false, badge: 'BEST' },
-  { rank: 2, locked: true },
-  { rank: 3, locked: true },
-  { rank: 0, name: '두꺼운 일자 풀뱅', sub: '얼굴이 더 길어 보일 수 있어요', warn: true, locked: false },
-];
-const MAKEUP_MOCK = [
-  { rank: 1, name: '우아한 분위기 룩', sub: '세미 글로우 · ELEGANT MOOD', locked: false, badge: 'BEST' },
-  { rank: 2, locked: true },
-  { rank: 3, locked: true },
-  { rank: 0, name: '과한 컨투어 룩', sub: '입체감이 인위적으로 보일 수 있어요', warn: true, locked: false },
-];
-
+/**
+ * 추천 카드 4장 (rank 1·2·3 + AVOID).
+ * 카드는 백엔드(POST /api/cards/{hair|makeup}) 응답을 mappers.mapHairCard / mapMakeupCard 로
+ * 정규화한 형태를 받는다 — 호출 측 책임.
+ *
+ * 빈 배열이거나 cards=null 이면 데모 더미를 띄우는 게 아니라 빈 슬롯을 보여준다 (회귀 명확하게).
+ */
 export default function CardList({ type = 'hair', cards, onCard, onBack }) {
   const isHair = type === 'hair';
-  const items = cards && cards.length ? cards : (isHair ? HAIR_MOCK : MAKEUP_MOCK);
+  const items = Array.isArray(cards) ? cards : [];
+  const empty = items.length === 0;
+
   return (
-    <div style={{ width: '100%', height: '100%', background: '#fff', color: '#000', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ width: '100%', minHeight: '100dvh', background: '#fff', color: '#000', display: 'flex', flexDirection: 'column' }}>
       <StatusBar />
       <BackHeader label={isHair ? 'HAIR' : 'MAKEUP'} title={isHair ? '헤어 추천' : '메이크업 추천'} onBack={onBack} />
 
@@ -36,23 +30,43 @@ export default function CardList({ type = 'hair', cards, onCard, onBack }) {
         </h1>
       </div>
 
-      <div style={{ flex: 1, overflowY: 'auto', padding: '8px 22px 30px' }}>
-        {items.map((c, i) => (
-          <CardRow key={i} card={c} onClick={() => onCard?.(c)} />
-        ))}
+      <div style={{ flex: 1, overflowY: 'auto', padding: '8px 22px max(env(safe-area-inset-bottom), 30px)' }}>
+        {empty ? (
+          <EmptyState type={type} />
+        ) : (
+          items.map((c, i) => <CardRow key={i} card={c} onClick={() => onCard?.(c)} />)
+        )}
+      </div>
+    </div>
+  );
+}
+
+function EmptyState({ type }) {
+  return (
+    <div style={{ padding: '60px 20px', textAlign: 'center' }}>
+      <div style={{ width: 56, height: 56, border: '1px solid #000', borderRadius: '50%', margin: '0 auto 18px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        {Icons.warn(22)}
+      </div>
+      <div className="label" style={{ marginBottom: 8, color: '#7a7a7a' }}>NO CARDS YET</div>
+      <div className="ko" style={{ fontSize: 14, fontWeight: 300, lineHeight: 1.6, color: '#5a5a5a' }}>
+        {type === 'makeup' ? '메이크업 카드를 불러오지 못했어요.' : '헤어 카드를 불러오지 못했어요.'}<br />
+        뒤로 가서 다시 시도해 주세요.
       </div>
     </div>
   );
 }
 
 function CardRow({ card, onClick }) {
-  const isWarn = card.warn;
+  const isWarn = !!card.warn;
   return (
     <div
       onClick={onClick}
+      role="button"
+      tabIndex={0}
       style={{
         display: 'flex', gap: 16, padding: '18px 0', borderBottom: '1px solid #e8e8e8',
         cursor: 'pointer', alignItems: 'stretch', position: 'relative',
+        minHeight: 124,
       }}
     >
       <div style={{ width: 96, height: 124, position: 'relative', flexShrink: 0 }}>
@@ -70,14 +84,14 @@ function CardRow({ card, onClick }) {
             <>
               <span className="serif-i" style={{ fontSize: 18, fontWeight: 300, lineHeight: 1, letterSpacing: '-.01em' }}>{card.rank}</span>
               <span className="label" style={{ fontSize: 8.5, letterSpacing: '.2em' }}>
-                {card.rank === 1 ? 'ST' : card.rank === 2 ? 'ND' : 'RD'}
+                {ordinal(card.rank)}
               </span>
             </>
           )}
         </div>
       </div>
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', minWidth: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6, flexWrap: 'wrap' }}>
           {card.badge && (
             <span className="label" style={{ padding: '2px 6px', border: '1px solid #000', background: '#000', color: '#fff', fontSize: 9 }}>
               {card.badge}
@@ -98,10 +112,12 @@ function CardRow({ card, onClick }) {
           </>
         ) : (
           <>
-            <div className="ko" style={{ fontSize: 17, fontWeight: 400, letterSpacing: '-.01em', marginBottom: 6, lineHeight: 1.3 }}>
-              {card.name}
+            <div className="ko" style={{ fontSize: 16, fontWeight: 500, letterSpacing: '-.01em', marginBottom: 6, lineHeight: 1.3, overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
+              {card.name || '추천 카드'}
             </div>
-            <div className="ko" style={{ fontSize: 12, color: '#5a5a5a', fontWeight: 300, lineHeight: 1.5 }}>{card.sub}</div>
+            <div className="ko" style={{ fontSize: 12, color: '#5a5a5a', fontWeight: 300, lineHeight: 1.5, overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
+              {card.sub}
+            </div>
           </>
         )}
         {card.locked && !isWarn && (
@@ -111,7 +127,14 @@ function CardRow({ card, onClick }) {
           </div>
         )}
       </div>
-      <div style={{ display: 'flex', alignItems: 'center' }}>{Icons.arrow(16, isWarn ? '#a8a8a8' : '#000')}</div>
+      <div style={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}>{Icons.arrow(16, isWarn ? '#a8a8a8' : '#000')}</div>
     </div>
   );
+}
+
+function ordinal(n) {
+  if (n === 1) return 'ST';
+  if (n === 2) return 'ND';
+  if (n === 3) return 'RD';
+  return 'TH';
 }

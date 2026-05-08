@@ -9,7 +9,7 @@ import { FacePlaceholder } from './common/Placeholders';
 export default function ShareCard({ result, card, variant = 'hair', onClose, onCopy, onSave }) {
   const isMakeup = variant === 'makeup';
   return (
-    <div style={{ width: '100%', height: '100%', background: '#000', color: '#fff', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ width: '100%', minHeight: '100dvh', background: '#000', color: '#fff', display: 'flex', flexDirection: 'column' }}>
       <StatusBar dark />
       <BackHeader label="SHARE" title={isMakeup ? '메이크업 결과 공유' : '결과 공유'} onBack={onClose} dark />
 

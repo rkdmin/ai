@@ -4,9 +4,13 @@ import { BackHeader } from './common/Layout';
 import { Icons } from './common/Icons';
 import { FacePlaceholder, ProductPlaceholder } from './common/Placeholders';
 
-export default function AdGate({ onDone, onBack }) {
+export default function AdGate({ card, onDone, onBack }) {
   const [stage, setStage] = useState('prompt');
   const [t, setT] = useState(15);
+
+  const cardLabel = card?.cardType === 'makeup' ? 'MAKEUP' : 'HAIR';
+  const cardName = card?.name || (card?.cardType === 'makeup' ? '메이크업 카드' : '헤어 카드');
+  const cardRank = card?.rank ?? 1;
 
   useEffect(() => {
     if (stage !== 'ad') return;
@@ -31,11 +35,13 @@ export default function AdGate({ onDone, onBack }) {
 
   if (stage === 'prompt') {
     return (
-      <div style={{ width: '100%', height: '100%', background: '#fff', color: '#000', display: 'flex', flexDirection: 'column' }}>
+      <div style={{ width: '100%', minHeight: '100dvh', background: '#fff', color: '#000', display: 'flex', flexDirection: 'column' }}>
         <StatusBar />
         <BackHeader label="LOCKED" title="잠금 해제" onBack={onBack} />
         <div style={{ flex: 1, padding: '40px 28px 0', display: 'flex', flexDirection: 'column' }}>
-          <div className="label" style={{ marginBottom: 14 }}>HAIR · nº 01 — LONG LAYERED</div>
+          <div className="label" style={{ marginBottom: 14 }}>
+            {cardLabel} · nº 0{Math.max(cardRank, 1)} — {cardName.toUpperCase()}
+          </div>
 
           <div style={{ aspectRatio: '1/1', position: 'relative', marginBottom: 24, border: '1px solid #000' }}>
             <FacePlaceholder w="100%" h="100%" tone="dark" label="" />
@@ -66,7 +72,9 @@ export default function AdGate({ onDone, onBack }) {
                 {Icons.lock(22)}
               </div>
               <div style={{ textAlign: 'center' }}>
-                <div className="label" style={{ marginBottom: 6 }}>1ST · BEST MATCH</div>
+                <div className="label" style={{ marginBottom: 6 }}>
+                  {cardRank === 1 ? '1ST · BEST MATCH' : `${cardRank}TH · MATCH`}
+                </div>
                 <div className="ko" style={{ fontSize: 18, fontWeight: 300, letterSpacing: '-.01em' }}>잠긴 카드</div>
               </div>
             </div>
@@ -123,7 +131,7 @@ export default function AdGate({ onDone, onBack }) {
 
   if (stage === 'ad') {
     return (
-      <div style={{ width: '100%', height: '100%', background: '#000', color: '#fff', display: 'flex', flexDirection: 'column' }}>
+      <div style={{ width: '100%', minHeight: '100dvh', background: '#000', color: '#fff', display: 'flex', flexDirection: 'column' }}>
         <StatusBar dark />
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 22px 14px', flexShrink: 0 }}>
           <span className="label" style={{ color: 'rgba(255,255,255,.5)' }}>AD · {t}s</span>
@@ -164,7 +172,7 @@ export default function AdGate({ onDone, onBack }) {
     <div
       style={{
         width: '100%',
-        height: '100%',
+        minHeight: '100dvh',
         background: '#fff',
         color: '#000',
         display: 'flex',

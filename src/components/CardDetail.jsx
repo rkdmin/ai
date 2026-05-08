@@ -3,34 +3,31 @@ import { Icons } from './common/Icons';
 import { BackHeader, Section } from './common/Layout';
 import { FacePlaceholder } from './common/Placeholders';
 
-// 헤어 카드 상세. card.name / card.rank / card.sub 만 props 로 받고,
-// 본문 섹션(코멘트·맞춤 피드백·무드보드)은 mock — Gemini 응답이 카드별 코멘트를
-// 반환하도록 프롬프트가 보강되면 여기에 매핑.
-// TODO: card.commentary / card.personalFit / card.moodBoard 필드를 백엔드 응답에 추가.
+// 헤어 카드 상세. mappers.mapHairCard 가 정규화한 카드를 받는다.
+// card.commentary / card.personalFit / card.moodBoard / card.featureTip 를 그대로 사용하고,
+// 백엔드 응답에서 빠진 부분은 짧은 fallback 으로 채운다.
 const FALLBACK_FIT = [
-  { kw: '균형잡힌 비율', point: '턱선 ±2cm 길이가 가장 자연스러워요' },
-  { kw: '부드러운 눈매', point: '안으로 말린 C컬로 시선 강조' },
-  { kw: '좁은 이마', point: '시스루 뱅으로 이마 비율 보정' },
+  { kw: '균형잡힌 비율', point: '얼굴형에 맞춰 길이를 조정해보세요' },
+  { kw: '이목구비 균형', point: '앞머리 비율로 인상을 조정' },
 ];
 
 const FALLBACK_MOOD = [
-  { kw: 'ROMANTIC', kr: '로맨틱', c1: '#f3d9c8', c2: '#c97b6e' },
-  { kw: 'EFFORTLESS', kr: '내추럴', c1: '#ede2d0', c2: '#a8896f' },
+  { kw: 'CLEAN', kr: '클린', c1: '#f5e6d3', c2: '#d4a574' },
   { kw: 'CLASSIC', kr: '클래식', c1: '#e0d4c4', c2: '#7a6549' },
 ];
 
-export default function CardDetail({ card, onBack, onShare, onSynthesize }) {
-  const name = card?.name || '쿠션 단발';
+export default function CardDetail({ card, result, photoUrl, onBack, onShare, onSynthesize }) {
+  const name = card?.name || '추천 헤어';
   const rank = card?.rank ?? 1;
-  const commentary =
-    card?.commentary ||
-    '계란형 + 부드러운 눈매에 가장 잘 어울리는 길이는 턱선 ±2cm. 살짝 안으로 말린 C컬이 동그란 인상을 보완하고, 시스루 뱅으로 이마 비율을 조정하면 우아하면서도 청순한 ROMANTIC 무드가 완성돼요.';
-  const fit = card?.personalFit || FALLBACK_FIT;
-  const moodBoard = card?.moodBoard || FALLBACK_MOOD;
+  const commentary = card?.commentary || card?.coachComment || '얼굴형 분석 결과를 기준으로 가장 자연스러운 헤어 스타일이에요.';
+  const fit = (card?.personalFit && card.personalFit.length) ? card.personalFit : FALLBACK_FIT;
+  const moodBoard = (card?.moodBoard && card.moodBoard.length) ? card.moodBoard : FALLBACK_MOOD;
   const headerLabel = `HAIR · nº 0${Math.max(rank, 1)}`;
+  const featureTip = card?.featureTip;
+  const moodLabel = card?.moodLabel;
 
   return (
-    <div style={{ width: '100%', height: '100%', background: '#fff', color: '#000', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ width: '100%', minHeight: '100dvh', background: '#fff', color: '#000', display: 'flex', flexDirection: 'column' }}>
       <StatusBar />
       <BackHeader
         label={headerLabel}
@@ -46,6 +43,12 @@ export default function CardDetail({ card, onBack, onShare, onSynthesize }) {
       <div style={{ flex: 1, overflowY: 'auto' }}>
         <div style={{ aspectRatio: '1/1.05', background: '#000', position: 'relative' }}>
           <FacePlaceholder w="100%" h="100%" tone="dark" label="reference" />
+          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg,rgba(0,0,0,0) 40%,rgba(0,0,0,.85) 100%)' }} />
+          {moodLabel && (
+            <span className="label" style={{ position: 'absolute', top: 16, left: 18, color: 'rgba(255,255,255,.65)' }}>
+              {moodLabel}
+            </span>
+          )}
           <div style={{ position: 'absolute', bottom: 14, left: 18, right: 18, color: '#fff' }}>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 6 }}>
               <span className="serif-i" style={{ fontSize: 22, color: '#fff', lineHeight: 1 }}>{rank}</span>
@@ -53,7 +56,10 @@ export default function CardDetail({ card, onBack, onShare, onSynthesize }) {
                 {rankSuffix(rank)} · {rank === 1 ? 'BEST MATCH' : 'MATCH'}
               </span>
             </div>
-            <div className="ko" style={{ fontSize: 24, fontWeight: 300, letterSpacing: '-.01em' }}>{name}</div>
+            <div className="ko" style={{ fontSize: 24, fontWeight: 300, letterSpacing: '-.01em', marginBottom: card?.bangs && card.bangs !== '없음' ? 6 : 0 }}>{name}</div>
+            {card?.bangs && card.bangs !== '없음' && (
+              <div className="ko" style={{ fontSize: 12, color: 'rgba(255,255,255,.7)', fontWeight: 300 }}>앞머리 · {card.bangs}</div>
+            )}
           </div>
         </div>
 
@@ -66,6 +72,12 @@ export default function CardDetail({ card, onBack, onShare, onSynthesize }) {
         </Section>
 
         <Section n="02" en="PERSONAL FIT" kr="내 얼굴 특징 맞춤 피드백">
+          {featureTip && (
+            <div style={{ background: '#fff', border: '1px solid #000', padding: '12px 14px', marginBottom: 12 }}>
+              <div className="label" style={{ marginBottom: 4, color: '#7a7a7a' }}>FEATURE TIP</div>
+              <div className="ko" style={{ fontSize: 12.5, fontWeight: 400, lineHeight: 1.6 }}>{featureTip}</div>
+            </div>
+          )}
           {fit.map((f, i) => (
             <div
               key={i}
@@ -99,8 +111,16 @@ export default function CardDetail({ card, onBack, onShare, onSynthesize }) {
         <Section n="04" en="AI SYNTHESIS" kr="내 얼굴에 합성해보기" last>
           <div style={{ background: '#000', color: '#fff', padding: '22px 20px 24px', position: 'relative' }}>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 28px 1fr', gap: 10, alignItems: 'center', marginBottom: 18 }}>
-              <div style={{ aspectRatio: '1/1.2', position: 'relative' }}>
-                <FacePlaceholder w="100%" h="100%" tone="dark" label="" />
+              <div style={{ aspectRatio: '1/1.2', position: 'relative', overflow: 'hidden' }}>
+                {photoUrl ? (
+                  <img
+                    src={photoUrl}
+                    alt=""
+                    style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', filter: 'grayscale(0.2)' }}
+                  />
+                ) : (
+                  <FacePlaceholder w="100%" h="100%" tone="dark" label="" />
+                )}
                 <span className="label" style={{ position: 'absolute', top: 8, left: 10, color: 'rgba(255,255,255,.6)', fontSize: 9 }}>BEFORE</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{Icons.arrow(20, '#fff')}</div>

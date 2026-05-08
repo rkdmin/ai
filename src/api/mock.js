@@ -11,6 +11,11 @@ export async function analyzeFace(_imageBase64, _faceRatios = null) {
   return {
     faceType: '둥근형',
     features: ['눈 간격 넓음', '코 낮음', '광대 넓음'],
+    moodArchetype: ['ROMANTIC', 'CLEAN', 'SOFT'],
+    personalColor: '봄 웜톤',
+    styleLabel: '봄날의 햇살형',
+    faceRatios: null,
+    analysisId: null,
   }
 }
 
@@ -20,32 +25,32 @@ export async function generateHairCards(_analysis) {
   return [
     {
       type: 'recommend', rank: 1, cardType: 'hair',
-      mood: '청순 내추럴', emoji: '🌸',
-      hair: '히피펌 미디엄',
+      mood: '청순 내추럴', moodLabel: 'ROMANTIC · 우아한 분위기', emoji: '🌸',
+      hair: '히피펌 미디엄', bangs: '시스루뱅',
       hairReason: '볼륨감이 얼굴 세로 길이를 늘려 둥근 얼굴형을 갸름하게 보이게 합니다.',
       featureTip: '눈 간격이 넓으니 눈 사이 가르마를 활용하면 시선이 모여 보입니다.',
       coachComment: '히피펌은 둥근 얼굴형에 자연스러운 볼륨을 더해 얼굴이 입체적으로 보여요. 중간 길이가 얼굴 비율을 잡아주는 최적의 선택입니다.',
     },
     {
       type: 'recommend', rank: 2, cardType: 'hair',
-      mood: '시크 레이어드', emoji: '✨',
-      hair: '레이어드 컷',
+      mood: '시크 레이어드', moodLabel: 'CLEAN · 도시적 분위기', emoji: '✨',
+      hair: '레이어드 컷', bangs: '사이드뱅',
       hairReason: '사이드 레이어가 얼굴 옆선을 가려 갸름한 인상을 만들어 줍니다.',
       featureTip: '광대가 넓으니 귀 뒤로 넘기는 스타일보다 사이드를 내려두는 것이 유리합니다.',
       coachComment: '레이어드 컷은 얼굴 옆을 자연스럽게 커버하면서도 세련된 느낌을 줍니다. 광대가 넓은 경우 사이드 볼륨을 살리면 더욱 균형감이 좋아집니다.',
     },
     {
       type: 'recommend', rank: 3, cardType: 'hair',
-      mood: '오피스 단정', emoji: '💼',
-      hair: '단발 외컬',
+      mood: '오피스 단정', moodLabel: 'CLASSIC · 단정한 분위기', emoji: '💼',
+      hair: '단발 외컬', bangs: '없음',
       hairReason: '깔끔한 선으로 단정하면서도 얼굴 아래쪽에 공간을 만들어 세련된 인상을 줍니다.',
       featureTip: null,
       coachComment: '단발 외컬은 얼굴 라인을 정돈해주면서 전문적인 이미지를 연출합니다. 끝을 바깥쪽으로 살짝 말아주면 얼굴이 더 갸름해 보여요.',
     },
     {
       type: 'avoid', cardType: 'hair',
-      mood: '피해야 할 헤어', emoji: '⚠️',
-      hair: '원랭스 롱 스트레이트',
+      mood: '피해야 할 헤어', moodLabel: null, emoji: '⚠️',
+      hair: '원랭스 롱 스트레이트', bangs: null,
       hairReason: '얼굴 양옆에 볼륨이 없어 얼굴 폭이 더 강조되어 보입니다.',
       featureTip: null,
       coachComment: '원랭스 롱 스트레이트는 얼굴 좌우 폭을 그대로 드러내 둥근 얼굴형이 더 넓어 보입니다. 특히 광대가 넓은 경우 더 두드러질 수 있어요.',
@@ -59,14 +64,16 @@ export async function generateMakeupCards(_analysis) {
   return [
     {
       type: 'recommend', rank: 1, cardType: 'makeup',
-      mood: '생기 발랄', emoji: '🌸',
+      mood: '생기 발랄', moodLabel: 'FRESH · 생기 발랄', emoji: '🌸',
+      baseSkin: 'Semi-Glow',
       makeup: {
-        lip: '코랄 핑크', lipReason: '피부 노란 기와 자연스럽게 어우러져 화사한 생기를 더해줍니다.',
-        blush: '피치 블러셔', blushReason: '뺨에 맑은 혈색을 주어 입체감과 건강미를 동시에 연출합니다.',
-        eyeshadow: '샴페인 골드', eyeshadowReason: '눈두덩에 가벼운 광채를 주어 눈매가 또렷하고 트여 보입니다.',
-        eyebrow: '라이트 브라운 / 염색모', eyebrowReason: '눈썹 색을 밝게 빼면 이목구비 경계가 부드러워져 봄 웜톤의 투명한 이미지가 극대화됩니다.',
-        eyeliner: '브라운 펜슬 점막 채움', eyelinerReason: '블랙보다 부드러운 브라운으로 점막만 채우면 눈매의 맑은 느낌이 유지됩니다.',
-        highlighter: '피치 빔 / 물광 (앞광대)', highlighterReason: '앞볼에 촉촉한 물광을 얹으면 생기 있고 입체적인 동안 얼굴이 완성됩니다.',
+        shading: '광대 아래 부드러운 음영', shadingReason: '둥근 얼굴형에 자연스럽게 입체감을 더합니다.',
+        highlight: '앞광대 물광', highlightReason: '생기 있고 동안 얼굴 인상을 만들어 줍니다.',
+        blush: '피치 블러셔 (앞볼 중앙)', blushReason: '맑은 혈색을 주어 건강미를 연출합니다.',
+        eyebrow: '라이트 브라운 자연 아치', eyebrowReason: '봄 웜톤의 투명한 이미지를 극대화합니다.',
+        lip: '코랄 핑크 그라데', lipReason: '피부 톤과 어우러져 화사한 생기를 더해줍니다.',
+        eyeshadow: '샴페인 골드 단색', eyeshadowReason: '눈두덩에 가벼운 광채를 더해 눈매가 트여 보입니다.',
+        eyeliner: '브라운 점막 채움', eyelinerReason: '맑은 눈매 인상을 유지합니다.',
       },
       featureTip: '눈 간격이 넓으니 눈 앞머리에 진한 색을 모아 간격을 좁아 보이게 하세요.',
       coachComment: '코랄과 피치 계열의 조합은 둥근 얼굴형에 생동감을 더합니다. 전체적으로 가볍고 투명한 텍스처로 마무리하면 더욱 화사해 보여요.',
@@ -129,7 +136,8 @@ export async function generateTotalCards(_analysis) {
         lip: '코랄 핑크', lipReason: '웜톤 피부색과 자연스럽게 어우러져 화사한 생기를 더합니다.',
         blush: '피치 블러셔', blushReason: '맑은 혈색으로 입체감과 건강미를 동시에 연출합니다.',
         eyeshadow: '샴페인 골드', eyeshadowReason: '가벼운 광채로 눈매를 또렷하고 트여 보이게 합니다.',
-        eyebrow: '라이트 브라운 / 염색모', eyebrowReason: '밝은 눈썹 컬러가 이목구비를 부드럽게 해 봄 웜톤의 투명함을 극대화합니다.',
+        eyebrow: '라이트 브라운 / 염색모', eyebrowReason: '밝은 눈썹 컬러가 이목구비를 ' +
+            '부드럽게 해 봄 웜톤의 투명함을 극대화합니다.',
         eyeliner: '브라운 펜슬 점막 채움', eyelinerReason: '맑은 눈매를 유지하면서 자연스럽게 눈을 또렷하게 만들어 줍니다.',
         highlighter: '피치 빔 / 물광 (앞광대)', highlighterReason: '앞볼의 물광이 히피펌의 가벼운 무드와 어우러져 생기 넘치는 인상을 완성합니다.',
       },

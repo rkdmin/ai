@@ -18,11 +18,11 @@ const NETWORK_TIPS = [
   { n: '03', label: '잠시 후 다시 시도' },
 ];
 
-export default function ErrorScreen({ type = 'face', onRetry, onBack }) {
+export default function ErrorScreen({ type = 'face', message, onRetry, onBack }) {
   const isFace = type === 'face';
   const tips = isFace ? FACE_TIPS : NETWORK_TIPS;
   return (
-    <div style={{ width: '100%', height: '100%', background: '#fff', color: '#000', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ width: '100%', minHeight: '100dvh', background: '#fff', color: '#000', display: 'flex', flexDirection: 'column' }}>
       <StatusBar />
       <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '10px 22px 14px', flexShrink: 0 }}>
         <button onClick={onBack} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }} aria-label="close">
@@ -48,6 +48,18 @@ export default function ErrorScreen({ type = 'face', onRetry, onBack }) {
             ? '아래 항목을 확인하고 다시 시도해 주세요. 얼굴이 잘 보이는 정면 사진이 가장 정확해요.'
             : '와이파이 또는 데이터 연결을 확인하고 다시 시도해 주세요. 분석은 처음부터 시작되지 않아요.'}
         </p>
+        {message && (
+          <div
+            style={{
+              padding: '10px 12px', background: '#f6f1ed', borderLeft: '2px solid #c45a3b',
+              fontSize: 11.5, color: '#5a5a5a', fontWeight: 300, lineHeight: 1.6, marginBottom: 18,
+              wordBreak: 'break-word',
+            }}
+          >
+            <span className="label" style={{ fontSize: 9, color: '#7a7a7a', marginRight: 6 }}>DETAIL</span>
+            {message}
+          </div>
+        )}
 
         <div style={{ borderTop: '1px solid #000' }}>
           {tips.map((t, i) => (
@@ -60,7 +72,7 @@ export default function ErrorScreen({ type = 'face', onRetry, onBack }) {
       </div>
 
       <div style={{ flex: 1 }} />
-      <div style={{ padding: '18px 24px 30px', display: 'flex', gap: 10, flexShrink: 0 }}>
+      <div style={{ padding: '18px 24px max(env(safe-area-inset-bottom), 30px)', display: 'flex', gap: 10, flexShrink: 0 }}>
         <button
           onClick={onBack}
           style={{ flex: 1, background: '#fff', color: '#000', border: '1px solid #000', padding: '14px 0', fontFamily: 'Jost', fontSize: 11, letterSpacing: '.18em', cursor: 'pointer' }}

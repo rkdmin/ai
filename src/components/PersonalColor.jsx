@@ -16,7 +16,7 @@ const OPTIONS = [
 export default function PersonalColor({ onNext, onBack }) {
   const [pick, setPick] = useState(null);
   return (
-    <div style={{ width: '100%', height: '100%', background: '#fff', color: '#000', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ width: '100%', minHeight: '100dvh', background: '#fff', color: '#000', display: 'flex', flexDirection: 'column' }}>
       <StatusBar />
       <BackHeader label="STEP 02 / 03" title="퍼스널컬러" onBack={onBack} />
 
@@ -70,7 +70,7 @@ export default function PersonalColor({ onNext, onBack }) {
         </button>
       </div>
 
-      <div style={{ padding: '18px 24px 30px', borderTop: '1px solid #e8e8e8', display: 'flex', gap: 10, flexShrink: 0 }}>
+      <div style={{ padding: '18px 24px max(env(safe-area-inset-bottom), 30px)', borderTop: '1px solid #e8e8e8', display: 'flex', gap: 10, flexShrink: 0 }}>
         <button
           onClick={onBack}
           style={{ flex: 1, background: '#fff', color: '#000', border: '1px solid #000', padding: '14px 0', fontFamily: 'Jost', fontSize: 11, letterSpacing: '.18em', cursor: 'pointer' }}

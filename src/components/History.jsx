@@ -19,7 +19,7 @@ export default function History({ onNav, onBack }) {
   const items = ALL.map((it, i) => ({ ...it, _idx: i })).filter((it) => !removed[it._idx]);
 
   return (
-    <div style={{ width: '100%', height: '100%', background: '#fff', color: '#000', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ width: '100%', minHeight: '100dvh', background: '#fff', color: '#000', display: 'flex', flexDirection: 'column' }}>
       <StatusBar />
       <BackHeader label="ARCHIVE" title="HISTORY" onBack={onBack} />
 

@@ -4,14 +4,14 @@ import { useEffect } from 'react';
 
 export default function Splash({ onNext }) {
   useEffect(() => {
-    const t = setTimeout(() => onNext?.(), 2000);
+    const t = setTimeout(() => onNext?.(), 900);
     return () => clearTimeout(t);
   }, [onNext]);
   return (
     <div
       style={{
         width: '100%',
-        height: '100%',
+        minHeight: '100dvh',
         background: '#000',
         color: '#fff',
         display: 'flex',

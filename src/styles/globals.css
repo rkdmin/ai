@@ -14,7 +14,14 @@ html, body, #root {
   font-weight: 300;
 }
 
-button { font-family: inherit; cursor: pointer; }
+html, body { height: 100%; }
+#root { min-height: 100%; }
+
+/* iOS 모바일 사파리에서 input[type=text/file] 포커스 시 자동 확대 방지 */
+input, button, textarea, select { font-size: 16px; }
+
+/* 화면 회전·터치 highlight 제거 */
+button { font-family: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent; }
 
 /* Wireframe wordmark — Cormorant Garamond 200, tight tracking */
 .wm {
@@ -46,3 +53,4 @@ button { font-family: inherit; cursor: pointer; }
 ::-webkit-scrollbar { width: 0; height: 0; }
 
 @keyframes spin { to { transform: rotate(360deg); } }
+@keyframes fade-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }

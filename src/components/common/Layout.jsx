@@ -123,8 +123,10 @@ export function TabBar({ active = 'home', dark = false, onNav }) {
         display: 'flex',
         background: bg,
         borderTop: `1px solid ${border}`,
-        padding: '8px 0 22px',
+        padding: '8px 0 max(env(safe-area-inset-bottom), 22px)',
         flexShrink: 0,
+        position: 'sticky',
+        bottom: 0,
       }}
     >
       {tabs.map((t) => (
