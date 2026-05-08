@@ -40,6 +40,62 @@
       "sha256": "1f7b0768cf670eae85b328ce022341e3f5c5ecde5612a90c5be05b8d530abe66",
       "reason": "헤어가 양 옆선 가림, 사각형 신호 평가 불가 (보이는 부분은 오히려 계란형)",
       "rejectedAt": "2026-05-08"
+    },
+    {
+      "name": "안은진",
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/5/53/Ahn_EunJin_at_the_3rd_Blue_Dragon_Series_Awards_2024_09.jpg",
+      "filename": "Ahn_EunJin_at_the_3rd_Blue_Dragon_Series_Awards_2024_09.jpg",
+      "sha256": "621ffdfca94b08a4e991b0816854950e9cf31a98e5570d99015245cbe18c6130",
+      "reason": "3/4 측면 각도, 좌우 비대칭으로 양쪽 옆선/gonial 확인 불가",
+      "rejectedAt": "2026-05-08"
+    },
+    {
+      "name": "한효주",
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/4/47/160718_한효주_이종석_W_제작발표회_(1).jpg",
+      "filename": "160718_한효주_이종석_W_제작발표회_(1).jpg",
+      "sha256": "96e18eecf5b22db9b78c2e7fca550cb9eddc82914f52908e1a2639b79906dcb6",
+      "reason": "약 45도 측면 각도, 사각형 양측 신호 확인 불가",
+      "rejectedAt": "2026-05-08"
+    },
+    {
+      "name": "이선빈",
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/a/a5/Lee_Sun-bin_in_November_2025.png",
+      "filename": "Lee_Sun-bin_in_November_2025.png",
+      "sha256": "39ca62871ccb5f904b2aa1f5351e686e09a4c2ef236da83a8418b66f8090934c",
+      "reason": "머리카락이 우측 옆선·턱선 가림, 5-10도 기울어짐",
+      "rejectedAt": "2026-05-08"
+    },
+    {
+      "name": "해린",
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/8/8c/20230905_Haerin_(NewJeans).jpg",
+      "filename": "20230905_Haerin_(NewJeans).jpg",
+      "sha256": "5f516bff7ab23b326f69338770adecc90487812c43ee4ba0fa8f7d080bf31201",
+      "reason": "앞머리+양쪽 머리카락이 이마/옆선 가림, 하트형 이마 넓음 확인 불가",
+      "rejectedAt": "2026-05-08"
+    },
+    {
+      "name": "박은빈",
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/d/db/Park_Eun-bin_in_July_2025.png",
+      "filename": "Park_Eun-bin_in_July_2025.png",
+      "sha256": "a892699627122991b68a7c19d58aebcd25ac03bb775c267158ff3fd265c41330",
+      "reason": "활짝 웃으며 입 벌림",
+      "rejectedAt": "2026-05-08"
+    },
+    {
+      "name": "이지아",
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/6/66/Lee_Ji-ah_for_Vogue_Korea,_June_2021.jpg",
+      "filename": "Lee_Ji-ah_for_Vogue_Korea,_June_2021.jpg",
+      "sha256": "75781cd9b29b22252ff65adde5710078b8365449de690f262b8ee3d9452da232",
+      "reason": "머리카락+손이 이마·옆선·턱선 가림, 윤곽선 측정 불가",
+      "rejectedAt": "2026-05-08"
+    },
+    {
+      "name": "정은채",
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/a/aa/Jung_Eun-chae_at_the_press_conference_for_\"Fatal_Encounter\",_2_May_2014.jpg",
+      "filename": "Jung_Eun-chae_at_the_press_conference_for_\"Fatal_Encounter\",_2_May_2014.jpg",
+      "sha256": "6529917dbf82180b0a4db2e630059862ac74e67df5959c6858da6bb079c19e5d",
+      "reason": "마이크 든 손이 턱선·왼쪽 옆선 가림",
+      "rejectedAt": "2026-05-08"
     }
   ]
 }

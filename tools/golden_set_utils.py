@@ -51,6 +51,47 @@ def sha256_of(path: Path) -> str:
     return h.hexdigest()
 
 
+def upload_url_from_filename(filename: str) -> str:
+    """
+    Wikimedia Commons 의 upload URL 을 파일명으로부터 결정적으로 계산.
+    규칙: MD5(filename) 의 앞 1자/앞 2자가 디렉토리.
+        e.g. "Foo.jpg" → md5=ac... → /a/ac/Foo.jpg
+    """
+    md5 = hashlib.md5(filename.encode("utf-8")).hexdigest()
+    return f"https://upload.wikimedia.org/wikipedia/commons/{md5[0]}/{md5[:2]}/{urllib.parse.quote(filename)}"
+
+
+# 사전 필터 키워드 — 골든셋 부적합 사진 패턴
+EXCLUDE_KEYWORDS = [
+    "press_conference", "press-conference", "presscon",
+    "stage", "live", "performance", "performing", "concert",
+    "speech", "speaking", "interview", "공연", "무대",
+    "_at_the_", "_event", "showcase", "fan_meeting", "fanmeeting",
+    "premiere", "red_carpet", "redcarpet", "awards",
+    "with_microphone", "holding",
+]
+PREFER_KEYWORDS = [
+    "portrait", "headshot", "studio", "profile", "프로필", "프로필사진",
+]
+
+
+def prefilter_filenames(filenames: list[str]) -> dict:
+    """
+    파일명 리스트를 골든셋 적합도로 분류.
+    return: {"preferred": [...], "neutral": [...], "excluded": [...]}
+    """
+    out = {"preferred": [], "neutral": [], "excluded": []}
+    for f in filenames:
+        lower = f.lower()
+        if any(k in lower for k in EXCLUDE_KEYWORDS):
+            out["excluded"].append(f)
+        elif any(k in lower for k in PREFER_KEYWORDS):
+            out["preferred"].append(f)
+        else:
+            out["neutral"].append(f)
+    return out
+
+
 def load_rejections(rejections_path: Path) -> dict:
     if not rejections_path.exists():
         return {"rejections": []}
@@ -108,6 +149,11 @@ def main():
     p4 = sub.add_parser("sha256", help="파일 SHA256")
     p4.add_argument("file")
 
+    p5 = sub.add_parser("upload-url", help="Commons 파일명 → upload.wikimedia.org URL")
+    p5.add_argument("filename")
+
+    p6 = sub.add_parser("prefilter", help="파일명 리스트(stdin, 한 줄당 1개) → preferred/neutral/excluded JSON")
+
     args = parser.parse_args()
 
     # Windows 한글 출력 보정
@@ -129,6 +175,11 @@ def main():
         print("OK")
     elif args.cmd == "sha256":
         print(sha256_of(Path(args.file)))
+    elif args.cmd == "upload-url":
+        print(upload_url_from_filename(args.filename))
+    elif args.cmd == "prefilter":
+        names = [line.strip() for line in sys.stdin if line.strip()]
+        print(json.dumps(prefilter_filenames(names), ensure_ascii=False, indent=2))
 
 
 if __name__ == "__main__":

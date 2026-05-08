@@ -32,18 +32,41 @@ cat tools/golden-set-rejections.json
 - 이미 golden-set 에 있는 인물명 추출 → skipset 구성
 - 인자(얼굴형/인원수)로 후보 풀 필터링
 
-### 2. 각 인물 처리 (1명씩 순차, 최대 3 후보 시도)
+### 2. 각 인물 처리 (1명씩, 최대 5 후보 시도)
 
-**(a) Wikipedia URL 후보 1~3개 수집**
+**(a) Wikimedia Commons Category URL 찾기**
+
+먼저 commons.wikimedia.org 의 Category 페이지를 찾는다 — 한 인물에 사진 5~30장이 있어 후보 풀이 풍부.
 ```
-WebSearch with query="<이름> 위키백과 site:ko.wikipedia.org"
-→ ko.wikipedia.org/wiki/... 형태 URL 1~3개 추출 (인물 페이지 위주, 동음이의 페이지 X)
+WebSearch with query="<이름> commons wikimedia category"
+또는 영문명 추정으로 https://commons.wikimedia.org/wiki/Category:<English_Name>
+
+대안 fallback: ko.wikipedia.org/wiki/<이름> → 인포박스 1장만
 ```
 
-**(b) 각 URL 에서 인포박스 사진 URL 추출**
+**(b) Category 페이지에서 파일명 리스트 추출**
 ```
-WebFetch(url) with prompt: "이 페이지의 인물 인포박스 메인 프로필 사진의 직접 URL 을 추출. upload.wikimedia.org 의 .jpg/.png/.webp URL 한 줄만 출력. 없으면 'NONE'. 다른 텍스트 절대 포함 금지."
+WebFetch(category_url) with prompt:
+"Category 페이지의 인물 사진 파일명만 한 줄에 하나씩 출력. .jpg/.png/.webp 확장자 포함, 다른 텍스트 절대 금지."
 ```
+
+**(c) 사전 필터** (네트워크 0)
+```bash
+echo "<filenames newline-separated>" | py -3 tools/golden_set_utils.py prefilter
+# → {"preferred": [...], "neutral": [...], "excluded": [...]}
+```
+
+`preferred` 우선 → `neutral` → `excluded` 는 시도 안 함 (행사·공연·인터뷰 사진).
+상위 5개를 후보로 결정.
+
+**(d) 각 후보 파일명 → upload URL**
+```bash
+py -3 tools/golden_set_utils.py upload-url "<filename>"
+# → https://upload.wikimedia.org/wikipedia/commons/<md5[0]>/<md5[:2]>/<filename>
+```
+
+> upload URL 은 MD5 해시 기반 결정적 — Commons 파일명만 알면 다운로드 URL 즉시 계산.
+> 소스 페이지 다시 fetch 할 필요 없음.
 
 **(c) 거절 사전 필터** (네트워크 비용 0)
 ```bash
