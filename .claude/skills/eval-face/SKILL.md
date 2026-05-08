@@ -32,7 +32,8 @@ description: 골든셋 사진들에 backend ANALYZE_PROMPT 를 돌려 얼굴형 
    - `Read` 로 `backend/services/rag_service.py` → `ANALYZE_PROMPT = """..."""` 블록 추출
    - `Read` 로 `tools/golden-set.json` → `imagesDir`, `items` 파싱
 2. **각 사진을 Agent 로 평가** (병렬, 한 메시지당 최대 4~5개)
-   - 각 item 마다 `Agent({ subagent_type: "general-purpose", description: "Analyze face <file>", prompt: <아래> })`
+   - 각 item 마다 `Agent({ subagent_type: "general-purpose", model: "sonnet", description: "Analyze face <file>", prompt: <아래> })`
+   - **`model: "sonnet"` 필수** — Opus 는 정액제 쿼터를 빠르게 소진하므로 평가용은 Sonnet 으로 고정
    - Agent prompt 형식:
      ```
      너는 뷰티 전문가다. 아래 ANALYZE_PROMPT 를 정확히 그대로 적용하여
