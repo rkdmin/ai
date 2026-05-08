@@ -126,7 +126,12 @@ backend/                        # FastAPI (Phase 2 신규)
 
 tools/                          # Phase 1 로컬 평가 도구 (백엔드 이관 후에도 골든셋 회귀용으로 남김)
 ├── landmark.py                 # MediaPipe 단일/배치 추출 CLI
+├── eval.py                     # Gemini 종량제로 골든셋 회귀 평가
+├── golden-set.json             # 골든셋 라벨 (imagesDir + items[])
 └── requirements.txt
+
+.claude/skills/eval-face/       # Claude 정액제로 골든셋 평가 (Gemini 비용 0)
+└── SKILL.md                    # 호출: "/eval-face" 또는 "골든셋 평가해줘"
 ```
 
 
