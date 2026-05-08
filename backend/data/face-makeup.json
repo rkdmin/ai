@@ -11,7 +11,7 @@
       "recommendCards": [
         {
           "priority": 1,
-          "title": "우아한 분위기 룩 (탕웨이 st)",
+          "title": "우아한 분위기 룩 (ELEGANT MOOD)",
           "shading": {
             "zone": ["눈두덩이", "코 벽"],
             "method": "음영 연결",
@@ -40,7 +40,7 @@
         },
         {
           "priority": 2,
-          "title": "시크 도회적 룩 (김지원 st)",
+          "title": "시크 도회적 룩 (URBAN CHIC)",
           "shading": {
             "zone": ["턱 라인"],
             "method": "사선으로 쓸어 윤곽 강조",
@@ -69,7 +69,7 @@
         },
         {
           "priority": 3,
-          "title": "청순 여리 룩 (안유진 st)",
+          "title": "청순 여리 룩 (PURE FRESH)",
           "shading": {
             "zone": [],
             "method": "최소화",
@@ -176,7 +176,7 @@
         },
         {
           "priority": 3,
-          "title": "캣츠아이 포인트 룩 (닝닝/제니 st)",
+          "title": "캣츠아이 포인트 룩 (SHARP CHIC)",
           "shading": {
             "zone": [],
             "method": "생략 가능",
@@ -254,7 +254,7 @@
         },
         {
           "priority": 2,
-          "title": "아이 포인트 룩 (안은진 st)",
+          "title": "아이 포인트 룩 (FOCUS UP)",
           "shading": {
             "zone": ["턱 끝", "헤어라인"],
             "method": "전체 윤곽 정리",
@@ -283,7 +283,7 @@
         },
         {
           "priority": 3,
-          "title": "화려한 이목구비 룩 (설인아 st)",
+          "title": "화려한 이목구비 룩 (BOLD GLAM)",
           "shading": {
             "zone": ["코 끝", "턱 끝"],
             "method": "윤곽 정리",
@@ -362,7 +362,7 @@
         },
         {
           "priority": 2,
-          "title": "시크 도도 룩 (Minnie st)",
+          "title": "시크 도도 룩 (URBAN EDGE)",
           "shading": {
             "zone": ["옆광대 (강하게)"],
             "method": "사선으로 깊게",
@@ -391,7 +391,7 @@
         },
         {
           "priority": 3,
-          "title": "퓨어 러블리 룩 (해린/히메샤 st)",
+          "title": "퓨어 러블리 룩 (PURE ROMANTIC)",
           "shading": {
             "zone": ["헤어라인"],
             "method": "이마 가장자리 정리",
@@ -470,7 +470,7 @@
         },
         {
           "priority": 2,
-          "title": "언더 포인트 룩 (민카롱 st)",
+          "title": "언더 포인트 룩 (FRESH LIFT)",
           "shading": {
             "zone": ["코 끝 (짧게)"],
             "method": "코 끝을 쳐서 코 길이를 줄임",
@@ -499,7 +499,7 @@
         },
         {
           "priority": 3,
-          "title": "지적 분위기 룩 (박은빈 st)",
+          "title": "지적 분위기 룩 (REFINED MOOD)",
           "shading": {
             "zone": [],
             "method": "최소화",
@@ -686,7 +686,7 @@
         },
         {
           "priority": 2,
-          "title": "시크 도회적 룩 (모델 st)",
+          "title": "시크 도회적 룩 (EDITORIAL EDGE)",
           "shading": {
             "zone": [],
             "method": "생략",
@@ -715,7 +715,7 @@
         },
         {
           "priority": 3,
-          "title": "퓨어 클린 룩 (김고은/지젤 st)",
+          "title": "퓨어 클린 룩 (PURE CLEAN)",
           "shading": {
             "zone": [],
             "method": "최소화",

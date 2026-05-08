@@ -1,0 +1,33 @@
+/* Beaumi Design Tokens */
+:root {
+  /* Colors */
+  --color-bg: #ffffff;
+  --color-text: #000000;
+  --color-text-secondary: #1a1a1a;
+  --color-text-muted: #5a5a5a;
+  --color-text-subtle: #7a7a7a;
+  --color-text-disabled: #a8a8a8;
+  --color-line: #e8e8e8;
+  --color-line-strong: #000000;
+  --color-accent-warm: #f6f1ed;
+  --color-accent-warm-2: #efe7df;
+  --color-accent-cool: #eef2f6;
+  --color-warn: #c45a3b;
+
+  /* Typography */
+  --font-ko: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif;
+  --font-en: 'Jost', system-ui, sans-serif;
+  --font-serif: 'Cormorant Garamond', 'Times New Roman', serif;
+
+  /* Spacing scale */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 22px;
+  --sp-6: 26px;
+  --sp-7: 32px;
+
+  /* Letter spacing for label patterns */
+  --ls-label: 0.22em;
+}

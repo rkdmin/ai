@@ -3,7 +3,7 @@
     {
       "faceType": "oval",
       "description": "균형 잡힌 얼굴형이나, 얼굴 길이감(짧거나 긴)에 따라 스타일링이 달라질 수 있음",
-      "exampleCelebrity": ["카리나 (Karina)", "윈터 (Winter)", "고윤정 (Go Yoon-jung)", "수지 (Suzy)", "화사 (Hwasa - 짧은 계란형)"],
+      "moodArchetype": ["CLEAN", "ELEGANT", "CLASSIC"],
       "recommend": [
         {
           "style": "칼단발 (태슬컷)",
@@ -14,7 +14,7 @@
         },
         {
           "style": "앞머리 펌 + 단발",
-          "reason": "얼굴이 짧은 계란형(예: 화사)은 생머리 단발 시 얼굴이 더 짧아 보일 수 있어, 컬이 들어간 앞머리로 여백을 채우고 사랑스러운 무드를 더함",
+          "reason": "얼굴이 짧은 계란형은 생머리 단발 시 얼굴이 더 짧아 보일 수 있어, 컬이 들어간 앞머리로 여백을 채우고 사랑스러운 무드를 더함",
           "promptKeyword": "short bob with curly bangs, puppy bangs, s-curl fringe, lovely wavy bob",
           "priority": 2,
           "bangs": "컬리뱅 또는 퍼피뱅"
@@ -38,7 +38,7 @@
     {
       "faceType": "round",
       "description": "얼굴 가로폭과 세로폭이 비슷하고 볼살이 있어 귀여운 인상을 주는 얼굴형",
-      "exampleCelebrity": ["디하나 (Billlie)", "제니 (Jennie - 둥근 느낌의 짧은 얼굴)", "소희 (Sohee)"],
+      "moodArchetype": ["ROMANTIC", "FRESH", "SOFT"],
       "recommend": [
         {
           "style": "단발 레이어드 컷",
@@ -77,11 +77,11 @@
     {
       "faceType": "square",
       "description": "하관(턱)의 골격이 발달하여 강인하거나 지적인 인상을 주는 얼굴형 (육각형 포함)",
-      "exampleCelebrity": ["안은진 (Ahn Eun-jin)", "송혜교 (Song Hye-kyo)", "한효주 (Han Hyo-joo)"],
+      "moodArchetype": ["SHARP", "CLASSIC", "ELEGANT"],
       "recommend": [
         {
           "style": "단발 레이어드 컷 (C컬)",
-          "reason": "이마를 시원하게 드러내어 시선을 위로 올리고, 머리끝은 턱을 감싸 하관의 무게감을 줄여주는 베스트 스타일 (안은진 스타일)",
+          "reason": "이마를 시원하게 드러내어 시선을 위로 올리고, 머리끝은 턱을 감싸 하관의 무게감을 줄여주는 베스트 스타일 (SHARP MOOD)",
           "promptKeyword": "chin length layered bob, c-curl, forehead exposed, no bangs, soft jawline coverage",
           "priority": 1,
           "bangs": "없음 (이마 노출)"
@@ -116,7 +116,7 @@
     {
       "faceType": "heart",
       "description": "이마와 광대가 넓고 턱 끝은 좁은 얼굴형. 얼굴 길이가 짧은 경우도 포함",
-      "exampleCelebrity": ["해린 (Haerin - 짧은 하트형)", "사나 (Sana)", "이선빈 (Lee Sun-bin)"],
+      "moodArchetype": ["ROMANTIC", "FRESH", "SOFT"],
       "recommend": [
         {
           "style": "사이드뱅 + 중단발",
@@ -151,11 +151,11 @@
     {
       "faceType": "long",
       "description": "얼굴 세로 비율이 길거나, 인중 등 중안부가 긴 얼굴형",
-      "exampleCelebrity": ["로제 (Rosé)", "나나 (Nana)", "박은빈 (Park Eun-bin)", "이지아 (Lee Ji-ah)"],
+      "moodArchetype": ["ELEGANT", "CLASSIC", "EDGY"],
       "recommend": [
         {
           "style": "단발 S컬 펌",
-          "reason": "앞머리에 컬을 넣어(S컬) 시선을 얼굴 중앙으로 모으고, 옆 볼륨을 살려 긴 얼굴의 여백을 채워줌 (나나 스타일)",
+          "reason": "앞머리에 컬을 넣어(S컬) 시선을 얼굴 중앙으로 모으고, 옆 볼륨을 살려 긴 얼굴의 여백을 채워줌 (CLASSIC MOOD)",
           "promptKeyword": "short bob with s-curl, curly bangs, side volume, wavy bob, retro style",
           "priority": 1,
           "bangs": "있음 (S컬 앞머리)"
@@ -185,12 +185,12 @@
           "reason": "얼굴에 딱 달라붙는 머리는 긴 얼굴형을 그대로 드러냄"
         }
       ],
-      "coachComment": "긴 얼굴형은 앞머리가 필수입니다. 특히 중안부가 길다면 앞머리에 컬을 넣어 시선을 분산시키는 나나 스타일의 단발 펌을 추천해요."
+      "coachComment": "긴 얼굴형은 앞머리가 필수입니다. 특히 중안부가 길다면 앞머리에 컬을 넣어 시선을 분산시키는 CLASSIC 무드의 단발 펌을 추천해요."
     },
     {
       "faceType": "peanut",
       "description": "옆광대와 하관(사각턱)이 모두 발달하고 볼이 패여 얼굴 라인이 울퉁불퉁한 얼굴형",
-      "exampleCelebrity": ["천우희", "정은채"],
+      "moodArchetype": ["SHARP", "EDGY", "CLASSIC"],
       "recommend": [
         {
           "style": "히피펌 / 굵은 웨이브",
@@ -225,7 +225,7 @@
     {
       "faceType": "diamond",
       "description": "옆광대가 발달하고 턱은 좁으며 턱 근육이 없는 얼굴형",
-      "exampleCelebrity": ["지젤 (Giselle)"],
+      "moodArchetype": ["SHARP", "ELEGANT", "EDGY"],
       "recommend": [
         {
           "style": "반묶음 (Half-up)",

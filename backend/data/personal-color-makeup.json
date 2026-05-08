@@ -3,8 +3,8 @@
     {
       "personalColor": "spring_warm",
       "label": "봄 웜톤 (Spring Warm)",
-      "description": "사랑스럽고 생기 넘치는 이미지가 강점인 유형입니다. 탁한 느낌을 배제하고 '투명함'과 '반짝임'을 살리는 것이 핵심입니다. (참조: 안유진, 윤아)",
-      "exampleCelebrity": ["안유진", "윤아", "수지"],
+      "description": "사랑스럽고 생기 넘치는 이미지가 강점인 유형입니다. 탁한 느낌을 배제하고 '투명함'과 '반짝임'을 살리는 것이 핵심입니다. (무드: PURE FRESH · ROMANTIC)",
+      "moodArchetype": ["FRESH", "ROMANTIC", "CLEAN"],
       "colorCards": [
         {
           "priority": 1,
@@ -79,8 +79,8 @@
     {
       "personalColor": "summer_cool",
       "label": "여름 쿨톤 (Summer Cool)",
-      "description": "청초하고 깨끗한 이미지가 매력적인 유형입니다. 대비감이 강한 메이크업보다는 부드럽고 은은한 파스텔 톤이 베스트입니다. (참조: 장원영, 태연)",
-      "exampleCelebrity": ["장원영", "태연", "손예진"],
+      "description": "청초하고 깨끗한 이미지가 매력적인 유형입니다. 대비감이 강한 메이크업보다는 부드럽고 은은한 파스텔 톤이 베스트입니다. (무드: COOL CLEAN · SOFT)",
+      "moodArchetype": ["CLEAN", "SOFT", "ELEGANT"],
       "colorCards": [
         {
           "priority": 1,
@@ -158,8 +158,8 @@
     {
       "personalColor": "autumn_warm",
       "label": "가을 웜톤 (Autumn Warm)",
-      "description": "그윽하고 성숙한 '분위기'가 독보적인 유형입니다. 쨍한 컬러보다는 깊이 있는 음영과 누드 톤이 베스트입니다. (참조: 탕웨이, 제니)",
-      "exampleCelebrity": ["탕웨이", "제니", "이효리"],
+      "description": "그윽하고 성숙한 '분위기'가 독보적인 유형입니다. 쨍한 컬러보다는 깊이 있는 음영과 누드 톤이 베스트입니다. (무드: ELEGANT · CLASSIC)",
+      "moodArchetype": ["ELEGANT", "CLASSIC", "EDGY"],
       "colorCards": [
         {
           "priority": 1,
@@ -237,8 +237,8 @@
     {
       "personalColor": "winter_cool",
       "label": "겨울 쿨톤 (Winter Cool)",
-      "description": "선명하고 차가운 대비감(Contrast)이 생명인 유형입니다. 애매한 색보다는 확실한 블랙 & 화이트, 혹은 비비드한 포인트가 베스트입니다. (참조: 김지원, 카리나)",
-      "exampleCelebrity": ["김지원", "카리나", "임지연"],
+      "description": "선명하고 차가운 대비감(Contrast)이 생명인 유형입니다. 애매한 색보다는 확실한 블랙 & 화이트, 혹은 비비드한 포인트가 베스트입니다. (무드: SHARP · EDGY)",
+      "moodArchetype": ["SHARP", "EDGY", "CLASSIC"],
       "colorCards": [
         {
           "priority": 1,

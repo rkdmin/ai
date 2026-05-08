@@ -14,6 +14,7 @@ class AnalyzeRequest(BaseModel):
 class AnalyzeResponse(BaseModel):
     faceType: str
     features: list[str]
+    moodArchetype: list[str] = []  # 8개 키워드 중 3개 (퍼블리시티권 회피 — 연예인 레퍼런스 대체)
     faceRatios: dict | None = None
     analysisId: str | None = None  # Phase 3 (Supabase) 에서 발급
 

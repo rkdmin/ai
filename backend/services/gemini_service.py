@@ -126,7 +126,10 @@ def _build_cards_prompt(
         f"{rag_context}\n\n"
         "## 출력 형식\n"
         f"{output_format}\n\n"
-        f"규칙: {color_rule}"
+        f"규칙: {color_rule}\n"
+        "moodLabel 규칙(반드시 준수, 위반 시 응답 거부): 무드 아키타입 8개(ROMANTIC / CLEAN / SOFT / ELEGANT / SHARP / CLASSIC / FRESH / EDGY) 중 하나를 골라 '키워드 · 한국어 분위기' 형태로 작성하세요. "
+        "연예인·인물 이름·고유명사·'○○ st'·'look-alike' 등 인물 비교 표현은 모든 필드(mood, moodLabel, coachComment, hair, hairReason, featureTip 포함)에서 절대 사용하지 마세요. "
+        "퍼블리시티권 침해 회피를 위한 강제 정책입니다."
     )
 
 

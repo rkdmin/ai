@@ -37,6 +37,19 @@ COLOR_MAP = {
     "겨울쿨": "winter_cool",
 }
 
+# 무드 아키타입 — 연예인 레퍼런스 대체 (퍼블리시티권 회피 정책)
+# 응답에는 반드시 이 8개 중에서만 선택해서 보내야 한다.
+MOOD_ARCHETYPES = {
+    "ROMANTIC": "부드럽고 사랑스러운",
+    "CLEAN": "깨끗하고 단정한",
+    "SOFT": "자연스럽고 차분한",
+    "ELEGANT": "우아하고 도도한",
+    "SHARP": "또렷하고 강한",
+    "CLASSIC": "시간을 타지 않는",
+    "FRESH": "활기차고 산뜻한",
+    "EDGY": "개성있고 도시적인",
+}
+
 
 # ── 데이터 룩업 ───────────────────────────────────────────────────
 
@@ -101,8 +114,10 @@ def build_hair_context(analysis: dict) -> str:
         for a in hair.get("avoid", [])
     )
 
+    moods = ", ".join(hair.get("moodArchetype", []) or []) or "—"
     hair_ctx = (
         f"[헤어 — {analysis.get('faceType')}]\n"
+        f"무드 후보: {moods}\n"
         f"추천 스타일:\n{recs_text}\n"
         f"피해야 할: {avoid_text}\n"
         f"코치: {hair.get('coachComment', '')}"
@@ -238,6 +253,7 @@ HAIR_CARDS_FORMAT = """[
     "rank": 1,
     "cardType": "hair",
     "mood": "스타일 무드명",
+    "moodLabel": "무드 아키타입 + 한국어 분위기 (예: ROMANTIC · 우아한 분위기). 연예인 비교 절대 금지.",
     "emoji": "이모지 1개",
     "hair": "헤어스타일명",
     "bangs": "앞머리 스타일 (예: 없음 / 시스루뱅 / 사이드뱅 / 풀뱅)",
@@ -245,12 +261,13 @@ HAIR_CARDS_FORMAT = """[
     "featureTip": "이목구비 특징 기반 헤어 팁 1문장 (특징 없으면 null)",
     "coachComment": "헤어 중심 전체 조언 2-3문장"
   },
-  { "type": "recommend", "rank": 2, "cardType": "hair", "mood": "...", "emoji": "...", "hair": "...", "bangs": "...", "hairReason": "...", "featureTip": "...", "coachComment": "..." },
-  { "type": "recommend", "rank": 3, "cardType": "hair", "mood": "...", "emoji": "...", "hair": "...", "bangs": "...", "hairReason": "...", "featureTip": "...", "coachComment": "..." },
+  { "type": "recommend", "rank": 2, "cardType": "hair", "mood": "...", "moodLabel": "...", "emoji": "...", "hair": "...", "bangs": "...", "hairReason": "...", "featureTip": "...", "coachComment": "..." },
+  { "type": "recommend", "rank": 3, "cardType": "hair", "mood": "...", "moodLabel": "...", "emoji": "...", "hair": "...", "bangs": "...", "hairReason": "...", "featureTip": "...", "coachComment": "..." },
   {
     "type": "avoid",
     "cardType": "hair",
     "mood": "피해야 할 헤어스타일",
+    "moodLabel": null,
     "emoji": "⚠️",
     "hair": "피해야 할 헤어스타일명",
     "bangs": null,
@@ -266,6 +283,7 @@ MAKEUP_CARDS_FORMAT = """[
     "rank": 1,
     "cardType": "makeup",
     "mood": "스타일 무드명",
+    "moodLabel": "무드 아키타입 + 한국어 분위기 (예: ELEGANT · 우아한 분위기). 연예인 비교 절대 금지.",
     "emoji": "이모지 1개",
     "baseSkin": "피부 표현 방식 (예: Semi-Glow, Center Glow, Matte)",
     "makeup": {
@@ -280,12 +298,13 @@ MAKEUP_CARDS_FORMAT = """[
     "featureTip": "이목구비 특징 기반 메이크업 팁 1문장 (특징 없으면 null)",
     "coachComment": "메이크업 중심 전체 조언 2-3문장"
   },
-  { "type": "recommend", "rank": 2, "cardType": "makeup", "mood": "...", "emoji": "...", "baseSkin": "...", "makeup": { "shading": "...", "shadingReason": "...", "highlight": "...", "highlightReason": "...", "blush": "...", "blushReason": "...", "eyebrow": "...", "eyebrowReason": "...", "lip": "...", "lipReason": "...", "eyeshadow": "...", "eyeshadowReason": "...", "eyeliner": "...", "eyelinerReason": "..." }, "featureTip": "...", "coachComment": "..." },
-  { "type": "recommend", "rank": 3, "cardType": "makeup", "mood": "...", "emoji": "...", "baseSkin": "...", "makeup": { "shading": "...", "shadingReason": "...", "highlight": "...", "highlightReason": "...", "blush": "...", "blushReason": "...", "eyebrow": "...", "eyebrowReason": "...", "lip": "...", "lipReason": "...", "eyeshadow": "...", "eyeshadowReason": "...", "eyeliner": "...", "eyelinerReason": "..." }, "featureTip": "...", "coachComment": "..." },
+  { "type": "recommend", "rank": 2, "cardType": "makeup", "mood": "...", "moodLabel": "...", "emoji": "...", "baseSkin": "...", "makeup": { "shading": "...", "shadingReason": "...", "highlight": "...", "highlightReason": "...", "blush": "...", "blushReason": "...", "eyebrow": "...", "eyebrowReason": "...", "lip": "...", "lipReason": "...", "eyeshadow": "...", "eyeshadowReason": "...", "eyeliner": "...", "eyelinerReason": "..." }, "featureTip": "...", "coachComment": "..." },
+  { "type": "recommend", "rank": 3, "cardType": "makeup", "mood": "...", "moodLabel": "...", "emoji": "...", "baseSkin": "...", "makeup": { "shading": "...", "shadingReason": "...", "highlight": "...", "highlightReason": "...", "blush": "...", "blushReason": "...", "eyebrow": "...", "eyebrowReason": "...", "lip": "...", "lipReason": "...", "eyeshadow": "...", "eyeshadowReason": "...", "eyeliner": "...", "eyelinerReason": "..." }, "featureTip": "...", "coachComment": "..." },
   {
     "type": "avoid",
     "cardType": "makeup",
     "mood": "피해야 할 메이크업",
+    "moodLabel": null,
     "emoji": "⚠️",
     "baseSkin": null,
     "makeup": {
@@ -308,6 +327,7 @@ TOTAL_CARDS_FORMAT = """[
     "rank": 1,
     "cardType": "total",
     "mood": "스타일 무드명",
+    "moodLabel": "무드 아키타입 + 한국어 분위기 (예: CLASSIC · 시간을 타지 않는). 연예인 비교 절대 금지.",
     "emoji": "이모지 1개",
     "hair": "헤어스타일명",
     "bangs": "앞머리 스타일",
@@ -325,12 +345,13 @@ TOTAL_CARDS_FORMAT = """[
     "featureTip": "이목구비 종합 팁 1문장 (특징 없으면 null)",
     "coachComment": "헤어+메이크업 종합 전체 조언 2-3문장"
   },
-  { "type": "recommend", "rank": 2, "cardType": "total", "mood": "...", "emoji": "...", "hair": "...", "bangs": "...", "hairReason": "...", "baseSkin": "...", "makeup": { "shading": "...", "shadingReason": "...", "highlight": "...", "highlightReason": "...", "blush": "...", "blushReason": "...", "eyebrow": "...", "eyebrowReason": "...", "lip": "...", "lipReason": "...", "eyeshadow": "...", "eyeshadowReason": "...", "eyeliner": "...", "eyelinerReason": "..." }, "featureTip": "...", "coachComment": "..." },
-  { "type": "recommend", "rank": 3, "cardType": "total", "mood": "...", "emoji": "...", "hair": "...", "bangs": "...", "hairReason": "...", "baseSkin": "...", "makeup": { "shading": "...", "shadingReason": "...", "highlight": "...", "highlightReason": "...", "blush": "...", "blushReason": "...", "eyebrow": "...", "eyebrowReason": "...", "lip": "...", "lipReason": "...", "eyeshadow": "...", "eyeshadowReason": "...", "eyeliner": "...", "eyelinerReason": "..." }, "featureTip": "...", "coachComment": "..." },
+  { "type": "recommend", "rank": 2, "cardType": "total", "mood": "...", "moodLabel": "...", "emoji": "...", "hair": "...", "bangs": "...", "hairReason": "...", "baseSkin": "...", "makeup": { "shading": "...", "shadingReason": "...", "highlight": "...", "highlightReason": "...", "blush": "...", "blushReason": "...", "eyebrow": "...", "eyebrowReason": "...", "lip": "...", "lipReason": "...", "eyeshadow": "...", "eyeshadowReason": "...", "eyeliner": "...", "eyelinerReason": "..." }, "featureTip": "...", "coachComment": "..." },
+  { "type": "recommend", "rank": 3, "cardType": "total", "mood": "...", "moodLabel": "...", "emoji": "...", "hair": "...", "bangs": "...", "hairReason": "...", "baseSkin": "...", "makeup": { "shading": "...", "shadingReason": "...", "highlight": "...", "highlightReason": "...", "blush": "...", "blushReason": "...", "eyebrow": "...", "eyebrowReason": "...", "lip": "...", "lipReason": "...", "eyeshadow": "...", "eyeshadowReason": "...", "eyeliner": "...", "eyelinerReason": "..." }, "featureTip": "...", "coachComment": "..." },
   {
     "type": "avoid",
     "cardType": "total",
     "mood": "피해야 할 스타일",
+    "moodLabel": null,
     "emoji": "⚠️",
     "hair": "피해야 할 헤어스타일",
     "bangs": null,
@@ -377,13 +398,29 @@ ANALYZE_PROMPT = """당신은 뷰티 전문가입니다. 다른 텍스트는 절
 
 {
   "faceType": "계란형 | 둥근형 | 사각형 | 하트형 | 긴형 | 다이아몬드형 | 땅콩형 | 판정 어려움 중 하나",
-  "features": ["확실히 보이는 특징만, 0개도 가능"]
+  "features": ["확실히 보이는 특징만, 0개도 가능"],
+  "moodArchetype": ["이 얼굴이 풍기는 무드 키워드 3개"]
 }
 
 ## 분석 원칙 (반드시 준수)
 - **확실한 것만 포함**: 사진을 보고 즉시 "이건 확실하다"고 판단되는 것만 포함하세요.
 - **애매하면 제외**: "아마도", "~인 것 같다", "~일 수도 있다" 수준이면 포함하지 마세요.
 - **억지로 채우지 말 것**: 목록을 채우기 위해 불확실한 항목을 넣는 것은 잘못된 분석입니다. 빈 배열([])도 정답입니다.
+
+## moodArchetype 판단 기준 (퍼블리시티권 회피 — 인물 비교 절대 금지)
+- 반드시 아래 8개 중에서만 정확히 3개를 선택하세요. 다른 단어를 만들어내지 마세요.
+- 연예인·인물 이름·고유명사("○○ 스타일", "○○ st", "look-alike" 포함) 절대 금지.
+- 인물과 닮았다고 비교하지 말고, 얼굴이 풍기는 인상·무드만 판단하세요.
+
+선택 가능 목록 (영문 키워드):
+- ROMANTIC: 부드럽고 사랑스러운
+- CLEAN: 깨끗하고 단정한
+- SOFT: 자연스럽고 차분한
+- ELEGANT: 우아하고 도도한
+- SHARP: 또렷하고 강한
+- CLASSIC: 시간을 타지 않는
+- FRESH: 활기차고 산뜻한
+- EDGY: 개성있고 도시적인
 
 ---
 
