@@ -1,0 +1,45 @@
+{
+  "_comment": "거절 이력 — build-golden-set 스킬이 같은 사진 재시도 방지용. URL 정규화 + 파일명 + SHA256 3중 dedup. 새 거절은 tools/golden_set_utils.py add 로 추가.",
+  "rejections": [
+    {
+      "name": "수지",
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/3/33/Bae_Suzy_at_OB_Beer_Hanmac_%27As_Smooth_As_Possible%27_campaign%2C_3_April_2024_04.jpg",
+      "filename": "Bae_Suzy_at_OB_Beer_Hanmac_'As_Smooth_As_Possible'_campaign,_3_April_2024_04.jpg",
+      "sha256": "91055a5c60613da0afd9a6c0cf858744f4821938d5d20828ca092d10f81f4755",
+      "reason": "각도 비뚤어짐 (정면 아님), 옆선 평가 어려움",
+      "rejectedAt": "2026-05-08"
+    },
+    {
+      "name": "화사",
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/5/57/20240712_Hwasa_%28%ED%99%94%EC%82%AC%29.jpg_%282%29.jpg",
+      "filename": "20240712_Hwasa_(화사).jpg_(2).jpg",
+      "sha256": "1f214ce23b2bef4a24340c81c7c281162761a7fbbc53b1a875a9ac2de8b68a72",
+      "reason": "활짝 웃음 + 살짝 옆 + 광대 올라감, 옆선 평가 불가",
+      "rejectedAt": "2026-05-08"
+    },
+    {
+      "name": "소희",
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/a/af/Wonder_Girls071205_Sohee.jpg",
+      "filename": "Wonder_Girls071205_Sohee.jpg",
+      "sha256": "5dc205ca39a580d55fef94159b6c18ea266ea3dee21f3a2c10002c01accfb549",
+      "reason": "2007년 17세 시점, 마이크 입 벌림, 헤어 액세서리가 이마 가림",
+      "rejectedAt": "2026-05-08"
+    },
+    {
+      "name": "제니",
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/1/18/Jennie_230917.jpg",
+      "filename": "Jennie_230917.jpg",
+      "sha256": "7563daa64dbda1703daee69086c267d769cba241808f75a70f296a641de43435",
+      "reason": "거의 측면(90도), 정면 분석 불가",
+      "rejectedAt": "2026-05-08"
+    },
+    {
+      "name": "송혜교",
+      "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/e/e2/20230719_Song_Hye-kyo_%28%EC%86%A1%ED%98%9C%EA%B5%90%29.jpg",
+      "filename": "20230719_Song_Hye-kyo_(송혜교).jpg",
+      "sha256": "1f7b0768cf670eae85b328ce022341e3f5c5ecde5612a90c5be05b8d530abe66",
+      "reason": "헤어가 양 옆선 가림, 사각형 신호 평가 불가 (보이는 부분은 오히려 계란형)",
+      "rejectedAt": "2026-05-08"
+    }
+  ]
+}
