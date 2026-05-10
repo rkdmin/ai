@@ -54,19 +54,22 @@ export default function PhotoUpload({ onUpload, onBack }) {
           <div style={{ paddingBottom: 8, marginBottom: 10, borderBottom: '1px solid #000' }}>
             <div className="label" style={{ fontSize: 9.5, letterSpacing: '.22em' }}>SHOOTING GUIDE · 촬영 예시</div>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 8 }}>
-            <GuideThumb variant="good" ok mark="DO" title="포니테일·민소매" sub="앞머리 모두 올려서" />
-            <GuideThumb variant="good-cam" ok mark="DO" title="후면 기본 카메라" sub="광각·셀피 금지" />
-            <GuideThumb variant="bad-face" ok={false} mark="DON'T" title="앞머리·마스크" sub="얼굴 가리지 않기" />
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 6 }}>
+            <GuideThumb variant="good" ok mark="DO" title="포니테일·민소매" sub="앞머리 올려서" />
+            <GuideThumb variant="good-cam" ok mark="DO" title="후면 카메라" sub="광각·셀피 ✗" />
+            <GuideThumb variant="bad-face" ok={false} mark="DON'T" title="앞머리·마스크" sub="얼굴 가리지 ✗" />
             <GuideThumb variant="bad-light-filter" ok={false} mark="DON'T" title="필터·역광" sub="원래 톤 그대로" />
           </div>
         </div>
 
         <div
           onClick={pickFile}
+          role="button"
+          tabIndex={0}
+          className="tappable"
           style={{
             minHeight: 240, border: '1px dashed #000', position: 'relative', background: '#fafaf8',
-            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
+            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
             overflow: 'hidden',
           }}
         >

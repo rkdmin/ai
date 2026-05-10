@@ -37,12 +37,17 @@ export default function PersonalColor({ onNext, onBack }) {
               <div
                 key={o.id}
                 onClick={() => setPick(o.id)}
+                role="button"
+                tabIndex={0}
+                aria-pressed={selected}
+                className="tappable"
                 style={{
-                  padding: '18px 16px', cursor: 'pointer',
+                  padding: '18px 16px',
                   borderRight: br, borderBottom: bb,
                   background: selected ? '#000' : '#fff',
                   color: selected ? '#fff' : '#000',
                   display: 'flex', flexDirection: 'column', gap: 14, minHeight: 140,
+                  transition: 'background-color .14s ease, color .14s ease',
                 }}
               >
                 <div style={{ display: 'flex', gap: 0, height: 32 }}>
@@ -58,16 +63,17 @@ export default function PersonalColor({ onNext, onBack }) {
           })}
         </div>
 
-        <button
-          onClick={() => onNext?.(null)}
-          style={{
-            marginTop: 18, background: 'transparent', border: 'none', padding: '10px 0',
-            fontFamily: 'Pretendard', fontSize: 13, color: '#7a7a7a', cursor: 'pointer',
-            textDecoration: 'underline', textUnderlineOffset: 3,
-          }}
-        >
-          잘 모르겠어요 — 건너뛰기
-        </button>
+        <div style={{ marginTop: 18, display: 'flex', justifyContent: 'center' }}>
+          <button
+            onClick={() => onNext?.(null)}
+            style={{
+              background: '#fff', border: '1px solid #d4d4d4', padding: '10px 16px',
+              fontFamily: 'Pretendard', fontSize: 12.5, color: '#5a5a5a', minHeight: 40,
+            }}
+          >
+            잘 모르겠어요 — 건너뛰기
+          </button>
+        </div>
       </div>
 
       <div style={{ padding: '18px 24px max(env(safe-area-inset-bottom), 30px)', borderTop: '1px solid #e8e8e8', display: 'flex', gap: 10, flexShrink: 0 }}>

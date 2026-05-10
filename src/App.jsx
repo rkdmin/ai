@@ -417,7 +417,7 @@ export default function App() {
   }
 
   // 데스크톱(≥600px) 에서는 480px 캡 모바일 프레임. 모바일에서는 화면 전체.
-  // 100dvh 로 모바일 브라우저 chrome 변동 대응.
+  // 100dvh 로 모바일 브라우저 chrome 변동 대응. 데스크톱 베이지 백드롭은 globals.css.
   const containerStyle = useMemo(() => ({
     width: '100%',
     minHeight: '100dvh',
@@ -430,5 +430,17 @@ export default function App() {
     overflowX: 'hidden',
   }), []);
 
-  return <div style={containerStyle}>{view}</div>;
+  // 내부 wrapper 에 key={stage} 를 주면 stage 전환 시 .page-enter 애니메이션이
+  // 매번 재실행되어 화면이 살짝 떠오르며 페이드 인 — "탭 사이 점프" 느낌 제거.
+  return (
+    <div style={containerStyle}>
+      <div
+        key={stage}
+        className="page-enter"
+        style={{ display: 'flex', flexDirection: 'column', flex: 1, minWidth: 0, width: '100%' }}
+      >
+        {view}
+      </div>
+    </div>
+  );
 }

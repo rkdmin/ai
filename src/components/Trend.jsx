@@ -27,9 +27,9 @@ export default function Trend({ onNav }) {
   return (
     <div style={{ width: '100%', minHeight: '100dvh', background: '#fff', color: '#000', display: 'flex', flexDirection: 'column' }}>
       <StatusBar />
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 22px 14px', flexShrink: 0 }}>
-        <span className="label">TREND</span>
-        <button style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }} aria-label="search">{Icons.search(18)}</button>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '4px 14px 6px', flexShrink: 0, minHeight: 52 }}>
+        <span className="label" style={{ paddingLeft: 8 }}>TREND</span>
+        <button className="icon-btn" style={{ marginRight: -6 }} aria-label="search">{Icons.search(18)}</button>
       </div>
       <div style={{ height: 1, background: '#000', flexShrink: 0 }} />
 
@@ -43,7 +43,7 @@ export default function Trend({ onNav }) {
         <div className="serif-i" style={{ fontSize: 13, color: '#7a7a7a', marginTop: 14 }}>weekly · 04 / 28 — 05 / 04</div>
       </div>
 
-      <div style={{ padding: '14px 22px', display: 'flex', gap: 6, overflowX: 'auto', borderBottom: '1px solid #e8e8e8' }}>
+      <div className="snap-x" style={{ padding: '14px 22px', display: 'flex', gap: 6, overflowX: 'auto', borderBottom: '1px solid #e8e8e8' }}>
         {FILTERS.map((f) => (
           <button
             key={f.id}
@@ -79,7 +79,7 @@ export default function Trend({ onNav }) {
 
         <div style={{ padding: '18px 22px 12px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
           {GRID.map((c, i) => (
-            <div key={i} style={{ cursor: 'pointer' }}>
+            <div key={i} role="button" tabIndex={0} className="tappable">
               <div style={{ aspectRatio: '4/5', background: '#f6f1ed', position: 'relative', marginBottom: 10 }}>
                 <FacePlaceholder w="100%" h="100%" tone={i % 2 === 0 ? 'light' : 'dark'} label="" />
                 <span className="label" style={{ position: 'absolute', top: 8, left: 10, padding: '2px 6px', background: '#fff', color: '#000', fontSize: 9 }}>{c.tag}</span>

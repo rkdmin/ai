@@ -197,10 +197,11 @@ export default function MakeupDetail({ card, result, photoUrl, onBack, onShare, 
                 href={p.coupangPartnersUrl || undefined}
                 target={p.coupangPartnersUrl ? '_blank' : undefined}
                 rel={p.coupangPartnersUrl ? 'noopener noreferrer' : undefined}
+                className={p.coupangPartnersUrl ? 'tappable' : undefined}
                 style={{
-                  display: 'flex', gap: 14, padding: '14px 0', borderBottom: '1px solid #e8e8e8',
+                  display: 'flex', gap: 14, padding: '14px 4px', borderBottom: '1px solid #e8e8e8',
                   alignItems: 'center', textDecoration: 'none', color: 'inherit',
-                  cursor: p.coupangPartnersUrl ? 'pointer' : 'default',
+                  minHeight: 76,
                 }}
               >
                 <div style={{ width: 60, height: 60, background: '#0e0e0e', position: 'relative', overflow: 'hidden', flexShrink: 0 }}>

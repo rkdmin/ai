@@ -11,10 +11,10 @@ export default function Login({ onNext, mode }) {
   return (
     <div style={{ width: '100%', minHeight: '100dvh', background: '#fff', color: '#000', display: 'flex', flexDirection: 'column' }}>
       <StatusBar />
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 22px 14px', flexShrink: 0 }}>
-        <button style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }} aria-label="back">{Icons.back(20)}</button>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '4px 14px 6px', flexShrink: 0, minHeight: 52 }}>
+        <button className="icon-btn" style={{ marginLeft: -6 }} aria-label="back">{Icons.back(20)}</button>
         <span className="label">{isGate ? 'UNLOCK' : 'SIGN IN'}</span>
-        <span style={{ width: 20 }} />
+        <span style={{ width: 44 }} />
       </div>
       <div style={{ height: 1, background: '#000', flexShrink: 0 }} />
 
@@ -60,7 +60,7 @@ export default function Login({ onNext, mode }) {
         {!isGate && (
           <button
             onClick={onNext}
-            style={{ background: 'transparent', color: '#7a7a7a', border: 'none', padding: '14px 0', cursor: 'pointer', fontFamily: 'Pretendard', fontSize: 12.5, textDecoration: 'underline', textUnderlineOffset: 3 }}
+            style={{ background: '#fff', color: '#5a5a5a', border: '1px solid #d4d4d4', padding: '13px 0', fontFamily: 'Pretendard', fontSize: 13, minHeight: 44 }}
           >
             로그인 없이 1회 체험하기
           </button>

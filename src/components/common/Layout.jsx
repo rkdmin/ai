@@ -5,18 +5,19 @@ export function BackHeader({ title, label, onBack, right, dark = false }) {
   const sub = dark ? 'rgba(255,255,255,.6)' : '#7a7a7a';
   return (
     <>
-      <div style={{ display: 'flex', alignItems: 'center', padding: '10px 18px 14px', gap: 12, flexShrink: 0 }}>
+      <div style={{ display: 'flex', alignItems: 'center', padding: '4px 14px 6px', gap: 8, flexShrink: 0, minHeight: 52 }}>
         <button
           onClick={onBack}
-          style={{ background: 'none', border: 'none', padding: 6, cursor: 'pointer', marginLeft: -6 }}
+          className="icon-btn"
+          style={{ marginLeft: -6, color: c }}
           aria-label="back"
         >
           {Icons.back(20, c)}
         </button>
-        <div style={{ flex: 1 }}>
+        <div style={{ flex: 1, minWidth: 0 }}>
           {label && <div className="label" style={{ color: sub, marginBottom: 2 }}>{label}</div>}
           {title && (
-            <div className="ko" style={{ fontSize: 14, fontWeight: 500, color: c, letterSpacing: '-.005em' }}>
+            <div className="ko" style={{ fontSize: 14, fontWeight: 500, color: c, letterSpacing: '-.005em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
               {title}
             </div>
           )}
@@ -67,6 +68,9 @@ export function CtaTile({ label, kr, onClick, dark, br }) {
   return (
     <div
       onClick={onClick}
+      role="button"
+      tabIndex={0}
+      className="tappable"
       style={{
         padding: '22px 16px',
         borderRight: br ? '1px solid #000' : 'none',
@@ -75,7 +79,6 @@ export function CtaTile({ label, kr, onClick, dark, br }) {
         display: 'flex',
         flexDirection: 'column',
         gap: 10,
-        cursor: 'pointer',
         minHeight: 130,
         justifyContent: 'space-between',
       }}
@@ -133,13 +136,19 @@ export function TabBar({ active = 'home', dark = false, onNav }) {
         <div
           key={t.id}
           onClick={() => onNav?.(t.id)}
+          role="button"
+          tabIndex={0}
+          className="tappable"
           style={{
             flex: 1,
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
             gap: 4,
-            cursor: 'pointer',
+            paddingTop: 4,
+            paddingBottom: 4,
+            minHeight: 48,
+            justifyContent: 'center',
           }}
         >
           {t.icon(18, active === t.id ? activeColor : muteColor)}

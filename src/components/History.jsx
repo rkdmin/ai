@@ -54,10 +54,13 @@ export default function History({ onNav, onBack }) {
         {items.map((it, i) => (
           <div
             key={it._idx}
+            role={editing ? undefined : 'button'}
+            tabIndex={editing ? undefined : 0}
+            className={editing ? undefined : 'tappable'}
             style={{
               display: 'flex', gap: 14, padding: '16px 22px',
               borderBottom: '1px solid #e8e8e8',
-              alignItems: 'center', cursor: editing ? 'default' : 'pointer',
+              alignItems: 'center',
               opacity: it.expired ? 0.55 : 1,
             }}
           >

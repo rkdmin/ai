@@ -9,10 +9,10 @@ export default function Home({ onNext, onNav }) {
   return (
     <div style={{ width: '100%', minHeight: '100dvh', background: '#fff', color: '#000', display: 'flex', flexDirection: 'column' }}>
       <StatusBar />
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 22px 14px', flexShrink: 0 }}>
-        <button style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }} aria-label="menu">{Icons.menu(20)}</button>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '4px 14px 6px', flexShrink: 0, minHeight: 52 }}>
+        <button className="icon-btn" style={{ marginLeft: -6 }} aria-label="menu">{Icons.menu(20)}</button>
         <span className="wm" style={{ fontSize: 21, letterSpacing: '-.005em' }}>beaumi</span>
-        <button style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }} aria-label="notifications">{Icons.bell(18)}</button>
+        <button className="icon-btn" style={{ marginRight: -6 }} aria-label="notifications">{Icons.bell(18)}</button>
       </div>
       <div style={{ height: 1, background: '#000', flexShrink: 0 }} />
 
@@ -53,7 +53,7 @@ export default function Home({ onNext, onNav }) {
           </div>
           <span onClick={() => onNav?.('history')} className="ko" style={{ fontSize: 11, color: '#7a7a7a', cursor: 'pointer' }}>전체보기 →</span>
         </div>
-        <div style={{ padding: '0 22px 24px', display: 'flex', gap: 12, overflowX: 'auto' }}>
+        <div className="snap-x" style={{ padding: '0 22px 24px', display: 'flex', gap: 12, overflowX: 'auto' }}>
           <RecentCard date="04 / 28" label="계란형 · 봄웜" tone="cream" />
           <RecentCard date="04 / 12" label="하트형 · 겨울쿨" tone="paper" />
           <RecentCard date="03 / 30" label="긴형 · 가을웜" tone="cream" />
@@ -69,11 +69,14 @@ function Tile({ icon, label, sub, br, rb, onClick }) {
   return (
     <div
       onClick={onClick}
+      role="button"
+      tabIndex={0}
+      className="tappable"
       style={{
         padding: '24px 14px 22px',
         borderRight: br ? '1px solid #000' : 'none',
         borderBottom: rb ? '1px solid #000' : 'none',
-        display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 14, minHeight: 120, cursor: 'pointer',
+        display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 14, minHeight: 120,
       }}
     >
       <div>{icon}</div>
@@ -88,7 +91,12 @@ function Tile({ icon, label, sub, br, rb, onClick }) {
 function RecentCard({ date, label, tone }) {
   const bg = tone === 'cream' ? '#f3ece5' : '#f6f4f0';
   return (
-    <div style={{ flex: '0 0 150px', background: bg, padding: '12px 12px 14px', display: 'flex', flexDirection: 'column', gap: 10, cursor: 'pointer' }}>
+    <div
+      role="button"
+      tabIndex={0}
+      className="tappable"
+      style={{ flex: '0 0 150px', background: bg, padding: '12px 12px 14px', display: 'flex', flexDirection: 'column', gap: 10 }}
+    >
       <div style={{ aspectRatio: '4/5', width: '100%' }}>
         <FacePlaceholder w="100%" h="100%" tone="light" label="result" />
       </div>

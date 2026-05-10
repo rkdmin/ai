@@ -31,15 +31,16 @@ export default function Onboarding({ idx = 0, onNext, onSkip }) {
   return (
     <div style={{ width: '100%', minHeight: '100dvh', background: '#fff', color: '#000', display: 'flex', flexDirection: 'column' }}>
       <StatusBar />
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 22px 14px', flexShrink: 0 }}>
-        <span className="wm" style={{ fontSize: 18, fontWeight: 300 }}>beaumi</span>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '4px 14px 6px', flexShrink: 0, minHeight: 52 }}>
+        <span className="wm" style={{ fontSize: 18, fontWeight: 300, paddingLeft: 8 }}>beaumi</span>
         {!isLast && (
-          <span
+          <button
             onClick={onSkip}
-            style={{ fontFamily: 'Pretendard', fontSize: 12, color: '#7a7a7a', cursor: 'pointer' }}
+            className="icon-btn"
+            style={{ width: 'auto', minWidth: 56, padding: '0 12px', fontFamily: 'Pretendard', fontSize: 12, color: '#7a7a7a' }}
           >
             건너뛰기 →
-          </span>
+          </button>
         )}
       </div>
       <div style={{ height: 1, background: '#000', flexShrink: 0 }} />

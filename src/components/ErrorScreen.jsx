@@ -24,8 +24,8 @@ export default function ErrorScreen({ type = 'face', message, onRetry, onBack })
   return (
     <div style={{ width: '100%', minHeight: '100dvh', background: '#fff', color: '#000', display: 'flex', flexDirection: 'column' }}>
       <StatusBar />
-      <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '10px 22px 14px', flexShrink: 0 }}>
-        <button onClick={onBack} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }} aria-label="close">
+      <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '4px 14px 6px', flexShrink: 0, minHeight: 52 }}>
+        <button onClick={onBack} className="icon-btn" style={{ marginRight: -6 }} aria-label="close">
           {Icons.close(20)}
         </button>
       </div>

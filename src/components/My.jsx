@@ -79,10 +79,13 @@ export default function My({ onNav, onBack }) {
             <div
               key={i}
               onClick={m.go ? () => onNav?.(m.go) : undefined}
+              role="button"
+              tabIndex={0}
+              className="tappable"
               style={{
                 display: 'flex', alignItems: 'center', gap: 14, padding: '16px 22px',
                 borderBottom: i < MENU.length - 1 ? '1px solid #e8e8e8' : '1px solid #000',
-                cursor: 'pointer',
+                minHeight: 56,
               }}
             >
               <span className="serif-i" style={{ fontSize: 13, color: '#a8a8a8', width: 22 }}>{m.n}</span>
@@ -100,9 +103,8 @@ export default function My({ onNav, onBack }) {
           <div className="serif-i" style={{ fontSize: 11, color: '#a8a8a8' }}>v 1.0.0 · sharing your beauty, every day</div>
           <button
             style={{
-              marginTop: 14, background: 'transparent', border: 'none', padding: '8px 0',
-              fontFamily: 'Pretendard', fontSize: 11, color: '#a8a8a8', cursor: 'pointer',
-              textDecoration: 'underline', textUnderlineOffset: 3,
+              marginTop: 16, background: '#fff', border: '1px solid #d4d4d4', padding: '10px 18px',
+              fontFamily: 'Pretendard', fontSize: 12, color: '#5a5a5a', minHeight: 40,
             }}
           >
             로그아웃

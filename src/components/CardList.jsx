@@ -63,9 +63,10 @@ function CardRow({ card, onClick }) {
       onClick={onClick}
       role="button"
       tabIndex={0}
+      className="tappable"
       style={{
         display: 'flex', gap: 16, padding: '18px 0', borderBottom: '1px solid #e8e8e8',
-        cursor: 'pointer', alignItems: 'stretch', position: 'relative',
+        alignItems: 'stretch', position: 'relative',
         minHeight: 124,
       }}
     >

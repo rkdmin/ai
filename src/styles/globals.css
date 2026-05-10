@@ -17,11 +17,29 @@ html, body, #root {
 html, body { height: 100%; }
 #root { min-height: 100%; }
 
+/* 모바일 앱 느낌 — 풀투리프레시 / 바운스 / 우발 텍스트 선택 / 300ms 탭딜레이 차단.
+   .selectable / 입력 요소만 텍스트 선택 허용. */
+html, body {
+  overscroll-behavior: none;
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  user-select: none;
+}
+input, textarea, [contenteditable], .selectable {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
 /* iOS 모바일 사파리에서 input[type=text/file] 포커스 시 자동 확대 방지 */
 input, button, textarea, select { font-size: 16px; }
 
-/* 화면 회전·터치 highlight 제거 */
-button { font-family: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+button {
+  font-family: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: opacity .14s ease, background-color .14s ease, color .14s ease;
+}
+button:active:not(:disabled) { opacity: .55; }
 
 /* Wireframe wordmark — Cormorant Garamond 200, tight tracking */
 .wm {
@@ -52,5 +70,58 @@ button { font-family: inherit; cursor: pointer; -webkit-tap-highlight-color: tra
 
 ::-webkit-scrollbar { width: 0; height: 0; }
 
+/* 누를 수 있는 면(div/li/article 등)에 붙여 모바일 탭 피드백을 준다.
+   editorial 톤 유지를 위해 transform 없이 opacity 만 살짝 떨어뜨림. */
+.tappable {
+  -webkit-tap-highlight-color: transparent;
+  transition: opacity .14s ease, background-color .14s ease;
+  cursor: pointer;
+  user-select: none;
+}
+.tappable:active { opacity: .55; }
+
+/* 아이콘 전용 버튼: 보이는 사이즈는 작아도 터치 히트박스 44×44 보장. */
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: opacity .14s ease;
+  color: inherit;
+}
+.icon-btn:active { opacity: .5; }
+
+/* 가로 스크롤 컨테이너: 모멘텀 + 스냅. 자식 첫 요소부터 정렬. */
+.snap-x {
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.snap-x > * { scroll-snap-align: start; }
+
+/* 페이지 진입 트랜지션 — stage 변경 시 살짝 떠오르며 페이드 인. */
+.page-enter { animation: page-enter .26s cubic-bezier(.2,.7,.3,1) both; }
+@keyframes page-enter {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: none; }
+}
+
 @keyframes spin { to { transform: rotate(360deg); } }
 @keyframes fade-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+/* 데스크톱 뷰포트(>=600px)에서는 따뜻한 베이지 무대 + 480 모바일 프레임 그림자.
+   "이건 모바일 앱"이라는 시그널을 시각적으로 전달. */
+@media (min-width: 600px) {
+  html, body, #root { background: #efe7df; }
+  #root > div {
+    box-shadow: 0 18px 60px rgba(40,30,20,.18), 0 2px 10px rgba(40,30,20,.08);
+    border-left: 1px solid rgba(0,0,0,.04);
+    border-right: 1px solid rgba(0,0,0,.04);
+  }
+}
