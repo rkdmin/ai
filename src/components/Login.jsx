@@ -69,7 +69,25 @@ export default function Login({ onNext, mode }) {
 
       <div style={{ flex: 1 }} />
       <div style={{ padding: '0 28px max(env(safe-area-inset-bottom), 28px)', textAlign: 'center', fontSize: 11, color: '#a8a8a8', lineHeight: 1.7, fontWeight: 300, flexShrink: 0 }}>
-        가입 시 <span style={{ textDecoration: 'underline' }}>이용약관</span> · <span style={{ textDecoration: 'underline' }}>개인정보처리방침</span>에<br />동의한 것으로 간주됩니다.
+        가입 시{' '}
+        <a
+          href="/terms.html"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ color: '#5a5a5a', textDecoration: 'underline', textUnderlineOffset: 2 }}
+        >
+          이용약관
+        </a>{' '}
+        ·{' '}
+        <a
+          href="/privacy.html"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ color: '#5a5a5a', textDecoration: 'underline', textUnderlineOffset: 2 }}
+        >
+          개인정보처리방침
+        </a>
+        에<br />동의한 것으로 간주됩니다.
       </div>
     </div>
   );

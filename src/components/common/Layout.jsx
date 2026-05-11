@@ -1,4 +1,5 @@
 import { Icons } from './Icons';
+import { tapHaptic } from '../../hooks/useHaptic';
 
 export function BackHeader({ title, label, onBack, right, dark = false }) {
   const c = dark ? '#fff' : '#000';
@@ -7,10 +8,10 @@ export function BackHeader({ title, label, onBack, right, dark = false }) {
     <>
       <div style={{ display: 'flex', alignItems: 'center', padding: '4px 14px 6px', gap: 8, flexShrink: 0, minHeight: 52 }}>
         <button
-          onClick={onBack}
+          onClick={() => { tapHaptic('light'); onBack?.(); }}
           className="icon-btn"
           style={{ marginLeft: -6, color: c }}
-          aria-label="back"
+          aria-label="뒤로가기"
         >
           {Icons.back(20, c)}
         </button>
@@ -135,9 +136,18 @@ export function TabBar({ active = 'home', dark = false, onNav }) {
       {tabs.map((t) => (
         <div
           key={t.id}
-          onClick={() => onNav?.(t.id)}
+          onClick={() => { tapHaptic('light'); onNav?.(t.id); }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              tapHaptic('light');
+              onNav?.(t.id);
+            }
+          }}
           role="button"
           tabIndex={0}
+          aria-label={t.label}
+          aria-current={active === t.id ? 'page' : undefined}
           className="tappable"
           style={{
             flex: 1,
@@ -147,7 +157,7 @@ export function TabBar({ active = 'home', dark = false, onNav }) {
             gap: 4,
             paddingTop: 4,
             paddingBottom: 4,
-            minHeight: 48,
+            minHeight: 56,
             justifyContent: 'center',
           }}
         >

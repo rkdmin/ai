@@ -1,10 +1,11 @@
 // TODO: 실제 부팅/스플래시 동안 토큰 검증·세션 복원·딥링크 처리 등을 붙일 자리.
-// 현재는 2초 대기 후 다음 단계로 이동.
+// Capacitor 네이티브 SplashScreen 이 이미 cold-boot 동안 표시되므로,
+// JS 진입 후에는 한 프레임만 잡아둔다. 200ms 는 페이드 페이지트랜지션 충돌 방지용 최소값.
 import { useEffect } from 'react';
 
 export default function Splash({ onNext }) {
   useEffect(() => {
-    const t = setTimeout(() => onNext?.(), 900);
+    const t = setTimeout(() => onNext?.(), 200);
     return () => clearTimeout(t);
   }, [onNext]);
   return (

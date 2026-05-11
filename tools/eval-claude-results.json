@@ -1,55 +1,55 @@
 {
   "model": "claude-sonnet-4-6 (subscription, via Agent tool)",
-  "ranAt": "2026-05-10",
+  "ranAt": "2026-05-11",
   "promptSource": "backend/services/rag_service.py :: ANALYZE_PROMPT",
   "results": [
     {
       "file": "계란형/카리나.jpg",
       "expectedFaceType": "계란형",
       "expectedAlternatives": [],
-      "actual": { "error": "실사 사진이 아닌 AI 생성 이미지로 판단됩니다 — 피부에 자연 모공·음영이 없고 눈이 비현실적으로 크며 전형적인 생성형 AI 인물 특징이 나타납니다." },
+      "actual": { "error": "실사 사진이 아닌 AI 생성 이미지로 판단되어 분석할 수 없습니다." },
       "verdict": "errors"
     },
     {
       "file": "계란형/고윤정.jpg",
       "expectedFaceType": "계란형",
       "expectedAlternatives": [],
-      "actual": { "faceType": "계란형", "features": ["눈꼬리 처짐", "중안부 긺"], "moodArchetype": ["ELEGANT", "SOFT", "ROMANTIC"] },
+      "actual": { "faceType": "계란형", "features": ["눈꼬리 올라감", "속쌍꺼풀"], "moodArchetype": ["ELEGANT", "CLEAN", "ROMANTIC"] },
       "verdict": "hits"
     },
     {
       "file": "둥근형/강미나.png",
       "expectedFaceType": "둥근형",
       "expectedAlternatives": [],
-      "actual": { "faceType": "둥근형", "features": ["눈 간격 넓음", "광대 넓음"], "moodArchetype": ["SOFT", "ROMANTIC", "FRESH"] },
+      "actual": { "faceType": "둥근형", "features": ["광대 넓음", "눈 간격 넓음"], "moodArchetype": ["SOFT", "ROMANTIC", "FRESH"] },
       "verdict": "hits"
     },
     {
       "file": "사각형/정유미.jpg",
       "expectedFaceType": "사각형",
       "expectedAlternatives": [],
-      "actual": { "faceType": "사각형", "features": ["눈꼬리 처짐", "중안부 긴 유형", "눈두덩이 살 얇음"], "moodArchetype": ["CLEAN", "ELEGANT", "CLASSIC"] },
+      "actual": { "faceType": "사각형", "features": ["눈꼬리 처짐", "중안부 긴 유형", "아몬드 눈"], "moodArchetype": ["ELEGANT", "CLEAN", "CLASSIC"] },
       "verdict": "hits"
     },
     {
       "file": "사각형/정채연.jpg",
       "expectedFaceType": "사각형",
       "expectedAlternatives": [],
-      "actual": { "faceType": "사각형", "features": ["눈꼬리 처짐", "중안부 짧은 유형"], "moodArchetype": ["FRESH", "CLEAN", "ROMANTIC"] },
+      "actual": { "faceType": "사각형", "features": ["눈꼬리 처짐", "속쌍꺼풀", "중안부 짧은 유형"], "moodArchetype": ["FRESH", "ROMANTIC", "CLEAN"] },
       "verdict": "hits"
     },
     {
       "file": "하트형/사나.png",
       "expectedFaceType": "하트형",
       "expectedAlternatives": [],
-      "actual": { "faceType": "하트형", "features": ["눈꼬리 처짐", "눈두덩이 살 두꺼움", "이마 넓음"], "moodArchetype": ["ROMANTIC", "SOFT", "ELEGANT"] },
+      "actual": { "faceType": "하트형", "features": ["눈꼬리 처짐", "입술 두꺼움", "광대 넓음"], "moodArchetype": ["ROMANTIC", "SOFT", "CLEAN"] },
       "verdict": "hits"
     },
     {
       "file": "긴형/로제.jpg",
       "expectedFaceType": "긴형",
       "expectedAlternatives": [],
-      "actual": { "faceType": "긴형", "features": ["눈꼬리 올라감", "중안부 긺", "인중 짧음"], "moodArchetype": ["ELEGANT", "SHARP", "ROMANTIC"] },
+      "actual": { "faceType": "긴형", "features": ["눈꼬리 올라감", "인중 짧음", "눈 간격 좁음"], "moodArchetype": ["ELEGANT", "SHARP", "ROMANTIC"] },
       "verdict": "hits"
     },
     {
@@ -70,7 +70,7 @@
       "file": "땅콩형/천우희2.jpg",
       "expectedFaceType": "땅콩형",
       "expectedAlternatives": [],
-      "actual": { "faceType": "땅콩형", "features": ["광대 넓음", "눈꼬리 처짐", "속쌍꺼풀"], "moodArchetype": ["SOFT", "CLEAN", "ROMANTIC"] },
+      "actual": { "faceType": "땅콩형", "features": ["광대 넓음", "눈꼬리 처짐", "속쌍꺼풀"], "moodArchetype": ["SOFT", "ROMANTIC", "CLEAN"] },
       "verdict": "hits"
     }
   ],
@@ -81,6 +81,10 @@
     "miss": 0,
     "ambiguous": 0,
     "errors": 1,
-    "accuracy": "9/10 (90%) — 거부 1장 제외 시 9/9 (100%)"
+    "accuracy": "9/10 (90%)",
+    "notes": [
+      "카리나.jpg 는 실사 사진이지만 보정/필터/조명 때문에 Claude가 AI 생성으로 오판하여 거부함. ANALYZE_PROMPT 의 거부 조건이 보수적으로 작동한 결과 — false-positive rejection.",
+      "거부 케이스를 제외한 9/9(100%) 가 얼굴형 라벨과 정확히 일치."
+    ]
   }
 }

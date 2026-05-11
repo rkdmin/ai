@@ -1,20 +1,102 @@
+import { useRef, useState } from 'react';
 import { StatusBar } from './common/StatusBar';
 import { BackHeader } from './common/Layout';
 import { Icons } from './common/Icons';
 import { FacePlaceholder } from './common/Placeholders';
+import { tapHaptic, successHaptic } from '../hooks/useHaptic';
 
 // 공유 카드. result + card 를 props 로 받아 카드 본문에 반영.
-// TODO: 실제 공유 동작(SAVE IMAGE = html2canvas → blob, INSTAGRAM/KAKAO = Web Share API)
-//   현재는 버튼 클릭이 no-op.
-export default function ShareCard({ result, card, variant = 'hair', onClose, onCopy, onSave }) {
+// SAVE IMAGE 는 html2canvas 미설치 환경에서 안전하게 폴백되도록 동적 import.
+// 공유 버튼은 navigator.share 우선, 미지원시 클립보드로 텍스트 복사.
+export default function ShareCard({ result, card, variant = 'hair', onClose }) {
   const isMakeup = variant === 'makeup';
+  const cardRef = useRef(null);
+  const [toast, setToast] = useState('');
+
+  function showToast(msg) {
+    setToast(msg);
+    setTimeout(() => setToast(''), 1800);
+  }
+
+  async function captureCard() {
+    // html2canvas 가 설치되어 있을 때만 PNG 캡처. 없으면 null 반환.
+    if (!cardRef.current) return null;
+    try {
+      const mod = await import('html2canvas');
+      const html2canvas = mod.default || mod;
+      const canvas = await html2canvas(cardRef.current, { backgroundColor: '#fff', scale: 2 });
+      return await new Promise((resolve) => canvas.toBlob(resolve, 'image/png', 0.95));
+    } catch {
+      return null;
+    }
+  }
+
+  async function onSave() {
+    tapHaptic('medium');
+    const blob = await captureCard();
+    if (!blob) {
+      showToast('브라우저에서 길게 눌러 이미지를 저장해 주세요.');
+      return;
+    }
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `beaumi-${variant}-${Date.now()}.png`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+    successHaptic();
+    showToast('이미지로 저장했어요.');
+  }
+
+  async function shareNative(label) {
+    tapHaptic('light');
+    const title = isMakeup ? 'Beaumi · 메이크업 결과' : 'Beaumi · 헤어 결과';
+    const text = `${result?.styleLabel || (card?.name ?? 'My Beaumi result')} — ${(result?.moodArchetype || []).join(' · ')}`;
+    try {
+      const blob = await captureCard();
+      if (blob && navigator.canShare && navigator.canShare({ files: [new File([blob], 'beaumi.png', { type: 'image/png' })] })) {
+        await navigator.share({
+          title, text,
+          files: [new File([blob], 'beaumi.png', { type: 'image/png' })],
+        });
+        return;
+      }
+      if (navigator.share) {
+        await navigator.share({ title, text, url: typeof window !== 'undefined' ? window.location.href : 'https://beaumi.app' });
+        return;
+      }
+    } catch (e) {
+      // 사용자가 share sheet 를 닫은 경우는 조용히 무시.
+      if (e?.name === 'AbortError') return;
+    }
+    // 폴백: 클립보드에 텍스트 복사.
+    try {
+      await navigator.clipboard.writeText(`${title}\n${text}`);
+      showToast(`${label || '내용'}을 클립보드에 복사했어요.`);
+    } catch {
+      showToast('공유를 지원하지 않는 환경이에요.');
+    }
+  }
+
+  async function onCopy() {
+    tapHaptic('light');
+    const url = typeof window !== 'undefined' ? window.location.href : 'https://beaumi.app';
+    try {
+      await navigator.clipboard.writeText(url);
+      showToast('링크를 복사했어요.');
+    } catch {
+      showToast('클립보드에 접근할 수 없어요.');
+    }
+  }
   return (
     <div style={{ width: '100%', minHeight: '100dvh', background: '#000', color: '#fff', display: 'flex', flexDirection: 'column' }}>
       <StatusBar dark />
       <BackHeader label="SHARE" title={isMakeup ? '메이크업 결과 공유' : '결과 공유'} onBack={onClose} dark />
 
       <div style={{ flex: 1, overflowY: 'auto', padding: '22px 22px 0', display: 'flex', flexDirection: 'column', gap: 14 }}>
-        <div style={{ background: '#fff', color: '#000', position: 'relative' }}>
+        <div ref={cardRef} style={{ background: '#fff', color: '#000', position: 'relative' }}>
           <div style={{ padding: '14px 18px 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span className="wm" style={{ fontSize: 14, fontWeight: 300 }}>beaumi</span>
             <span className="serif-i" style={{ fontSize: 11, color: '#7a7a7a' }}>{isMakeup ? 'AI Makeup' : 'AI Beauty Coach'}</span>
@@ -49,12 +131,28 @@ export default function ShareCard({ result, card, variant = 'hair', onClose, onC
           SAVE IMAGE
         </button>
         <div style={{ display: 'flex', gap: 8 }}>
-          <ShareButton label="INSTAGRAM" icon={Icons.insta} />
-          <ShareButton label="KAKAO" />
-          <ShareButton label="COPY LINK" icon={Icons.link} onClick={onCopy} />
+          <ShareButton label="공유" icon={Icons.insta} onClick={() => shareNative('결과')} />
+          <ShareButton label="이미지" onClick={onSave} />
+          <ShareButton label="링크 복사" icon={Icons.link} onClick={onCopy} />
         </div>
         <div style={{ height: 14 }} />
       </div>
+
+      {toast && (
+        <div
+          role="status"
+          aria-live="polite"
+          style={{
+            position: 'fixed', bottom: 'max(env(safe-area-inset-bottom), 28px)', left: '50%',
+            transform: 'translateX(-50%)', background: 'rgba(255,255,255,.96)', color: '#000',
+            padding: '10px 16px', fontSize: 12.5, maxWidth: 360, textAlign: 'center',
+            border: '1px solid #000', zIndex: 100,
+          }}
+          className="ko"
+        >
+          {toast}
+        </div>
+      )}
     </div>
   );
 }

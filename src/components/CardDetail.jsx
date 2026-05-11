@@ -16,7 +16,7 @@ const FALLBACK_MOOD = [
   { kw: 'CLASSIC', kr: '클래식', c1: '#e0d4c4', c2: '#7a6549' },
 ];
 
-export default function CardDetail({ card, result, photoUrl, onBack, onShare, onSynthesize }) {
+export default function CardDetail({ card, result, photoUrl, synthesizedPhoto, onBack, onShare, onSynthesize }) {
   const name = card?.name || '추천 헤어';
   const rank = card?.rank ?? 1;
   const commentary = card?.commentary || card?.coachComment || '얼굴형 분석 결과를 기준으로 가장 자연스러운 헤어 스타일이에요.';
@@ -40,7 +40,7 @@ export default function CardDetail({ card, result, photoUrl, onBack, onShare, on
         }
       />
 
-      <div style={{ flex: 1, overflowY: 'auto' }}>
+      <div style={{ flex: 1, overflowY: 'auto', paddingBottom: 76 }}>
         <div style={{ aspectRatio: '1/1.05', background: '#000', position: 'relative' }}>
           <FacePlaceholder w="100%" h="100%" tone="dark" label="reference" />
           <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg,rgba(0,0,0,0) 40%,rgba(0,0,0,.85) 100%)' }} />
@@ -116,6 +116,7 @@ export default function CardDetail({ card, result, photoUrl, onBack, onShare, on
                   <img
                     src={photoUrl}
                     alt=""
+                    decoding="async"
                     style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', filter: 'grayscale(0.2)' }}
                   />
                 ) : (
@@ -124,22 +125,36 @@ export default function CardDetail({ card, result, photoUrl, onBack, onShare, on
                 <span className="label" style={{ position: 'absolute', top: 8, left: 10, color: 'rgba(255,255,255,.6)', fontSize: 9 }}>BEFORE</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{Icons.arrow(20, '#fff')}</div>
-              <div style={{ aspectRatio: '1/1.2', position: 'relative', border: '1px dashed rgba(255,255,255,.4)' }}>
-                <div style={{ position: 'absolute', inset: 0, backgroundImage: 'repeating-linear-gradient(135deg, rgba(255,255,255,.05) 0 1px, transparent 1px 10px)' }} />
-                <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-                  <div style={{ width: 34, height: 34, border: '1px solid rgba(255,255,255,.5)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    {Icons.lock(14, 'rgba(255,255,255,.7)')}
-                  </div>
-                  <span className="serif-i" style={{ fontSize: 13, color: 'rgba(255,255,255,.6)' }}>after</span>
-                </div>
-                <span className="label" style={{ position: 'absolute', top: 8, left: 10, color: 'rgba(255,255,255,.5)', fontSize: 9 }}>AI SYNTHESIS</span>
+              <div style={{ aspectRatio: '1/1.2', position: 'relative', border: synthesizedPhoto ? '1px solid rgba(255,255,255,.6)' : '1px dashed rgba(255,255,255,.4)', overflow: 'hidden' }}>
+                {synthesizedPhoto ? (
+                  <img
+                    src={synthesizedPhoto}
+                    alt="AI 합성 결과"
+                    style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+                  />
+                ) : (
+                  <>
+                    <div style={{ position: 'absolute', inset: 0, backgroundImage: 'repeating-linear-gradient(135deg, rgba(255,255,255,.05) 0 1px, transparent 1px 10px)' }} />
+                    <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                      <div style={{ width: 34, height: 34, border: '1px solid rgba(255,255,255,.5)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        {Icons.lock(14, 'rgba(255,255,255,.7)')}
+                      </div>
+                      <span className="serif-i" style={{ fontSize: 13, color: 'rgba(255,255,255,.6)' }}>after</span>
+                    </div>
+                  </>
+                )}
+                <span className="label" style={{ position: 'absolute', top: 8, left: 10, color: 'rgba(255,255,255,.6)', fontSize: 9 }}>{synthesizedPhoto ? 'AFTER' : 'AI SYNTHESIS'}</span>
               </div>
             </div>
             <div style={{ marginBottom: 14 }}>
               <div className="label" style={{ color: 'rgba(255,255,255,.5)', marginBottom: 6 }}>STEP 04 · TRY ON</div>
-              <div className="ko" style={{ fontSize: 18, fontWeight: 300, letterSpacing: '-.01em', marginBottom: 6 }}>이 헤어, 내 얼굴엔 어떨까?</div>
+              <div className="ko" style={{ fontSize: 18, fontWeight: 300, letterSpacing: '-.01em', marginBottom: 6 }}>
+                {synthesizedPhoto ? '합성 결과가 도착했어요' : '이 헤어, 내 얼굴엔 어떨까?'}
+              </div>
               <div className="ko" style={{ fontSize: 12, color: 'rgba(255,255,255,.6)', fontWeight: 300, lineHeight: 1.6 }}>
-                15초 광고를 보고 내 얼굴에 합성된 결과를 받아보세요.
+                {synthesizedPhoto
+                  ? '저장하거나 공유해보세요. 다시 보려면 같은 버튼을 눌러도 광고만 보면 됩니다.'
+                  : '15초 광고를 보고 내 얼굴에 합성된 결과를 받아보세요.'}
               </div>
             </div>
             <button
@@ -150,10 +165,36 @@ export default function CardDetail({ card, result, photoUrl, onBack, onShare, on
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
               }}
             >
-              {Icons.play(13)} WATCH AD &amp; SYNTHESIZE
+              {Icons.play(13)} {synthesizedPhoto ? 'WATCH AD & SHOW AGAIN' : 'WATCH AD & SYNTHESIZE'}
             </button>
           </div>
         </Section>
+      </div>
+
+      {/* Sticky 하단 액션 바 — 긴 스크롤 페이지에서 메인 CTA 가 항상 손에 닿도록.
+          모바일 앱 표준 패턴(IG/Pinterest 류). 100dvh 변동에도 고정. */}
+      <div
+        style={{
+          position: 'sticky', bottom: 0, left: 0, right: 0,
+          background: '#fff', borderTop: '1px solid #000',
+          padding: '10px 14px max(env(safe-area-inset-bottom), 14px)',
+          display: 'flex', gap: 8, flexShrink: 0,
+        }}
+      >
+        <button
+          onClick={onShare}
+          aria-label="결과 공유"
+          style={{ flex: 1, background: '#fff', color: '#000', border: '1px solid #000', padding: '12px 0', fontFamily: 'Jost', fontSize: 11, letterSpacing: '.18em', cursor: 'pointer', minHeight: 48 }}
+        >
+          SHARE
+        </button>
+        <button
+          onClick={onSynthesize}
+          aria-label="합성 결과 보기"
+          style={{ flex: 2, background: '#000', color: '#fff', border: 'none', padding: '12px 0', fontFamily: 'Jost', fontSize: 11, letterSpacing: '.22em', cursor: 'pointer', minHeight: 48, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}
+        >
+          {Icons.play(13, '#fff')} TRY ON
+        </button>
       </div>
     </div>
   );

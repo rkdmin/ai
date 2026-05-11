@@ -8,8 +8,21 @@
 const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '')
 
 function getUserId() {
-  // Phase 3 에서 Supabase 세션에서 채움. 지금은 항상 게스트.
-  return null
+  // Phase 3 에서 Supabase 세션에서 채움.
+  // 그 전까지: dev 모드에서는 localStorage 에 stable 가짜 id 발급해서 photo 합성 같은
+  // require_user 라우트도 동작하게 한다. 운영 빌드(prod)에서는 항상 null → 게스트.
+  if (typeof window === 'undefined') return null
+  if (!import.meta.env.DEV) return null
+  try {
+    let id = window.localStorage.getItem('beaumi.dev_user_id')
+    if (!id) {
+      id = 'dev-' + Math.random().toString(36).slice(2, 10)
+      window.localStorage.setItem('beaumi.dev_user_id', id)
+    }
+    return id
+  } catch {
+    return null
+  }
 }
 
 async function http(path, body) {

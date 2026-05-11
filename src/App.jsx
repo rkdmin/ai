@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import './styles/tokens.css';
 import './styles/globals.css';
 
@@ -20,7 +20,7 @@ import Trend from './components/Trend';
 import History from './components/History';
 import My from './components/My';
 
-import { analyzeFace, generateHairCards, generateMakeupCards } from './api/ai';
+import { analyzeFace, generateHairCards, generateMakeupCards, generateStyledPhoto } from './api/ai';
 import { mapCards } from './api/mappers';
 
 /**
@@ -70,6 +70,41 @@ function markOnboarded() {
   } catch { /* noop */ }
 }
 
+// 카드별 합성 결과 캐시 키. 같은 분석 안에서 카드의 cardType+rank+이름으로 식별.
+// (분석이 새로 실행되면 hairCards/makeupCards 가 갈리고, 같은 카드여도 새 키로 인식되므로
+// 굳이 분석 id 까지 묶지 않아도 충돌 위험 없음.)
+function cardKey(card) {
+  if (!card) return '';
+  return `${card.cardType || 'hair'}-${card.rank ?? 0}-${card.name || card.hair || card.mood || ''}`;
+}
+
+// stage 별 "뒤로가기" 시 돌아갈 부모 stage. Android 하드웨어 백 + 데스크톱 브라우저 백 처리용.
+// 분기 로직(예: card_detail 은 hair / makeup 둘 다에서 진입)은 navStackRef 에서 stage 진입 순서를 보고 결정.
+const PARENT_STAGE = {
+  onboarding2: 'onboarding1',
+  onboarding3: 'onboarding2',
+  login: 'home',
+  guest_gate: 'home',
+  upload: 'home',
+  personal_color: 'upload',
+  loading: 'home',
+  error_face: 'home',
+  error_network: 'home',
+  result_home: 'home',
+  hair_loading: 'result_home',
+  result_tabs_hair: 'result_home',
+  card_detail: 'result_tabs_hair',
+  ad_gate: 'result_tabs_hair',
+  share_card: 'result_home',
+  makeup_loading: 'result_home',
+  result_tabs_makeup: 'result_home',
+  makeup_detail: 'result_tabs_makeup',
+  share_card_makeup: 'makeup_detail',
+  trend: 'home',
+  history: 'home',
+  my: 'home',
+};
+
 export default function App() {
   const [stage, setStage] = useState('splash');
 
@@ -89,14 +124,74 @@ export default function App() {
   // 광고 게이트 진입 시 어떤 stage 로 돌아갈지 / 완료 후 어디로 갈지.
   const [adReturn, setAdReturn] = useState({ done: 'card_detail', back: 'result_tabs_hair' });
 
+  // 카드별 합성 사진 캐시. key 는 cardKey() 결과(헤어/메이크업 + rank + 이름).
+  // 한 번 합성하면 같은 카드를 다시 열어도 같은 이미지 사용.
+  const [synthByKey, setSynthByKey] = useState({});
+
   // 분석 / 네트워크 에러 표시용.
   const [errorInfo, setErrorInfo] = useState({ type: 'face', message: '' });
 
-  const go = useCallback((next) => setStage(next), []);
+  // history stack 동기화. 새 stage 마다 pushState — 사용자가 시스템 백을 누르면 popstate 가 떨어지고
+  // 거기서 부모 stage 로 되돌린다. setStage 자체는 popstate 핸들러에서도 호출되므로,
+  // pushState 는 "유저 액션으로 넘어갈 때만" 일어나도록 isPopRef 로 가드.
+  const isPopRef = useRef(false);
+  const go = useCallback((next) => {
+    setStage(next);
+    if (typeof window === 'undefined') return;
+    if (isPopRef.current) {
+      // popstate 콜백 안에서 setStage 한 케이스 — history 는 이미 한 칸 뒤로 갔음.
+      isPopRef.current = false;
+      return;
+    }
+    try { window.history.pushState({ stage: next }, '', ''); } catch { /* noop */ }
+  }, []);
   const navTab = useCallback((tab) => {
     const allowed = ['home', 'trend', 'history', 'my'];
     if (allowed.includes(tab)) go(tab);
   }, [go]);
+
+  // 진입 시 1번만: 첫 history 항목 심기 + popstate / Capacitor backButton 리스너.
+  // stageRef 로 클로저에서 최신 stage 를 본다.
+  const stageRef = useRef(stage);
+  useEffect(() => { stageRef.current = stage; }, [stage]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return undefined;
+    try { window.history.replaceState({ stage: 'splash' }, '', ''); } catch { /* noop */ }
+
+    const onPop = () => {
+      const cur = stageRef.current;
+      const parent = PARENT_STAGE[cur];
+      if (!parent) {
+        // home / splash 등 루트에서 백 → 다시 한 칸 push 해서 앱이 종료되지 않도록 보존.
+        // (Capacitor 환경에서는 별도로 App.exitApp 을 호출해도 되지만, 웹/PWA 호환을 위해 보수적으로 유지.)
+        try { window.history.pushState({ stage: cur }, '', ''); } catch { /* noop */ }
+        return;
+      }
+      isPopRef.current = true;
+      setStage(parent);
+    };
+    window.addEventListener('popstate', onPop);
+
+    // Capacitor 네이티브 빌드: 하드웨어 백 버튼은 popstate 가 자동으로 발화되지 않을 수 있어
+    // App 플러그인 backButton 이벤트도 같이 후킹. 미설치 환경에서는 import 가 실패하지만
+    // try/catch 로 폴백되므로 빌드/실행에 영향 없음.
+    let appListenerHandle = null;
+    (async () => {
+      try {
+        const mod = await import('@capacitor/app');
+        if (mod?.App?.addListener) {
+          const handle = await mod.App.addListener('backButton', () => onPop());
+          appListenerHandle = handle;
+        }
+      } catch { /* noop */ }
+    })();
+
+    return () => {
+      window.removeEventListener('popstate', onPop);
+      try { appListenerHandle?.remove?.(); } catch { /* noop */ }
+    };
+  }, []);
 
   const startAnalysis = useCallback(() => {
     if (!photo?.dataUrl) {
@@ -118,6 +213,7 @@ export default function App() {
     setHairCards(null);
     setMakeupCards(null);
     setActiveCard(null);
+    setSynthByKey({}); // 이전 분석의 합성 사진 캐시 폐기.
     go('result_home');
   }, [personalColor, go]);
 
@@ -157,6 +253,40 @@ export default function App() {
     const msg = String(e?.message || e || '');
     setErrorInfo({ type: 'network', message: msg });
     go('error_network');
+  }, [go]);
+
+  // ── 사진 합성 (POST /api/photo/generate) ──────────────────────
+  const startSynthesis = useCallback((card) => {
+    if (!photo?.dataUrl || !card) return;
+    if (card.cardType === 'makeup') return; // 정책: 메이크업 카드는 합성 미지원.
+    const key = cardKey(card);
+    // 이미 받아둔 합성 결과가 있으면 재호출 안 함 — 광고만 다시 보여주고 끝.
+    const cached = synthByKey[key];
+    if (cached) {
+      taskRef.current = Promise.resolve(cached);
+    } else {
+      taskRef.current = generateStyledPhoto(photo.dataUrl, card);
+    }
+    setAdReturn({ done: 'synth_loading', back: 'card_detail' });
+    go('ad_gate');
+  }, [photo, synthByKey, go]);
+
+  const onSynthSuccess = useCallback((dataUrl) => {
+    if (!activeCard || !dataUrl) {
+      go('card_detail');
+      return;
+    }
+    const key = cardKey(activeCard);
+    setSynthByKey((m) => (m[key] === dataUrl ? m : { ...m, [key]: dataUrl }));
+    go('card_detail');
+  }, [activeCard, go]);
+
+  const onSynthError = useCallback((e) => {
+    const msg = String(e?.message || e || '');
+    // 합성 실패는 분석/카드 에러처럼 전역 에러 화면으로 던지지 않고, 카드 상세로 돌아가
+    // AFTER 슬롯의 안내 텍스트로 노출. 사용자가 다른 카드를 보거나 재시도할 수 있게.
+    setErrorInfo({ type: 'network', message: msg });
+    go('card_detail');
   }, [go]);
 
   const photoUrl = photo?.dataUrl || null;
@@ -312,12 +442,27 @@ export default function App() {
           card={activeCard}
           result={result}
           photoUrl={photoUrl}
+          synthesizedPhoto={activeCard ? synthByKey[cardKey(activeCard)] : null}
           onBack={() => go('result_tabs_hair')}
           onShare={() => go('share_card')}
-          onSynthesize={() => {
-            setAdReturn({ done: 'card_detail', back: 'card_detail' });
-            go('ad_gate');
-          }}
+          onSynthesize={() => startSynthesis(activeCard)}
+        />
+      );
+      break;
+    case 'synth_loading':
+      view = (
+        <Loading
+          task={taskRef.current}
+          photoUrl={photoUrl}
+          label="합성 사진"
+          steps={[
+            { label: '얼굴 지오메트리', en: 'GEOMETRY' },
+            { label: '스타일 적용', en: 'APPLY STYLE' },
+            { label: '마무리', en: 'FINALIZE' },
+          ]}
+          onSuccess={onSynthSuccess}
+          onError={onSynthError}
+          onCancel={() => go('card_detail')}
         />
       );
       break;

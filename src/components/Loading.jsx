@@ -98,6 +98,7 @@ export default function Loading({
             src={photoUrl}
             alt=""
             aria-hidden
+            decoding="async"
             style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', filter: 'grayscale(0.4) contrast(1.05) brightness(0.85)' }}
           />
         ) : (

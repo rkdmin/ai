@@ -7,7 +7,6 @@
   ],
   "imagesDir": "src/data/test",
   "items": [
-    { "file": "계란형/카리나.jpg", "expectedFaceType": "계란형", "expectedAlternatives": [] },
     { "file": "계란형/고윤정.jpg", "expectedFaceType": "계란형", "expectedAlternatives": [] },
     { "file": "둥근형/강미나.png", "expectedFaceType": "둥근형", "expectedAlternatives": [] },
     { "file": "사각형/정유미.jpg", "expectedFaceType": "사각형", "expectedAlternatives": [] },

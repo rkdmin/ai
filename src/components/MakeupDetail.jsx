@@ -73,7 +73,7 @@ export default function MakeupDetail({ card, result, photoUrl, onBack, onShare, 
         }
       />
 
-      <div style={{ flex: 1, overflowY: 'auto' }}>
+      <div style={{ flex: 1, overflowY: 'auto', paddingBottom: 76 }}>
         <div style={{ aspectRatio: '1/.95', background: '#000', position: 'relative' }}>
           <FacePlaceholder w="100%" h="100%" tone="dark" label="reference look" />
           <div
@@ -190,6 +190,26 @@ export default function MakeupDetail({ card, result, photoUrl, onBack, onShare, 
         </Section>
 
         <Section n="05" en="PRODUCTS" kr="이 룩에 추천하는 제품" last>
+          {/* 공정거래위원회 추천·보증 심사지침 + 쿠팡파트너스 운영정책에 따른 사전 고지.
+              상품 링크와 같은 화면 안에 명확히 노출되어야 한다. */}
+          <div
+            role="note"
+            aria-label="제휴 활동 고지"
+            style={{
+              padding: '10px 12px',
+              border: '1px solid #d4d4d4',
+              background: '#fafaf8',
+              marginBottom: 12,
+              fontSize: 11,
+              lineHeight: 1.55,
+              color: '#5a5a5a',
+              fontWeight: 300,
+            }}
+            className="ko"
+          >
+            <span className="label" style={{ display: 'inline-block', marginRight: 6, color: '#000' }}>AD · 제휴</span>
+            이 페이지의 제품 링크는 쿠팡파트너스 활동의 일환으로, 일정액의 수수료를 제공받습니다.
+          </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 0, borderTop: '1px solid #000' }}>
             {products.map((p, i) => (
               <a
@@ -228,6 +248,30 @@ export default function MakeupDetail({ card, result, photoUrl, onBack, onShare, 
             </button>
           </div>
         </Section>
+      </div>
+
+      <div
+        style={{
+          position: 'sticky', bottom: 0, left: 0, right: 0,
+          background: '#fff', borderTop: '1px solid #000',
+          padding: '10px 14px max(env(safe-area-inset-bottom), 14px)',
+          display: 'flex', gap: 8, flexShrink: 0,
+        }}
+      >
+        <button
+          onClick={onBack}
+          aria-label="다른 카드 보기"
+          style={{ flex: 1, background: '#fff', color: '#000', border: '1px solid #000', padding: '12px 0', fontFamily: 'Jost', fontSize: 11, letterSpacing: '.18em', cursor: 'pointer', minHeight: 48 }}
+        >
+          OTHER LOOKS
+        </button>
+        <button
+          onClick={onShare}
+          aria-label="메이크업 결과 공유"
+          style={{ flex: 2, background: '#000', color: '#fff', border: 'none', padding: '12px 0', fontFamily: 'Jost', fontSize: 11, letterSpacing: '.22em', cursor: 'pointer', minHeight: 48, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}
+        >
+          {Icons.share(13, '#fff')} SHARE LOOK
+        </button>
       </div>
     </div>
   );

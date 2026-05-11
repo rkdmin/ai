@@ -47,6 +47,7 @@ export default function AnalysisResult({ result, photoUrl, onCardList, onShare }
             <img
               src={photoUrl}
               alt="분석한 정면 사진"
+              decoding="async"
               style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', filter: 'grayscale(0.05) contrast(1.02)' }}
             />
           ) : (

@@ -5,24 +5,47 @@ import { Icons } from './common/Icons';
 import { FacePlaceholder } from './common/Placeholders';
 
 // 정면 사진 1장 업로드. file picker → FileReader → onUpload(file, dataUrl).
-// NEXT 버튼은 파일이 선택된 경우에만 진행, 아니면 picker 를 다시 연다.
-export default function PhotoUpload({ onUpload, onBack }) {
-  const fileRef = useRef(null);
-  const [preview, setPreview] = useState(null); // { file, dataUrl }
+// NEXT 버튼은 파일 + 동의 체크가 모두 충족된 경우에만 진행.
+//
+// 카메라 / 갤러리 분리: capture="user" 는 셀카 카메라 직접 호출, 미지정은 시스템 picker(앨범).
+// 일부 안드로이드 브라우저는 capture 가 무시되고 picker 가 뜨므로 두 개 input 을 두고 명시적 선택.
+const MAX_FILE_BYTES = 10 * 1024 * 1024; // 10MB — 백엔드 정책과 동기화 필요.
 
-  function pickFile() {
-    fileRef.current?.click();
-  }
+export default function PhotoUpload({ onUpload, onBack }) {
+  const cameraRef = useRef(null);
+  const galleryRef = useRef(null);
+  const [preview, setPreview] = useState(null); // { file, dataUrl }
+  const [consent, setConsent] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
+
+  function pickFromCamera() { cameraRef.current?.click(); }
+  function pickFromGallery() { galleryRef.current?.click(); }
+
   function onFileChange(e) {
     const file = e.target.files?.[0];
+    e.target.value = ''; // 같은 파일 재선택 허용.
     if (!file) return;
+    if (file.size > MAX_FILE_BYTES) {
+      setErrorMsg('사진 용량은 10MB 이하만 업로드할 수 있어요.');
+      return;
+    }
+    if (!file.type.startsWith('image/')) {
+      setErrorMsg('이미지 파일만 업로드할 수 있어요.');
+      return;
+    }
+    setErrorMsg('');
     const reader = new FileReader();
     reader.onload = () => setPreview({ file, dataUrl: reader.result });
+    reader.onerror = () => setErrorMsg('파일을 읽을 수 없어요. 다시 시도해 주세요.');
     reader.readAsDataURL(file);
   }
   function next() {
+    if (!consent) {
+      setErrorMsg('사진 분석 동의에 체크해 주세요.');
+      return;
+    }
     if (!preview) {
-      pickFile();
+      pickFromCamera();
       return;
     }
     onUpload?.(preview.file, preview.dataUrl);
@@ -34,10 +57,17 @@ export default function PhotoUpload({ onUpload, onBack }) {
       <BackHeader label="STEP 01 / 03" title="정면 사진 업로드" onBack={onBack} />
 
       <input
-        ref={fileRef}
+        ref={cameraRef}
         type="file"
         accept="image/*"
         capture="user"
+        style={{ display: 'none' }}
+        onChange={onFileChange}
+      />
+      <input
+        ref={galleryRef}
+        type="file"
+        accept="image/*"
         style={{ display: 'none' }}
         onChange={onFileChange}
       />
@@ -63,9 +93,10 @@ export default function PhotoUpload({ onUpload, onBack }) {
         </div>
 
         <div
-          onClick={pickFile}
+          onClick={pickFromCamera}
           role="button"
           tabIndex={0}
+          aria-label="사진 영역 — 탭하면 카메라가 열려요"
           className="tappable"
           style={{
             minHeight: 240, border: '1px dashed #000', position: 'relative', background: '#fafaf8',
@@ -103,6 +134,50 @@ export default function PhotoUpload({ onUpload, onBack }) {
           </div>
         </div>
 
+        {/* 카메라 / 갤러리 명시적 선택 — 안드로이드/iOS 모두에서 사용자 의도가 분명. */}
+        <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); pickFromCamera(); }}
+            style={{ flex: 1, padding: '12px 0', background: '#fff', color: '#000', border: '1px solid #000', fontFamily: 'Pretendard', fontSize: 12.5, minHeight: 44, cursor: 'pointer' }}
+          >
+            카메라로 촬영
+          </button>
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); pickFromGallery(); }}
+            style={{ flex: 1, padding: '12px 0', background: '#fff', color: '#000', border: '1px solid #000', fontFamily: 'Pretendard', fontSize: 12.5, minHeight: 44, cursor: 'pointer' }}
+          >
+            앨범에서 선택
+          </button>
+        </div>
+
+        {/* 명시적 동의 체크 — Apple 5.1.1 / 한국 개보법 §15 정보주체 동의 표준. */}
+        <label
+          style={{
+            display: 'flex', alignItems: 'flex-start', gap: 10, marginTop: 16,
+            padding: '12px 14px', border: '1px solid #d4d4d4', background: '#fafaf8', cursor: 'pointer',
+          }}
+        >
+          <input
+            type="checkbox"
+            checked={consent}
+            onChange={(e) => { setConsent(e.target.checked); if (e.target.checked) setErrorMsg(''); }}
+            style={{ marginTop: 3, width: 18, height: 18, accentColor: '#000', cursor: 'pointer', flexShrink: 0 }}
+            aria-describedby="consent-desc"
+          />
+          <span id="consent-desc" className="ko" style={{ fontSize: 12, lineHeight: 1.6, color: '#1a1a1a', fontWeight: 300 }}>
+            <b style={{ fontWeight: 500 }}>(필수)</b> 얼굴형 분석을 위해 사진을 일시 처리하는 데 동의합니다.
+            <span style={{ color: '#7a7a7a' }}> 분석 즉시 폐기되며 외부 공유 · AI 학습에 쓰이지 않아요.</span>
+          </span>
+        </label>
+
+        {errorMsg && (
+          <div role="alert" style={{ marginTop: 12, padding: '10px 12px', background: '#fff5f0', borderLeft: '2px solid #c45a3b', color: '#c45a3b', fontSize: 12 }} className="ko">
+            {errorMsg}
+          </div>
+        )}
+
         <div style={{ height: 18 }} />
       </div>
 
@@ -115,7 +190,15 @@ export default function PhotoUpload({ onUpload, onBack }) {
         </button>
         <button
           onClick={next}
-          style={{ flex: 2, background: '#000', color: '#fff', border: 'none', padding: '14px 0', fontFamily: 'Jost', fontSize: 11, letterSpacing: '.22em', cursor: 'pointer' }}
+          aria-disabled={!preview || !consent}
+          style={{
+            flex: 2,
+            background: preview && consent ? '#000' : '#5a5a5a',
+            color: '#fff', border: 'none', padding: '14px 0',
+            fontFamily: 'Jost', fontSize: 11, letterSpacing: '.22em',
+            cursor: 'pointer', minHeight: 48,
+            opacity: preview && consent ? 1 : 0.6,
+          }}
         >
           NEXT →
         </button>
