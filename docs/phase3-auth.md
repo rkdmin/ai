@@ -276,16 +276,20 @@ v1.1+ 추가 예정:
 
 ## Phase 3 완료 기준 체크리스트
 
-- [ ] Supabase Auth 설정 완료
+- [x] Supabase Auth 연동 코드 추가 (`Authorization: Bearer` 검증, OAuth redirect bridge)
+- [x] Supabase 테이블/RLS SQL 추가 (`backend/supabase_schema.sql`)
+- [ ] Supabase Auth 콘솔 설정 완료 (Kakao/Google provider, redirect URL)
 - [ ] 카카오 OAuth PoC 통과 (카카오톡 설치/미설치, 백그라운드 복귀)
-- [ ] 카카오 OAuth + InAppBrowser 플로우 동작 확인
-- [ ] 구글 로그인 동작 확인
-- [ ] 게스트 1회 체험 가능
-- [ ] 로그인 시 분석 결과 자동 저장
-- [ ] 히스토리 목록 / 상세 조회 가능
+- [ ] 카카오 OAuth + InAppBrowser 플로우 동작 확인 (현재 웹 redirect 기반 코드)
+- [ ] 구글 로그인 동작 확인 (현재 웹 redirect 기반 코드)
+- [x] 게스트 1회 체험 가능 (기존 IP rate limit 유지)
+- [x] 로그인 시 분석 결과 자동 저장 (`/api/analyze` → `analyses`)
+- [x] 카드 생성 시 카드 데이터 자동 저장 (`/api/cards/*` → `cards`)
+- [x] 히스토리 목록 / 상세 조회 가능 (`GET /api/history`, `GET /api/history/{analysisId}`)
 - [ ] 로그인/비로그인 Rate Limit 차등 적용 확인
-- [ ] RLS로 본인 데이터만 조회 가능 확인
-- [ ] 인증/RLS 테스트 그린
+- [x] RLS 정책 SQL 작성
+- [ ] RLS로 본인 데이터만 조회 가능 확인 (Supabase 프로젝트 적용 후)
+- [ ] 인증/RLS 테스트 그린 (실 Supabase 프로젝트 필요)
 
 ---
 

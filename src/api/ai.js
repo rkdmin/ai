@@ -8,9 +8,12 @@ import * as mock from './mock'
 
 const provider = import.meta.env.VITE_MOCK === 'true' ? mock : backend
 
-export const analyzeFace = (imageBase64) => provider.analyzeFace(imageBase64)
+export const analyzeFace = (imageBase64, personalColor = null) => provider.analyzeFace(imageBase64, personalColor)
 export const generateHairCards = (analysis) => provider.generateHairCards(analysis)
 export const generateMakeupCards = (analysis) => provider.generateMakeupCards(analysis)
 export const generateTotalCards = (analysis) => provider.generateTotalCards(analysis)
 export const generateAllCards = (analysis) => provider.generateAllCards(analysis)
 export const generateStyledPhoto = (imageBase64, card) => provider.generateStyledPhoto(imageBase64, card)
+export const fetchHistory = (limit) => provider.fetchHistory?.(limit) ?? Promise.resolve([])
+export const fetchHistoryDetail = (analysisId) => provider.fetchHistoryDetail?.(analysisId) ?? Promise.resolve(null)
+export const saveHistoryCard = (analysisId, cardType, cardData) => provider.saveHistoryCard?.(analysisId, cardType, cardData) ?? Promise.resolve({ ok: true })

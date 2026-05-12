@@ -22,6 +22,7 @@ import My from './components/My';
 
 import { analyzeFace, generateHairCards, generateMakeupCards, generateStyledPhoto } from './api/ai';
 import { mapCards } from './api/mappers';
+import { useAuth } from './contexts/AuthContext';
 
 /**
  * 25 화면 흐름. 사용자 액션이 분석 / 카드 생성 / 사진 합성 같은 비동기 작업을 트리거할 때마다
@@ -106,6 +107,7 @@ const PARENT_STAGE = {
 };
 
 export default function App() {
+  const auth = useAuth();
   const [stage, setStage] = useState('splash');
 
   // 입력
@@ -147,8 +149,13 @@ export default function App() {
   }, []);
   const navTab = useCallback((tab) => {
     const allowed = ['home', 'trend', 'history', 'my'];
-    if (allowed.includes(tab)) go(tab);
-  }, [go]);
+    if (!allowed.includes(tab)) return;
+    if ((tab === 'history' || tab === 'my') && !auth.isAuthenticated) {
+      go('guest_gate');
+      return;
+    }
+    go(tab);
+  }, [auth.isAuthenticated, go]);
 
   // 진입 시 1번만: 첫 history 항목 심기 + popstate / Capacitor backButton 리스너.
   // stageRef 로 클로저에서 최신 stage 를 본다.
@@ -199,9 +206,9 @@ export default function App() {
       go('error_face');
       return;
     }
-    taskRef.current = analyzeFace(photo.dataUrl);
+    taskRef.current = analyzeFace(photo.dataUrl, backendPersonalColorKey(personalColor));
     go('loading');
-  }, [photo, go]);
+  }, [photo, personalColor, go]);
 
   const onAnalysisSuccess = useCallback((r) => {
     if (!r || r.faceType === '판정 어려움') {
@@ -219,7 +226,7 @@ export default function App() {
 
   const onAnalysisError = useCallback((e) => {
     const msg = String(e?.message || e || '');
-    const isNet = /연결|네트워크|fetch|Network|timeout/i.test(msg);
+    const isNet = e?.status >= 500 || /연결|네트워크|fetch|Network|timeout|high demand|try again later|temporarily|unavailable|overloaded/i.test(msg);
     setErrorInfo({ type: isNet ? 'network' : 'face', message: msg });
     go(isNet ? 'error_network' : 'error_face');
   }, [go]);
@@ -234,7 +241,10 @@ export default function App() {
     };
     const fn = type === 'makeup' ? generateMakeupCards : generateHairCards;
     taskRef.current = fn(payload).then((arr) =>
-      mapCards(arr, type, { result, features: result.features }),
+      mapCards(arr, type, { result, features: result.features }).map((card) => ({
+        ...card,
+        analysisId: result.analysisId ?? null,
+      })),
     );
     go(type === 'makeup' ? 'makeup_loading' : 'hair_loading');
   }, [result, go]);
@@ -307,10 +317,25 @@ export default function App() {
       view = <Onboarding idx={2} onNext={() => { markOnboarded(); go('login'); }} />;
       break;
     case 'login':
-      view = <Login onNext={() => { markOnboarded(); go('home'); }} />;
+      view = (
+        <Login
+          onNext={() => { markOnboarded(); go('home'); }}
+          onOAuth={(provider) => auth.signIn(provider)}
+          onGuest={() => { auth.continueAsGuest(); markOnboarded(); go('home'); }}
+          onBack={() => go('home')}
+        />
+      );
       break;
     case 'guest_gate':
-      view = <Login onNext={() => { markOnboarded(); go('home'); }} mode="guest_gate" />;
+      view = (
+        <Login
+          onNext={() => { markOnboarded(); go('home'); }}
+          onOAuth={(provider) => auth.signIn(provider)}
+          onGuest={() => { auth.continueAsGuest(); markOnboarded(); go('home'); }}
+          onBack={() => go('home')}
+          mode="guest_gate"
+        />
+      );
       break;
 
     // ── B · ANALYZE ────────────────────────────────────────
@@ -554,7 +579,7 @@ export default function App() {
       view = <History onNav={navTab} onBack={() => go('home')} />;
       break;
     case 'my':
-      view = <My onNav={navTab} onBack={() => go('home')} />;
+      view = <My onNav={navTab} onBack={() => go('home')} onSignOut={() => { auth.signOut(); go('login'); }} />;
       break;
 
     default:

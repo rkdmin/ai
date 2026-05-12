@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from routes import analyze, cards, photo
+from routes import analyze, cards, history, photo
 from services import mediapipe_service
 
 load_dotenv()
@@ -35,7 +35,7 @@ allowed_origins = [
     o.strip()
     for o in os.getenv(
         "ALLOWED_ORIGINS",
-        "http://localhost:5173,http://localhost,capacitor://localhost",
+        "http://localhost:5173,http://127.0.0.1:5173,http://localhost,capacitor://localhost",
     ).split(",")
     if o.strip()
 ]
@@ -49,6 +49,7 @@ app.add_middleware(
 
 app.include_router(analyze.router, prefix="/api")
 app.include_router(cards.router, prefix="/api")
+app.include_router(history.router, prefix="/api")
 app.include_router(photo.router, prefix="/api")
 
 

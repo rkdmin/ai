@@ -4,11 +4,14 @@ docs/phase2-backend.md 의 인터페이스 정의를 준수한다.
 """
 from __future__ import annotations
 
+from datetime import datetime
+
 from pydantic import BaseModel, Field
 
 
 class AnalyzeRequest(BaseModel):
     frontImage: str = Field(..., description="data URL 또는 순수 base64 (정면 사진)")
+    personalColor: str | None = None
 
 
 class AnalyzeResponse(BaseModel):
@@ -34,7 +37,7 @@ class PhotoRequest(BaseModel):
     analysisId: str | None = None
     cardType: str  # 'hair' | 'total'
     card: dict
-    frontImage: str  # Phase 3 제거 예정
+    frontImage: str | None = None  # 게스트/로컬 폴백. 로그인 유저는 Storage 원본 사용 가능.
 
 
 class PhotoResponse(BaseModel):
@@ -44,3 +47,24 @@ class PhotoResponse(BaseModel):
 
 class ErrorResponse(BaseModel):
     error: str
+
+
+class HistorySaveRequest(BaseModel):
+    analysisId: str
+    cardType: str
+    cardData: dict | list[dict]
+
+
+class HistoryListItem(BaseModel):
+    analysisId: str
+    faceType: str
+    personalColor: str | None = None
+    cardTypes: list[str] = []
+    createdAt: datetime
+    photoExpired: bool
+
+
+class HistoryDetailResponse(BaseModel):
+    analysis: dict
+    cards: list[dict] = []
+    generatedPhotos: list[dict] = []

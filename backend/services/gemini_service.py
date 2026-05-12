@@ -35,6 +35,23 @@ class GeminiError(Exception):
     pass
 
 
+def is_transient_error(message: str) -> bool:
+    lower = (message or "").lower()
+    return any(
+        token in lower
+        for token in (
+            "high demand",
+            "try again later",
+            "temporarily",
+            "timeout",
+            "rate limit",
+            "quota",
+            "unavailable",
+            "overloaded",
+        )
+    )
+
+
 def _api_key() -> str:
     key = os.getenv("GEMINI_API_KEY")
     if not key:

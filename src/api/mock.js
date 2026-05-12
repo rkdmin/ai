@@ -210,3 +210,18 @@ export async function generateStyledPhoto(imageBase64, _card) {
   await delay(1000)
   return imageBase64
 }
+
+export async function fetchHistory() {
+  await delay(200)
+  return []
+}
+
+export async function fetchHistoryDetail() {
+  await delay(200)
+  return null
+}
+
+export async function saveHistoryCard() {
+  await delay(100)
+  return { ok: true }
+}

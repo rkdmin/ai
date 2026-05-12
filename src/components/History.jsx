@@ -1,22 +1,55 @@
-// TODO: GET /api/history (Phase 3 인증 + 90일 보존 정책) 연결.
-// 현재는 로컬 mock 4건. EDIT 모드 / 삭제 / EXPIRED 표시는 UI 만 동작.
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { StatusBar } from './common/StatusBar';
 import { BackHeader, TabBar } from './common/Layout';
 import { Icons } from './common/Icons';
 import { FacePlaceholder } from './common/Placeholders';
+import { fetchHistory } from '../api/ai';
 
-const ALL = [
-  { date: '2026 · 04 · 28', label: '봄날의 햇살형', sub: '계란형 · 봄 웜톤', tone: 'dark' },
-  { date: '2026 · 04 · 12', label: '고운 새벽형', sub: '하트형 · 겨울 쿨톤', tone: 'light' },
-  { date: '2026 · 03 · 30', label: '단아한 가을형', sub: '긴형 · 가을 웜톤', tone: 'dark' },
-  { date: '2025 · 10 · 11', label: '또렷한 겨울형', sub: '각진형 · 겨울 쿨톤', tone: 'light', expired: true },
-];
+function formatDate(value) {
+  if (!value) return '';
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return '';
+  return `${d.getFullYear()} · ${String(d.getMonth() + 1).padStart(2, '0')} · ${String(d.getDate()).padStart(2, '0')}`;
+}
+
+function historyLabel(item) {
+  const cardTypes = item.cardTypes?.length ? item.cardTypes.join(' · ') : '분석 완료';
+  return `${item.faceType || '분석 결과'} · ${cardTypes}`;
+}
 
 export default function History({ onNav, onBack }) {
+  const [remoteItems, setRemoteItems] = useState(null);
+  const [error, setError] = useState('');
   const [removed, setRemoved] = useState({});
   const [editing, setEditing] = useState(false);
-  const items = ALL.map((it, i) => ({ ...it, _idx: i })).filter((it) => !removed[it._idx]);
+
+  useEffect(() => {
+    let alive = true;
+    fetchHistory(5)
+      .then((rows) => {
+        if (!alive) return;
+        setRemoteItems((rows || []).map((row, i) => ({
+          _idx: row.analysisId || i,
+          date: formatDate(row.createdAt),
+          label: historyLabel(row),
+          sub: row.photoExpired ? '사진이 만료되었습니다' : [row.faceType, row.personalColor].filter(Boolean).join(' · '),
+          tone: i % 2 === 0 ? 'dark' : 'light',
+          expired: row.photoExpired,
+        })));
+      })
+      .catch((e) => {
+        if (!alive) return;
+        setError(e?.message || '히스토리를 불러오지 못했어요.');
+        setRemoteItems([]);
+      });
+    return () => { alive = false; };
+  }, []);
+
+  const source = useMemo(() => {
+    if (remoteItems === null) return [];
+    return remoteItems;
+  }, [remoteItems, error]);
+  const items = source.filter((it) => !removed[it._idx]);
 
   return (
     <div style={{ width: '100%', minHeight: '100dvh', background: '#fff', color: '#000', display: 'flex', flexDirection: 'column' }}>
@@ -50,6 +83,20 @@ export default function History({ onNav, onBack }) {
             {editing ? 'DONE' : 'EDIT'}
           </button>
         </div>
+
+        {remoteItems === null && (
+          <div style={{ padding: '40px 22px', textAlign: 'center' }}>
+            <div className="serif-i" style={{ fontSize: 13, color: '#7a7a7a', marginBottom: 8 }}>loading archive</div>
+            <div className="ko" style={{ fontSize: 13, color: '#5a5a5a', fontWeight: 300 }}>기록을 불러오는 중이에요</div>
+          </div>
+        )}
+
+        {error && (
+          <div style={{ padding: '34px 22px', textAlign: 'center', borderBottom: '1px solid #e8e8e8' }}>
+            <div className="label" style={{ color: '#c45a3b', marginBottom: 8 }}>LOAD FAILED</div>
+            <div className="ko" style={{ fontSize: 13, color: '#5a5a5a', lineHeight: 1.6 }}>{error}</div>
+          </div>
+        )}
 
         {items.map((it, i) => (
           <div
@@ -88,7 +135,7 @@ export default function History({ onNav, onBack }) {
                 {it.label}
               </div>
               <div className="ko" style={{ fontSize: 11.5, color: '#5a5a5a', fontWeight: 300 }}>
-                {it.expired ? '결과 보존 기간이 지나 다시 분석이 필요해요' : it.sub}
+                {it.expired ? '사진이 만료되었습니다' : it.sub}
               </div>
             </div>
             {editing ? (
@@ -109,10 +156,10 @@ export default function History({ onNav, onBack }) {
             )}
           </div>
         ))}
-        {items.length === 0 && (
+        {remoteItems !== null && !error && items.length === 0 && (
           <div style={{ padding: '40px 22px', textAlign: 'center' }}>
-            <div className="serif-i" style={{ fontSize: 13, color: '#7a7a7a', marginBottom: 8 }}>archive cleared</div>
-            <div className="ko" style={{ fontSize: 13, color: '#5a5a5a', fontWeight: 300 }}>모두 삭제했어요</div>
+            <div className="serif-i" style={{ fontSize: 13, color: '#7a7a7a', marginBottom: 8 }}>empty archive</div>
+            <div className="ko" style={{ fontSize: 13, color: '#5a5a5a', fontWeight: 300 }}>아직 저장된 분석 기록이 없어요</div>
           </div>
         )}
 

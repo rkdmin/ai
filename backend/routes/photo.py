@@ -11,7 +11,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from middleware import rate_limit
 from middleware.auth import Principal, require_user
 from models.schemas import PhotoRequest, PhotoResponse
-from services import gemini_service
+from services import gemini_service, supabase_service
 
 router = APIRouter()
 
@@ -24,13 +24,39 @@ async def generate_photo(
 ):
     if body.cardType not in ("hair", "total"):
         raise HTTPException(status_code=400, detail="cardType은 'hair' 또는 'total' 이어야 합니다.")
+    if not body.analysisId and not body.frontImage:
+        raise HTTPException(status_code=400, detail="analysisId 또는 frontImage가 필요합니다.")
 
     rate_limit.consume("photo", principal, request)
 
-    try:
-        image_data_url = await gemini_service.generate_styled_photo(body.frontImage, body.card)
-    except gemini_service.GeminiError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+    if body.analysisId:
+        cached = await supabase_service.get_generated_photo(principal.user_id, body.analysisId, body.cardType)
+        if cached:
+            return PhotoResponse(generatedImage=cached["storage_url"], cached=True)
 
-    # Phase 3 자리표시자 — generated_photos UNIQUE(analysisId, cardType) 캐시 히트면 cached=true
+    front_image = body.frontImage
+    if not front_image and body.analysisId:
+        front_image = await supabase_service.fetch_front_image_data_url(principal.user_id, body.analysisId)
+    if not front_image:
+        raise HTTPException(status_code=404, detail="원본 사진을 찾을 수 없습니다.")
+
+    try:
+        image_data_url = await gemini_service.generate_styled_photo(front_image, body.card)
+    except gemini_service.GeminiError as e:
+        status = 503 if gemini_service.is_transient_error(str(e)) else 400
+        raise HTTPException(status_code=status, detail=str(e))
+
+    if body.analysisId:
+        storage_url, _ = await supabase_service.upload_image_data_url(
+            image_data_url,
+            prefix=f"generated/{principal.user_id}/{body.analysisId}",
+            ttl_days=30,
+        )
+        await supabase_service.insert_generated_photo(
+            principal.user_id,
+            body.analysisId,
+            body.cardType,
+            storage_url or image_data_url,
+        )
+
     return PhotoResponse(generatedImage=image_data_url, cached=False)

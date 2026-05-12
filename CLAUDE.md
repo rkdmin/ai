@@ -14,6 +14,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 | `CLAUDE.md` (이 파일) | 구조·흐름·스키마·파일명 변경 시 |
 | `docs/ui-flow.md` | step 추가/삭제, 컴포넌트 동작·조건·state 변경 시 |
 | `docs/test.md` | 테스트 구조·품질 게이트 변경 시 |
+| `docs/auth-setup.md` | Supabase/Auth/Google OAuth 콘솔 설정 변경 시 |
 | `backend/data/rag_usage_guide.md` | RAG 데이터 구조·병합 규칙·우선순위 변경 시 |
 
 변경 후 MD와 코드가 불일치하면 다음 세션에서 잘못된 컨텍스트로 작업하게 됩니다.
@@ -57,6 +58,7 @@ npm run dev
 VITE_API_URL=http://localhost:8000  # 백엔드 주소 (필수)
 VITE_MOCK=                          # true 면 백엔드 호출 없이 더미 데이터
 VITE_DEV_INSPECTOR=                 # true 면 🐞 인스펙터 노출 (Phase 2 부터는 거의 빈 패널)
+VITE_SUPABASE_URL=                  # Phase 3 OAuth redirect URL (https://*.supabase.co)
 ```
 
 ### 백엔드 (Python + FastAPI)
@@ -66,7 +68,7 @@ cd backend
 python -m venv .venv
 . .venv/Scripts/activate            # Windows PowerShell: .venv\Scripts\Activate.ps1
 pip install -r requirements.txt
-cp .env.example .env                # GEMINI_API_KEY 채우기
+cp .env.example .env                # GEMINI_API_KEY / Supabase 값 채우기
 uvicorn main:app --reload --port 8000
 # → http://localhost:8000/docs (Swagger UI)
 ```
@@ -74,7 +76,11 @@ uvicorn main:app --reload --port 8000
 `backend/.env`:
 ```
 GEMINI_API_KEY=                     # 필수
-ALLOWED_ORIGINS=http://localhost:5173,http://localhost,capacitor://localhost
+ALLOWED_ORIGINS=http://localhost:5173,http://127.0.0.1:5173,http://localhost,capacitor://localhost
+SUPABASE_URL=                       # Phase 3
+SUPABASE_ANON_KEY=                  # Phase 3
+SUPABASE_SERVICE_ROLE_KEY=          # Phase 3
+SUPABASE_PHOTO_BUCKET=analysis-photos
 ```
 
 ---
@@ -116,13 +122,15 @@ backend/                        # FastAPI (Phase 2 신규)
 ├── routes/
 │   ├── analyze.py              # POST /api/analyze
 │   ├── cards.py                # POST /api/cards/{hair|makeup|total}
+│   ├── history.py              # GET/POST /api/history (Phase 3)
 │   └── photo.py                # POST /api/photo/generate (로그인 전용)
 ├── services/
 │   ├── mediapipe_service.py    # MediaPipe FaceMesh → faceRatios (tools/landmark.py 이관)
 │   ├── gemini_service.py       # Gemini 2.5 Flash 호출 (분석/카드/이미지)
-│   └── rag_service.py          # RAG 컨텍스트 빌더 + 카드 포맷 + ANALYZE_PROMPT (ragUtils.js 이관)
+│   ├── rag_service.py          # RAG 컨텍스트 빌더 + 카드 포맷 + ANALYZE_PROMPT (ragUtils.js 이관)
+│   └── supabase_service.py     # Supabase Auth/REST/Storage helper (Phase 3)
 ├── middleware/
-│   ├── auth.py                 # X-User-Id 헤더 기반 식별 (Phase 3 전 스텁)
+│   ├── auth.py                 # Supabase JWT 검증 + 로컬 개발 X-User-Id 폴백
 │   └── rate_limit.py           # 인메모리 IP/유저 카운터 (UTC 일자 단위)
 ├── models/
 │   └── schemas.py              # Pydantic 요청/응답 스키마
@@ -132,6 +140,7 @@ backend/                        # FastAPI (Phase 2 신규)
 │   ├── personal-color-makeup.json
 │   ├── feature-tips.json
 │   └── rag_usage_guide.md
+├── supabase_schema.sql         # Phase 3 테이블/RLS 스키마
 └── requirements.txt
 
 tools/                          # Phase 1 로컬 평가 도구 (백엔드 이관 후에도 골든셋 회귀용으로 남김)

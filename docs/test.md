@@ -41,6 +41,7 @@
 - `/api/analyze`
 - `/api/cards/*`
 - `/api/photo/generate`
+- `/api/history`, `/api/history/{analysisId}`
 - 공통 에러 응답 포맷
 - 메이크업 카드 `recommendedProducts` 응답 shape
 
@@ -58,6 +59,9 @@
 - RLS
 - Rate limiting
 - 로그인 상태별 사용량 제한 반영
+- 로그인 분석 저장: `/api/analyze` → `analyses`
+- 로그인 카드 저장: `/api/cards/*` → `cards`
+- 생성 사진 캐시: `(analysisId, cardType)` → cached 응답
 
 도구:
 - `pytest`
@@ -65,6 +69,13 @@
 
 원칙:
 - 게스트 / 로그인 2가지 권한 상태를 fixture로 고정한다
+- 외부 Supabase/Gemini 호출은 mock 하고, 라우트 wiring과 payload를 우선 검증한다
+
+현재 커버리지:
+- `backend/test_integration.py`: Phase 2 API schema + Gemini 응답 contract
+- `backend/test_phase3.py`: Phase 3 auth/history/storage route wiring
+- `test/backendAuth.test.js`: 프론트 API 클라이언트 Authorization/history payload
+- `test/History.test.jsx`: 히스토리 로딩/만료/에러 UI
 
 ### 4. E2E Web
 

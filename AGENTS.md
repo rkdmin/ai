@@ -11,6 +11,7 @@
 - 테스트 전략과 품질 게이트: [`docs/test.md`](./docs/test.md)
 - RAG 데이터 사용 가이드: [`src/data/rag_usage_guide.md`](./src/data/rag_usage_guide.md)
 - 로드맵·MVP·Phase별 상세 (v1.0/v1.1/Phase 7 분리): [`docs/ROADMAP.md`](./docs/ROADMAP.md)
+- Supabase/Google Auth 설정 메모: [`docs/auth-setup.md`](./docs/auth-setup.md)
 
 ## 문서 업데이트 규칙
 

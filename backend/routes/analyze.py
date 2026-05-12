@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from middleware import rate_limit
 from middleware.auth import Principal, get_principal
 from models.schemas import AnalyzeRequest, AnalyzeResponse
-from services import gemini_service, mediapipe_service
+from services import gemini_service, mediapipe_service, supabase_service
 
 router = APIRouter()
 
@@ -25,10 +25,21 @@ async def analyze(
     try:
         result = await gemini_service.analyze_face(body.frontImage, face_ratios)
     except gemini_service.GeminiError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        status = 503 if gemini_service.is_transient_error(str(e)) else 400
+        raise HTTPException(status_code=status, detail=str(e))
 
-    # Phase 3 자리표시자 — 로그인 유저면 analyses 테이블 INSERT 후 analysisId 발급
     if not principal.is_guest:
-        result.setdefault("analysisId", None)
+        front_image_url, expires_at = await supabase_service.upload_image_data_url(
+            body.frontImage,
+            prefix=f"analyses/{principal.user_id}",
+            ttl_days=90,
+        )
+        result["analysisId"] = await supabase_service.insert_analysis(
+            user_id=principal.user_id,
+            result=result,
+            personal_color=body.personalColor,
+            front_image_url=front_image_url,
+            photo_expires_at=expires_at,
+        )
 
     return result

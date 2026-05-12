@@ -6,13 +6,25 @@
 import { StatusBar } from './common/StatusBar';
 import { Icons } from './common/Icons';
 
-export default function Login({ onNext, mode }) {
+export default function Login({ onNext, onOAuth, onGuest, onBack, mode }) {
   const isGate = mode === 'guest_gate';
+  const startOAuth = (provider) => {
+    try {
+      if (onOAuth) {
+        const started = onOAuth(provider);
+        if (started === false) onNext?.();
+      } else {
+        onNext?.();
+      }
+    } catch (e) {
+      alert(e?.message || '로그인을 시작할 수 없습니다.');
+    }
+  };
   return (
     <div style={{ width: '100%', minHeight: '100dvh', background: '#fff', color: '#000', display: 'flex', flexDirection: 'column' }}>
       <StatusBar />
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '4px 14px 6px', flexShrink: 0, minHeight: 52 }}>
-        <button className="icon-btn" style={{ marginLeft: -6 }} aria-label="back">{Icons.back(20)}</button>
+        <button onClick={onBack} className="icon-btn" style={{ marginLeft: -6 }} aria-label="back">{Icons.back(20)}</button>
         <span className="label">{isGate ? 'UNLOCK' : 'SIGN IN'}</span>
         <span style={{ width: 44 }} />
       </div>
@@ -37,7 +49,7 @@ export default function Login({ onNext, mode }) {
 
       <div style={{ padding: '56px 28px 0', display: 'flex', flexDirection: 'column', gap: 10 }}>
         <button
-          onClick={onNext}
+          onClick={() => startOAuth('kakao')}
           style={{ background: '#FEE500', color: '#000', border: 'none', padding: '15px 18px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, cursor: 'pointer' }}
         >
           <svg width="18" height="18" viewBox="0 0 24 24" fill="#000">
@@ -46,7 +58,7 @@ export default function Login({ onNext, mode }) {
           <span className="ko" style={{ fontSize: 14, fontWeight: 500 }}>카카오로 시작하기</span>
         </button>
         <button
-          onClick={onNext}
+          onClick={() => startOAuth('google')}
           style={{ background: '#fff', color: '#000', border: '1px solid #000', padding: '15px 18px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, cursor: 'pointer' }}
         >
           <svg width="16" height="16" viewBox="0 0 24 24">
@@ -59,7 +71,7 @@ export default function Login({ onNext, mode }) {
         </button>
         {!isGate && (
           <button
-            onClick={onNext}
+            onClick={() => onGuest?.() || onNext?.()}
             style={{ background: '#fff', color: '#5a5a5a', border: '1px solid #d4d4d4', padding: '13px 0', fontFamily: 'Pretendard', fontSize: 13, minHeight: 44 }}
           >
             로그인 없이 1회 체험하기

@@ -13,11 +13,11 @@
 | 종합 카드 | `POST /api/cards/total` ✅ | `generateTotalCards()` ✅ | — ❌ | **호출자 없음** (UI에 진입점 미정) |
 | 사진 합성 | `POST /api/photo/generate` ✅ | `generateStyledPhoto()` ✅ | `App.onSynthesize` ✅ (이번 작업으로 연결) | **연결됨** |
 | 헬스체크 | `GET /api/health` ✅ | — | — | 운영 모니터링용 (UI 호출 불필요) |
-| 분석 히스토리 저장 | ❌ 미구현 | — | — | Phase 3 (Supabase 도입) |
-| 분석 히스토리 조회 | ❌ 미구현 | — | `History.jsx` (mock 4건) | Phase 3 |
+| 분석 히스토리 저장 | `POST /api/history` ✅ + 카드 생성 시 자동 저장 ✅ | `saveHistoryCard()` ✅ | 카드 생성 플로우 ✅ | **연결됨** (Supabase 필요) |
+| 분석 히스토리 조회 | `GET /api/history` ✅ / detail ✅ | `fetchHistory()` ✅ | `History.jsx` ✅ | **연결됨** (Supabase 필요) |
 | 마이페이지 프로필 | ❌ 미구현 | — | `My.jsx` (mock) | Phase 3 |
 | 트렌드 피드 | ❌ 미구현 | — | `Trend.jsx` (mock) | v1.x 별도 작업 |
-| 카카오/구글 로그인 | ❌ 미구현 | — | `Login.jsx` (no-op) | Phase 3 (Supabase Auth) |
+| 카카오/구글 로그인 | Supabase JWT 검증 ✅ | OAuth redirect bridge ✅ | `Login.jsx` ✅ | **코드 연결됨** (콘솔 설정/실기기 PoC 필요) |
 | 쿠팡 상품 매핑 | ⚠️ 스키마는 있음, 미주입 | — | `MakeupDetail` (PRODUCTS_MOCK fallback) | Phase 5 (운영 데이터 + 링크 빌더) |
 | `styleLabel` (감성 라벨) | ⚠️ 분석 응답 스키마 미포함 | — | `AnalysisResult`, `ShareCard` (fallback 텍스트) | Gemini 프롬프트 보강 (소규모) |
 | 광고 SDK | ❌ 미구현 | — | `AdGate` (15s 타이머 mock) | v1.1 광고 정책 |
@@ -53,17 +53,36 @@
 - **메이크업 카드는 정책상 합성 미지원** — `card.cardType === 'makeup'` 이면 `onSynthesize` 가 동작하지 않는다 (`MakeupDetail` 은 합성 버튼 자체가 없음).
 - **rate limit**: photo 스코프는 로그인 5회/일. dev 가짜 user id 도 카운팅 대상이지만 서버 재시작하면 초기화. 필요하면 backend `.env` 에 `RATE_LIMIT_DISABLED=true` 추가.
 
-### 2.3 ⏳ 백엔드 미구현 — Phase 3 (Supabase)
+### 2.3 🔧 Phase 3 코드 연결 — Supabase Auth/History
 
-스키마/라우트가 아직 없어 프론트는 mock 으로 동작 중.
+Supabase 콘솔 설정과 SQL 적용이 끝나면 동작하는 코드 경로까지 연결했다.
 
-- **`History.jsx`** — 4건 정적 mock. `// TODO: GET /api/history` 주석 있음.
-  필요 작업: `analyses` 테이블, JWT 검증, 90일 보존 정책, `GET /api/history` 라우트.
+- **인증**
+  - 프론트: `src/contexts/AuthContext.jsx`, `src/utils/authBridge.js`
+  - OAuth 버튼은 Supabase `/auth/v1/authorize` 로 이동하고, redirect hash 의 access token 을 localStorage 세션으로 저장한다.
+  - API 클라이언트는 `Authorization: Bearer <token>` 을 자동 첨부한다.
+  - 백엔드: `middleware/auth.py` 가 Supabase `/auth/v1/user` 로 토큰을 검증한다.
+- **히스토리**
+  - `POST /api/analyze`: 로그인 유저는 `analyses` INSERT 후 `analysisId` 반환, 정면 사진은 Storage 90일 보관.
+  - `POST /api/cards/{hair|makeup|total}`: `analysisId` 가 있으면 생성 카드 배열을 `cards` 에 저장.
+  - `GET /api/history`: 최근 5건 조회.
+  - `GET /api/history/{analysisId}`: 분석/카드/생성 사진 상세 조회.
+  - `POST /api/photo/generate`: `(analysisId, cardType)` 생성 사진 캐시를 확인하고 저장한다.
+- **Supabase 스키마**
+  - `backend/supabase_schema.sql` 에 `analyses`, `cards`, `feedback`, `usage_counters`, `generated_photos` 와 RLS 정책을 추가했다.
+
+남은 외부 작업:
+
+- Supabase SQL Editor에서 `backend/supabase_schema.sql` 적용
+- Storage bucket `analysis-photos` 생성
+- Kakao/Google OAuth provider와 redirect URL 등록
+- Android 실기기 카카오 PoC: 앱 설치/미설치/백그라운드 복귀 케이스
+
+아직 남은 Phase 3 범위:
+
 - **`My.jsx`** — 닉네임/연동/통계/퍼스널컬러 mock. `// TODO: 프로필을 Supabase 세션에서 로드`.
   필요 작업: 프로필 schema, `GET /api/me`, 통계 집계 쿼리.
-- **`Login.jsx`** — 어떤 버튼을 눌러도 그냥 `onNext`. `// TODO: Supabase Auth (kakao/google)`.
-  필요 작업: `supabase.auth.signInWithOAuth`, redirect 처리, `getUserId()` 를 Supabase 세션에서 채우기.
-- **분석 결과 저장** (`POST /api/history`) — 분석 직후 또는 사용자가 카드를 본 시점에 저장. UI 자체는 자동 흐름이라 추가 컴포넌트 불필요, App 에서 분석 완료 시 호출.
+- **`usage_counters` DB 집계** — 테이블은 추가했지만 런타임 rate limit 은 아직 인메모리 카운터를 사용한다.
 
 ### 2.4 ⏳ 백엔드 미구현 — 별도 작업
 
@@ -94,6 +113,13 @@
 src/api/backend.js                  (~)    getUserId 가 dev 모드에서 localStorage 기반 stable id 발급
 src/App.jsx                          (~)    synthByKey 상태 + onSynthesize + synth_loading 단계 추가
 src/components/CardDetail.jsx        (~)    AFTER 슬롯에 synthesizedPhoto 렌더 (없으면 기존 잠금 UI)
+src/contexts/AuthContext.jsx          (new)  Supabase OAuth 세션 상태
+src/utils/authBridge.js               (new)  OAuth redirect/hash 처리
+src/components/Login.jsx              (~)    Kakao/Google OAuth 버튼 연결
+src/components/History.jsx            (~)    GET /api/history 연결
+backend/services/supabase_service.py  (new)  Auth/REST/Storage helper
+backend/routes/history.py             (new)  history save/list/detail API
+backend/supabase_schema.sql           (new)  Supabase 테이블/RLS 스키마
 package.json                         (~)    @capacitor/app, @capacitor/haptics 추가
                                             (코드는 이미 동적 import 로 사용 중이었지만 deps 누락으로
                                              Vite pre-transform 단계에서 500. 설치만으로 해결.)

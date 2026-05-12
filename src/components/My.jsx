@@ -22,7 +22,7 @@ const MENU = [
   { n: '07', label: '고객센터', en: 'SUPPORT', kind: 'link', href: 'mailto:support@beaumi.app' },
 ];
 
-export default function My({ onNav, onBack }) {
+export default function My({ onNav, onBack, onSignOut }) {
   // Apple 5.1.1(v) + 개인정보보호법 §35.3 — 사용자가 앱 안에서 직접 계정 삭제를 시작할 수 있어야 함.
   // 두 단계 confirm: 1) 안내 모달, 2) 텍스트 일치 확인. 실제 호출은 deleteAccount 미구현 시점 안내만.
   const [confirmStep, setConfirmStep] = useState(null); // null | 'intro' | 'verify'
@@ -151,6 +151,7 @@ export default function My({ onNav, onBack }) {
           <div className="wm" style={{ fontSize: 18, fontWeight: 300, marginBottom: 6 }}>beaumi</div>
           <div className="serif-i" style={{ fontSize: 11, color: '#a8a8a8' }}>v 1.0.0 · sharing your beauty, every day</div>
           <button
+            onClick={onSignOut}
             style={{
               marginTop: 16, background: '#fff', border: '1px solid #d4d4d4', padding: '10px 18px',
               fontFamily: 'Pretendard', fontSize: 12, color: '#5a5a5a', minHeight: 40,

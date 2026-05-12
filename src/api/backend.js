@@ -5,6 +5,8 @@
  * 환경변수 VITE_API_URL — 로컬 'http://localhost:8000', 개발 Render, 운영 Railway
  */
 
+import { getAccessToken } from '../utils/authBridge'
+
 const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '')
 
 function getUserId() {
@@ -25,36 +27,63 @@ function getUserId() {
   }
 }
 
-async function http(path, body) {
-  const headers = { 'content-type': 'application/json' }
-  const userId = getUserId()
-  if (userId) headers['X-User-Id'] = userId
+function responseError(detail, status) {
+  const err = new Error(detail)
+  err.status = status
+  return err
+}
 
+function authHeaders(base = {}) {
+  const headers = { ...base }
+  const token = getAccessToken()
+  if (token) {
+    headers.Authorization = `Bearer ${token}`
+  } else {
+    const userId = getUserId()
+    if (userId) headers['X-User-Id'] = userId
+  }
+  return headers
+}
+
+async function parseError(resp) {
+  let detail = `요청 실패 (${resp.status})`
+  try {
+    const j = await resp.json()
+    detail = j.detail || j.error || detail
+  } catch { /* non-JSON */ }
+  return responseError(detail, resp.status)
+}
+
+async function http(path, body) {
   let resp
   try {
     resp = await fetch(`${API_URL}${path}`, {
       method: 'POST',
-      headers,
+      headers: authHeaders({ 'content-type': 'application/json' }),
       body: JSON.stringify(body),
     })
   } catch (e) {
     throw new Error(`서버에 연결할 수 없어요. 잠시 후 다시 시도해주세요. (${e.message})`)
   }
 
-  if (!resp.ok) {
-    let detail = `요청 실패 (${resp.status})`
-    try {
-      const j = await resp.json()
-      detail = j.detail || j.error || detail
-    } catch { /* non-JSON */ }
-    throw new Error(detail)
+  if (!resp.ok) throw await parseError(resp)
+  return resp.json()
+}
+
+async function httpGet(path) {
+  let resp
+  try {
+    resp = await fetch(`${API_URL}${path}`, { headers: authHeaders() })
+  } catch (e) {
+    throw new Error(`서버에 연결할 수 없어요. 잠시 후 다시 시도해주세요. (${e.message})`)
   }
+  if (!resp.ok) throw await parseError(resp)
   return resp.json()
 }
 
 // ─── 얼굴 분석 ─────────────────────────────────────────────────────
-export async function analyzeFace(imageBase64) {
-  return http('/api/analyze', { frontImage: imageBase64 })
+export async function analyzeFace(imageBase64, personalColor = null) {
+  return http('/api/analyze', { frontImage: imageBase64, personalColor })
 }
 
 // ─── 카드 생성 ────────────────────────────────────────────────────
@@ -95,7 +124,19 @@ export async function generateStyledPhoto(imageBase64, card) {
     analysisId: card.analysisId ?? null,
     cardType: card.cardType,
     card,
-    frontImage: imageBase64, // Phase 3 (Storage 도입) 에서 제거
+    frontImage: imageBase64,
   })
   return result.generatedImage
+}
+
+export async function fetchHistory(limit = 5) {
+  return httpGet(`/api/history?limit=${encodeURIComponent(limit)}`)
+}
+
+export async function fetchHistoryDetail(analysisId) {
+  return httpGet(`/api/history/${encodeURIComponent(analysisId)}`)
+}
+
+export async function saveHistoryCard(analysisId, cardType, cardData) {
+  return http('/api/history', { analysisId, cardType, cardData })
 }
