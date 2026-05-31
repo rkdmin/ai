@@ -66,7 +66,7 @@ npx cap open android
 |------|------|---------|
 | 사진 접근 | `@capacitor/camera` | v1.0 |
 | 공유 | `html2canvas` + `@capacitor/share` | v1.0 |
-| 구글 로그인 | `@codetrix-studio/capacitor-google-auth` | v1.0 |
+| 구글 로그인 | Supabase OAuth redirect bridge | v1.0 |
 | 카카오 로그인 | Supabase OAuth + InAppBrowser | v1.0 |
 | 에러 트래킹 | `@sentry/browser` | v1.0 |
 | 광고 | `@capacitor-community/admob` | v1.1 |
@@ -162,7 +162,10 @@ Capacitor 앱
 
 ---
 
-## Phase 6 완료 기준 체크리스트
+## Phase 6 저장소/구현 기준 체크리스트
+
+> 위 체크는 **저장소/빌드/설정 기준으로 확인 가능한 항목**이다.
+> 실제 Android 기기와 스토어 환경에서 확인해야 하는 항목은 아래 `🙋 사용자 직접 테스트 체크리스트`에서 따로 체크한다.
 
 - [ ] Capacitor 초기 세팅 완료
 - [ ] Android 플랫폼 생성 완료

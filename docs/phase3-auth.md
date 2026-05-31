@@ -27,8 +27,8 @@
 
 | 제공자 | 우선도 | 도입 시점 | 구현 방식 |
 |--------|--------|---------|----------|
-| 카카오 | MUST | v1.0 (Phase 3) | Supabase OAuth + Capacitor InAppBrowser |
-| 구글 | MUST | v1.0 (Phase 3) | `@codetrix-studio/capacitor-google-auth` |
+| 카카오 | MUST | v1.0 (Phase 3) | Supabase OAuth (현재 웹 redirect bridge 코드, Android 실기기에서 InAppBrowser 경로 검증 필요) |
+| 구글 | MUST | v1.0 (Phase 3) | Supabase OAuth (현재 웹 redirect bridge 코드, 실기기 계정 선택/복귀 검증 필요) |
 | 애플 | iOS 출시 시 MUST | Phase 7 | `@capacitor-community/apple-sign-in` |
 | 네이버 | NICE | 출시 후 추가 검토 | — |
 
@@ -122,6 +122,13 @@ UNIQUE (analysis_id, card_type)
 
 ## 3-3. 프론트 인증 UI
 
+### 현재 구현 메모 (2026-05-12)
+
+- 로그인 컴포넌트는 `src/components/Login.jsx` 하나로 `login` / `guest_gate` 를 모두 처리한다.
+- `src/utils/authBridge.js` 가 Supabase OAuth redirect hash 에서 access token 을 읽어 세션을 복원한다.
+- 비로그인 사용자가 `history`, `my`, `history_detail` 에 접근하면 `guest_gate` 로 보내고, 로그인 후 원래 목적지로 복귀한다.
+- 홈 recent 는 로그인 사용자만 `fetchHistory(3)` 를 호출한다. 게스트는 보호된 history fetch 없이 안내 카피만 본다.
+
 ### 로그인 화면
 
 ```
@@ -150,11 +157,12 @@ src/
 ├── contexts/
 │   └── AuthContext.jsx
 ├── components/
-│   ├── LoginPage.jsx
-│   ├── Header.jsx
-│   └── HistoryPage.jsx
+│   ├── Login.jsx
+│   ├── Home.jsx
+│   ├── History.jsx
+│   └── HistoryDetail.jsx
 └── utils/
-    └── authBridge.js      ← Capacitor 전용 브리지 로직
+    └── authBridge.js      ← OAuth redirect 세션 복원 + post-login return target 저장/소비
 ```
 
 ---
@@ -165,13 +173,15 @@ src/
 
 - 최근 5회 표시
 - 날짜 / 얼굴형 / 퍼스널컬러 / 카드 타입 요약
-- 항목 선택 시 당시 카드 목록 재표시
+- 항목 선택 시 `history_detail` 로 진입
+- `NEW ANALYSIS` CTA 로 새 분석 플로우 재진입
 
 ### 히스토리 상세 (`/history/:id`)
 
 - 당시 분석 결과
 - 생성된 카드 목록
-- 사진 만료 시 `"사진이 만료되었습니다"` 표시
+- 저장된 헤어/메이크업 카드를 현재 카드 UI로 다시 열기
+- 사진 만료 시 `"사진 만료"` 상태를 보여주고 카드 정보는 유지
 
 ---
 
@@ -207,7 +217,7 @@ async def require_user(authorization: str | None = Header(default=None)):
    - 정면 사진을 Storage에 업로드 → analyses.front_image_url
    - analyses INSERT (expires_at = now + 90일 포함)
    - 응답에 analysisId 포함 (로그인 시)
-3. 카드 생성 후 /api/history 저장
+3. 카드 생성 후 /api/cards/{hair|makeup|total} 응답 저장
 4. 백엔드: cards INSERT (analysis_id 참조)
 5. 사진 생성(/api/photo/generate) 시 generated_photos INSERT (UNIQUE 제약)
 ```
@@ -235,7 +245,7 @@ async def require_user(authorization: str | None = Header(default=None)):
 ### 사용자 안내
 
 - 회원가입 약관/개인정보 처리방침에 보관 기간 명시
-- 히스토리 상세 화면에서 "이 분석의 내 사진 즉시 삭제" 옵션 제공 (별도 마이페이지 도입 없이 항목 단위 삭제로 처리)
+- 히스토리 상세의 "내 사진 즉시 삭제"는 운영 정책 후보로 유지하되, 현재 UI/백엔드 모두 미구현
 
 ### 비용 가드
 
@@ -247,34 +257,40 @@ async def require_user(authorization: str | None = Header(default=None)):
 ## 3-7. 앱/웹 네비게이션 구조
 
 ```
-v1.0 하단 탭바 2개:
+현재 하단 탭바 4개:
   홈 탭       → 업로드 → 분석 → 결과 → 카드 → 카드 상세
-  히스토리 탭 → 내 분석 기록
+  트렌드 탭   → 정적 mock 피드
+  히스토리 탭 → 내 분석 기록 → 기록 상세
+  마이 탭     → 계정/활동 mock 관리
 
-v1.1+ 추가 예정:
-  트렌드 탭   → 개인화 뷰티 피드
+인증 게이트:
+  비로그인 → history / my / history_detail 접근 시 guest_gate
+  로그인 성공 후 → 원래 탭 또는 기록 상세로 복귀
 
 별도 화면:
-  /login
-  /history/:id
+  splash / onboarding / login / guest_gate
 ```
 
-- 동일한 React 라우팅 구조를 웹과 Capacitor 앱이 공유
-- React Navigation 도입 없이 현재 웹 라우팅/상태 구조를 확장하는 방향을 우선 검토
+- 현재는 URL 라우터보다 `App.jsx` stage 상태로 웹/Capacitor 흐름을 공용 관리
+- Android 하드웨어 back 도 같은 stage parent 규칙을 사용
 
 ---
 
 ## 3-8. 테스트 전략
 
-- [ ] 로그인 권한/세션 로직 테스트
-- [ ] 게스트 → 로그인 전환 회귀 테스트
+- [x] OAuth redirect bridge / 세션 복원 / post-login return target 테스트 (`test/authBridge.test.js`)
+- [x] 히스토리 목록 / 상세 UI 회귀 테스트 (`test/Home.test.jsx`, `test/History.test.jsx`, `test/HistoryDetail.test.jsx`)
+- [ ] 게스트 → 로그인 전환 상위 흐름 회귀 테스트
 - [ ] RLS 정책 SQL 테스트 또는 클라이언트 테스트 추가
 - [ ] 로그인 사용자 사용량 제한 회귀 테스트 추가
 - [ ] OAuth 복귀 플로우는 자동화보다 실기기 smoke test 항목으로 관리
 
 ---
 
-## Phase 3 완료 기준 체크리스트
+## Phase 3 저장소/구현 기준 체크리스트
+
+> 위 체크는 **코드/문서/저장소 기준으로 확인 가능한 항목**이다.
+> Supabase 콘솔, 실기기 OAuth, 실제 계정 데이터 검증은 아래 `🙋 사용자 직접 테스트 체크리스트`에서 따로 체크한다.
 
 - [x] Supabase Auth 연동 코드 추가 (`Authorization: Bearer` 검증, OAuth redirect bridge)
 - [x] Supabase 테이블/RLS SQL 추가 (`backend/supabase_schema.sql`)
@@ -314,9 +330,14 @@ v1.1+ 추가 예정:
 ### 히스토리
 - [ ] 로그인 후 분석 1회 → 히스토리 탭에 즉시 노출
 - [ ] 분석을 6회 한 후 히스토리에 가장 오래된 1건이 빠지는지 (최근 5회)
-- [ ] 히스토리 항목 탭 → 당시 카드와 사진 다시 보임
+- [ ] 홈 recent 카드 탭 → 기록 상세 진입 → 뒤로가기 시 홈으로 복귀
+- [ ] 히스토리 항목 탭 → 기록 상세 진입 → 뒤로가기 시 히스토리로 복귀
+- [ ] 히스토리 상세에서 HAIR / MAKEUP 다시 열기 → 저장된 카드 세트가 현재 UI로 정상 복원
 - [ ] 91일 지난 분석을 강제로 만들어 (혹은 SQL로 `photo_expires_at`을 어제로 바꿔) cron 동작 후 사진 만료 안내가 노출되는지
-- [ ] 히스토리 상세 → "이 분석의 내 사진 즉시 삭제" 버튼 → 사진만 사라지고 카드 데이터는 남는가
+
+### guest gate / 복귀
+- [ ] guest 상태에서 history / my / history_detail 진입 시 진입 이유별 gate 카피가 맞게 보이는가
+- [ ] gate 에서 로그인 성공 후 원래 보려던 탭 또는 기록 상세로 정확히 복귀하는가
 
 ### 보안
 - [ ] 다른 계정 토큰으로 `/api/history` 호출 시 빈 응답 (RLS 동작)

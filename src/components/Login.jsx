@@ -1,13 +1,33 @@
-// TODO: Supabase Auth (카카오/구글) 연동.
-//   - 카카오 버튼: supabase.auth.signInWithOAuth({ provider: 'kakao' })
-//   - 구글 버튼: supabase.auth.signInWithOAuth({ provider: 'google' })
-//   - "로그인 없이 1회 체험"은 게스트 플래그 set 후 home 으로 이동.
-// 현재는 어떤 버튼을 눌러도 단순히 다음 단계로 이동.
 import { StatusBar } from './common/StatusBar';
 import { Icons } from './common/Icons';
 
-export default function Login({ onNext, onOAuth, onGuest, onBack, mode }) {
+const GATE_COPY = {
+  history: {
+    title: '지난 분석 기록을 보려면 로그인이 필요해요',
+    body: '로그인하면 분석 결과와 카드 기록을 저장하고, 나중에 다시 이어볼 수 있어요.',
+    eyebrow: 'HISTORY ACCESS',
+  },
+  history_detail: {
+    title: '이 분석 기록을 열려면 로그인이 필요해요',
+    body: '로그인 후에는 지난 카드 결과와 생성 기록까지 다시 확인할 수 있어요.',
+    eyebrow: 'ARCHIVE DETAIL',
+  },
+  my: {
+    title: '내 정보와 활동을 보려면 로그인이 필요해요',
+    body: '로그인하면 퍼스널 컬러, 분석 활동, 계정 설정을 한 곳에서 관리할 수 있어요.',
+    eyebrow: 'MY ACCOUNT',
+  },
+  unlock: {
+    title: '잠금 해제와 저장을 계속하려면 로그인이 필요해요',
+    body: '로그인하면 결과를 저장하고, 다음 기기에서도 같은 기록을 다시 볼 수 있어요.',
+    eyebrow: 'UNLOCK',
+  },
+};
+
+export default function Login({ onNext, onOAuth, onGuest, onBack, mode, reason = 'history' }) {
   const isGate = mode === 'guest_gate';
+  const gateCopy = GATE_COPY[reason] || GATE_COPY.history;
+
   const startOAuth = (provider) => {
     try {
       if (onOAuth) {
@@ -17,9 +37,10 @@ export default function Login({ onNext, onOAuth, onGuest, onBack, mode }) {
         onNext?.();
       }
     } catch (e) {
-      alert(e?.message || '로그인을 시작할 수 없습니다.');
+      alert(e?.message || '로그인을 시작할 수 없어요.');
     }
   };
+
   return (
     <div style={{ width: '100%', minHeight: '100dvh', background: '#fff', color: '#000', display: 'flex', flexDirection: 'column' }}>
       <StatusBar />
@@ -32,9 +53,12 @@ export default function Login({ onNext, onOAuth, onGuest, onBack, mode }) {
 
       {isGate && (
         <div style={{ margin: '18px 22px 0', padding: '14px 16px', background: '#f6f1ed', borderLeft: '2px solid #000' }}>
-          <div className="label" style={{ color: '#000', marginBottom: 6 }}>1회 체험 완료 ✓</div>
+          <div className="label" style={{ color: '#000', marginBottom: 6 }}>{gateCopy.eyebrow}</div>
+          <div className="ko" style={{ fontSize: 14, color: '#1a1a1a', lineHeight: 1.55, fontWeight: 500, marginBottom: 6 }}>
+            {gateCopy.title}
+          </div>
           <div className="ko" style={{ fontSize: 12, color: '#1a1a1a', lineHeight: 1.6 }}>
-            로그인하면 결과 저장·공유·히스토리·트렌드 피드까지 — 모두 잠금이 풀려요.
+            {gateCopy.body}
           </div>
         </div>
       )}
@@ -43,7 +67,7 @@ export default function Login({ onNext, onOAuth, onGuest, onBack, mode }) {
         <div className="wm" style={{ fontSize: 36, letterSpacing: '-.01em', fontWeight: 200, lineHeight: 1 }}>beaumi</div>
         <div style={{ width: 24, height: 1, background: '#000', margin: '18px auto' }} />
         <div className="serif-i" style={{ fontSize: 13.5, color: '#5a5a5a' }}>
-          {isGate ? '로그인하고 모두 잠금 해제' : '오늘의 나를 가장 정확하게'}
+          {isGate ? '로그인하고 기록을 이어보세요' : '오늘의 얼굴을 더 정확하게'}
         </div>
       </div>
 
@@ -90,7 +114,7 @@ export default function Login({ onNext, onOAuth, onGuest, onBack, mode }) {
         >
           이용약관
         </a>{' '}
-        ·{' '}
+        및{' '}
         <a
           href="/privacy.html"
           target="_blank"
@@ -99,7 +123,7 @@ export default function Login({ onNext, onOAuth, onGuest, onBack, mode }) {
         >
           개인정보처리방침
         </a>
-        에<br />동의한 것으로 간주됩니다.
+        에 동의한 것으로 간주됩니다.
       </div>
     </div>
   );

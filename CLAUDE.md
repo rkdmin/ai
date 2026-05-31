@@ -21,6 +21,21 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ---
 
+## ⚠️ 파일 인코딩 규칙 (필수)
+
+> **모든 텍스트 파일은 반드시 `UTF-8`(BOM 없음) + `LF` 줄끝으로 저장한다.**
+> 이 저장소는 한글 문자열과 `·`(가운뎃점, U+00B7) 같은 기호를 코드/테스트/문서에 직접 쓴다. 잘못된 코드페이지(CP949/EUC-KR 등)로 저장하면 `·` 가 `쨌` 같은 깨진 글자로 바뀌어 **화면에 그대로 렌더되고, 컴포넌트와 테스트가 같이 깨지면 테스트는 통과하지만 UI 만 깨지는** 사고가 난다 (2026-05 실제 발생).
+
+지킬 것:
+
+- 파일 저장 인코딩은 항상 **UTF-8 (no BOM)**. PowerShell 로 파일을 쓸 때는 `-Encoding utf8` 을 명시한다.
+- 줄끝은 **LF**. (`.gitattributes` 의 `* text=auto eol=lf` 가 강제)
+- `src/`·`test/` 에 한글/특수기호 문자열을 넣은 뒤에는 `git diff` 로 `·` 가 `쨌` 등으로 바뀌지 않았는지 확인한다.
+- IDE(IntelliJ 등) 의 파일 인코딩 설정이 `UTF-8` 인지 확인한다 (Settings → Editor → File Encodings: Global/Project/Default 모두 UTF-8).
+- `.gitattributes` 가 `.jsx/.js/.ts/.tsx/.css/.html/.json/.md/.py/.sql/.yml` 를 텍스트로 다루고 LF 로 정규화한다. 새 텍스트 확장자를 추가하면 여기에도 등록한다.
+
+---
+
 ## 💄 AI 뷰티 코치
 
 정면 사진 1장으로 얼굴형을 분석하고, 헤어/메이크업 코디 카드 4장(추천 3장 + 비추천 1장), 전문가 피드백, 메이크업 카드용 추천 제품 + 쿠팡파트너스 링크를 제공하는 AI 뷰티 코치 앱입니다.
@@ -94,6 +109,8 @@ src/                            # 프론트엔드 (웹/Capacitor 공용)
 │   ├── backend.js      # FastAPI 백엔드 HTTP 클라이언트
 │   └── mock.js         # 더미 데이터 (VITE_MOCK=true 시 사용)
 ├── components/                 # Beaumi 에디토리얼 디자인 (handoff 패키지 적용)
+│   ├── Home.jsx           # 홈 랜딩 + 최근 기록 1~3개 이어보기 (로그인 사용자만 fetch)
+│   ├── Login.jsx          # OAuth 로그인 + 게스트 체험 + guest gate 카피 분기
 │   ├── PhotoUpload.jsx    # STEP 01 — 정면 사진 1장 + DO/DON'T 가이드 타일
 │   ├── Loading.jsx        # STEP 02 — 4-step 분석 로딩 (FACE DETECTION → CARD CURATION)
 │   ├── AnalysisResult.jsx # STEP 02 결과 — MOOD KEYS / FEATURES / RECOMMENDATIONS
@@ -101,6 +118,10 @@ src/                            # 프론트엔드 (웹/Capacitor 공용)
 │   ├── CardDetail.jsx     # STEP 04 — AI COMMENTARY / PERSONAL FIT / MOOD BOARD / AI SYNTHESIS
 │   ├── AdGate.jsx         # 15초 광고 게이트 (잠금 카드 / 사진 합성 공통)
 │   ├── ShareCard.jsx      # 공유 카드 오버레이
+│   ├── History.jsx        # 최근 5회 분석 기록 목록 + 새 분석 진입
+│   ├── HistoryDetail.jsx  # 저장된 분석/카드/생성 사진 재열람 + 카드 재오픈
+│   ├── Trend.jsx          # 트렌드 mock 피드 (v1.0 시안 유지)
+│   ├── My.jsx             # 계정/활동 mock 관리 화면 + 계정 삭제 시트
 │   └── common/
 │       ├── Icons.jsx          # 인라인 SVG 아이콘 세트
 │       ├── Layout.jsx         # BackHeader / Section / IndexMark / CtaTile
@@ -112,6 +133,7 @@ src/                            # 프론트엔드 (웹/Capacitor 공용)
 │   ├── 촬영가이드 여자.png   # 정면 촬영 가이드 이미지
 │   └── 촬영가이드 측면.png   # (참고용, v1.0 미사용)
 ├── utils/
+│   ├── authBridge.js      # OAuth redirect 세션 복원 + post-login return target 저장/소비
 │   └── validateImage.js   # Canvas API 기반 이미지 유효성 검사
 └── devtools/                   # 개발 전용 — VITE_DEV_INSPECTOR=true 일 때만 활성, 운영 빌드 트리 셰이킹
     ├── inspector.js            # 호출 기록 이벤트 버스 + 인메모리 스토리지
@@ -239,20 +261,27 @@ tools/                          # Phase 1 로컬 평가 도구 (백엔드 이관
 
 ## 주요 데이터 흐름
 
-1. `PhotoUpload` → 정면 사진 1장 수집 (프론트)
-2. 프론트가 `POST /api/analyze` 호출 (`src/api/backend.js`)
+1. `Home` → 새 분석 시작 또는 최근 기록 재열기
+   - 로그인 사용자는 `fetchHistory(3)` 로 recent 1~3개를 본다
+   - 게스트는 recent API를 호출하지 않고 로그인 유도 카피만 본다
+2. `PhotoUpload` → 정면 사진 1장 수집 (프론트)
+3. 프론트가 `POST /api/analyze` 호출 (`src/api/backend.js`)
    - 백엔드: MediaPipe → `faceRatios`
    - 백엔드: Gemini 2.5 Flash → `{ faceType, features, faceRatios, analysisId? }` 반환
-3. `AnalysisResult` → 퍼스널컬러 확정 (알면 직접 선택 / 모르면 질문 3개)
-4. 프론트가 `POST /api/cards/{hair|makeup|total}` 호출
+4. `PersonalColor` → 퍼스널컬러 선택 후 분석 시작
+5. 프론트가 `POST /api/cards/{hair|makeup|total}` 호출
    - 백엔드: `rag_service.build_*_context` → Gemini → 카드 4장 생성
-5. 카드 선택 시 → `CardDetail` 진입
+6. 카드 선택 시 → `CardDetail` / `MakeupDetail` 진입
    - 메이크업 카드: `recommendedProducts` + 쿠팡파트너스 링크 + 고지 문구 노출 (사진 생성 미지원)
    - 헤어/종합 추천 카드: `POST /api/photo/generate` (로그인 전용) → Gemini → data URL 반환
+7. `History` / `HistoryDetail`
+   - `GET /api/history` → 최근 5회 목록
+   - `GET /api/history/{analysisId}` → 저장된 분석/카드/생성 사진 조회
+   - `HistoryDetail` 에서 저장된 헤어/메이크업 카드를 다시 열 때 `analysisId` 를 카드에 복원해 TRY ON 재사용 가능
 
 > 모든 AI 호출은 백엔드를 경유한다. 프론트엔드는 더 이상 Gemini API 키를 갖지 않는다.
 
-> ⚠️ **현재 상태(2026-05-08, handoff 디자인 적용 직후)**: `src/App.jsx` 는 `handoff/` 패키지의 인라인 mock 응답으로 동작한다. `api/ai.js` (analyzeFace / generateHairCards / 등) 와 새 컴포넌트 props 가 아직 연결되어 있지 않다. **다음 작업: App.jsx 의 `// TODO: Claude Code — replace mock with: const r = await apiClient.analyze(photo)` 자리에 `analyzeFace`/`generateHairCards`/`generateMakeupCards` 호출을 다시 끼워넣고, 새 컴포넌트가 기대하는 prop 모양(`{ name, sub, tone, locked, warn, rank }`) 으로 카드를 매핑할 것.** 이전 컴포넌트는 `src/_backup_pre_handoff_*` 에 보관됨.
+> 현재 프론트는 `api/ai.js` 를 통해 실제 백엔드/모의 데이터를 모두 호출한다. 다만 `Trend.jsx`, `My.jsx`, `MakeupDetail.jsx` 일부 영역은 여전히 mock 중심이며, `generateTotalCards` 백엔드 경로는 있어도 v1.0 UI에서는 직접 노출하지 않는다.
 
 ---
 

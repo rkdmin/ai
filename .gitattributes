@@ -1,0 +1,17 @@
+# 모든 텍스트 파일: LF 줄끝 + UTF-8 작업트리 인코딩 강제.
+# (한글/`·` 기호가 CP949 등으로 저장돼 `쨌` 로 깨지는 사고 방지 — CLAUDE.md "파일 인코딩 규칙" 참조)
+* text=auto eol=lf
+
+*.js   text working-tree-encoding=UTF-8
+*.jsx  text working-tree-encoding=UTF-8
+*.ts   text working-tree-encoding=UTF-8
+*.tsx  text working-tree-encoding=UTF-8
+*.css  text working-tree-encoding=UTF-8
+*.html text working-tree-encoding=UTF-8
+*.json text working-tree-encoding=UTF-8
+*.md   text working-tree-encoding=UTF-8
+*.py   text working-tree-encoding=UTF-8
+*.sql  text working-tree-encoding=UTF-8
+*.yml  text working-tree-encoding=UTF-8
+*.yaml text working-tree-encoding=UTF-8
+

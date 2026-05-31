@@ -1,6 +1,7 @@
 const SUPABASE_URL = (import.meta.env.VITE_SUPABASE_URL || '').replace(/\/$/, '');
 const SESSION_KEY = 'beaumi.auth.session';
 const GUEST_KEY = 'beaumi.guest.enabled';
+const RETURN_TARGET_KEY = 'beaumi.auth.return_target';
 
 function readSession() {
   if (typeof window === 'undefined') return null;
@@ -44,6 +45,7 @@ export function isGuestMode() {
 export function startGuestMode() {
   try {
     window.localStorage.setItem(GUEST_KEY, '1');
+    window.localStorage.removeItem(RETURN_TARGET_KEY);
   } catch { /* noop */ }
 }
 
@@ -51,7 +53,31 @@ export function signOut() {
   try {
     window.localStorage.removeItem(SESSION_KEY);
     window.localStorage.removeItem(GUEST_KEY);
+    window.localStorage.removeItem(RETURN_TARGET_KEY);
   } catch { /* noop */ }
+}
+
+export function setPostAuthTarget(target) {
+  if (typeof window === 'undefined') return;
+  try {
+    if (!target) {
+      window.localStorage.removeItem(RETURN_TARGET_KEY);
+      return;
+    }
+    window.localStorage.setItem(RETURN_TARGET_KEY, JSON.stringify(target));
+  } catch { /* noop */ }
+}
+
+export function consumePostAuthTarget() {
+  if (typeof window === 'undefined') return null;
+  try {
+    const raw = window.localStorage.getItem(RETURN_TARGET_KEY);
+    if (!raw) return null;
+    window.localStorage.removeItem(RETURN_TARGET_KEY);
+    return JSON.parse(raw);
+  } catch {
+    return null;
+  }
 }
 
 export function consumeOAuthRedirect() {

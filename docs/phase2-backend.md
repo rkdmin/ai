@@ -205,12 +205,12 @@ class HistoryDetailResponse(BaseModel):
 
 ## 2-4. 프론트엔드 수정 사항
 
-- [ ] 프론트의 AI 직접 호출을 모두 백엔드 엔드포인트 호출로 교체
-- [ ] 환경변수 `VITE_API_URL` 추가
+- [x] 프론트의 AI 직접 호출을 모두 백엔드 엔드포인트 호출로 교체
+- [x] 환경변수 `VITE_API_URL` 추가
   - 로컬: `http://localhost:8000`
   - 개발/테스트 배포: Render URL
   - 출시 운영: Railway URL
-- [ ] `VITE_GEMINI_API_KEY`, 기타 AI 키를 프론트에서 제거
+- [x] `VITE_GEMINI_API_KEY`, 기타 AI 키를 프론트에서 제거
 - [ ] 웹과 Capacitor 앱이 동일한 `VITE_API_URL` 빌드값을 사용하도록 정리
 - [ ] 실패 응답 포맷을 프론트 에러 UI에 맞게 통일
 
@@ -271,21 +271,24 @@ app.add_middleware(
 
 ## 2-7. 테스트 전략
 
-- [ ] `/api/analyze`, `/api/cards/*`, `/api/photo/generate` contract test 추가
-- [ ] 게스트/로그인 권한 integration test 추가
+- [x] `/api/analyze`, `/api/cards/*`, `/api/photo/generate` contract test 추가
+- [x] 게스트/로그인 권한 integration test 추가
 - [ ] Rate limiting 초과 시 `429` 응답 테스트 추가
 - [ ] 공통 에러 응답 포맷 회귀 테스트 추가
 - [ ] Render staging smoke test 추가
 
 ---
 
-## Phase 2 완료 기준 체크리스트
+## Phase 2 저장소/구현 기준 체크리스트
+
+> 위 체크는 **코드/문서/저장소 기준으로 확인 가능한 항목**이다.
+> 실제 배포/실기기/보안 확인은 아래 `🙋 사용자 직접 테스트 체크리스트`에서 따로 체크한다.
 
 - [ ] 백엔드 서버 생성 및 로컬 실행 확인
-- [ ] `/api/analyze` 엔드포인트 동작 확인
-- [ ] `/api/cards/*` 엔드포인트 동작 확인
+- [x] `/api/analyze` 엔드포인트 동작 확인
+- [x] `/api/cards/*` 엔드포인트 동작 확인
 - [ ] `/api/photo/generate` 로그인 + 사용량 제한 체크 확인
-- [ ] 프론트 환경변수에서 AI 키 완전 제거
+- [x] 프론트 환경변수에서 AI 키 완전 제거
 - [ ] Rate limiting 적용 확인
 - [ ] Render 무료 배포 완료
 - [ ] Capacitor 앱에서 Render 백엔드 통신 확인

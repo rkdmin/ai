@@ -7,209 +7,357 @@
 
 ## 앱 탭 구조
 
-v1.0 하단 탭바 2개:
+현재 하단 탭바는 4개다.
 
 ```
-[홈] [히스토리]
+[홈] [트렌드] [히스토리] [마이]
 ```
 
-- **홈 탭**: 얼굴 분석 → 카드 추천 메인 플로우
-- **히스토리 탭**: 최근 분석 기록 5회
-- **트렌드 탭은 v1.1에서 추가** (트렌드 피드 도입 시점)
-- 웹과 Capacitor 앱이 동일한 UI 흐름을 공유
+- `home`: 새 분석 시작 + 최근 기록 이어보기
+- `trend`: 정적 mock 피드
+- `history`: 로그인 사용자만 접근 가능
+- `my`: 로그인 사용자만 접근 가능
+
+인증 게이트:
+- 비로그인 사용자가 `history`, `my` 로 이동하면 `guest_gate` 로 보낸다.
+- `guest_gate` 에서 OAuth 로그인 성공 시 원래 의도한 탭/기록 상세로 복귀한다.
 
 ---
 
-## 전체 흐름 개요
+## 전체 stage 맵 (`App.jsx`)
 
+```txt
+splash
+  → onboarding1 → onboarding2 → onboarding3
+  → login | home
+
+home
+  → upload → personal_color → loading → result_home
+  → trend
+  → history → history_detail
+  → my
+  → guest_gate
+
+result_home
+  → hair_loading → result_tabs_hair → card_detail → ad_gate → synth_loading
+  → makeup_loading → result_tabs_makeup → makeup_detail → ad_gate
+  → share_card | share_card_makeup
 ```
-[홈 탭] upload → analyzing → result → generatingCards → cards → cardDetail
-[히스토리 탭] 히스토리 목록 → 히스토리 상세
-(v1.1+ 트렌드 탭) 트렌드 피드
-```
 
-뒤로가기:
-- `result` → `upload`
-- `cards` → `upload` (전체 리셋)
-- `cardDetail` → `cards`
-
-에러 발생 시:
-- `analyzing` 실패 → `upload` + 에러 안내
-- `generatingCards` 실패 → `result` + 에러 안내
+핵심 포인트:
+- `history_detail` 은 `home recent` 와 `history list` 두 곳에서 모두 진입한다.
+- `ad_gate` 뒤 이동 위치는 고정이 아니라 `adReturn` 상태로 결정한다.
+- `share_card` 는 헤어 결과 공유, `share_card_makeup` 은 메이크업 결과 공유다.
 
 ---
 
-## Step 1 — PhotoUpload (`step: 'upload'`)
+## 뒤로가기 규칙
+
+- `onboarding2` → `onboarding1`
+- `onboarding3` → `onboarding2`
+- `login` / `guest_gate` → `home`
+- `upload` → `home`
+- `personal_color` → `upload`
+- `loading` / `error_face` / `error_network` → `home`
+- `result_home` → `home`
+- `hair_loading` / `makeup_loading` → `result_home`
+- `result_tabs_hair` / `result_tabs_makeup` → `result_home`
+- `card_detail` → `result_tabs_hair`
+- `makeup_detail` → `result_tabs_makeup`
+- `share_card` → `activeCard` 가 있으면 `card_detail`, 없으면 `result_home`
+- `share_card_makeup` → `makeup_detail`
+- `history` / `my` / `trend` → `home`
+- `history_detail` → 진입 출처 기준 복귀
+  - `home recent` 에서 열었으면 `home`
+  - `history list` 에서 열었으면 `history`
+
+Capacitor Android 하드웨어 back 도 같은 규칙을 따른다.
+
+---
+
+## Splash / Onboarding / Login
+
+### Splash (`stage: 'splash'`)
+
+- 1초 후 다음 화면으로 이동
+- `localStorage['beaumi.onboarded'] === '1'` 이면 `home`
+- 아니면 `onboarding1`
+
+### Onboarding (`onboarding1~3`)
+
+- 3장 구성
+- 마지막 화면 완료 시 `beaumi.onboarded = '1'` 저장 후 `login`
+- 중간 스킵도 가능
+
+### Login (`stage: 'login' | 'guest_gate'`)
+
+공통:
+- 카카오 OAuth
+- 구글 OAuth
+
+`login` 전용:
+- 게스트 1회 체험 버튼 노출
+
+`guest_gate` 전용:
+- 진입 이유별 카피 분기
+  - `history`
+  - `history_detail`
+  - `my`
+  - `unlock`
+- 로그인 성공 후 `authBridge.consumePostAuthTarget()` 으로 원래 목적지 복귀
+
+---
+
+## Home (`stage: 'home'`)
+
+**컴포넌트:** `Home.jsx`
+
+구성:
+- 상단 history 아이콘
+- Hero CTA: `START ANALYSIS`
+- 탐색 타일 4개
+  - `ANALYZE` → `upload`
+  - `RESULTS` → `history`
+  - `HISTORY` → `history`
+  - `MY` → `my`
+- `RECENT` 섹션
+
+`RECENT` 규칙:
+- 로그인 사용자만 `fetchHistory(3)` 호출
+- 게스트는 API 호출 없이 로그인 유도 empty copy만 노출
+- recent 카드 클릭 시 `history_detail` 진입
+- recent 카드에서 열린 상세는 뒤로가기 시 `home` 으로 복귀
+
+---
+
+## Photo Upload (`stage: 'upload'`)
 
 **컴포넌트:** `PhotoUpload.jsx`
 
-### 정면 사진 (필수)
-
-- 클릭 또는 드래그 업로드
-- 업로드 즉시 `validateImage()`로 유효성 검사
-- 통과 시 미리보기 표시
-- 실패 시 에러 메시지 + 재업로드 유도
-
-### 촬영 가이드 시트
-
-- `"촬영가이드 확인하기"` 버튼
-- 정면 가이드 이미지 + 촬영 조건 안내
-- 가이드 이미지를 꾹 눌러 전체화면 확대
-
-### 퍼스널컬러 질문
-
-- `"알아요"` / `"몰라요"` 중 하나 선택
-- 선택 전까지 분석 CTA 비활성화
-
-### 분석 시작 조건
-
-- 정면 사진 업로드 완료
-- 퍼스널컬러 질문 응답 완료
-- `onAnalyze(preview, knowsColor)` 호출
-
-> v1.0은 정면 1장만 받음. 측면(90도·45도)은 v1.x 검토 (`docs/phase1-quality.md` 1-3 참조).
+- 정면 사진 1장 업로드
+- 업로드 성공 시 `photo = { file, dataUrl }`
+- 완료 즉시 `personal_color` 로 이동
 
 ---
 
-## Step 2 — 분석 로딩 (`step: 'analyzing'`)
+## Personal Color (`stage: 'personal_color'`)
 
-**컴포넌트:** `App.jsx` 내 인라인 로딩 화면
+**컴포넌트:** `PersonalColor.jsx`
 
-- "Beauté AI" 로딩 화면
-- 2단계 진행 표시
-  - Step 1: MediaPipe 측정
-  - Step 2: Gemini 분석
-- 내부 동작: `analyzeFace(imageBase64)`
-- 성공 → `result`
-- 실패 → `upload`
+- 퍼스널컬러 선택
+- 선택값은 한국어 라벨로 `personalColor` 상태에 저장
+- 다음 진행 시 `startAnalysis()`
 
 ---
 
-## Step 3 — 분석 결과 (`step: 'result'`)
+## 분석 로딩 / 에러
+
+### Analysis Loading (`stage: 'loading'`)
+
+**컴포넌트:** `Loading.jsx`
+
+- 내부 task: `analyzeFace(photo.dataUrl, backendPersonalColorKey(personalColor))`
+- 성공:
+  - 정상 결과 → `result_home`
+  - `faceType === '판정 어려움'` → `error_face`
+- 실패:
+  - 네트워크성 에러 → `error_network`
+  - 그 외 → `error_face`
+
+### Error (`stage: 'error_face' | 'error_network'`)
+
+**컴포넌트:** `ErrorScreen.jsx`
+
+- `error_face`
+  - 재시도 → `upload`
+  - 뒤로 → `home`
+- `error_network`
+  - 카드 생성 전 에러면 `startAnalysis()` 재시도
+  - 카드 생성 후 에러면 `result_home` 으로 복귀
+
+---
+
+## 분석 결과 (`stage: 'result_home'`)
 
 **컴포넌트:** `AnalysisResult.jsx`
 
-### 표시 내용
+표시:
+- 업로드 사진 또는 저장된 `frontImageUrl`
+- 얼굴형
+- 퍼스널컬러
+- `moodArchetype` 3개
+- `features` 최대 3개
+- 공유 버튼
 
-| 섹션 | 조건 | 내용 |
-|------|------|------|
-| 정면 사진 | 항상 | 업로드한 사진 |
-| Face Type | 항상 | 얼굴형 + 설명 |
-| Personal Color | `knowsPersonalColor === true` | 4개 버튼 중 선택 |
-| Features | `analysis.features.length > 0` | 특징 태그 |
+CTA:
+- `헤어 추천 받기` → 캐시 없으면 `hair_loading`, 있으면 `result_tabs_hair`
+- `메이크업 받기` → 캐시 없으면 `makeup_loading`, 있으면 `result_tabs_makeup`
 
-### 카드 타입 선택
-
-- 헤어 카드
-- 메이크업 카드
-- 종합 카드
-- 선택 시 `generatingCards` 이동
-
-### 판정 어려움 케이스
-
-- `analysis.faceType === '판정 어려움'`이면 카드 타입 선택 버튼을 비활성화한다
-- 대신 `"여러 얼굴형 특징이 섞여 있어요. 다른 정면 사진으로 다시 시도해 주세요."` 안내 카드 노출
-- CTA: `[다시 촬영하기]` → `upload`로 복귀
+주의:
+- 백엔드에는 `total` 카드 API 가 있지만 현재 v1.0 UI에는 진입 CTA 가 없다.
 
 ---
 
-## Step 4 — 카드 생성 로딩 (`step: 'generatingCards'`)
+## 헤어 카드 플로우
 
-**컴포넌트:** `App.jsx` 내 인라인 로딩 화면
+### Hair Loading (`stage: 'hair_loading'`)
 
-- `"코디 카드를 만들고 있어요"`
-- 성공 → `cards`
-- 실패 → `result`
+- `generateHairCards(payload)` 호출
+- 성공 → `result_tabs_hair`
 
----
-
-## Step 5 — 카드 목록 (`step: 'cards'`)
+### Hair List (`stage: 'result_tabs_hair'`)
 
 **컴포넌트:** `CardList.jsx`
 
-- 상단 분석 요약 표시
-- `styleLabel` 감성 레이블 표시
-- 선택한 카드 타입의 카드 4장 렌더링
+- 카드 선택 시:
+  - 잠금 카드면 `ad_gate`
+  - 아니면 `card_detail`
 
-### 공유
-
-- 결과 카드 공유 버튼 제공
-- 구현 방식:
-  - 웹: `html2canvas`로 캡처 후 다운로드/공유
-  - 앱: `html2canvas` + `@capacitor/share`
-
-### 카드 잠금 구조
-
-- **v1.0 (Android 1차 출시)**: 4장 모두 무료 공개
-- **v1.1 (광고 도입 이후)**: Rank 3 / Avoid 무료, Rank 1·2는 보상형 광고 시청 후 해제
-
----
-
-## Step 6 — 카드 상세 (`step: 'cardDetail'`)
+### Hair Detail (`stage: 'card_detail'`)
 
 **컴포넌트:** `CardDetail.jsx`
 
-### 추천 카드 — 카드 종류별 노출 섹션
+- 공유 버튼
+- 하단 sticky CTA
+  - `SHARE`
+  - `TRY ON`
+- `TRY ON` 은 광고 게이트 후 `synth_loading`
 
-| 섹션 | 헤어 카드 | 메이크업 카드 | 종합 카드 | Avoid 카드 |
-|------|---------|------------|---------|----------|
-| Hero | ✓ | ✓ | ✓ | ✓ |
-| Hair Style | ✓ | — | ✓ | (해당 시) |
-| Makeup | — | ✓ | ✓ | (해당 시) |
-| Feature Tip | ✓ | ✓ | ✓ | — |
-| Coach Note | ✓ | ✓ | ✓ | ✓ |
-| 적용 사진 | ✓ (추천만) | — | ✓ (추천만) | — |
-| 추천 제품 | — | ✓ | — | — |
+### Ad Gate / Synthesis
 
-### 메이크업 카드 상세
+- `ad_gate`
+  - 잠금 카드 해제용 또는 합성 보기용으로 공용 사용
+- `synth_loading`
+  - `generateStyledPhoto(photo?.dataUrl || null, card)`
+  - 이미 생성한 카드면 `synthByKey` 캐시 사용
+- 합성 성공 시 같은 `card_detail` 로 복귀
 
-1. 카드 하단에 추천 제품 블록 노출
-2. 상품 수는 2~4개를 기본으로 하며 `label`과 `"쿠팡에서 보기"` CTA를 표시
-3. CTA 클릭 시 `coupangPartnersUrl`로 이동
-4. 하단에 쿠팡파트너스 법적 고지 문구를 함께 노출
-5. 메이크업 카드에서는 `"사진 생성하기"` 버튼을 노출하지 않음
-
-### 헤어/종합 카드 적용 사진 생성
-
-1. `"사진 생성하기"` 버튼
-2. 게스트면 로그인 CTA 노출 (사진 생성은 로그인 전용)
-3. 로그인 사용자면 `/api/photo/generate` 호출
-   - **분석당 카드 종류별 1회**: 같은 분석에서 같은 종류(헤어/종합) 두 번째 요청은 캐시 응답
-   - **일일 누적 5회 상한**: 초과 시 안내 UI
-4. 성공 시 전후 비교 토글 노출
+중요:
+- 저장된 히스토리에서 다시 연 헤어 카드도 `analysisId` 를 유지해야 한다.
+- 그래야 로그인 전용 TRY ON 이 저장된 분석 기준으로 재사용된다.
 
 ---
 
-## 트렌드 탭 (`tab: 'trends'`) — v1.1+
+## 메이크업 카드 플로우
 
-> v1.0에서는 노출하지 않는다. 트렌드 피드 백엔드가 준비된 시점(v1.1+)에 추가한다.
+### Makeup Loading (`stage: 'makeup_loading'`)
 
-**컴포넌트:** `TrendsScreen`
+- `generateMakeupCards(payload)` 호출
+- 성공 → `result_tabs_makeup`
 
-- 주 1회 업데이트
-- 얼굴형 / 퍼스널컬러 기반 필터
-- 기사 제목 + 요약 + 원문 링크
+### Makeup List (`stage: 'result_tabs_makeup'`)
+
+**컴포넌트:** `CardList.jsx`
+
+- 카드 선택 시:
+  - 잠금 카드면 `ad_gate`
+  - 아니면 `makeup_detail`
+
+### Makeup Detail (`stage: 'makeup_detail'`)
+
+**컴포넌트:** `MakeupDetail.jsx`
+
+- 공유 버튼
+- 제품 블록과 쿠팡 제휴 고지 노출
+- 정책상 사진 합성은 지원하지 않는다
+- 하단 sticky CTA
+  - `OTHER LOOKS`
+  - `SHARE LOOK`
 
 ---
 
-## 히스토리 탭 (`tab: 'history'`)
+## 공유
 
-**컴포넌트:** `HistoryPage`
+### Hair Share (`stage: 'share_card'`)
+
+- `activeCard` 가 있으면 상세 기반 공유
+- 없으면 분석 결과 공유
+
+### Makeup Share (`stage: 'share_card_makeup'`)
+
+- 메이크업 상세 기반 공유
+
+---
+
+## Trend (`stage: 'trend'`)
+
+**컴포넌트:** `Trend.jsx`
+
+- 현재 정적 mock 피드
+- 필터, 검색 버튼, 카드 모두 실데이터 연결 전 시안 수준
+
+---
+
+## History (`stage: 'history'`)
+
+**컴포넌트:** `History.jsx`
 
 - 로그인 필요
-- 최근 5회 분석 기록
-- 항목 선택 시 당시 카드 목록 재표시
+- 진입 시 `fetchHistory(5)`
+- 최근 5회 기록 표시
+- `EDIT` 모드에서는 로컬 UI 에서만 숨김 처리
+- `NEW ANALYSIS` → `upload`
+- row 클릭 → `history_detail`
+
+상태:
+- 로딩 UI
+- 에러 UI
+- 사진 만료(`photoExpired`) 오버레이
+- empty archive UI
 
 ---
 
-## State 구조 (`App.jsx`)
+## History Detail (`stage: 'history_detail'`)
+
+**컴포넌트:** `HistoryDetail.jsx`
+
+- 진입 시 `fetchHistoryDetail(analysisId)`
+- 표시 정보
+  - 분석 요약
+  - 저장된 feature 태그
+  - 다시 열 수 있는 카드 세트
+  - 생성된 사진 목록
+- `HAIR` / `MAKEUP` 버튼으로 저장된 카드 세트를 현재 플로우에 다시 주입
+- `TOTAL` 카드 기록은 안내만 하고 현재 UI 에서 직접 재오픈하지 않는다
+- `NEW ANALYSIS` → `upload`
+
+재오픈 규칙:
+- `mapCards()` 로 현재 카드 UI shape 로 다시 매핑
+- 각 카드에 `analysisId` 를 다시 넣는다
+
+---
+
+## My (`stage: 'my'`)
+
+**컴포넌트:** `My.jsx`
+
+- 로그인 필요
+- 현재 mock 프로필/통계/메뉴 중심
+- 로그아웃 가능
+- 계정 삭제 2단계 확인 시트 존재
+- 실제 계정 삭제 API 는 아직 미연결
+
+---
+
+## 주요 상태 (`App.jsx`)
 
 ```js
-step: 'upload' | 'analyzing' | 'result' | 'generatingCards' | 'cards' | 'cardDetail'
-image: string | null
-analysis: { faceType, features, personalColor? } | null
-cardSets: { hair?, makeup?, total? } | null
-selectedCard: CardObject | null // makeup card는 recommendedProducts[] 포함 가능
-knowsPersonalColor: boolean | null
-error: string | null
+stage: string
+photo: { file, dataUrl } | null
+personalColor: string | null
+result: {
+  analysisId?: string | null,
+  faceType: string,
+  features?: string[],
+  personalColor?: string | null,
+  frontImageUrl?: string | null,
+} | null
+hairCards: CardObject[] | null
+makeupCards: CardObject[] | null
+activeCard: CardObject | null
+adReturn: { done: string, back: string }
+synthByKey: Record<string, string>
+errorInfo: { type: 'face' | 'network', message: string }
+guestGateReason: 'history' | 'history_detail' | 'my' | 'unlock'
+historySelection: { analysisId: string | null, back: 'home' | 'history' }
 ```

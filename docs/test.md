@@ -75,7 +75,16 @@
 - `backend/test_integration.py`: Phase 2 API schema + Gemini 응답 contract
 - `backend/test_phase3.py`: Phase 3 auth/history/storage route wiring
 - `test/backendAuth.test.js`: 프론트 API 클라이언트 Authorization/history payload
-- `test/History.test.jsx`: 히스토리 로딩/만료/에러 UI
+- `test/App.flow.test.jsx`: splash/onboarding/login/home 진입 회귀
+- `test/Home.test.jsx`: 게스트 recent fetch 차단, 로그인 recent fetch + 상세 진입
+- `test/History.test.jsx`: 히스토리 로딩/만료/에러 UI + 상세 진입 + 새 분석 CTA
+- `test/HistoryDetail.test.jsx`: 저장된 카드 재오픈 시 `analysisId` 복원
+- `test/authBridge.test.js`: post-login return target 저장/1회 소비 + guest 전환 시 target 정리
+
+아직 비는 구간:
+- `AnalysisResult`, `CardDetail`, `MakeupDetail`, `ShareCard` CTA hierarchy 회귀 테스트
+- guest gate reason 분기와 OAuth 복귀를 엮는 상위 흐름 테스트
+- Playwright E2E (`업로드 → 분석 → 카드`, `로그인 → 히스토리 → 상세`)
 
 ### 4. E2E Web
 
@@ -231,12 +240,17 @@ tests/
 
 ## 출시 전 최소 품질 게이트
 
-- [ ] 프론트 핵심 로직 unit test 구축
-- [ ] 백엔드 핵심 API contract test 구축
-- [ ] 인증/권한 integration test 구축
+### 저장소/자동화 기준
+
+- [x] 프론트 핵심 로직 unit test 구축
+- [x] 백엔드 핵심 API contract test 구축
+- [x] 인증/권한 integration test 구축
 - [ ] 업로드 → 분석 → 카드, 로그인 → 히스토리 중 핵심 E2E 1~2개 구축
 - [ ] 메이크업 카드 추천 제품/쿠팡 링크 핵심 흐름 테스트 구축
 - [ ] 얼굴형/카드 eval 데이터셋 10~15장 구축
+
+### 사용자 직접 확인 기준
+
 - [ ] Android device smoke checklist 통과
 
 ---

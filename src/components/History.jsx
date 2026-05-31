@@ -17,7 +17,7 @@ function historyLabel(item) {
   return `${item.faceType || '분석 결과'} · ${cardTypes}`;
 }
 
-export default function History({ onNav, onBack }) {
+export default function History({ onNav, onBack, onOpenDetail, onNewAnalysis }) {
   const [remoteItems, setRemoteItems] = useState(null);
   const [error, setError] = useState('');
   const [removed, setRemoved] = useState({});
@@ -32,7 +32,7 @@ export default function History({ onNav, onBack }) {
           _idx: row.analysisId || i,
           date: formatDate(row.createdAt),
           label: historyLabel(row),
-          sub: row.photoExpired ? '사진이 만료되었습니다' : [row.faceType, row.personalColor].filter(Boolean).join(' · '),
+          sub: row.photoExpired ? '사진이 만료되었어요.' : [row.faceType, row.personalColor].filter(Boolean).join(' · '),
           tone: i % 2 === 0 ? 'dark' : 'light',
           expired: row.photoExpired,
         })));
@@ -48,7 +48,7 @@ export default function History({ onNav, onBack }) {
   const source = useMemo(() => {
     if (remoteItems === null) return [];
     return remoteItems;
-  }, [remoteItems, error]);
+  }, [remoteItems]);
   const items = source.filter((it) => !removed[it._idx]);
 
   return (
@@ -104,6 +104,7 @@ export default function History({ onNav, onBack }) {
             role={editing ? undefined : 'button'}
             tabIndex={editing ? undefined : 0}
             className={editing ? undefined : 'tappable'}
+            onClick={editing ? undefined : () => onOpenDetail?.(it._idx)}
             style={{
               display: 'flex', gap: 14, padding: '16px 22px',
               borderBottom: '1px solid #e8e8e8',
@@ -135,12 +136,15 @@ export default function History({ onNav, onBack }) {
                 {it.label}
               </div>
               <div className="ko" style={{ fontSize: 11.5, color: '#5a5a5a', fontWeight: 300 }}>
-                {it.expired ? '사진이 만료되었습니다' : it.sub}
+                {it.expired ? '사진이 만료되었어요.' : it.sub}
               </div>
             </div>
             {editing ? (
               <button
-                onClick={() => setRemoved((r) => ({ ...r, [it._idx]: true }))}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setRemoved((r) => ({ ...r, [it._idx]: true }));
+                }}
                 aria-label="delete"
                 style={{
                   width: 28, height: 28, borderRadius: '50%', border: '1px solid #000', background: '#fff',
@@ -156,20 +160,22 @@ export default function History({ onNav, onBack }) {
             )}
           </div>
         ))}
+
         {remoteItems !== null && !error && items.length === 0 && (
           <div style={{ padding: '40px 22px', textAlign: 'center' }}>
             <div className="serif-i" style={{ fontSize: 13, color: '#7a7a7a', marginBottom: 8 }}>empty archive</div>
-            <div className="ko" style={{ fontSize: 13, color: '#5a5a5a', fontWeight: 300 }}>아직 저장된 분석 기록이 없어요</div>
+            <div className="ko" style={{ fontSize: 13, color: '#5a5a5a', fontWeight: 300 }}>아직 저장된 분석 기록이 없어요.</div>
           </div>
         )}
 
         <div style={{ padding: '30px 22px 36px', background: '#f6f1ed', margin: '18px 22px 30px', textAlign: 'center', borderLeft: '2px solid #000' }}>
           <div className="serif-i" style={{ fontSize: 13, color: '#5a5a5a', marginBottom: 6 }}>your beauty changes every day</div>
-          <div className="ko" style={{ fontSize: 15, fontWeight: 400, marginBottom: 14 }}>오늘의 나도 기록해볼까요?</div>
+          <div className="ko" style={{ fontSize: 15, fontWeight: 400, marginBottom: 14 }}>오늘의 얼굴도 기록해볼까요?</div>
           <button
+            onClick={onNewAnalysis}
             style={{ background: '#000', color: '#fff', border: 'none', padding: '12px 22px', fontFamily: 'Jost', fontSize: 11, letterSpacing: '.22em', cursor: 'pointer' }}
           >
-            NEW ANALYSIS →
+            NEW ANALYSIS
           </button>
         </div>
       </div>
