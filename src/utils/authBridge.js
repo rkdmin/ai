@@ -30,6 +30,26 @@ export function getAuthSession() {
   return readSession();
 }
 
+// dev/mock 전용 — 실제 OAuth 없이 로그인 상태를 흉내내는 가짜 Supabase JWT 세션을 만든다.
+// 운영 빌드에서는 호출하는 UI(테스트 로그인 버튼)가 VITE_MOCK 게이트로 렌더되지 않는다.
+export function startTestSession() {
+  const b64 = (obj) => window.btoa(unescape(encodeURIComponent(JSON.stringify(obj))));
+  const token = `${b64({ alg: 'none', typ: 'JWT' })}.${b64({
+    sub: 'dev-test-user',
+    email: 'test@beaumi.app',
+    app_metadata: { provider: 'google' },
+  })}.devtest`;
+  const session = {
+    accessToken: token,
+    refreshToken: null,
+    tokenType: 'bearer',
+    providerToken: null,
+    expiresAt: Date.now() + 3600 * 1000,
+  };
+  writeSession(session);
+  return session;
+}
+
 export function getAccessToken() {
   return readSession()?.accessToken || null;
 }

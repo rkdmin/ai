@@ -91,6 +91,15 @@
 - guest gate reason 분기와 OAuth 복귀를 엮는 상위 흐름 테스트
 - Playwright E2E (`업로드 → 분석 → 카드`, `로그인 → 히스토리 → 상세`)
 
+### 3.5 dev/mock 수동 UI 점검 (브라우저)
+
+백엔드/실제 OAuth 없이 전체 화면 흐름을 손으로 점검할 때 쓴다. `VITE_MOCK=true` 일 때만 노출되는 dev 전용 진입점이며, 운영 빌드에는 렌더/번들되지 않는다.
+
+- 실행: `.env.mocktest.local`(gitignore됨, `VITE_MOCK=true`) + `npx vite --mode mocktest --port 5175`
+- **테스트 로그인**: `Login` 화면의 `🧪 테스트 로그인 (mock)` → `auth.signInAsTestUser()` 가 가짜 Supabase JWT 세션(`test@beaumi.app`, provider `google`) 활성화. 로그인 전용 화면(My/History/TRY ON) 점검용.
+- **샘플 얼굴**: `PhotoUpload` 의 `🧪 샘플 얼굴 사용 (mock)` → 번들 샘플(`src/assets/dev-sample-face.jpg`, 골든셋 얼굴 1장)을 업로드한 것처럼 세팅 + 동의 자동 체크. 파일 picker 없이 분석 플로우 진입용.
+- 점검 경로: 로그인 → 업로드(샘플) → 퍼스널컬러 → 분석 결과(CTA 위계) → 카드 → 상세(합성 전/후 CTA) → 공유(before/after).
+
 ### 4. E2E Web
 
 대상:

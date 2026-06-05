@@ -24,7 +24,7 @@ const GATE_COPY = {
   },
 };
 
-export default function Login({ onNext, onOAuth, onGuest, onBack, mode, reason = 'history' }) {
+export default function Login({ onNext, onOAuth, onGuest, onTestLogin, onBack, mode, reason = 'history' }) {
   const isGate = mode === 'guest_gate';
   const gateCopy = GATE_COPY[reason] || GATE_COPY.history;
 
@@ -99,6 +99,15 @@ export default function Login({ onNext, onOAuth, onGuest, onBack, mode, reason =
             style={{ background: '#fff', color: '#5a5a5a', border: '1px solid #d4d4d4', padding: '13px 0', fontFamily: 'Pretendard', fontSize: 13, minHeight: 44 }}
           >
             로그인 없이 1회 체험하기
+          </button>
+        )}
+        {import.meta.env.VITE_MOCK === 'true' && (
+          // dev/mock 전용 — 운영 빌드에는 렌더되지 않는다.
+          <button
+            onClick={() => onTestLogin?.()}
+            style={{ background: '#fff', color: '#c45a3b', border: '1px dashed #c45a3b', padding: '12px 0', fontFamily: 'Pretendard', fontSize: 12.5, minHeight: 44, cursor: 'pointer' }}
+          >
+            🧪 테스트 로그인 (mock)
           </button>
         )}
       </div>

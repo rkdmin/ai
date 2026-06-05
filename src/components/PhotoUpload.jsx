@@ -39,6 +39,21 @@ export default function PhotoUpload({ onUpload, onBack }) {
     reader.onerror = () => setErrorMsg('파일을 읽을 수 없어요. 다시 시도해 주세요.');
     reader.readAsDataURL(file);
   }
+  // dev/mock 전용 — 번들된 샘플 얼굴(연예인 테스트 데이터)을 업로드한 것처럼 세팅.
+  // 동적 import 라 운영 번들/실행 경로에는 포함되지 않는다.
+  async function useSampleFace() {
+    try {
+      const { default: url } = await import('../assets/dev-sample-face.jpg');
+      const res = await fetch(url);
+      const blob = await res.blob();
+      const file = new File([blob], 'dev-sample-face.jpg', { type: blob.type || 'image/jpeg' });
+      const reader = new FileReader();
+      reader.onload = () => { setPreview({ file, dataUrl: reader.result }); setConsent(true); setErrorMsg(''); };
+      reader.readAsDataURL(file);
+    } catch {
+      setErrorMsg('샘플 이미지를 불러오지 못했어요.');
+    }
+  }
   function next() {
     if (!consent) {
       setErrorMsg('사진 분석 동의에 체크해 주세요.');
@@ -151,6 +166,16 @@ export default function PhotoUpload({ onUpload, onBack }) {
             앨범에서 선택
           </button>
         </div>
+        {import.meta.env.VITE_MOCK === 'true' && (
+          // dev/mock 전용 — 운영 빌드에는 렌더되지 않는다.
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); useSampleFace(); }}
+            style={{ marginTop: 8, width: '100%', padding: '11px 0', background: '#fff', color: '#c45a3b', border: '1px dashed #c45a3b', fontFamily: 'Pretendard', fontSize: 12, minHeight: 40, cursor: 'pointer' }}
+          >
+            🧪 샘플 얼굴 사용 (mock)
+          </button>
+        )}
 
         {/* 명시적 동의 체크 — Apple 5.1.1 / 한국 개보법 §15 정보주체 동의 표준. */}
         <label

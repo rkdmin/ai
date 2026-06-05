@@ -324,6 +324,7 @@ export default function App() {
           onNext={() => { markOnboarded(); go('home'); }}
           onOAuth={(provider) => auth.signIn(provider)}
           onGuest={() => { auth.continueAsGuest(); markOnboarded(); go('home'); }}
+          onTestLogin={() => { auth.signInAsTestUser(); markOnboarded(); go('home'); }}
           onBack={() => go('home')}
         />
       );
@@ -334,6 +335,7 @@ export default function App() {
           onNext={() => { markOnboarded(); go('home'); }}
           onOAuth={(provider) => auth.signIn(provider)}
           onGuest={() => { auth.continueAsGuest(); markOnboarded(); go('home'); }}
+          onTestLogin={() => { auth.signInAsTestUser(); markOnboarded(); go('home'); }}
           onBack={() => go('home')}
           mode="guest_gate"
           reason={guestGateReason}

@@ -6,6 +6,7 @@ import {
   signInWithOAuth,
   signOut as bridgeSignOut,
   startGuestMode,
+  startTestSession,
 } from '../utils/authBridge';
 
 const AuthContext = createContext(null);
@@ -27,6 +28,14 @@ export function AuthProvider({ children }) {
     return true;
   }, []);
 
+  // dev/mock 전용 테스트 로그인 — 가짜 세션을 즉시 활성화.
+  const signInAsTestUser = useCallback(() => {
+    const next = startTestSession();
+    setSession(next);
+    setGuest(false);
+    return true;
+  }, []);
+
   const continueAsGuest = useCallback(() => {
     startGuestMode();
     setGuest(true);
@@ -44,9 +53,10 @@ export function AuthProvider({ children }) {
     isAuthenticated: Boolean(session?.accessToken),
     isGuest: guest && !session?.accessToken,
     signIn,
+    signInAsTestUser,
     continueAsGuest,
     signOut,
-  }), [session, guest, signIn, continueAsGuest, signOut]);
+  }), [session, guest, signIn, signInAsTestUser, continueAsGuest, signOut]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
@@ -59,6 +69,7 @@ export function useAuth() {
       isAuthenticated: false,
       isGuest: false,
       signIn: () => false,
+      signInAsTestUser: () => false,
       continueAsGuest: () => {},
       signOut: () => {},
     };
