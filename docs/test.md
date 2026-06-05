@@ -80,9 +80,13 @@
 - `test/History.test.jsx`: 히스토리 로딩/만료/에러 UI + 상세 진입 + 새 분석 CTA
 - `test/HistoryDetail.test.jsx`: 저장된 카드 재오픈 시 `analysisId` 복원
 - `test/authBridge.test.js`: post-login return target 저장/1회 소비 + guest 전환 시 target 정리
+- `test/AnalysisResult.test.jsx`: 헤어=1차/메이크업=2차 CTA wiring + analysisId 유무에 따른 SAVED 배지 (Phase 4-4)
+- `test/CardDetail.test.jsx`: 합성 전/후 sticky CTA 조건 분기 (합성 보기↔결과 공유/다시 보기) (Phase 4-5)
+- `test/MakeupDetail.test.jsx`: 사진 생성 CTA 미노출(규칙 6) + 제품 블록 쿠팡 링크/검색 키워드 분기 (Phase 4-5)
+- `test/Trend.test.jsx`: 준비중 경량화 — mock 피드/search 버튼 제거 + START ANALYSIS→home (Phase 4-6)
 
 아직 비는 구간:
-- `AnalysisResult`, `CardDetail`, `MakeupDetail`, `ShareCard` CTA hierarchy 회귀 테스트
+- `ShareCard` CTA hierarchy 회귀 테스트 (Phase 4-8 예정)
 - guest gate reason 분기와 OAuth 복귀를 엮는 상위 흐름 테스트
 - Playwright E2E (`업로드 → 분석 → 카드`, `로그인 → 히스토리 → 상세`)
 
