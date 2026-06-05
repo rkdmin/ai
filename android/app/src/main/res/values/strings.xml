@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Beaumi</string>
+    <string name="title_activity_main">Beaumi</string>
+    <string name="package_name">app.beaumi.coach</string>
+    <string name="custom_url_scheme">app.beaumi.coach</string>
+</resources>

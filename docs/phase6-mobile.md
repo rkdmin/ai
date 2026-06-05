@@ -58,6 +58,21 @@ npx cap sync android
 npx cap open android
 ```
 
+### ✅ 적용 현황 (2026-06-06)
+
+초기 세팅과 Android 플랫폼 생성을 완료했다.
+
+- `@capacitor/cli`(devDep), `@capacitor/android` 설치. `@capacitor/core`(8.3.3)는 기존 플러그인 전이 의존성으로 이미 있었음.
+- 설정 파일은 `capacitor.config.ts` 대신 **`capacitor.config.json`** 사용 — 이 프로젝트는 TypeScript 툴체인이 없어 JSON 이 의존성 없이 항상 동작한다.
+  - `appId: "app.beaumi.coach"` (Play Store 패키지명 — **출시 전까지만 변경 가능**, 첫 제출 후 영구 고정)
+  - `appName: "Beaumi"`, `webDir: "dist"`
+- `npx cap add android` 로 `android/` 네이티브 프로젝트 스캐폴딩 완료. 기존 플러그인 2개(`@capacitor/app`, `@capacitor/haptics`) 자동 감지됨.
+- SDK 버전(`android/variables.gradle`): `minSdk 24`, `compile/targetSdk 36` — Play Store targetSdk 요구치 충족.
+- `android/` 는 커밋한다. 빌드 산출물(`build/`, `.gradle/`, `app/src/main/assets/public`, keystore, `local.properties`)은 `android/.gitignore` 가 제외.
+
+> ⚠️ **빌드/실행 선행 조건**: 이 작업 시점의 개발 머신에는 **JDK·Android Studio·Android SDK 가 미설치**다.
+> `npx cap add/sync` 같은 스캐폴딩은 SDK 없이 동작하지만, `npx cap open android` → signed `.aab` 빌드·실기기 실행은 **Android Studio(JDK+SDK 번들) 설치가 선행**되어야 한다. 설치 후 위 "기본 개발 루프"로 진행한다.
+
 ---
 
 ## 6-2. 필수 플러그인/브리지
@@ -167,8 +182,8 @@ Capacitor 앱
 > 위 체크는 **저장소/빌드/설정 기준으로 확인 가능한 항목**이다.
 > 실제 Android 기기와 스토어 환경에서 확인해야 하는 항목은 아래 `🙋 사용자 직접 테스트 체크리스트`에서 따로 체크한다.
 
-- [ ] Capacitor 초기 세팅 완료
-- [ ] Android 플랫폼 생성 완료
+- [x] Capacitor 초기 세팅 완료 (`capacitor.config.json` — appId `app.beaumi.coach` / appName `Beaumi` / webDir `dist`)
+- [x] Android 플랫폼 생성 완료 (`npx cap add android` — `android/` 스캐폴딩, target/compileSdk 36)
 - [ ] 카메라 업로드 동작 확인
 - [ ] 결과 카드 공유 동작 확인
 - [ ] 카카오 / 구글 로그인 동작 확인

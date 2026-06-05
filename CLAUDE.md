@@ -165,6 +165,10 @@ backend/                        # FastAPI (Phase 2 신규)
 ├── supabase_schema.sql         # Phase 3 테이블/RLS 스키마
 └── requirements.txt
 
+capacitor.config.json           # Phase 6 — Capacitor 설정 (appId app.beaumi.coach / appName Beaumi / webDir dist)
+android/                        # Phase 6 — npx cap add android 로 생성한 네이티브 Android 프로젝트
+                                #   빌드 산출물은 android/.gitignore 가 제외. signed .aab 빌드는 Android Studio 필요.
+
 tools/                          # Phase 1 로컬 평가 도구 (백엔드 이관 후에도 골든셋 회귀용으로 남김)
 ├── landmark.py                 # MediaPipe 단일/배치 추출 CLI
 ├── eval.py                     # Gemini 종량제로 골든셋 회귀 평가
