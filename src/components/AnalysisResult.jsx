@@ -1,6 +1,6 @@
 import { StatusBar } from './common/StatusBar';
 import { Icons } from './common/Icons';
-import { IndexMark, CtaTile } from './common/Layout';
+import { IndexMark } from './common/Layout';
 import { FacePlaceholder } from './common/Placeholders';
 import { MOOD_KR, MOOD_PALETTES as MOOD_COLORS } from '../api/moodPalette';
 
@@ -112,14 +112,58 @@ export default function AnalysisResult({ result, photoUrl, onCardList, onShare }
           ))}
         </div>
 
-        <div
-          style={{
-            display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 0,
-            border: '1px solid #000', margin: '8px 22px 30px',
-          }}
-        >
-          <CtaTile label="HAIR" kr="헤어 추천 받기" onClick={() => onCardList?.('hair')} br />
-          <CtaTile label="MAKEUP" kr="메이크업 받기" onClick={() => onCardList?.('makeup')} dark />
+        <div style={{ margin: '8px 22px 30px' }}>
+          {result?.analysisId && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 14 }}>
+              {Icons.check(13, '#7a7a7a')}
+              <span className="label" style={{ fontSize: 9.5, color: '#7a7a7a' }}>SAVED</span>
+              <span className="ko" style={{ fontSize: 12, fontWeight: 300, color: '#7a7a7a' }}>
+                이 분석은 히스토리에 저장됐어요
+              </span>
+            </div>
+          )}
+
+          {/* 1차 CTA — 헤어부터 보게 한다 (Phase 4: CTA 위계 정리) */}
+          <button
+            onClick={() => onCardList?.('hair')}
+            className="tappable"
+            style={{
+              width: '100%', border: '1px solid #000', background: '#000', color: '#fff',
+              padding: '20px 18px', display: 'flex', alignItems: 'center',
+              justifyContent: 'space-between', textAlign: 'left', cursor: 'pointer',
+            }}
+          >
+            <span>
+              <span className="label" style={{ display: 'block', color: 'rgba(255,255,255,.5)', marginBottom: 8 }}>
+                1ST · START HERE
+              </span>
+              <span className="ko" style={{ display: 'block', fontSize: 17, fontWeight: 400, letterSpacing: '-.01em' }}>
+                헤어 추천 보기
+              </span>
+            </span>
+            {Icons.arrow(20, '#fff')}
+          </button>
+
+          {/* 2차 CTA — 메이크업 (시각 비중 낮춤) */}
+          <button
+            onClick={() => onCardList?.('makeup')}
+            className="tappable"
+            style={{
+              width: '100%', border: '1px solid #000', borderTop: 'none', background: '#fff', color: '#000',
+              padding: '16px 18px', display: 'flex', alignItems: 'center',
+              justifyContent: 'space-between', textAlign: 'left', cursor: 'pointer',
+            }}
+          >
+            <span>
+              <span className="label" style={{ display: 'block', color: '#7a7a7a', marginBottom: 6 }}>
+                MAKEUP
+              </span>
+              <span className="ko" style={{ display: 'block', fontSize: 14, fontWeight: 400, letterSpacing: '-.005em' }}>
+                메이크업 추천 보기
+              </span>
+            </span>
+            {Icons.arrow(18, '#000')}
+          </button>
         </div>
       </div>
     </div>

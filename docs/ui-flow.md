@@ -188,12 +188,14 @@ Capacitor Android 하드웨어 back 도 같은 규칙을 따른다.
 - `moodArchetype` 3개
 - `features` 최대 3개
 - 공유 버튼
+- `result.analysisId` 가 있으면(로그인 분석) CTA 위에 `SAVED · 이 분석은 히스토리에 저장됐어요` 배지
 
-CTA:
-- `헤어 추천 받기` → 캐시 없으면 `hair_loading`, 있으면 `result_tabs_hair`
-- `메이크업 받기` → 캐시 없으면 `makeup_loading`, 있으면 `result_tabs_makeup`
+CTA (1차/2차 위계 — 동등 그리드 아님):
+- 1차: `헤어 추천 보기` (full-width dark 버튼, `1ST · START HERE` 라벨) → 캐시 없으면 `hair_loading`, 있으면 `result_tabs_hair`
+- 2차: `메이크업 추천 보기` (full-width outline 버튼, 시각 비중 낮춤) → 캐시 없으면 `makeup_loading`, 있으면 `result_tabs_makeup`
 
 주의:
+- 결과 화면 핵심 결정("헤어 vs 메이크업")의 망설임을 줄이기 위해 헤어를 1차 CTA 로 고정한다.
 - 백엔드에는 `total` 카드 API 가 있지만 현재 v1.0 UI에는 진입 CTA 가 없다.
 
 ---
