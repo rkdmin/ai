@@ -751,7 +751,7 @@ Phase 4 목표
 3. `Login` / guest gate 문구와 복귀 흐름 정리 (`완료`)
 4. `AnalysisResult` CTA 구조 재정리 (`완료`)
 5. `CardDetail` / `MakeupDetail` action hierarchy 정리 (`완료`)
-6. `Trend` 숨김 또는 준비중 처리
+6. `Trend` 숨김 또는 준비중 처리 (`완료` — 준비중 경량 버전 채택)
 7. `My` mock 축소
 8. `ShareCard` 품질 개선
 
@@ -783,13 +783,13 @@ Phase 4에서 하지 않는 것
 - [x] history row 클릭 시 상세 진입이 된다
 - [x] guest gate가 진입 이유별로 다른 문구를 보여준다
 - [ ] share 카드가 실제 결과 이미지를 반영한다
-- [ ] trend 탭은 실데이터가 없으면 노출을 줄인다
+- [x] trend 탭은 실데이터가 없으면 노출을 줄인다 (mock 피드 전체 제거 → "준비 중" 경량 화면 + START ANALYSIS CTA)
 - [ ] my 페이지는 mock 과장이 줄어든다
 - [ ] 주요 empty / error / loading 상태 문구가 통일된다
 
 ### 9.1 지금 사용자가 직접 체크해야 하는 것
 
-- [ ] `Trend` 화면의 search 버튼, `My` 화면의 settings 버튼이 실제 동작이 없는 상태인지 확인하고 숨길지 연결할지 결정 (`MakeupDetail` 의 `+ 파트별 추천 제품 더보기` dead 버튼은 `완료` — onSynthesize 에 잘못 연결돼 있어 제거)
+- [ ] `My` 화면의 settings 버튼이 실제 동작이 없는 상태인지 확인하고 숨길지 연결할지 결정 (`Trend` search dead 버튼은 `완료` — 준비중 경량화 시 제거 / `MakeupDetail` 의 `+ 파트별 추천 제품 더보기` dead 버튼도 `완료` — onSynthesize 에 잘못 연결돼 있어 제거)
 - [ ] 홈 recent 카드에서 상세 진입 후 뒤로가기 시 `home` 으로 복귀하는지 실기기/브라우저에서 확인
 - [ ] 히스토리 목록에서 상세 진입 후 뒤로가기 시 `history` 로 복귀하는지 확인
 - [ ] guest 상태에서 `history`, `my`, 홈 recent 관련 진입 시 reason 맞는 gate 카피가 나오는지 확인
