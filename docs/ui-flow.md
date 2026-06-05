@@ -272,12 +272,15 @@ CTA (1차/2차 위계 — 동등 그리드 아님):
 
 ### Hair Share (`stage: 'share_card'`)
 
-- `activeCard` 가 있으면 상세 기반 공유
-- 없으면 분석 결과 공유
+- `activeCard` 가 있으면 상세 기반 공유, 없으면 분석 결과 공유
+- 합성 사진(`synthByKey[cardKey(activeCard)]`)을 `synthesizedPhoto` 로 전달
+  - 합성 사진 있음 → before/after 비교형(실제 `photoUrl`/`synthesizedPhoto` 반영)
+  - 합성 사진 없음 → 결과 카드형(REFERENCE 1장, 가짜 AFTER 없음)
+- CTA: `SAVE IMAGE`(1차) + `공유`/`링크 복사`(2차). 캡처는 html2canvas 동적 import, 미설치/실패 시 안내 토스트 폴백
 
 ### Makeup Share (`stage: 'share_card_makeup'`)
 
-- 메이크업 상세 기반 공유
+- 메이크업 상세 기반 공유 (정책상 합성 사진 없음 → 결과 카드형)
 
 ---
 

@@ -753,7 +753,7 @@ Phase 4 목표
 5. `CardDetail` / `MakeupDetail` action hierarchy 정리 (`완료`)
 6. `Trend` 숨김 또는 준비중 처리 (`완료` — 준비중 경량 버전 채택)
 7. `My` mock 축소 (`완료`)
-8. `ShareCard` 품질 개선
+8. `ShareCard` 품질 개선 (`완료`)
 
 이 순서가 좋은 이유는, 사용자의 메인 가치인 "분석 -> 저장 -> 재방문"을 먼저 닫을 수 있기 때문이다.
 
@@ -782,7 +782,7 @@ Phase 4에서 하지 않는 것
 - [x] hair / makeup 상세의 sticky CTA 목적이 분명하다 (CardDetail: 합성 전=합성 보기 1차 / 합성 후=결과 공유 1차·다시 보기 2차 조건 분기. MakeupDetail: dead 더보기 버튼 제거)
 - [x] history row 클릭 시 상세 진입이 된다
 - [x] guest gate가 진입 이유별로 다른 문구를 보여준다
-- [ ] share 카드가 실제 결과 이미지를 반영한다
+- [x] share 카드가 실제 결과 이미지를 반영한다 (합성 사진 있으면 before/after 비교형으로 실제 photoUrl·synthesizedPhoto 반영, 없으면 결과 카드형 / 저장=1차·외부 공유=2차 CTA)
 - [x] trend 탭은 실데이터가 없으면 노출을 줄인다 (mock 피드 전체 제거 → "준비 중" 경량 화면 + START ANALYSIS CTA)
 - [x] my 페이지는 mock 과장이 줄어든다 (fake stats·유저 퍼스널컬러·dead 메뉴 제거, 프로필은 세션 JWT email/provider 실데이터화)
 - [ ] 주요 empty / error / loading 상태 문구가 통일된다

@@ -8,7 +8,7 @@ import { tapHaptic, successHaptic } from '../hooks/useHaptic';
 // 공유 카드. result + card 를 props 로 받아 카드 본문에 반영.
 // SAVE IMAGE 는 html2canvas 미설치 환경에서 안전하게 폴백되도록 동적 import.
 // 공유 버튼은 navigator.share 우선, 미지원시 클립보드로 텍스트 복사.
-export default function ShareCard({ result, card, variant = 'hair', onClose }) {
+export default function ShareCard({ result, card, variant = 'hair', photoUrl = null, synthesizedPhoto = null, onClose }) {
   const isMakeup = variant === 'makeup';
   const cardRef = useRef(null);
   const [toast, setToast] = useState('');
@@ -102,7 +102,9 @@ export default function ShareCard({ result, card, variant = 'hair', onClose }) {
             <span className="serif-i" style={{ fontSize: 11, color: '#7a7a7a' }}>{isMakeup ? 'AI Makeup' : 'AI Beauty Coach'}</span>
           </div>
 
-          {isMakeup ? <MakeupBody result={result} card={card} /> : <HairBody result={result} card={card} />}
+          {isMakeup
+            ? <MakeupBody result={result} card={card} />
+            : <HairBody result={result} card={card} photoUrl={photoUrl} synthesizedPhoto={synthesizedPhoto} />}
 
           <div
             style={{
@@ -121,18 +123,20 @@ export default function ShareCard({ result, card, variant = 'hair', onClose }) {
           </div>
         </div>
 
+        {/* 1차 CTA — 저장. 외부 공유/링크는 2차로 내린다 (Phase 4-8). */}
         <button
           onClick={onSave}
+          className="tappable"
           style={{
-            background: '#fff', color: '#000', border: 'none', padding: '14px 0',
+            background: '#fff', color: '#000', border: 'none', padding: '15px 0',
             fontFamily: 'Jost', fontSize: 11, letterSpacing: '.22em', cursor: 'pointer',
           }}
         >
           SAVE IMAGE
         </button>
+        <div className="label" style={{ color: 'rgba(255,255,255,.4)', fontSize: 9, textAlign: 'center', marginTop: 2 }}>OR SHARE</div>
         <div style={{ display: 'flex', gap: 8 }}>
           <ShareButton label="공유" icon={Icons.insta} onClick={() => shareNative('결과')} />
-          <ShareButton label="이미지" onClick={onSave} />
           <ShareButton label="링크 복사" icon={Icons.link} onClick={onCopy} />
         </div>
         <div style={{ height: 14 }} />
@@ -157,6 +161,32 @@ export default function ShareCard({ result, card, variant = 'hair', onClose }) {
   );
 }
 
+// 공유 카드 내 이미지 슬롯. 실제 사진(data URL/Storage URL)이 있으면 반영, 없으면 placeholder.
+function ShareImage({ src, label, border = false, ratio = '1/1.1' }) {
+  return (
+    <div
+      style={{
+        aspectRatio: ratio, position: 'relative', background: '#f6f1ed',
+        borderRight: border ? '1px solid #e8e8e8' : 'none',
+        borderBottom: ratio === '1/1' ? '1px solid #e8e8e8' : 'none',
+        overflow: 'hidden',
+      }}
+    >
+      {src ? (
+        <img
+          src={src}
+          alt=""
+          decoding="async"
+          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+        />
+      ) : (
+        <FacePlaceholder w="100%" h="100%" tone="light" label="" />
+      )}
+      <span className="label" style={{ position: 'absolute', top: 8, left: 10, fontSize: 9, background: '#fff', padding: '1px 5px' }}>{label}</span>
+    </div>
+  );
+}
+
 function ShareButton({ label, icon, onClick }) {
   return (
     <button
@@ -173,7 +203,7 @@ function ShareButton({ label, icon, onClick }) {
   );
 }
 
-function HairBody({ result, card }) {
+function HairBody({ result, card, photoUrl, synthesizedPhoto }) {
   const label = result?.styleLabel || '봄날의 햇살형';
   const subEn = result?.faceTypeEn || 'egg shape · spring warm';
   const tags = card?.name
@@ -185,16 +215,16 @@ function HairBody({ result, card }) {
         <div className="ko" style={{ fontSize: 28, fontWeight: 300, letterSpacing: '-.015em', lineHeight: 1.15 }}>{label}</div>
         <div className="serif-i" style={{ fontSize: 13, color: '#5a5a5a', marginTop: 6 }}>{subEn}</div>
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', borderBottom: '1px solid #e8e8e8' }}>
-        <div style={{ aspectRatio: '1/1.1', borderRight: '1px solid #e8e8e8', position: 'relative' }}>
-          <FacePlaceholder w="100%" h="100%" tone="light" label="" />
-          <span className="label" style={{ position: 'absolute', top: 8, left: 10, fontSize: 9 }}>BEFORE</span>
+      {synthesizedPhoto ? (
+        // 합성 사진이 있으면 before/after 비교형 — 실제 이미지를 반영한다.
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', borderBottom: '1px solid #e8e8e8' }}>
+          <ShareImage src={photoUrl} label="BEFORE" border />
+          <ShareImage src={synthesizedPhoto} label="AFTER" />
         </div>
-        <div style={{ aspectRatio: '1/1.1', background: '#f6f1ed', position: 'relative' }}>
-          <FacePlaceholder w="100%" h="100%" tone="light" label="" />
-          <span className="label" style={{ position: 'absolute', top: 8, left: 10, fontSize: 9 }}>AFTER</span>
-        </div>
-      </div>
+      ) : (
+        // 합성 사진이 없으면 결과 카드형 — 가짜 AFTER 를 만들지 않는다.
+        <ShareImage src={photoUrl} label="REFERENCE" ratio="1/1" />
+      )}
       <div
         style={{ padding: '12px 18px', display: 'flex', gap: 6, alignItems: 'center', borderBottom: '1px solid #e8e8e8' }}
       >

@@ -504,6 +504,7 @@ export default function App() {
           result={result}
           card={activeCard}
           photoUrl={photoUrl}
+          synthesizedPhoto={activeCard ? synthByKey[cardKey(activeCard)] : null}
           onClose={() => go(activeCard ? 'card_detail' : 'result_home')}
         />
       );
