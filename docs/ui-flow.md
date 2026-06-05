@@ -220,10 +220,10 @@ CTA (1차/2차 위계 — 동등 그리드 아님):
 **컴포넌트:** `CardDetail.jsx`
 
 - 공유 버튼
-- 하단 sticky CTA
-  - `SHARE`
-  - `TRY ON`
-- `TRY ON` 은 광고 게이트 후 `synth_loading`
+- 하단 sticky CTA — 합성 상태에 따라 조건 분기:
+  - 합성 전: `SHARE`(2차 outline) + `합성 보기`(1차 dark) → 광고 게이트 후 `synth_loading`
+  - 합성 후: `다시 보기`(2차 outline, 재생성) + `결과 공유`(1차 dark) → 1차 행동이 공유로 전환
+- AI SYNTHESIS 섹션 버튼: `WATCH AD & SYNTHESIZE` / 합성 후 `WATCH AD & SHOW AGAIN`
 
 ### Ad Gate / Synthesis
 
@@ -260,8 +260,8 @@ CTA (1차/2차 위계 — 동등 그리드 아님):
 **컴포넌트:** `MakeupDetail.jsx`
 
 - 공유 버튼
-- 제품 블록과 쿠팡 제휴 고지 노출
-- 정책상 사진 합성은 지원하지 않는다
+- 제품 블록: 실제 `coupangPartnersUrl` 이 있는 제품이 하나라도 있을 때만 구매 affordance(`쿠팡에서 보기 →`)와 쿠팡 제휴 고지를 노출한다. 링크가 없으면 `검색 키워드 · {searchKeyword}` 형태로 정직하게 표시(가격·고지 없음).
+- 정책상 사진 합성은 지원하지 않는다 (이전 `+ 파트별 추천 제품 더보기` 버튼은 onSynthesize 에 잘못 연결된 dead 버튼이라 제거)
 - 하단 sticky CTA
   - `OTHER LOOKS`
   - `SHARE LOOK`

@@ -53,6 +53,7 @@ export default function MakeupDetail({ card, result, photoUrl, onBack, onShare, 
   const commentary = card?.commentary || card?.coachComment || '얼굴형과 퍼스널컬러를 기준으로 가장 자연스러운 메이크업이에요.';
   const fit = (card?.personalFit && card.personalFit.length) ? card.personalFit : FALLBACK_FIT;
   const products = (card?.recommendedProducts && card.recommendedProducts.length) ? card.recommendedProducts : PRODUCTS_MOCK;
+  const hasProductLinks = products.some((p) => p.coupangPartnersUrl); // 실제 쿠팡 링크가 있을 때만 구매 affordance / 제휴 고지 노출
   const headerLabel = `MAKEUP · nº 0${Math.max(rank, 1)}`;
   const featureTip = card?.featureTip;
   const moodLabel = card?.moodLabel;
@@ -189,63 +190,73 @@ export default function MakeupDetail({ card, result, photoUrl, onBack, onShare, 
           </div>
         </Section>
 
-        <Section n="05" en="PRODUCTS" kr="이 룩에 추천하는 제품" last>
+        <Section n="05" en="PRODUCTS" kr={hasProductLinks ? '이 룩에 추천하는 제품' : '이 룩에 어울리는 제품 키워드'} last>
           {/* 공정거래위원회 추천·보증 심사지침 + 쿠팡파트너스 운영정책에 따른 사전 고지.
-              상품 링크와 같은 화면 안에 명확히 노출되어야 한다. */}
-          <div
-            role="note"
-            aria-label="제휴 활동 고지"
-            style={{
-              padding: '10px 12px',
-              border: '1px solid #d4d4d4',
-              background: '#fafaf8',
-              marginBottom: 12,
-              fontSize: 11,
-              lineHeight: 1.55,
-              color: '#5a5a5a',
-              fontWeight: 300,
-            }}
-            className="ko"
-          >
-            <span className="label" style={{ display: 'inline-block', marginRight: 6, color: '#000' }}>AD · 제휴</span>
-            이 페이지의 제품 링크는 쿠팡파트너스 활동의 일환으로, 일정액의 수수료를 제공받습니다.
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 0, borderTop: '1px solid #000' }}>
-            {products.map((p, i) => (
-              <a
-                key={i}
-                href={p.coupangPartnersUrl || undefined}
-                target={p.coupangPartnersUrl ? '_blank' : undefined}
-                rel={p.coupangPartnersUrl ? 'noopener noreferrer' : undefined}
-                className={p.coupangPartnersUrl ? 'tappable' : undefined}
-                style={{
-                  display: 'flex', gap: 14, padding: '14px 4px', borderBottom: '1px solid #e8e8e8',
-                  alignItems: 'center', textDecoration: 'none', color: 'inherit',
-                  minHeight: 76,
-                }}
-              >
-                <div style={{ width: 60, height: 60, background: '#0e0e0e', position: 'relative', overflow: 'hidden', flexShrink: 0 }}>
-                  <div style={{ position: 'absolute', inset: 0, backgroundImage: 'repeating-linear-gradient(45deg, rgba(255,255,255,.06) 0 1px, transparent 1px 8px)' }} />
-                </div>
-                <div style={{ flex: 1 }}>
-                  <div className="label" style={{ fontSize: 9, marginBottom: 4 }}>{p.tag || p.slot?.toUpperCase()}</div>
-                  <div className="ko" style={{ fontSize: 13, fontWeight: 500, marginBottom: 3 }}>{p.name || p.label}</div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                    <span className="serif-i" style={{ fontSize: 13 }}>{p.price || ''}</span>
-                    <span className="ko" style={{ fontSize: 11, color: '#7a7a7a' }}>쿠팡 →</span>
-                  </div>
-                </div>
-              </a>
-            ))}
-            <button
-              onClick={onSynthesize}
+              실제 제휴 링크가 있을 때만 노출한다 — 링크 없이 고지만 띄우면 오히려 과장이다. */}
+          {hasProductLinks && (
+            <div
+              role="note"
+              aria-label="제휴 활동 고지"
               style={{
-                padding: '14px 0', background: '#fff', border: '1px dashed #000', borderTop: 'none',
-                fontFamily: 'Pretendard', fontSize: 12, color: '#5a5a5a', cursor: 'pointer',
+                padding: '10px 12px',
+                border: '1px solid #d4d4d4',
+                background: '#fafaf8',
+                marginBottom: 12,
+                fontSize: 11,
+                lineHeight: 1.55,
+                color: '#5a5a5a',
+                fontWeight: 300,
               }}
+              className="ko"
             >
-              + 파트별 추천 제품 더보기 (쿠팡)
-            </button>
+              <span className="label" style={{ display: 'inline-block', marginRight: 6, color: '#000' }}>AD · 제휴</span>
+              이 페이지의 제품 링크는 쿠팡파트너스 활동의 일환으로, 일정액의 수수료를 제공받습니다.
+            </div>
+          )}
+          {!hasProductLinks && (
+            <div className="ko" style={{ fontSize: 11.5, color: '#7a7a7a', fontWeight: 300, lineHeight: 1.55, marginBottom: 12 }}>
+              아직 추천 제품 링크 대신 검색에 쓸 키워드를 알려드려요. 마음에 드는 키워드로 직접 찾아보세요.
+            </div>
+          )}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 0, borderTop: '1px solid #000' }}>
+            {products.map((p, i) => {
+              const hasLink = !!p.coupangPartnersUrl;
+              const tag = p.tag || p.slot?.toUpperCase();
+              const title = p.name || p.label;
+              const keyword = p.searchKeyword || title;
+              const last = i === products.length - 1;
+              const inner = (
+                <>
+                  <div style={{ width: 60, height: 60, background: '#0e0e0e', position: 'relative', overflow: 'hidden', flexShrink: 0 }}>
+                    <div style={{ position: 'absolute', inset: 0, backgroundImage: 'repeating-linear-gradient(45deg, rgba(255,255,255,.06) 0 1px, transparent 1px 8px)' }} />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <div className="label" style={{ fontSize: 9, marginBottom: 4 }}>{tag}</div>
+                    <div className="ko" style={{ fontSize: 13, fontWeight: 500, marginBottom: 3 }}>{title}</div>
+                    {hasLink ? (
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                        <span className="serif-i" style={{ fontSize: 13 }}>{p.price || ''}</span>
+                        <span className="ko" style={{ fontSize: 11, color: '#7a7a7a' }}>쿠팡에서 보기 →</span>
+                      </div>
+                    ) : (
+                      <div className="ko" style={{ fontSize: 11, color: '#7a7a7a', fontWeight: 300 }}>검색 키워드 · {keyword}</div>
+                    )}
+                  </div>
+                </>
+              );
+              const baseStyle = {
+                display: 'flex', gap: 14, padding: '14px 4px',
+                borderBottom: last ? 'none' : '1px solid #e8e8e8',
+                alignItems: 'center', textDecoration: 'none', color: 'inherit', minHeight: 76,
+              };
+              return hasLink ? (
+                <a key={i} href={p.coupangPartnersUrl} target="_blank" rel="noopener noreferrer" className="tappable" style={baseStyle}>
+                  {inner}
+                </a>
+              ) : (
+                <div key={i} style={baseStyle}>{inner}</div>
+              );
+            })}
           </div>
         </Section>
       </div>

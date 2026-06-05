@@ -750,7 +750,7 @@ Phase 4 목표
 2. `Home` recent 실데이터 연결 (`완료`)
 3. `Login` / guest gate 문구와 복귀 흐름 정리 (`완료`)
 4. `AnalysisResult` CTA 구조 재정리 (`완료`)
-5. `CardDetail` / `MakeupDetail` action hierarchy 정리
+5. `CardDetail` / `MakeupDetail` action hierarchy 정리 (`완료`)
 6. `Trend` 숨김 또는 준비중 처리
 7. `My` mock 축소
 8. `ShareCard` 품질 개선
@@ -779,7 +779,7 @@ Phase 4에서 하지 않는 것
 - [x] 홈 recent가 실제 히스토리를 반영한다
 - [ ] dead button이 없다
 - [x] result 화면의 primary CTA가 하나로 읽힌다 (헤어=1차 dark CTA / 메이크업=2차 outline CTA + 로그인 시 SAVED 배지)
-- [ ] hair / makeup 상세의 sticky CTA 목적이 분명하다
+- [x] hair / makeup 상세의 sticky CTA 목적이 분명하다 (CardDetail: 합성 전=합성 보기 1차 / 합성 후=결과 공유 1차·다시 보기 2차 조건 분기. MakeupDetail: dead 더보기 버튼 제거)
 - [x] history row 클릭 시 상세 진입이 된다
 - [x] guest gate가 진입 이유별로 다른 문구를 보여준다
 - [ ] share 카드가 실제 결과 이미지를 반영한다
@@ -789,7 +789,7 @@ Phase 4에서 하지 않는 것
 
 ### 9.1 지금 사용자가 직접 체크해야 하는 것
 
-- [ ] `Trend` 화면의 search 버튼, `My` 화면의 settings 버튼, `MakeupDetail` 의 `+ 파트별 추천 제품 더보기` 버튼이 실제 동작이 없는 상태인지 확인하고 숨길지 연결할지 결정
+- [ ] `Trend` 화면의 search 버튼, `My` 화면의 settings 버튼이 실제 동작이 없는 상태인지 확인하고 숨길지 연결할지 결정 (`MakeupDetail` 의 `+ 파트별 추천 제품 더보기` dead 버튼은 `완료` — onSynthesize 에 잘못 연결돼 있어 제거)
 - [ ] 홈 recent 카드에서 상세 진입 후 뒤로가기 시 `home` 으로 복귀하는지 실기기/브라우저에서 확인
 - [ ] 히스토리 목록에서 상세 진입 후 뒤로가기 시 `history` 로 복귀하는지 확인
 - [ ] guest 상태에서 `history`, `my`, 홈 recent 관련 진입 시 reason 맞는 gate 카피가 나오는지 확인

@@ -181,20 +181,49 @@ export default function CardDetail({ card, result, photoUrl, synthesizedPhoto, o
           display: 'flex', gap: 8, flexShrink: 0,
         }}
       >
-        <button
-          onClick={onShare}
-          aria-label="결과 공유"
-          style={{ flex: 1, background: '#fff', color: '#000', border: '1px solid #000', padding: '12px 0', fontFamily: 'Jost', fontSize: 11, letterSpacing: '.18em', cursor: 'pointer', minHeight: 48 }}
-        >
-          SHARE
-        </button>
-        <button
-          onClick={onSynthesize}
-          aria-label="합성 결과 보기"
-          style={{ flex: 2, background: '#000', color: '#fff', border: 'none', padding: '12px 0', fontFamily: 'Jost', fontSize: 11, letterSpacing: '.22em', cursor: 'pointer', minHeight: 48, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}
-        >
-          {Icons.play(13, '#fff')} TRY ON
-        </button>
+        {synthesizedPhoto ? (
+          /* 합성 완료: 1차 행동을 "결과 공유"로, 재생성은 보조("다시 보기")로 내린다 */
+          <>
+            <button
+              onClick={onSynthesize}
+              aria-label="합성 결과 다시 보기"
+              className="tappable"
+              style={{ flex: 1, background: '#fff', color: '#000', border: '1px solid #000', padding: '12px 0', cursor: 'pointer', minHeight: 48 }}
+            >
+              <span className="ko" style={{ fontSize: 13, fontWeight: 500 }}>다시 보기</span>
+            </button>
+            <button
+              onClick={onShare}
+              aria-label="결과 공유"
+              className="tappable"
+              style={{ flex: 2, background: '#000', color: '#fff', border: 'none', padding: '12px 0', cursor: 'pointer', minHeight: 48, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}
+            >
+              {Icons.share(14, '#fff')}
+              <span className="ko" style={{ fontSize: 13, fontWeight: 500 }}>결과 공유</span>
+            </button>
+          </>
+        ) : (
+          /* 합성 전: 1차 행동은 합성, 공유는 보조 */
+          <>
+            <button
+              onClick={onShare}
+              aria-label="결과 공유"
+              className="tappable"
+              style={{ flex: 1, background: '#fff', color: '#000', border: '1px solid #000', padding: '12px 0', fontFamily: 'Jost', fontSize: 11, letterSpacing: '.18em', cursor: 'pointer', minHeight: 48 }}
+            >
+              SHARE
+            </button>
+            <button
+              onClick={onSynthesize}
+              aria-label="내 얼굴에 합성해보기"
+              className="tappable"
+              style={{ flex: 2, background: '#000', color: '#fff', border: 'none', padding: '12px 0', cursor: 'pointer', minHeight: 48, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}
+            >
+              {Icons.play(13, '#fff')}
+              <span className="ko" style={{ fontSize: 13, fontWeight: 500 }}>합성 보기</span>
+            </button>
+          </>
+        )}
       </div>
     </div>
   );
