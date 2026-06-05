@@ -84,6 +84,7 @@
 - `test/CardDetail.test.jsx`: 합성 전/후 sticky CTA 조건 분기 (합성 보기↔결과 공유/다시 보기) (Phase 4-5)
 - `test/MakeupDetail.test.jsx`: 사진 생성 CTA 미노출(규칙 6) + 제품 블록 쿠팡 링크/검색 키워드 분기 (Phase 4-5)
 - `test/Trend.test.jsx`: 준비중 경량화 — mock 피드/search 버튼 제거 + START ANALYSIS→home (Phase 4-6)
+- `test/My.test.jsx`: mock 축소 — fake stats/유저 퍼스널컬러/dead 메뉴·settings 제거 + 세션 JWT email/provider 실데이터 표시 (Phase 4-7)
 
 아직 비는 구간:
 - `ShareCard` CTA hierarchy 회귀 테스트 (Phase 4-8 예정)

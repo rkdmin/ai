@@ -1,26 +1,34 @@
-// TODO: 사용자 프로필(닉네임/연동/통계/퍼스널컬러) 을 Supabase 세션·메타데이터에서 로드.
-// 현재는 모두 mock. 분석 히스토리 메뉴만 onNav 로 연결됨.
+// 마이페이지 v1.0: "관리 허브"가 아니라 "계정 + 보관 상태" 화면이다.
+// 프로필(이메일/제공자)은 세션 JWT 에서 읽어 실데이터로 표시하고,
+// 데이터 소스가 없는 통계/퍼스널컬러 mock 은 두지 않는다 (과장 금지).
+// (Phase 4-7: mock 축소 — GET /api/me 가 생기면 분석 횟수 등 실통계를 여기에 붙인다.)
 import { useState } from 'react';
 import { StatusBar } from './common/StatusBar';
 import { BackHeader, TabBar } from './common/Layout';
 import { Icons } from './common/Icons';
 import { FacePlaceholder } from './common/Placeholders';
+import { useAuth } from '../contexts/AuthContext';
 
-const STATS = [
-  { n: '04', label: '분석', en: 'ANALYSES' },
-  { n: '12', label: '잠금해제', en: 'UNLOCKED' },
-  { n: '07', label: '공유', en: 'SHARED' },
-];
+const PROVIDER_LABELS = { google: 'Google', kakao: 'Kakao', apple: 'Apple' };
 
 const MENU = [
   { n: '01', label: '분석 히스토리', en: 'ANALYSIS HISTORY', go: 'history' },
-  { n: '02', label: '저장한 카드', en: 'SAVED CARDS' },
-  { n: '03', label: '공유한 결과', en: 'SHARED RESULTS' },
-  { n: '04', label: '알림 설정', en: 'NOTIFICATIONS' },
-  { n: '05', label: '개인정보 처리방침', en: 'PRIVACY POLICY', kind: 'link', href: '/privacy.html' },
-  { n: '06', label: '이용약관', en: 'TERMS OF SERVICE', kind: 'link', href: '/terms.html' },
-  { n: '07', label: '고객센터', en: 'SUPPORT', kind: 'link', href: 'mailto:support@beaumi.app' },
+  { n: '02', label: '개인정보 처리방침', en: 'PRIVACY POLICY', kind: 'link', href: '/privacy.html' },
+  { n: '03', label: '이용약관', en: 'TERMS OF SERVICE', kind: 'link', href: '/terms.html' },
+  { n: '04', label: '고객센터', en: 'SUPPORT', kind: 'link', href: 'mailto:support@beaumi.app' },
 ];
+
+// 세션 access token(JWT) payload 를 안전하게 파싱. 실패하면 null.
+function parseJwt(token) {
+  try {
+    const part = token.split('.')[1];
+    if (!part) return null;
+    const b64 = part.replace(/-/g, '+').replace(/_/g, '/');
+    return JSON.parse(decodeURIComponent(escape(window.atob(b64))));
+  } catch {
+    return null;
+  }
+}
 
 export default function My({ onNav, onBack, onSignOut }) {
   // Apple 5.1.1(v) + 개인정보보호법 §35.3 — 사용자가 앱 안에서 직접 계정 삭제를 시작할 수 있어야 함.
@@ -28,6 +36,12 @@ export default function My({ onNav, onBack, onSignOut }) {
   const [confirmStep, setConfirmStep] = useState(null); // null | 'intro' | 'verify'
   const [verifyText, setVerifyText] = useState('');
   const VERIFY_PHRASE = '삭제';
+
+  const { session } = useAuth();
+  const claims = session?.accessToken ? parseJwt(session.accessToken) : null;
+  const email = claims?.email || null;
+  const provider = claims?.app_metadata?.provider || null;
+  const providerLabel = PROVIDER_LABELS[provider] || provider || null;
 
   async function executeDelete() {
     // TODO: Supabase rpc('delete_account') + 백엔드 user data purge endpoint 호출.
@@ -45,11 +59,6 @@ export default function My({ onNav, onBack, onSignOut }) {
         label="ACCOUNT"
         title="MY"
         onBack={onBack}
-        right={
-          <button style={{ background: 'none', border: 'none', padding: 6, cursor: 'pointer' }} aria-label="settings">
-            {Icons.gear(16)}
-          </button>
-        }
       />
 
       <div style={{ flex: 1, overflowY: 'auto' }}>
@@ -57,41 +66,18 @@ export default function My({ onNav, onBack, onSignOut }) {
           <div style={{ width: 72, height: 72, borderRadius: '50%', overflow: 'hidden', flexShrink: 0, border: '1px solid #000' }}>
             <FacePlaceholder w="100%" h="100%" tone="light" label="" />
           </div>
-          <div style={{ flex: 1 }}>
-            <div className="serif-i" style={{ fontSize: 13, color: '#7a7a7a', marginBottom: 4 }}>since · march 2026</div>
-            <div className="ko" style={{ fontSize: 18, fontWeight: 400, letterSpacing: '-.005em' }}>beaumi_user</div>
-            <div className="ko" style={{ fontSize: 11.5, color: '#7a7a7a', fontWeight: 300, marginTop: 2 }}>kakao · 카카오 연동</div>
-          </div>
-        </div>
-
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', borderBottom: '1px solid #000' }}>
-          {STATS.map((s, i) => (
-            <div key={i} style={{ padding: '18px 12px', textAlign: 'center', borderRight: i < STATS.length - 1 ? '1px solid #000' : 'none' }}>
-              <div className="serif-i" style={{ fontSize: 24, fontWeight: 300, letterSpacing: '-.02em' }}>{s.n}</div>
-              <div className="label" style={{ marginTop: 4, fontSize: 9 }}>{s.en}</div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div className="label" style={{ color: '#7a7a7a', marginBottom: 6 }}>SIGNED IN</div>
+            <div className="ko" style={{ fontSize: 16, fontWeight: 400, letterSpacing: '-.005em', wordBreak: 'break-all' }}>
+              {email || '내 계정'}
             </div>
-          ))}
-        </div>
-
-        <div style={{ padding: '22px 22px 18px', borderBottom: '1px solid #e8e8e8' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 14 }}>
-            <div className="label">MY PERSONAL COLOR</div>
-            <span className="ko" style={{ fontSize: 11, color: '#7a7a7a', cursor: 'pointer' }}>수정 →</span>
-          </div>
-          <div style={{ display: 'flex', gap: 0, height: 36, marginBottom: 10 }}>
-            {['#f9d4a0', '#f5b888', '#e89870', '#d97050'].map((c, i) => (
-              <div key={i} style={{ flex: 1, background: c }} />
-            ))}
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-            <div className="ko" style={{ fontSize: 14, fontWeight: 500 }}>
-              봄 웜톤 <span style={{ fontWeight: 300, color: '#7a7a7a' }}>· Spring Warm</span>
+            <div className="ko" style={{ fontSize: 11.5, color: '#7a7a7a', fontWeight: 300, marginTop: 2 }}>
+              {providerLabel ? `${providerLabel} 로그인` : '로그인됨'}
             </div>
-            <div className="serif-i" style={{ fontSize: 12, color: '#7a7a7a' }}>set · 04 / 28</div>
           </div>
         </div>
 
-        <div style={{ borderTop: '1px solid #000', marginTop: 8 }}>
+        <div style={{ borderTop: '1px solid #000' }}>
           {MENU.map((m, i) => {
             const common = {
               role: 'button',
