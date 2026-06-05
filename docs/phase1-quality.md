@@ -219,8 +219,8 @@ v1.0은 **정면 1장만** 받는다. 측면(90도·45도) 기능은 v1.x 이후
 - [x] RAG 데이터 검토 완료 (1-4)
 - [x] feature-tips 매칭 확인 — 추가 확장은 v1.x
 - [x] 피드백 수집 UI — **v1.0 제외** (1-5 참조)
-- [ ] 10장 테스트에서 9장 이상 납득
-- [ ] AI eval 골든셋 회귀 통과
+- [ ] 10장 테스트에서 9장 이상 납득 (실사용자 자가평가 — 1-7/사용자 직접 테스트 항목)
+- [x] AI eval 골든셋 회귀 통과 — `eval-face`(Claude Sonnet) 9/9 hits (2026-05-31, `tools/eval-claude-results.json`). 단 Claude 기반 프롬프트 sanity check이며, 운영 정확도(Gemini)는 `tools/eval.py` 로 별도 확인 필요
 - [x] 경계형 얼굴형(다이아몬드/땅콩 등) fallback UX 정의 (faceType === '판정 어려움' 시 안내 카드 + 다시 찍기 버튼)
 - [x] 개발자용 프롬프트/응답 인스펙터 동작 (`VITE_DEV_INSPECTOR=true`)
 - [x] 운영 빌드에서 인스펙터 코드 미포함 확인 (5.09 KB 트리 셰이킹 검증)

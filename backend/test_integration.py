@@ -28,6 +28,8 @@ os.environ.setdefault("RATE_LIMIT_DISABLED", "true")
 from fastapi.testclient import TestClient  # noqa: E402
 
 from main import app  # noqa: E402
+from middleware import rate_limit  # noqa: E402
+from services import gemini_service  # noqa: E402
 
 
 # ─── Gemini stub 응답 ──────────────────────────────────────────────
@@ -257,3 +259,110 @@ def test_no_personality_reference_in_hair_cards():
     forbidden = ["st 룩", "닮은꼴", "look-alike", "님 st", "celebrityMatch"]
     for w in forbidden:
         assert w not in raw, f"forbidden token found: {w}"
+
+
+# ─── Rate Limiting (429) ───────────────────────────────────────────
+# 모듈 상단에서 RATE_LIMIT_DISABLED=true 로 우회 중이므로, 이 그룹만
+# monkeypatch 로 false 로 돌리고 카운터를 초기화한 뒤 검증한다.
+# 게스트 한도: analyze 1/일, cards 3/일(3종 합산), photo 0(require_user 가 401).
+
+
+def test_rate_limit_analyze_guest_second_call_is_429(monkeypatch):
+    monkeypatch.setenv("RATE_LIMIT_DISABLED", "false")
+    rate_limit.reset_all()
+    try:
+        body = {"frontImage": "data:image/jpeg;base64,xxx"}
+        with _patch_mediapipe(), _patch_gemini(_ANALYZE_TEXT):
+            with TestClient(app) as client:
+                r1 = client.post("/api/analyze", json=body)
+                r2 = client.post("/api/analyze", json=body)
+        assert r1.status_code == 200, r1.text
+        assert r2.status_code == 429, r2.text
+        detail = r2.json()["detail"]
+        assert isinstance(detail, str) and detail  # 사용자 안내 메시지
+    finally:
+        rate_limit.reset_all()
+
+
+def test_rate_limit_cards_guest_fourth_call_is_429(monkeypatch):
+    """cards 는 hair/makeup/total 합산 3/일 → 4회째 429 (scope 단위 카운터)."""
+    monkeypatch.setenv("RATE_LIMIT_DISABLED", "false")
+    rate_limit.reset_all()
+    try:
+        payload = {"faceType": "계란형", "personalColor": "spring_warm", "features": []}
+        with _patch_gemini(_HAIR_CARDS_TEXT):
+            with TestClient(app) as client:
+                statuses = [
+                    client.post("/api/cards/hair", json=payload).status_code
+                    for _ in range(4)
+                ]
+        assert statuses[:3] == [200, 200, 200], statuses
+        assert statuses[3] == 429, statuses
+    finally:
+        rate_limit.reset_all()
+
+
+def test_rate_limit_photo_guest_blocked_by_auth_401():
+    """photo 는 게스트 한도 0 — require_user 가 rate limit 도달 전에 401."""
+    with TestClient(app) as client:
+        r = client.post("/api/photo/generate", json={"analysisId": "a", "cardType": "hair"})
+    assert r.status_code == 401, r.text
+    assert r.json()["detail"] == "로그인이 필요합니다."
+
+
+# ─── 공통 에러 응답 포맷 회귀 ────────────────────────────────────────
+# 모든 에러 응답은 FastAPI 기본 envelope `{"detail": ...}` 를 유지한다.
+#   - HTTPException → detail 은 문자열 (사용자 안내 메시지)
+#   - 요청 검증 실패(422) → detail 은 에러 객체 리스트
+
+
+def test_error_format_http_exception_detail_is_string():
+    """photo cardType 오류 → 400, detail 문자열. (X-User-Id 폴백으로 로그인 취급)"""
+    with TestClient(app) as client:
+        r = client.post(
+            "/api/photo/generate",
+            headers={"X-User-Id": "u-test"},
+            json={"analysisId": "a", "cardType": "invalid", "card": {}},
+        )
+    assert r.status_code == 400, r.text
+    body = r.json()
+    assert list(body.keys()) == ["detail"]
+    assert isinstance(body["detail"], str) and body["detail"]
+
+
+def test_error_format_validation_detail_is_list():
+    """faceType 누락 → 422, detail 은 리스트."""
+    with TestClient(app) as client:
+        r = client.post("/api/cards/hair", json={"personalColor": "spring_warm"})
+    assert r.status_code == 422, r.text
+    body = r.json()
+    assert "detail" in body
+    assert isinstance(body["detail"], list) and body["detail"]
+
+
+def test_error_format_auth_401_detail_is_string():
+    """로그인 전용 엔드포인트에 게스트 접근 → 401, detail 문자열."""
+    with TestClient(app) as client:
+        r = client.post("/api/photo/generate", json={"analysisId": "a", "cardType": "hair"})
+    assert r.status_code == 401, r.text
+    body = r.json()
+    assert list(body.keys()) == ["detail"]
+    assert isinstance(body["detail"], str) and body["detail"]
+
+
+def test_error_format_gemini_failure_maps_to_status_and_string_detail():
+    """Gemini 실패 → 400/503 으로 매핑되고 detail 은 문자열."""
+    err = gemini_service.GeminiError("model overloaded, please retry")
+    with patch(
+        "services.gemini_service.generate_hair_cards",
+        new=AsyncMock(side_effect=err),
+    ):
+        with TestClient(app) as client:
+            r = client.post(
+                "/api/cards/hair",
+                json={"faceType": "계란형", "personalColor": None, "features": []},
+            )
+    assert r.status_code in (400, 503), r.text
+    body = r.json()
+    assert list(body.keys()) == ["detail"]
+    assert isinstance(body["detail"], str) and body["detail"]

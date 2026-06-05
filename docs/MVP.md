@@ -39,11 +39,11 @@
 ### 바이럴
 - [ ] 결과 카드 이미지 저장/공유 (`html2canvas` + `@capacitor/share`)
 - [ ] 감성 얼굴형 레이블 (`styleLabel`)
-- [ ] 연예인 스타일 매칭 텍스트
+- [ ] 무드 키워드 레이블 (`moodLabel`) — 연예인 비교는 퍼블리시티권 회피로 금지, 무드 아키타입으로 대체
 - [ ] 전후 비교 토글 (헤어/종합 추천 카드 한정)
 
 ### 운영 / 관측
-- [ ] 이벤트 트래킹 도구 도입 (GA4 또는 PostHog 단일 통일)
+- [ ] 이벤트 트래킹 도구 도입 (PostHog 단일 통일 — 웹+Capacitor 퍼널/리텐션)
 - [ ] v1.0부터 추적할 이벤트: `makeup_product_block_view`, `coupang_link_click`, `generated_photo_created`, `generated_photo_limit_hit`
 - [ ] Sentry 런타임 오류 수집 활성화
 

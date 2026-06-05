@@ -72,8 +72,8 @@
 │   ├── services/
 │   │   ├── mediapipe_service.py
 │   │   ├── gemini_service.py
-│   │   ├── supabase_service.py
-│   │   └── rate_limit_service.py
+│   │   ├── rag_service.py
+│   │   └── supabase_service.py
 │   ├── models/
 │   │   └── schemas.py
 │   └── middleware/
@@ -198,7 +198,7 @@ class HistoryDetailResponse(BaseModel):
 ### 운영 원칙
 
 - 초과 시 `429 Too Many Requests`
-- 초기 구현: 메모리 + Supabase `usage_counters`
+- 초기 구현: 메모리 + Supabase `usage_counters` (Rate limit 로직은 `middleware/rate_limit.py`에 둔다 — 별도 service 모듈 없음)
 - 확장 시 Redis 검토
 
 ---
@@ -273,8 +273,8 @@ app.add_middleware(
 
 - [x] `/api/analyze`, `/api/cards/*`, `/api/photo/generate` contract test 추가
 - [x] 게스트/로그인 권한 integration test 추가
-- [ ] Rate limiting 초과 시 `429` 응답 테스트 추가
-- [ ] 공통 에러 응답 포맷 회귀 테스트 추가
+- [x] Rate limiting 초과 시 `429` 응답 테스트 추가 (`test_integration.py` — analyze 2회째 429, cards 4회째 429, photo 게스트 401)
+- [x] 공통 에러 응답 포맷 회귀 테스트 추가 (`test_integration.py` — HTTPException→`{"detail": str}`, 검증 실패→`{"detail": [..]}`, Gemini 실패 400/503)
 - [ ] Render staging smoke test 추가
 
 ---
@@ -294,7 +294,7 @@ app.add_middleware(
 - [ ] Capacitor 앱에서 Render 백엔드 통신 확인
 - [ ] Play Store 제출 전 Railway Hobby 이전 완료
 - [ ] 개발자 도구와 앱 번들에서 API 키 노출 없음 확인
-- [ ] 핵심 API contract/integration 테스트 그린
+- [x] 핵심 API contract/integration 테스트 그린 (`test_integration.py` 13개 통과)
 
 ---
 

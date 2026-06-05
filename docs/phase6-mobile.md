@@ -105,7 +105,7 @@ Capacitor 앱
 ### 인증
 
 - 카카오: Supabase OAuth + InAppBrowser
-- 구글: Capacitor Google Auth
+- 구글: Supabase OAuth redirect bridge
 - 애플: Phase 7 (iOS 출시 시)
 
 ### 외부 링크

@@ -82,6 +82,8 @@ created_at   timestamptz DEFAULT now()
 
 ### `feedback`
 
+> 스키마만 선반영. 피드백 위젯 UI는 v1.0 제외(`phase1-quality.md` 1-5 참조)이며 v1.1 이후 도입한다.
+
 ```sql
 id          uuid PRIMARY KEY DEFAULT gen_random_uuid()
 analysis_id uuid REFERENCES analyses(id) ON DELETE CASCADE
