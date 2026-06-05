@@ -63,7 +63,7 @@ async function http(path, body) {
       body: JSON.stringify(body),
     })
   } catch (e) {
-    throw new Error(`서버에 연결할 수 없어요. 잠시 후 다시 시도해주세요. (${e.message})`)
+    throw new Error(`서버에 연결할 수 없어요. 잠시 후 다시 시도해 주세요. (${e.message})`)
   }
 
   if (!resp.ok) throw await parseError(resp)
@@ -75,7 +75,7 @@ async function httpGet(path) {
   try {
     resp = await fetch(`${API_URL}${path}`, { headers: authHeaders() })
   } catch (e) {
-    throw new Error(`서버에 연결할 수 없어요. 잠시 후 다시 시도해주세요. (${e.message})`)
+    throw new Error(`서버에 연결할 수 없어요. 잠시 후 다시 시도해 주세요. (${e.message})`)
   }
   if (!resp.ok) throw await parseError(resp)
   return resp.json()

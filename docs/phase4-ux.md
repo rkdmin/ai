@@ -647,6 +647,22 @@ Phase 4 목표
 - CTA에서 의미 없는 영문 장식만 남기는 형태
 - 비활성 이유를 설명하지 않는 disabled 버튼
 
+### 5.3.1 Empty / Error / Loading 문구 통일 기준 (2026-06-06 적용)
+
+empty / error / loading 상태는 화면마다 흩어져 톤과 구조가 달랐다. 아래 기준으로 통일했다.
+
+- 구조는 공용 컴포넌트 `src/components/common/StateNotice.jsx` 로 통일한다.
+  - 레이아웃: `(선택)아이콘 원형 → 영문 eyebrow(.label) → 한국어 본문`
+  - `variant`: `loading` / `empty` (eyebrow 회색 `#7a7a7a`) / `error` (eyebrow 경고색 `#c45a3b`)
+  - 적용 화면: `CardList` 빈 상태, `History` 로딩/실패, `HistoryDetail` 로딩/실패
+  - `Home` recent 안내, `Trend` 준비중은 다른 시각 처리(베이지 박스/풀 화면)라 컴포넌트 대상에서 제외하되 톤 규칙은 동일하게 따른다.
+- 문구 톤 규칙:
+  - 친근한 `~어요/아요` 체로 통일
+  - 보조용언은 띄어쓴다: `다시 시도해 주세요`, `올려 주세요` (기존 `시도해주세요` 등 혼용 제거)
+  - 로딩 본문은 진행 상태이므로 마침표를 붙이지 않는다: `불러오는 중이에요`
+  - 데이터 로딩 동사는 `불러오는` 으로 통일 (기존 `가져오는` 제거)
+- 회귀: `test/StateNotice.test.jsx` 가 variant별 eyebrow 색·본문 노드 렌더를 고정한다.
+
 ---
 
 ## 6. Phase 4 실행 계획
@@ -785,7 +801,7 @@ Phase 4에서 하지 않는 것
 - [x] share 카드가 실제 결과 이미지를 반영한다 (합성 사진 있으면 before/after 비교형으로 실제 photoUrl·synthesizedPhoto 반영, 없으면 결과 카드형 / 저장=1차·외부 공유=2차 CTA)
 - [x] trend 탭은 실데이터가 없으면 노출을 줄인다 (mock 피드 전체 제거 → "준비 중" 경량 화면 + START ANALYSIS CTA)
 - [x] my 페이지는 mock 과장이 줄어든다 (fake stats·유저 퍼스널컬러·dead 메뉴 제거, 프로필은 세션 JWT email/provider 실데이터화)
-- [ ] 주요 empty / error / loading 상태 문구가 통일된다
+- [x] 주요 empty / error / loading 상태 문구가 통일된다 (공용 `src/components/common/StateNotice.jsx` 로 구조 통일 + 톤 규칙 적용)
 
 ### 9.1 지금 사용자가 직접 체크해야 하는 것
 

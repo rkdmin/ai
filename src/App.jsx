@@ -219,7 +219,7 @@ export default function App() {
 
   const onAnalysisSuccess = useCallback((r) => {
     if (!r || r.faceType === '판정 어려움') {
-      setErrorInfo({ type: 'face', message: '얼굴 윤곽이 잘 보이는 정면 사진으로 다시 시도해주세요.' });
+      setErrorInfo({ type: 'face', message: '얼굴 윤곽이 잘 보이는 정면 사진으로 다시 시도해 주세요.' });
       go('error_face');
       return;
     }

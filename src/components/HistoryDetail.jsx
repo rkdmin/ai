@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { StatusBar } from './common/StatusBar';
 import { BackHeader, Section } from './common/Layout';
+import { StateNotice } from './common/StateNotice';
 import { FacePlaceholder } from './common/Placeholders';
 import { fetchHistoryDetail } from '../api/ai';
 import { mapCards } from '../api/mappers';
@@ -87,17 +88,11 @@ export default function HistoryDetail({ analysisId, onBack, onOpenCards, onNewAn
 
       <div style={{ flex: 1, overflowY: 'auto', paddingBottom: 24 }}>
         {detail === null && !error && (
-          <div style={{ padding: '44px 22px', textAlign: 'center' }}>
-            <div className="label" style={{ marginBottom: 8, color: '#7a7a7a' }}>LOADING</div>
-            <div className="ko" style={{ fontSize: 13, color: '#5a5a5a', fontWeight: 300 }}>분석 기록을 가져오는 중이에요.</div>
-          </div>
+          <StateNotice variant="loading" eyebrow="LOADING" message="분석 기록을 불러오는 중이에요" />
         )}
 
         {error && (
-          <div style={{ padding: '40px 22px' }}>
-            <div className="label" style={{ color: '#c45a3b', marginBottom: 8 }}>LOAD FAILED</div>
-            <div className="ko" style={{ fontSize: 13, color: '#5a5a5a', lineHeight: 1.6 }}>{error}</div>
-          </div>
+          <StateNotice variant="error" eyebrow="LOAD FAILED" message={error} />
         )}
 
         {analysis && (

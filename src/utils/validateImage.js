@@ -14,12 +14,12 @@ export function validateImage(base64) {
     const img = new Image()
 
     img.onerror = () =>
-      resolve({ valid: false, reason: '이미지를 읽을 수 없어요. 다른 사진을 시도해주세요.' })
+      resolve({ valid: false, reason: '이미지를 읽을 수 없어요. 다른 사진을 시도해 주세요.' })
 
     img.onload = () => {
       // 해상도 체크
       if (img.width < MIN_RESOLUTION || img.height < MIN_RESOLUTION) {
-        resolve({ valid: false, reason: '사진 해상도가 너무 낮아요. 더 선명한 사진을 올려주세요.' })
+        resolve({ valid: false, reason: '사진 해상도가 너무 낮아요. 더 선명한 사진을 올려 주세요.' })
         return
       }
 
@@ -48,11 +48,11 @@ export function validateImage(base64) {
       const stdDev = Math.sqrt(variance / pixelCount)
 
       if (avgBrightness < DARK_THRESHOLD) {
-        resolve({ valid: false, reason: '사진이 너무 어두워요. 밝은 환경에서 찍은 사진을 올려주세요.' })
+        resolve({ valid: false, reason: '사진이 너무 어두워요. 밝은 환경에서 찍은 사진을 올려 주세요.' })
       } else if (avgBrightness > BRIGHT_THRESHOLD) {
-        resolve({ valid: false, reason: '사진이 너무 밝아요. 과노출 없이 찍은 사진을 올려주세요.' })
+        resolve({ valid: false, reason: '사진이 너무 밝아요. 과노출 없이 찍은 사진을 올려 주세요.' })
       } else if (stdDev < UNIFORM_THRESHOLD) {
-        resolve({ valid: false, reason: '사진에 형체가 없어요. 얼굴이 잘 보이는 사진을 올려주세요.' })
+        resolve({ valid: false, reason: '사진에 형체가 없어요. 얼굴이 잘 보이는 사진을 올려 주세요.' })
       } else {
         resolve({ valid: true })
       }

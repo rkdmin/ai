@@ -1,6 +1,7 @@
 import { StatusBar } from './common/StatusBar';
 import { BackHeader, IndexMark } from './common/Layout';
 import { Icons } from './common/Icons';
+import { StateNotice } from './common/StateNotice';
 import { FacePlaceholder, MosaicOverlay } from './common/Placeholders';
 
 /**
@@ -43,16 +44,17 @@ export default function CardList({ type = 'hair', cards, onCard, onBack }) {
 
 function EmptyState({ type }) {
   return (
-    <div style={{ padding: '60px 20px', textAlign: 'center' }}>
-      <div style={{ width: 56, height: 56, border: '1px solid #000', borderRadius: '50%', margin: '0 auto 18px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        {Icons.warn(22)}
-      </div>
-      <div className="label" style={{ marginBottom: 8, color: '#7a7a7a' }}>NO CARDS YET</div>
-      <div className="ko" style={{ fontSize: 14, fontWeight: 300, lineHeight: 1.6, color: '#5a5a5a' }}>
-        {type === 'makeup' ? '메이크업 카드를 불러오지 못했어요.' : '헤어 카드를 불러오지 못했어요.'}<br />
-        뒤로 가서 다시 시도해 주세요.
-      </div>
-    </div>
+    <StateNotice
+      variant="empty"
+      icon
+      eyebrow="NO CARDS YET"
+      message={
+        <>
+          {type === 'makeup' ? '메이크업 카드를 불러오지 못했어요.' : '헤어 카드를 불러오지 못했어요.'}<br />
+          뒤로 가서 다시 시도해 주세요.
+        </>
+      }
+    />
   );
 }
 

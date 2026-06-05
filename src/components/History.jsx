@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { StatusBar } from './common/StatusBar';
 import { BackHeader, TabBar } from './common/Layout';
 import { Icons } from './common/Icons';
+import { StateNotice } from './common/StateNotice';
 import { FacePlaceholder } from './common/Placeholders';
 import { fetchHistory } from '../api/ai';
 
@@ -85,17 +86,16 @@ export default function History({ onNav, onBack, onOpenDetail, onNewAnalysis }) 
         </div>
 
         {remoteItems === null && (
-          <div style={{ padding: '40px 22px', textAlign: 'center' }}>
-            <div className="serif-i" style={{ fontSize: 13, color: '#7a7a7a', marginBottom: 8 }}>loading archive</div>
-            <div className="ko" style={{ fontSize: 13, color: '#5a5a5a', fontWeight: 300 }}>기록을 불러오는 중이에요</div>
-          </div>
+          <StateNotice variant="loading" eyebrow="LOADING" message="기록을 불러오는 중이에요" />
         )}
 
         {error && (
-          <div style={{ padding: '34px 22px', textAlign: 'center', borderBottom: '1px solid #e8e8e8' }}>
-            <div className="label" style={{ color: '#c45a3b', marginBottom: 8 }}>LOAD FAILED</div>
-            <div className="ko" style={{ fontSize: 13, color: '#5a5a5a', lineHeight: 1.6 }}>{error}</div>
-          </div>
+          <StateNotice
+            variant="error"
+            eyebrow="LOAD FAILED"
+            message={error}
+            style={{ borderBottom: '1px solid #e8e8e8' }}
+          />
         )}
 
         {items.map((it, i) => (
