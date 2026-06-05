@@ -73,6 +73,30 @@ npx cap open android
 > ⚠️ **빌드/실행 선행 조건**: 이 작업 시점의 개발 머신에는 **JDK·Android Studio·Android SDK 가 미설치**다.
 > `npx cap add/sync` 같은 스캐폴딩은 SDK 없이 동작하지만, `npx cap open android` → signed `.aab` 빌드·실기기 실행은 **Android Studio(JDK+SDK 번들) 설치가 선행**되어야 한다. 설치 후 위 "기본 개발 루프"로 진행한다.
 
+### 6-1.1 개발 머신 준비 (Windows)
+
+스캐폴딩 기준 버전: **Gradle 8.14.3 / AGP 8.13.0** → JDK 17+ 필요(권장 21).
+최신 Android Studio 가 **JDK 21(JBR)을 번들**하므로 별도 JDK 설치는 불필요하다.
+
+1. **Android Studio 설치** — https://developer.android.com/studio 에서 받아 기본 옵션으로 설치.
+   첫 실행 시 "Standard" 셋업을 고르면 Android SDK / Platform-Tools / Emulator / JBR 를 함께 받는다 (수 GB).
+   기본 SDK 경로: `%LOCALAPPDATA%\Android\Sdk`
+2. **(선택) 환경변수** — CLI(`gradlew`) 빌드까지 쓰려면 `ANDROID_HOME` 를 위 SDK 경로로 설정.
+   첫 실행은 Android Studio 안에서 Run 하면 되므로 필수는 아니다.
+3. **실행 대상 준비** — 둘 중 하나
+   - 실기기: USB 연결 + 개발자 옵션 → USB 디버깅 켜기 (카메라/OAuth 검증에 가장 적합)
+   - 에뮬레이터: Android Studio → Device Manager → AVD 생성
+4. **첫 빌드/실행**
+   ```bash
+   npm run build
+   npx cap sync android
+   npx cap open android   # Android Studio 열림 → Gradle sync 대기 → 기기 선택 → ▶ Run
+   ```
+   런처에 **Beaumi** 앱이 뜨면 성공.
+5. **백엔드 연결 주의** — 빌드 시점의 `VITE_API_URL` 이 앱에 박힌다.
+   폰에서는 `localhost` 가 PC 를 가리키지 않으므로, 분석 플로우까지 보려면 도달 가능한 백엔드 주소(Render/Railway 또는 터널)로 빌드해야 한다.
+   "앱이 뜨고 화면이 렌더되는지"만 보는 첫 스모크는 백엔드 없이도 가능.
+
 ---
 
 ## 6-2. 필수 플러그인/브리지
