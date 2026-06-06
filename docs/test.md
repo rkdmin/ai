@@ -86,6 +86,7 @@
 - `test/Trend.test.jsx`: 준비중 경량화 — mock 피드/search 버튼 제거 + START ANALYSIS→home (Phase 4-6)
 - `test/My.test.jsx`: mock 축소 — fake stats/유저 퍼스널컬러/dead 메뉴·settings 제거 + 세션 JWT email/provider 실데이터 표시 (Phase 4-7)
 - `test/ShareCard.test.jsx`: 합성 사진 유무에 따른 before/after 비교형 ↔ 결과 카드형 + 저장 1차/공유 2차 CTA (Phase 4-8)
+- `test/StateNotice.test.jsx`: 공통 empty/error/loading 블록 — variant별 eyebrow 색(loading 회색/error 경고색) + 본문 노드 렌더 (Phase 4 문구 통일)
 
 아직 비는 구간:
 - guest gate reason 분기와 OAuth 복귀를 엮는 상위 흐름 테스트

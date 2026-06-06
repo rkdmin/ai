@@ -14,7 +14,7 @@
 ```
 
 - `home`: 새 분석 시작 + 최근 기록 이어보기
-- `trend`: 정적 mock 피드
+- `trend`: "준비 중" 경량 화면 (mock 피드 제거, START ANALYSIS CTA, Phase 4-6)
 - `history`: 로그인 사용자만 접근 가능
 - `my`: 로그인 사용자만 접근 가능
 

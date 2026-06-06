@@ -109,22 +109,29 @@ src/                            # 프론트엔드 (웹/Capacitor 공용)
 │   ├── backend.js      # FastAPI 백엔드 HTTP 클라이언트
 │   └── mock.js         # 더미 데이터 (VITE_MOCK=true 시 사용)
 ├── components/                 # Beaumi 에디토리얼 디자인 (handoff 패키지 적용)
+│   ├── Splash.jsx         # 진입 스플래시 + 세션/딥링크 복원
+│   ├── Onboarding.jsx     # 3-step 온보딩 (로컬 플래그)
 │   ├── Home.jsx           # 홈 랜딩 + 최근 기록 1~3개 이어보기 (로그인 사용자만 fetch)
 │   ├── Login.jsx          # OAuth 로그인 + 게스트 체험 + guest gate 카피 분기
 │   ├── PhotoUpload.jsx    # STEP 01 — 정면 사진 1장 + DO/DON'T 가이드 타일
+│   ├── PersonalColor.jsx  # 퍼스널컬러 4계절 선택 / skip (분석 직전 보조 입력)
 │   ├── Loading.jsx        # STEP 02 — 4-step 분석 로딩 (FACE DETECTION → CARD CURATION)
+│   ├── ErrorScreen.jsx    # face / network 에러 화면 (type별 tip + CTA)
 │   ├── AnalysisResult.jsx # STEP 02 결과 — MOOD KEYS / FEATURES / RECOMMENDATIONS
 │   ├── CardList.jsx       # STEP 03 — 카드 4장 (rank1 무료 + 2·3 광고 잠금 + AVOID)
-│   ├── CardDetail.jsx     # STEP 04 — AI COMMENTARY / PERSONAL FIT / MOOD BOARD / AI SYNTHESIS
+│   ├── CardDetail.jsx     # STEP 04 — AI COMMENTARY / PERSONAL FIT / MOOD BOARD / AI SYNTHESIS (헤어/종합)
+│   ├── MakeupDetail.jsx   # 메이크업 카드 상세 — palette / part guide / 추천 제품 + 쿠팡 링크
 │   ├── AdGate.jsx         # 15초 광고 게이트 (잠금 카드 / 사진 합성 공통)
-│   ├── ShareCard.jsx      # 공유 카드 오버레이
+│   ├── ShareCard.jsx      # 공유 카드 오버레이 (결과 카드형 / before·after 비교형)
 │   ├── History.jsx        # 최근 5회 분석 기록 목록 + 새 분석 진입
 │   ├── HistoryDetail.jsx  # 저장된 분석/카드/생성 사진 재열람 + 카드 재오픈
-│   ├── Trend.jsx          # 트렌드 mock 피드 (v1.0 시안 유지)
-│   ├── My.jsx             # 계정/활동 mock 관리 화면 + 계정 삭제 시트
+│   ├── Trend.jsx          # 트렌드 "준비 중" 경량 화면 + START ANALYSIS CTA (Phase 4-6)
+│   ├── My.jsx             # 계정 화면 — 세션 JWT email/provider 실데이터 + 계정 삭제 시트 (Phase 4-7)
 │   └── common/
 │       ├── Icons.jsx          # 인라인 SVG 아이콘 세트
-│       ├── Layout.jsx         # BackHeader / Section / IndexMark / CtaTile
+│       ├── Layout.jsx         # BackHeader / Section / IndexMark / CtaTile / TabBar / StepDots
+│       ├── StatusBar.jsx      # 상단 상태바 목업
+│       ├── StateNotice.jsx    # 공통 empty / error / loading 상태 블록 (톤·구조 통일)
 │       └── Placeholders.jsx   # FacePlaceholder / MosaicOverlay / ProductPlaceholder (추상 — 실제 인물 사진 절대 금지)
 ├── styles/                     # 디자인 시스템 토큰 + 글로벌 유틸 (handoff 패키지)
 │   ├── tokens.css              # 컬러 / 폰트 / 간격 / letter-spacing
@@ -132,8 +139,14 @@ src/                            # 프론트엔드 (웹/Capacitor 공용)
 ├── data/
 │   ├── 촬영가이드 여자.png   # 정면 촬영 가이드 이미지
 │   └── 촬영가이드 측면.png   # (참고용, v1.0 미사용)
+├── contexts/
+│   └── AuthContext.jsx    # Supabase 세션/로그인 상태 + signInAsTestUser (mock 전용)
+├── hooks/
+│   └── useHaptic.js       # Capacitor Haptics 브리지 (웹 폴백 분기)
+├── assets/
+│   └── dev-sample-face.jpg # 🧪 mock 전용 샘플 얼굴 (VITE_MOCK 게이트, 운영 빌드 제외)
 ├── utils/
-│   ├── authBridge.js      # OAuth redirect 세션 복원 + post-login return target 저장/소비
+│   ├── authBridge.js      # OAuth redirect 세션 복원 + post-login return target 저장/소비 + startTestSession(mock)
 │   └── validateImage.js   # Canvas API 기반 이미지 유효성 검사
 └── devtools/                   # 개발 전용 — VITE_DEV_INSPECTOR=true 일 때만 활성, 운영 빌드 트리 셰이킹
     ├── inspector.js            # 호출 기록 이벤트 버스 + 인메모리 스토리지
