@@ -76,7 +76,21 @@ npx cap open android
 - `gradlew assembleDebug` (JAVA_HOME=JBR, ANDROID_HOME=SDK) → **BUILD SUCCESSFUL**, `app-debug.apk` 4.41MB 생성. 툴체인 end-to-end 동작 확인.
 - 에뮬레이터(Pixel 8 / API 37 Google Play x86_64)에 `adb install` → `am start app.beaumi.coach/.MainActivity` 로 실행.
 - **홈 화면 정상 렌더 확인**: 히어로/EXPLORE 타일/하단 탭바/게스트 RECENT 안내 카피, 한글 깨짐 없음.
+- `VITE_MOCK=true` 빌드로도 에뮬레이터 렌더 확인 (TREND 준비중 화면 등). 백엔드 없이 UI 흐름 점검 가능.
 - 아직 검증 전: 분석 플로우(백엔드 도달 필요), 카메라/공유/OAuth 네이티브 브리지.
+
+> ⚠️ **에뮬레이터 이미지 주의**: Pixel_8 에 받은 "16 KB Page Size" 이미지(API 37)는
+> 첫 페인트 때 `libmonochrome_64.so dlopen failed` (Chromium WebView 네이티브 로드 지연)로
+> **백지 화면이 잠깐 보였다가 복구**된다. 동작엔 지장 없으나 첫 로딩이 느리다.
+> 플레이키하면 일반(non-16KB) 시스템 이미지로 AVD 를 다시 만들면 해소된다.
+
+#### 검증 전략 (PC mock / 실폰 real) — 2026-06-06 확정
+
+- **PC 에뮬레이터 + `VITE_MOCK=true`**: UI 흐름·네이티브 브리지(카메라/공유) 검증. 백엔드 불필요.
+- **실제 폰 + 배포 백엔드(Render/Railway)**: 진짜 분석·OAuth·쿠팡 링크·실제 카메라 검증.
+- 주의: mock 은 실제 HTTP/CORS 경로를 타지 않는다. 그 경로는 배포 백엔드+실폰에서 처음 검증되므로,
+  배포 시 `ALLOWED_ORIGINS` 에 Capacitor WebView origin(`https://localhost`, `capacitor://localhost`)을 반드시 포함한다.
+  (현재 `.env` 에 `capacitor://localhost`·`http://localhost` 는 있으나 `https://localhost` 누락 → 배포 단계에서 추가)
 
 > ⚠️ **빌드/실행 선행 조건**: 이 작업 시점의 개발 머신에는 **JDK·Android Studio·Android SDK 가 미설치**다.
 > `npx cap add/sync` 같은 스캐폴딩은 SDK 없이 동작하지만, `npx cap open android` → signed `.aab` 빌드·실기기 실행은 **Android Studio(JDK+SDK 번들) 설치가 선행**되어야 한다. 설치 후 위 "기본 개발 루프"로 진행한다.
