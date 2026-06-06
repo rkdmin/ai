@@ -168,6 +168,18 @@ npx cap open android
   대상 앱(인스타/카톡)은 에뮬레이터에 설치 시 함께 노출됨.
 - 실제 SNS 앱으로의 전달 품질은 device smoke 단계에서 최종 확인.
 
+### 6-2.3 Sentry 에러 트래킹 적용 (2026-06-06)
+
+`@sentry/browser@10.56.0` 설치. 런타임 에러 수집을 WebView(웹/앱 공용)에서 처리.
+
+- `src/utils/sentry.js`: `initSentry()` 는 `VITE_SENTRY_DSN` 이 있을 때만 `Sentry.init` 실행,
+  없으면 건너뛴다. `captureError()` 는 init 안 됐으면 Sentry 가 자동 no-op.
+- `src/main.jsx`: 렌더 전에 `initSentry()` 호출(전역 핸들러 선설치) + `<ErrorBoundary>` 로 앱 래핑.
+- `src/components/common/ErrorBoundary.jsx`: React 렌더 크래시를 잡아 Sentry 보고 + 폴백 화면("잠시 문제가 발생했어요", RESTART).
+- **PII 차단**: `sendDefaultPii: false`, `tracesSampleRate: 0`. 얼굴 사진 dataUrl 은 fetch body 라 breadcrumb 에 안 남음.
+- 검증: DSN 없이도 앱이 정상 렌더(비활성, 무해) 확인. `test/ErrorBoundary.test.jsx` 로 폴백 회귀 고정.
+- 실제 수집 확인은 운영용 Sentry 프로젝트 DSN 을 `VITE_SENTRY_DSN` 에 넣고 빌드해야 한다 (6-8 운영 모니터링).
+
 ### 카카오 OAuth 리스크
 
 카카오 OAuth는 Phase 3 시작 전 1일 PoC를 거친다. 상세 케이스와 기준은 `phase3-auth.md` 3-1 "카카오 OAuth PoC" 섹션 참고.

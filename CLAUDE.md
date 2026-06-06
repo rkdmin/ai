@@ -74,6 +74,7 @@ VITE_API_URL=http://localhost:8000  # 백엔드 주소 (필수)
 VITE_MOCK=                          # true 면 백엔드 호출 없이 더미 데이터
 VITE_DEV_INSPECTOR=                 # true 면 🐞 인스펙터 노출 (Phase 2 부터는 거의 빈 패널)
 VITE_SUPABASE_URL=                  # Phase 3 OAuth redirect URL (https://*.supabase.co)
+VITE_SENTRY_DSN=                    # Phase 6 — 있으면 Sentry 에러 트래킹 활성, 없으면 비활성(no-op)
 ```
 
 ### 백엔드 (Python + FastAPI)
@@ -132,6 +133,7 @@ src/                            # 프론트엔드 (웹/Capacitor 공용)
 │       ├── Layout.jsx         # BackHeader / Section / IndexMark / CtaTile / TabBar / StepDots
 │       ├── StatusBar.jsx      # 상단 상태바 목업
 │       ├── StateNotice.jsx    # 공통 empty / error / loading 상태 블록 (톤·구조 통일)
+│       ├── ErrorBoundary.jsx  # 렌더 크래시 폴백 + Sentry 보고 (Phase 6)
 │       └── Placeholders.jsx   # FacePlaceholder / MosaicOverlay / ProductPlaceholder (추상 — 실제 인물 사진 절대 금지)
 ├── styles/                     # 디자인 시스템 토큰 + 글로벌 유틸 (handoff 패키지)
 │   ├── tokens.css              # 컬러 / 폰트 / 간격 / letter-spacing
@@ -147,6 +149,7 @@ src/                            # 프론트엔드 (웹/Capacitor 공용)
 │   └── dev-sample-face.jpg # 🧪 mock 전용 샘플 얼굴 (VITE_MOCK 게이트, 운영 빌드 제외)
 ├── utils/
 │   ├── authBridge.js      # OAuth redirect 세션 복원 + post-login return target 저장/소비 + startTestSession(mock)
+│   ├── sentry.js          # Sentry 에러 트래킹 init/capture (VITE_SENTRY_DSN 게이트, Phase 6)
 │   └── validateImage.js   # Canvas API 기반 이미지 유효성 검사
 └── devtools/                   # 개발 전용 — VITE_DEV_INSPECTOR=true 일 때만 활성, 운영 빌드 트리 셰이킹
     ├── inspector.js            # 호출 기록 이벤트 버스 + 인메모리 스토리지
