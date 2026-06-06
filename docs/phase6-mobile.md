@@ -139,6 +139,20 @@ npx cap open android
 - 플랫폼 의존 기능만 별도 브리지 파일로 분리
 - 브라우저에서도 동작해야 하므로 fallback 분기 필요
 
+### 6-2.1 카메라 브리지 적용 (2026-06-06)
+
+`@capacitor/camera@8.2.0` 설치 + `PhotoUpload.jsx` 에 플랫폼 분기 추가.
+
+- 네이티브(앱): `Camera.getPhoto({ resultType: DataUrl, source: Camera|Photos, width: 1280, correctOrientation: true })`
+  를 동적 import 로 호출 → dataUrl → `Blob`/`File` 로 normalize → 기존 `{ file, dataUrl }` 흐름에 합류.
+- 웹/브라우저: 기존 `<input type=file>` 폴백 유지 (`isNativePlatform()` 가 `window.Capacitor` 로 분기).
+- 취소 예외는 조용히 무시, 그 외 실패만 안내 카피 노출.
+- `width:1280` 캡으로 base64 payload 가 백엔드 10MB 정책을 넘지 않게 함.
+- **에뮬레이터 검증**: "앨범에서 선택" → 안드로이드 OS 네이티브 Photo Picker 가 열림 확인
+  (logcat `com.android.providers.media.photopicker`). 카메라 소스도 동일 브리지.
+- 권한: CAMERA 권한을 manifest 에 선언하지 않아 플러그인이 시스템 카메라 intent 를 쓰므로 런타임 권한 요청 불필요.
+- 실폰 실제 촬영(화질/전후면/회전)과 권한 흐름은 device smoke 단계에서 최종 확인.
+
 ### 카카오 OAuth 리스크
 
 카카오 OAuth는 Phase 3 시작 전 1일 PoC를 거친다. 상세 케이스와 기준은 `phase3-auth.md` 3-1 "카카오 OAuth PoC" 섹션 참고.
@@ -230,7 +244,7 @@ Capacitor 앱
 
 - [x] Capacitor 초기 세팅 완료 (`capacitor.config.json` — appId `app.beaumi.coach` / appName `Beaumi` / webDir `dist`)
 - [x] Android 플랫폼 생성 완료 (`npx cap add android` — `android/` 스캐폴딩, target/compileSdk 36)
-- [ ] 카메라 업로드 동작 확인
+- [ ] 카메라 업로드 동작 확인 — 브리지 구현 + 에뮬레이터 네이티브 피커 열림 확인 완료, 실폰 실제 촬영 검증만 남음
 - [ ] 결과 카드 공유 동작 확인
 - [ ] 카카오 / 구글 로그인 동작 확인
 - [ ] 쿠팡 외부 링크 동작 확인

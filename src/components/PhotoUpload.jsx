@@ -4,12 +4,19 @@ import { BackHeader } from './common/Layout';
 import { Icons } from './common/Icons';
 import { FacePlaceholder } from './common/Placeholders';
 
-// 정면 사진 1장 업로드. file picker → FileReader → onUpload(file, dataUrl).
-// NEXT 버튼은 파일 + 동의 체크가 모두 충족된 경우에만 진행.
+// 정면 사진 1장 업로드. → onUpload(file, dataUrl). NEXT 는 파일 + 동의 체크가 모두 충족돼야 진행.
 //
-// 카메라 / 갤러리 분리: capture="user" 는 셀카 카메라 직접 호출, 미지정은 시스템 picker(앨범).
-// 일부 안드로이드 브라우저는 capture 가 무시되고 picker 가 뜨므로 두 개 input 을 두고 명시적 선택.
+// 사진 입력 경로 (플랫폼 분기):
+//   - Capacitor 네이티브(앱): @capacitor/camera 로 OS 네이티브 카메라/갤러리 피커 호출 (Phase 6-2).
+//   - 웹/브라우저: 기존 <input type=file> 폴백 (capture="user"=카메라 / 미지정=앨범).
+// 두 경로 모두 결과를 { file, dataUrl } 로 normalize 해서 동일하게 처리한다.
 const MAX_FILE_BYTES = 10 * 1024 * 1024; // 10MB — 백엔드 정책과 동기화 필요.
+
+// Capacitor 네이티브(앱) 실행 여부. 네이티브 레이어가 window.Capacitor 를 주입한다.
+// 브라우저에서는 undefined → false (웹 폴백 사용).
+function isNativePlatform() {
+  return typeof window !== 'undefined' && window.Capacitor?.isNativePlatform?.() === true;
+}
 
 export default function PhotoUpload({ onUpload, onBack }) {
   const cameraRef = useRef(null);
@@ -18,8 +25,45 @@ export default function PhotoUpload({ onUpload, onBack }) {
   const [consent, setConsent] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
-  function pickFromCamera() { cameraRef.current?.click(); }
-  function pickFromGallery() { galleryRef.current?.click(); }
+  // 네이티브(앱) 전용 — @capacitor/camera 로 OS 카메라/갤러리 피커. 동적 import 라 웹 번들엔 포함 안 됨.
+  async function pickNative(useCamera) {
+    try {
+      const { Camera, CameraResultType, CameraSource } = await import('@capacitor/camera');
+      const photo = await Camera.getPhoto({
+        quality: 80,
+        width: 1280,                 // 얼굴 분석엔 충분 + base64 payload 과대 방지 (백엔드 10MB 정책)
+        resultType: CameraResultType.DataUrl,
+        source: useCamera ? CameraSource.Camera : CameraSource.Photos,
+        allowEditing: false,
+        correctOrientation: true,    // EXIF 회전 보정 — 분석 정확도에 도움
+      });
+      const dataUrl = photo?.dataUrl;
+      if (!dataUrl) return;
+      const blob = await (await fetch(dataUrl)).blob();
+      if (blob.size > MAX_FILE_BYTES) {
+        setErrorMsg('사진 용량은 10MB 이하만 업로드할 수 있어요.');
+        return;
+      }
+      const ext = (blob.type.split('/')[1] || 'jpg').replace('jpeg', 'jpg');
+      const file = new File([blob], `capture.${ext}`, { type: blob.type || 'image/jpeg' });
+      setErrorMsg('');
+      setPreview({ file, dataUrl });
+    } catch (e) {
+      // 사용자가 취소하면 예외가 나므로 조용히 무시한다.
+      const msg = String(e?.message || '');
+      if (/cancel/i.test(msg) || /No image/i.test(msg)) return;
+      setErrorMsg('카메라를 열 수 없어요. 권한을 확인하고 다시 시도해 주세요.');
+    }
+  }
+
+  function pickFromCamera() {
+    if (isNativePlatform()) { pickNative(true); return; }
+    cameraRef.current?.click();
+  }
+  function pickFromGallery() {
+    if (isNativePlatform()) { pickNative(false); return; }
+    galleryRef.current?.click();
+  }
 
   function onFileChange(e) {
     const file = e.target.files?.[0];

@@ -113,7 +113,7 @@ src/                            # 프론트엔드 (웹/Capacitor 공용)
 │   ├── Onboarding.jsx     # 3-step 온보딩 (로컬 플래그)
 │   ├── Home.jsx           # 홈 랜딩 + 최근 기록 1~3개 이어보기 (로그인 사용자만 fetch)
 │   ├── Login.jsx          # OAuth 로그인 + 게스트 체험 + guest gate 카피 분기
-│   ├── PhotoUpload.jsx    # STEP 01 — 정면 사진 1장 + DO/DON'T 가이드 타일
+│   ├── PhotoUpload.jsx    # STEP 01 — 정면 사진 1장 + DO/DON'T 가이드 타일 (네이티브 카메라/갤러리 브리지 + 웹 폴백)
 │   ├── PersonalColor.jsx  # 퍼스널컬러 4계절 선택 / skip (분석 직전 보조 입력)
 │   ├── Loading.jsx        # STEP 02 — 4-step 분석 로딩 (FACE DETECTION → CARD CURATION)
 │   ├── ErrorScreen.jsx    # face / network 에러 화면 (type별 tip + CTA)
