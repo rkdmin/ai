@@ -149,6 +149,8 @@ src/                            # 프론트엔드 (웹/Capacitor 공용)
 │   └── dev-sample-face.jpg # 🧪 mock 전용 샘플 얼굴 (VITE_MOCK 게이트, 운영 빌드 제외)
 ├── utils/
 │   ├── authBridge.js      # OAuth redirect 세션 복원 + post-login return target 저장/소비 + startTestSession(mock)
+│   ├── external.js        # 외부 URL(쿠팡 등) 시스템 브라우저로 열기 (네이티브 @capacitor/browser + 웹 폴백, Phase 6)
+│   ├── platform.js        # isNativePlatform — Capacitor 네이티브(앱) 실행 여부 판별 (Phase 6)
 │   ├── sentry.js          # Sentry 에러 트래킹 init/capture (VITE_SENTRY_DSN 게이트, Phase 6)
 │   └── validateImage.js   # Canvas API 기반 이미지 유효성 검사
 └── devtools/                   # 개발 전용 — VITE_DEV_INSPECTOR=true 일 때만 활성, 운영 빌드 트리 셰이킹

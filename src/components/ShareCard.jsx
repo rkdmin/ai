@@ -4,6 +4,7 @@ import { BackHeader } from './common/Layout';
 import { Icons } from './common/Icons';
 import { FacePlaceholder } from './common/Placeholders';
 import { tapHaptic, successHaptic } from '../hooks/useHaptic';
+import { isNativePlatform } from '../utils/platform';
 
 // 공유 카드. result + card 를 props 로 받아 카드 본문에 반영.
 // 캡처(html2canvas)는 동적 import 라 미설치/실패 시 안전하게 폴백.
@@ -12,8 +13,6 @@ import { tapHaptic, successHaptic } from '../hooks/useHaptic';
 //   - Capacitor 네이티브(앱): 캡처 PNG 를 @capacitor/filesystem 으로 기기에 기록 →
 //     공유는 @capacitor/share 네이티브 시트(files:[uri]), 저장은 Documents 에 기록.
 //   - 웹/브라우저: navigator.share → 클립보드 폴백 / 저장은 <a download>.
-const isNativePlatform = () =>
-  typeof window !== 'undefined' && window.Capacitor?.isNativePlatform?.() === true;
 
 // Blob → base64 (data: 프리픽스 제거) — Filesystem.writeFile 입력용.
 function blobToBase64(blob) {

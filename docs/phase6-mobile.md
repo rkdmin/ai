@@ -180,6 +180,16 @@ npx cap open android
 - 검증: DSN 없이도 앱이 정상 렌더(비활성, 무해) 확인. `test/ErrorBoundary.test.jsx` 로 폴백 회귀 고정.
 - 실제 수집 확인은 운영용 Sentry 프로젝트 DSN 을 `VITE_SENTRY_DSN` 에 넣고 빌드해야 한다 (6-8 운영 모니터링).
 
+### 6-2.4 쿠팡 외부 링크 브리지 적용 (2026-06-06)
+
+`@capacitor/browser@8.0.3` 설치. 메이크업 카드의 쿠팡파트너스 링크를 시스템 브라우저로 연다 (6-4).
+
+- `src/utils/platform.js`: 공용 `isNativePlatform()` (PhotoUpload·ShareCard 의 인라인 중복 제거 후 이리로 통합).
+- `src/utils/external.js`: `openExternalUrl(url)` — 네이티브면 `Browser.open({ url })`(시스템 브라우저/커스텀 탭), 웹이면 `window.open` 새 탭.
+- `MakeupDetail.jsx`: 쿠팡 `<a target="_blank">` 에 onClick 추가 — 네이티브면 `preventDefault` 후 `openExternalUrl`(인앱 WebView 안에서 안 열리게), 웹은 기존 `<a>` 동작 유지.
+- **검증 한계**: mock 데이터엔 `coupangPartnersUrl` 이 없어(검색 키워드만 표시) 에뮬레이터 mock 으로는 실제 링크 탭을 못 띄운다.
+  빌드/렌더/플러그인 등록은 확인. 실제 시스템 브라우저 오픈은 쿠팡 URL 이 주입되는 실 backend/실폰에서 확인.
+
 ### 카카오 OAuth 리스크
 
 카카오 OAuth는 Phase 3 시작 전 1일 PoC를 거친다. 상세 케이스와 기준은 `phase3-auth.md` 3-1 "카카오 OAuth PoC" 섹션 참고.
@@ -274,7 +284,7 @@ Capacitor 앱
 - [ ] 카메라 업로드 동작 확인 — 브리지 구현 + 에뮬레이터 네이티브 피커 열림 확인 완료, 실폰 실제 촬영 검증만 남음
 - [ ] 결과 카드 공유 동작 확인 — 브리지 구현 + 에뮬레이터 네이티브 공유 시트(이미지 첨부) 열림 확인 완료, 실폰 SNS 전달만 남음
 - [ ] 카카오 / 구글 로그인 동작 확인
-- [ ] 쿠팡 외부 링크 동작 확인
+- [ ] 쿠팡 외부 링크 동작 확인 — 브리지 구현(@capacitor/browser) 완료, mock 에 URL 없어 실 backend/실폰에서 시스템 브라우저 오픈 확인 필요
 - [ ] Render 백엔드로 실기기 QA 완료
 - [ ] Railway Hobby 이전 완료
 - [ ] Android Studio signed `.aab` 생성 성공

@@ -3,6 +3,7 @@ import { StatusBar } from './common/StatusBar';
 import { BackHeader } from './common/Layout';
 import { Icons } from './common/Icons';
 import { FacePlaceholder } from './common/Placeholders';
+import { isNativePlatform } from '../utils/platform';
 
 // 정면 사진 1장 업로드. → onUpload(file, dataUrl). NEXT 는 파일 + 동의 체크가 모두 충족돼야 진행.
 //
@@ -11,12 +12,6 @@ import { FacePlaceholder } from './common/Placeholders';
 //   - 웹/브라우저: 기존 <input type=file> 폴백 (capture="user"=카메라 / 미지정=앨범).
 // 두 경로 모두 결과를 { file, dataUrl } 로 normalize 해서 동일하게 처리한다.
 const MAX_FILE_BYTES = 10 * 1024 * 1024; // 10MB — 백엔드 정책과 동기화 필요.
-
-// Capacitor 네이티브(앱) 실행 여부. 네이티브 레이어가 window.Capacitor 를 주입한다.
-// 브라우저에서는 undefined → false (웹 폴백 사용).
-function isNativePlatform() {
-  return typeof window !== 'undefined' && window.Capacitor?.isNativePlatform?.() === true;
-}
 
 export default function PhotoUpload({ onUpload, onBack }) {
   const cameraRef = useRef(null);

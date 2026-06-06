@@ -2,6 +2,8 @@ import { StatusBar } from './common/StatusBar';
 import { Icons } from './common/Icons';
 import { BackHeader, Section } from './common/Layout';
 import { FacePlaceholder } from './common/Placeholders';
+import { isNativePlatform } from '../utils/platform';
+import { openExternalUrl } from '../utils/external';
 
 // 메이크업 카드 상세. card.name / card.rank / card.sub 만 props 로 받고,
 // 컬러 팔레트·파트별 가이드·추천 제품은 mock — Gemini 응답 + 쿠팡파트너스 매핑
@@ -250,7 +252,22 @@ export default function MakeupDetail({ card, result, photoUrl, onBack, onShare, 
                 alignItems: 'center', textDecoration: 'none', color: 'inherit', minHeight: 76,
               };
               return hasLink ? (
-                <a key={i} href={p.coupangPartnersUrl} target="_blank" rel="noopener noreferrer" className="tappable" style={baseStyle}>
+                <a
+                  key={i}
+                  href={p.coupangPartnersUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="tappable"
+                  style={baseStyle}
+                  onClick={(e) => {
+                    // 네이티브(앱): 인앱 WebView 가 아니라 시스템 브라우저에서 연다.
+                    if (isNativePlatform()) {
+                      e.preventDefault();
+                      openExternalUrl(p.coupangPartnersUrl);
+                    }
+                    // 웹: 기본 <a target="_blank"> 동작.
+                  }}
+                >
                   {inner}
                 </a>
               ) : (
