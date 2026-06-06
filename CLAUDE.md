@@ -122,7 +122,7 @@ src/                            # 프론트엔드 (웹/Capacitor 공용)
 │   ├── CardDetail.jsx     # STEP 04 — AI COMMENTARY / PERSONAL FIT / MOOD BOARD / AI SYNTHESIS (헤어/종합)
 │   ├── MakeupDetail.jsx   # 메이크업 카드 상세 — palette / part guide / 추천 제품 + 쿠팡 링크
 │   ├── AdGate.jsx         # 15초 광고 게이트 (잠금 카드 / 사진 합성 공통)
-│   ├── ShareCard.jsx      # 공유 카드 오버레이 (결과 카드형 / before·after 비교형)
+│   ├── ShareCard.jsx      # 공유 카드 오버레이 (결과 카드형 / before·after 비교형, 네이티브 공유·저장 브리지 + 웹 폴백)
 │   ├── History.jsx        # 최근 5회 분석 기록 목록 + 새 분석 진입
 │   ├── HistoryDetail.jsx  # 저장된 분석/카드/생성 사진 재열람 + 카드 재오픈
 │   ├── Trend.jsx          # 트렌드 "준비 중" 경량 화면 + START ANALYSIS CTA (Phase 4-6)

@@ -153,6 +153,21 @@ npx cap open android
 - 권한: CAMERA 권한을 manifest 에 선언하지 않아 플러그인이 시스템 카메라 intent 를 쓰므로 런타임 권한 요청 불필요.
 - 실폰 실제 촬영(화질/전후면/회전)과 권한 흐름은 device smoke 단계에서 최종 확인.
 
+### 6-2.2 공유/저장 브리지 적용 (2026-06-06)
+
+`@capacitor/share@8.0.1` + `@capacitor/filesystem@8.1.2` 설치. `ShareCard.jsx` 에 플랫폼 분기.
+
+- 캡처는 기존 `html2canvas` 로 결과 카드 → PNG blob (변경 없음).
+- 네이티브(앱) 공유: blob → base64 → `Filesystem.writeFile(Directory.Cache)` → `Filesystem.getUri` →
+  `Share.share({ title, text, files: [uri] })` 로 OS 네이티브 공유 시트.
+- 네이티브(앱) 저장: `<a download>` 는 WebView 에서 동작 안 하므로 `Directory.Documents` 에 기록 + 안내 토스트.
+- 웹/브라우저: 기존 `navigator.share` → 클립보드 폴백 / 저장은 `<a download>` 유지.
+- FileProvider: `android/app/src/main/res/xml/file_paths.xml` 의 `cache-path` 가 캐시 파일 공유를 덮음 (SecurityException 없음 확인).
+- **에뮬레이터 검증**: "공유" → `com.android.intentresolver.ChooserActivity`(네이티브 공유 시트)가
+  결과 카드 이미지 썸네일 + "봄날의 햇살형 — ROMANTIC · CLEAN · SOFT" 텍스트와 함께 열림 (logcat ACTION_SEND chooser).
+  대상 앱(인스타/카톡)은 에뮬레이터에 설치 시 함께 노출됨.
+- 실제 SNS 앱으로의 전달 품질은 device smoke 단계에서 최종 확인.
+
 ### 카카오 OAuth 리스크
 
 카카오 OAuth는 Phase 3 시작 전 1일 PoC를 거친다. 상세 케이스와 기준은 `phase3-auth.md` 3-1 "카카오 OAuth PoC" 섹션 참고.
@@ -245,7 +260,7 @@ Capacitor 앱
 - [x] Capacitor 초기 세팅 완료 (`capacitor.config.json` — appId `app.beaumi.coach` / appName `Beaumi` / webDir `dist`)
 - [x] Android 플랫폼 생성 완료 (`npx cap add android` — `android/` 스캐폴딩, target/compileSdk 36)
 - [ ] 카메라 업로드 동작 확인 — 브리지 구현 + 에뮬레이터 네이티브 피커 열림 확인 완료, 실폰 실제 촬영 검증만 남음
-- [ ] 결과 카드 공유 동작 확인
+- [ ] 결과 카드 공유 동작 확인 — 브리지 구현 + 에뮬레이터 네이티브 공유 시트(이미지 첨부) 열림 확인 완료, 실폰 SNS 전달만 남음
 - [ ] 카카오 / 구글 로그인 동작 확인
 - [ ] 쿠팡 외부 링크 동작 확인
 - [ ] Render 백엔드로 실기기 QA 완료

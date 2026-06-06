@@ -6,8 +6,25 @@ import { FacePlaceholder } from './common/Placeholders';
 import { tapHaptic, successHaptic } from '../hooks/useHaptic';
 
 // 공유 카드. result + card 를 props 로 받아 카드 본문에 반영.
-// SAVE IMAGE 는 html2canvas 미설치 환경에서 안전하게 폴백되도록 동적 import.
-// 공유 버튼은 navigator.share 우선, 미지원시 클립보드로 텍스트 복사.
+// 캡처(html2canvas)는 동적 import 라 미설치/실패 시 안전하게 폴백.
+//
+// 공유/저장 경로 (플랫폼 분기, Phase 6-2):
+//   - Capacitor 네이티브(앱): 캡처 PNG 를 @capacitor/filesystem 으로 기기에 기록 →
+//     공유는 @capacitor/share 네이티브 시트(files:[uri]), 저장은 Documents 에 기록.
+//   - 웹/브라우저: navigator.share → 클립보드 폴백 / 저장은 <a download>.
+const isNativePlatform = () =>
+  typeof window !== 'undefined' && window.Capacitor?.isNativePlatform?.() === true;
+
+// Blob → base64 (data: 프리픽스 제거) — Filesystem.writeFile 입력용.
+function blobToBase64(blob) {
+  return new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.onloadend = () => resolve(String(r.result).split(',')[1] || '');
+    r.onerror = reject;
+    r.readAsDataURL(blob);
+  });
+}
+
 export default function ShareCard({ result, card, variant = 'hair', photoUrl = null, synthesizedPhoto = null, onClose }) {
   const isMakeup = variant === 'makeup';
   const cardRef = useRef(null);
@@ -31,6 +48,17 @@ export default function ShareCard({ result, card, variant = 'hair', photoUrl = n
     }
   }
 
+  // 네이티브: 캡처 blob 을 기기에 기록하고 file:// URI 반환. dir='cache'(공유 임시) | 'documents'(저장).
+  async function writeImageFile(blob, dir) {
+    const { Filesystem, Directory } = await import('@capacitor/filesystem');
+    const base64 = await blobToBase64(blob);
+    const path = `beaumi-${variant}-${Date.now()}.png`;
+    const directory = dir === 'documents' ? Directory.Documents : Directory.Cache;
+    await Filesystem.writeFile({ path, data: base64, directory });
+    const { uri } = await Filesystem.getUri({ path, directory });
+    return uri;
+  }
+
   async function onSave() {
     tapHaptic('medium');
     const blob = await captureCard();
@@ -38,6 +66,18 @@ export default function ShareCard({ result, card, variant = 'hair', photoUrl = n
       showToast('브라우저에서 길게 눌러 이미지를 저장해 주세요.');
       return;
     }
+    // 네이티브(앱): 기기 Documents 에 기록 (<a download> 는 WebView 에서 동작하지 않음).
+    if (isNativePlatform()) {
+      try {
+        await writeImageFile(blob, 'documents');
+        successHaptic();
+        showToast('기기에 이미지를 저장했어요.');
+      } catch {
+        showToast('이미지를 저장하지 못했어요.');
+      }
+      return;
+    }
+    // 웹: 다운로드.
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -54,8 +94,28 @@ export default function ShareCard({ result, card, variant = 'hair', photoUrl = n
     tapHaptic('light');
     const title = isMakeup ? 'Beaumi · 메이크업 결과' : 'Beaumi · 헤어 결과';
     const text = `${result?.styleLabel || (card?.name ?? 'My Beaumi result')} — ${(result?.moodArchetype || []).join(' · ')}`;
+    const blob = await captureCard();
+
+    // 네이티브(앱): 캡처 PNG 를 기기에 기록 → OS 네이티브 공유 시트(files:[uri]).
+    if (isNativePlatform()) {
+      try {
+        const { Share } = await import('@capacitor/share');
+        if (blob) {
+          const uri = await writeImageFile(blob, 'cache');
+          await Share.share({ title, text, files: [uri] });
+        } else {
+          await Share.share({ title, text, url: 'https://beaumi.app' });
+        }
+        return;
+      } catch (e) {
+        // 사용자가 시트를 닫으면 예외 → 조용히 무시. 그 외엔 아래 폴백 시도.
+        const msg = String(e?.message || '');
+        if (/cancel/i.test(msg) || /abort/i.test(msg)) return;
+      }
+    }
+
+    // 웹: Web Share API → 클립보드 텍스트 복사 폴백.
     try {
-      const blob = await captureCard();
       if (blob && navigator.canShare && navigator.canShare({ files: [new File([blob], 'beaumi.png', { type: 'image/png' })] })) {
         await navigator.share({
           title, text,
@@ -68,10 +128,8 @@ export default function ShareCard({ result, card, variant = 'hair', photoUrl = n
         return;
       }
     } catch (e) {
-      // 사용자가 share sheet 를 닫은 경우는 조용히 무시.
       if (e?.name === 'AbortError') return;
     }
-    // 폴백: 클립보드에 텍스트 복사.
     try {
       await navigator.clipboard.writeText(`${title}\n${text}`);
       showToast(`${label || '내용'}을 클립보드에 복사했어요.`);
