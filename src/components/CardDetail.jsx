@@ -17,6 +17,7 @@ const FALLBACK_MOOD = [
 ];
 
 export default function CardDetail({ card, result, photoUrl, synthesizedPhoto, onBack, onShare, onSynthesize }) {
+  void result; // 카드 자체에 필요한 값이 다 담겨 있어 미사용 — MakeupDetail 과 props 모양 유지.
   const name = card?.name || '추천 헤어';
   const rank = card?.rank ?? 1;
   const commentary = card?.commentary || card?.coachComment || '얼굴형 분석 결과를 기준으로 가장 자연스러운 헤어 스타일이에요.';

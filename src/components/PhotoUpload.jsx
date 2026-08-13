@@ -80,7 +80,8 @@ export default function PhotoUpload({ onUpload, onBack }) {
   }
   // dev/mock 전용 — 번들된 샘플 얼굴(연예인 테스트 데이터)을 업로드한 것처럼 세팅.
   // 동적 import 라 운영 번들/실행 경로에는 포함되지 않는다.
-  async function useSampleFace() {
+  // 이름에 `use` 접두사를 쓰지 않는다 — React 훅이 아니라 평범한 핸들러다.
+  async function loadSampleFace() {
     try {
       const { default: url } = await import('../assets/dev-sample-face.jpg');
       const res = await fetch(url);
@@ -209,7 +210,7 @@ export default function PhotoUpload({ onUpload, onBack }) {
           // dev/mock 전용 — 운영 빌드에는 렌더되지 않는다.
           <button
             type="button"
-            onClick={(e) => { e.stopPropagation(); useSampleFace(); }}
+            onClick={(e) => { e.stopPropagation(); loadSampleFace(); }}
             style={{ marginTop: 8, width: '100%', padding: '11px 0', background: '#fff', color: '#c45a3b', border: '1px dashed #c45a3b', fontFamily: 'Pretendard', fontSize: 12, minHeight: 40, cursor: 'pointer' }}
           >
             🧪 샘플 얼굴 사용 (mock)
