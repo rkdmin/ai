@@ -25,6 +25,7 @@ import { analyzeFace, generateHairCards, generateMakeupCards, generateStyledPhot
 import { mapCards } from './api/mappers';
 import { useAuth } from './contexts/AuthContext';
 import { consumePostAuthTarget, setPostAuthTarget } from './utils/authBridge';
+import { resolveParentStage } from './utils/navigation';
 
 const KO_TO_KEY = {
   '봄 웜톤': 'spring_warm',
@@ -70,31 +71,6 @@ function cardKey(card) {
   return `${card.cardType || 'hair'}-${card.rank ?? 0}-${card.name || card.hair || card.mood || ''}`;
 }
 
-const PARENT_STAGE = {
-  onboarding2: 'onboarding1',
-  onboarding3: 'onboarding2',
-  login: 'home',
-  guest_gate: 'home',
-  upload: 'home',
-  personal_color: 'upload',
-  loading: 'home',
-  error_face: 'home',
-  error_network: 'home',
-  result_home: 'home',
-  hair_loading: 'result_home',
-  result_tabs_hair: 'result_home',
-  card_detail: 'result_tabs_hair',
-  ad_gate: 'result_tabs_hair',
-  share_card: 'result_home',
-  makeup_loading: 'result_home',
-  result_tabs_makeup: 'result_home',
-  makeup_detail: 'result_tabs_makeup',
-  share_card_makeup: 'makeup_detail',
-  trend: 'home',
-  history: 'home',
-  history_detail: 'history',
-  my: 'home',
-};
 
 export default function App() {
   const auth = useAuth();
@@ -115,10 +91,12 @@ export default function App() {
   const stageRef = useRef(stage);
   const adReturnRef = useRef(adReturn);
   const historySelectionRef = useRef(historySelection);
+  const activeCardRef = useRef(activeCard);
 
   useEffect(() => { stageRef.current = stage; }, [stage]);
   useEffect(() => { adReturnRef.current = adReturn; }, [adReturn]);
   useEffect(() => { historySelectionRef.current = historySelection; }, [historySelection]);
+  useEffect(() => { activeCardRef.current = activeCard; }, [activeCard]);
 
   const go = useCallback((next) => {
     setStage(next);
@@ -162,11 +140,11 @@ export default function App() {
 
     const onPop = () => {
       const cur = stageRef.current;
-      const parent = cur === 'history_detail'
-        ? (historySelectionRef.current.back || 'history')
-        : cur === 'ad_gate'
-          ? (adReturnRef.current.back || PARENT_STAGE[cur])
-          : PARENT_STAGE[cur];
+      const parent = resolveParentStage(cur, {
+        historySelection: historySelectionRef.current,
+        adReturn: adReturnRef.current,
+        activeCard: activeCardRef.current,
+      });
       if (!parent) {
         try { window.history.pushState({ stage: cur }, '', ''); } catch { /* noop */ }
         return;
