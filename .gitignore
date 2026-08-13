@@ -18,12 +18,22 @@ backend/**/__pycache__/
 *.pyc
 
 # Claude Code 로컬 설정 (커밋 금지)
-# 단, .claude/skills/ 의 스킬 정의는 팀 전체에 공유하므로 커밋
+# 단, 아래 예외는 모든 작업자·에이전트가 공유해야 하므로 커밋한다.
+#   skills/   — 반복 절차 정의
+#   rules/    — 경로 스코프 규칙 (paths: frontmatter 로 조건부 로드)
+#   hooks/    — 강제 규칙 스크립트 (인코딩·금지어 검사)
+#   settings.json — hooks/permissions 공유 설정 (settings.local.json 은 계속 제외)
 .claude/*
 !.claude/skills/
+!.claude/rules/
+!.claude/hooks/
+!.claude/settings.json
 
 # 임시 백업 (handoff 직전 스냅샷)
 src/_backup_pre_handoff_*/
+
+# 개인 지침 (공유 금지 — 팀 공용 규칙은 CLAUDE.md / .claude/rules/ 에)
+CLAUDE.local.md
 
 # 환경변수 (API 키 포함 — 절대 커밋 금지)
 .env
