@@ -1,3 +1,7 @@
+---
+last-verified: "2026-08-12"
+---
+
 # UI Flow
 
 > **기능이 변경될 때마다 이 파일을 반드시 함께 수정하세요.**
@@ -64,14 +68,25 @@ result_home
 - `result_tabs_hair` / `result_tabs_makeup` → `result_home`
 - `card_detail` → `result_tabs_hair`
 - `makeup_detail` → `result_tabs_makeup`
+- `ad_gate` → `adReturn.back` (없으면 `result_tabs_hair`)
 - `share_card` → `activeCard` 가 있으면 `card_detail`, 없으면 `result_home`
 - `share_card_makeup` → `makeup_detail`
 - `history` / `my` / `trend` → `home`
-- `history_detail` → 진입 출처 기준 복귀
+- `history_detail` → 진입 출처 기준 복귀 (`historySelection.back`)
   - `home recent` 에서 열었으면 `home`
   - `history list` 에서 열었으면 `history`
+- `synth_loading` → **뒤로가기 없음** (`PARENT_STAGE` 에 없어 back 이 무시된다. 합성 중 이탈 방지)
 
-Capacitor Android 하드웨어 back 도 같은 규칙을 따른다.
+구현은 `src/utils/navigation.js` 에 있다. 고정 복귀 지점은 `PARENT_STAGE` 테이블,
+진입 맥락에 따라 달라지는 세 화면(`history_detail` · `ad_gate` · `share_card`)은
+`resolveParentStage(stage, ctx)` 가 상태를 보고 결정한다.
+Capacitor Android 하드웨어 back 은 브라우저 `popstate` 와 같은 `onPop` 을 탄다.
+
+**화면 안의 닫기 버튼과 하드웨어 back 은 같은 결과를 내야 한다.** 새 화면을 추가할 때
+그 화면의 `onClose` 로직을 `resolveParentStage()` 에도 반영한다.
+회귀는 `test/navigation.test.js` 가 지킨다.
+
+루트 화면은 둘이다 — `home`, 그리고 첫 방문 흐름의 `onboarding1`. 둘은 뒤로 갈 곳이 없다.
 
 ---
 
@@ -79,7 +94,7 @@ Capacitor Android 하드웨어 back 도 같은 규칙을 따른다.
 
 ### Splash (`stage: 'splash'`)
 
-- 1초 후 다음 화면으로 이동
+- 200ms 후 다음 화면으로 이동 (`Splash.jsx` 의 `setTimeout`)
 - `localStorage['beaumi.onboarded'] === '1'` 이면 `home`
 - 아니면 `onboarding1`
 
@@ -134,9 +149,16 @@ Capacitor Android 하드웨어 back 도 같은 규칙을 따른다.
 
 **컴포넌트:** `PhotoUpload.jsx`
 
-- 정면 사진 1장 업로드
-- 업로드 성공 시 `photo = { file, dataUrl }`
-- 완료 즉시 `personal_color` 로 이동
+- 정면 사진 1장. 입력 경로는 플랫폼 분기 — 네이티브는 `@capacitor/camera`(카메라/갤러리),
+  웹은 파일 picker 폴백
+- DO/DON'T 가이드 타일 4개 노출 (포니테일·민소매 / 후면 카메라 / 앞머리·마스크 ✗ / 필터·역광 ✗).
+  전체 기준은 `docs/PHOTO_GUIDE.md`
+- **NEXT 는 사진 + 동의 체크가 모두 있어야 진행된다.** 사진만 고르면 넘어가지 않는다
+  - 동의 없음 → "사진 분석 동의에 체크해 주세요"
+  - 사진 없음 → 카메라 선택 시트를 다시 연다
+- 10MB 초과 시 거부
+- NEXT 통과 시 `onUpload(file, dataUrl)` → `photo = { file, dataUrl }` 저장 후 `personal_color` 로 이동
+- `VITE_MOCK=true` 일 때만 `🧪 샘플 얼굴 사용` 버튼 노출 (운영 빌드 제외)
 
 ---
 
@@ -163,6 +185,9 @@ Capacitor Android 하드웨어 back 도 같은 규칙을 따른다.
 - 실패:
   - 네트워크성 에러 → `error_network`
   - 그 외 → `error_face`
+- 백엔드에서 MediaPipe 가 얼굴을 못 찾으면 **Gemini 를 호출하지 않고 400** 으로 끊는다
+  (유료 호출을 막는 무료 게이트). 프론트는 `status < 500` 이라 `error_face` 로 분기한다.
+  단 일러스트·3D 렌더링·마네킹은 랜드마크가 잡혀 이 게이트를 통과한다
 
 ### Error (`stage: 'error_face' | 'error_network'`)
 
@@ -261,7 +286,10 @@ CTA (1차/2차 위계 — 동등 그리드 아님):
 
 - 공유 버튼
 - 제품 블록: 실제 `coupangPartnersUrl` 이 있는 제품이 하나라도 있을 때만 구매 affordance(`쿠팡에서 보기 →`)와 쿠팡 제휴 고지를 노출한다. 링크가 없으면 `검색 키워드 · {searchKeyword}` 형태로 정직하게 표시(가격·고지 없음).
-- 정책상 사진 합성은 지원하지 않는다 (이전 `+ 파트별 추천 제품 더보기` 버튼은 onSynthesize 에 잘못 연결된 dead 버튼이라 제거)
+  - **현재 백엔드는 `recommendedProducts` 를 채우지 않는다** — `PRODUCTS_MOCK` fallback 이 쓰인다.
+    따라서 구매 affordance 는 실제로는 노출되지 않는 상태다 (Phase 5 범위)
+  - 링크 열기는 `src/utils/external.js` 의 `openExternalUrl` — 네이티브는 시스템 브라우저, 웹은 새 탭
+- 정책상 사진 합성은 지원하지 않는다 (`onSynthesize` 로 가는 진입점이 없다)
 - 하단 sticky CTA
   - `OTHER LOOKS`
   - `SHARE LOOK`
@@ -277,6 +305,11 @@ CTA (1차/2차 위계 — 동등 그리드 아님):
   - 합성 사진 있음 → before/after 비교형(실제 `photoUrl`/`synthesizedPhoto` 반영)
   - 합성 사진 없음 → 결과 카드형(REFERENCE 1장, 가짜 AFTER 없음)
 - CTA: `SAVE IMAGE`(1차) + `공유`/`링크 복사`(2차). 캡처는 html2canvas 동적 import, 미설치/실패 시 안내 토스트 폴백
+- 저장·공유는 플랫폼 분기 (`isNativePlatform()`)
+  - **네이티브**: 저장은 `@capacitor/filesystem` 으로 기기 `Documents` 에 기록
+    (`<a download>` 는 WebView 에서 동작하지 않는다). 공유는 `@capacitor/share` 로 파일 첨부 시트.
+    사용자가 시트를 닫으면 조용히 무시한다
+  - **웹**: 저장은 `<a download>`, 공유는 Web Share API → 실패 시 클립보드 텍스트 복사 폴백
 
 ### Makeup Share (`stage: 'share_card_makeup'`)
 

@@ -1,3 +1,7 @@
+---
+last-verified: "2026-08-12"
+---
+
 # Auth / Supabase Setup Notes
 
 ## Supabase
@@ -16,8 +20,16 @@
 - Storage bucket:
   - `analysis-photos`
   - Public bucket
+    - ⚠️ 저장되는 것은 **사용자 정면 얼굴 사진**(90일 보관)이다. Public bucket 은 URL 을 아는
+      누구나 접근할 수 있다. 출시 전 private + signed URL 로 전환할지 결정이 필요하다.
+      (`backend/services/supabase_service.py` 의 `upload_image_data_url` 이 업로드 담당)
 
 ## Supabase Auth
+
+> 코드(`Login.jsx`)는 **Kakao 와 Google 둘 다** 지원한다 (`startOAuth('kakao')` / `startOAuth('google')`).
+> 아래 Google 설정만 끝난 상태로는 **카카오 로그인 버튼이 실패한다.**
+
+### Google
 
 - Path: `Authentication > Sign In / Providers > Google`
 - Google provider enabled.
@@ -29,6 +41,14 @@
     - `http://localhost:5173`
     - `http://127.0.0.1:5173`
   - 현재 코드 기준 OAuth 복귀 지점은 앱 루트(`/`)이며, 별도 `/login` 콜백 라우트는 사용하지 않음
+
+### Kakao — **미설정**
+
+- Path: `Authentication > Sign In / Providers > Kakao`
+- 필요한 것: Kakao Developers 앱 생성 → REST API 키 / Client Secret 을 Supabase 에 등록,
+  Kakao 쪽 Redirect URI 에 `https://plpvtuujthdefmbizbgc.supabase.co/auth/v1/callback` 추가.
+- Android 실기기 PoC 가 별도로 필요하다 — 카카오톡 앱 설치 / 미설치 / 백그라운드 복귀 3케이스.
+  (`docs/decisions/0004-phase3-auth-supabase.md` 의 "카카오 OAuth PoC" 절)
 
 ## Google Cloud
 

@@ -1,3 +1,7 @@
+---
+last-verified: "2026-08-12"
+---
+
 # Test Strategy
 
 > 이 프로젝트의 테스트는 기능 뒤에 붙이는 작업이 아니라 개발 구조 안에 같이 들어가는 품질 레이어다.
@@ -98,7 +102,8 @@
 
 - 실행: `.env.mocktest.local`(gitignore됨, `VITE_MOCK=true`) + `npx vite --mode mocktest --port 5175`
 - **테스트 로그인**: `Login` 화면의 `🧪 테스트 로그인 (mock)` → `auth.signInAsTestUser()` 가 가짜 Supabase JWT 세션(`test@beaumi.app`, provider `google`) 활성화. 로그인 전용 화면(My/History/TRY ON) 점검용.
-- **샘플 얼굴**: `PhotoUpload` 의 `🧪 샘플 얼굴 사용 (mock)` → 번들 샘플(`src/assets/dev-sample-face.jpg`, 골든셋 얼굴 1장)을 업로드한 것처럼 세팅 + 동의 자동 체크. 파일 picker 없이 분석 플로우 진입용.
+- **샘플 얼굴**: `PhotoUpload` 의 `🧪 샘플 얼굴 사용 (mock)` → 번들 샘플(`src/assets/dev-sample-face.jpg`, 골든셋 얼굴 1장)을 업로드한 것처럼 세팅 + 동의 자동 체크. 파일 picker 없이 분석 플로우 진입용. `VITE_MOCK` 게이트라 운영 빌드에는 포함되지 않는다.
+  - ⚠️ 이 이미지는 **실제 인물 사진**(골든셋 중 1장)이다. 스크린샷·공유 이미지·문서에 결과를 남길 때 인물명을 쓰지 않는다. 경계는 `tools/README.md` 의 "골든셋 사진의 성격" 참조.
 - 점검 경로: 로그인 → 업로드(샘플) → 퍼스널컬러 → 분석 결과(CTA 위계) → 카드 → 상세(합성 전/후 CTA) → 공유(before/after).
 
 ### 4. E2E Web
@@ -260,6 +265,9 @@ tests/
 - [x] 프론트 핵심 로직 unit test 구축
 - [x] 백엔드 핵심 API contract test 구축
 - [x] 인증/권한 integration test 구축
+- [x] 정적 분석(lint) 게이트 동작 — `npm run lint` (ESLint 9 flat config, 루트 `eslint.config.js`)
+- [x] 문서 검증 게이트 동작 — `npm run docs:check` (`scripts/docs-check.mjs`)
+- [x] 저장 시점 강제 검사 — `.claude/hooks/check-file.mjs` (인코딩·퍼블리시티권 금지어)
 - [ ] 업로드 → 분석 → 카드, 로그인 → 히스토리 중 핵심 E2E 1~2개 구축
 - [ ] 메이크업 카드 추천 제품/쿠팡 링크 핵심 흐름 테스트 구축
 - [ ] 얼굴형/카드 eval 데이터셋 10~15장 구축
@@ -278,3 +286,53 @@ tests/
 - Capacitor 연동은 `device smoke`
 
 이 4개를 분리해서 굴리는 것이 이 프로젝트의 기본 원칙이다.
+
+## 로컬 검증 명령
+
+```bash
+npm run verify
+```
+
+`lint` → `test` → `docs:check` 를 순서대로 돌린다. 개별로도 실행할 수 있다.
+
+`lint` 는 `src/`·`test/` 와 `.claude/hooks/` 만 본다. `backend/`·`tools/` (Python) 과
+`src/handoff/` (디자인 스냅샷 사본) 은 제외 대상이다.
+
+### `docs:check` 가 보는 것 (`scripts/docs-check.mjs`)
+
+**결합이 아니라 주장을 검증한다.** "코드와 문서를 같이 고쳤나"는 파일을 건드리기만 해도 통과하는
+약한 지표라, 문서가 *사실인지* 를 직접 본다.
+
+| 검사 | 잡는 실패 |
+|------|----------|
+| `.claude/rules/` frontmatter + `paths` 글롭 | YAML 이 깨지거나 글롭이 아무것도 안 잡아 **규칙이 조용히 로드되지 않는 경우** |
+| ADR frontmatter 규율 | 번호 중복, 파일명 불일치, `status`/`superseded_by` 모순 |
+| 마크다운 상대 링크 | 파일 이동·개명 후 방치된 죽은 링크 |
+| 백틱 경로 참조 | 실존하지 않거나 base 가 모호한 경로 |
+| `api-contract.md` 주장 필드 | **백엔드에 없는 유령 필드를 계약처럼 서술** |
+| `last-verified` 경과일 | 아무도 안 건드려 시간이 지나며 낡아가는 문서 (기준 45일) |
+
+마지막 항목이 핵심이다. 결합 검사가 원리적으로 못 잡는 유일한 종류다 — 문서는 같이 고쳐서
+낡는 게 아니라, **아무도 안 봐서** 낡는다.
+
+계획 단계라 아직 구현되지 않은 필드는 해당 절 제목에 `미구현` 을 넣어 검사에서 제외한다.
+
+퍼블리시티권 금지어를 **정당하게** 담아야 하는 파일은 `check-file:allow-policy-terms` 마커로
+면제한다. 현재 면제 파일은 아래 7개이며, 새로 붙일 때는 같은 줄에 이유를 적는다.
+
+```
+backend/services/gemini_service.py    금지 지시 프롬프트
+backend/services/rag_service.py       금지 지시 프롬프트 (ANALYZE_PROMPT)
+backend/test_integration.py           가드 테스트
+test/backendIntegration.test.js       가드 테스트
+test/liveBackend.test.js              가드 테스트
+src/handoff/README.md                 금지 항목 나열 목록
+src/handoff/CLAUDE_CODE_NOTES.md      제거된 옛 필드 기록 (정책 변경 증빙)
+```
+
+목록을 다시 셀 때는 `.md` 를 빼먹지 않는다 — `src/` 아래 마크다운도 검사 대상이다.
+전수 확인:
+
+```bash
+grep -rn "celebrityMatch\|look-alike\|닮은꼴" --include="*.js" --include="*.jsx" --include="*.md" --include="*.py" src/ backend/ test/ tools/
+```

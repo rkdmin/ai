@@ -209,12 +209,14 @@ def build_makeup_context(analysis: dict) -> str:
             f"컬러 카드:\n{color_cards}\n"
             f"피해야 할: {avoid_text}\n"
             f"코치: {color.get('coachComment', '')}\n\n"
+            # 파트를 열거하지 않는다. 퍼스널컬러 카드가 담는 파트는 4개 톤마다 다르다
+            # (shading 은 autumn_warm 에만, highlighter 는 spring_warm 에만 있는 식).
+            # 열거하면 없는 파트의 색을 지어내거나, 있는 파트를 그냥 지나친다.
             "[병합 규칙 — 반드시 준수]\n"
-            "- blush.zone, blush.shape → 얼굴형 기준 유지\n"
-            "- blush.colorVibe → 퍼스널컬러로 오버라이드\n"
-            "- lip.texture, lip.method → 얼굴형 기준 유지\n"
-            "- lip.colorVibe → 퍼스널컬러로 오버라이드\n"
-            "- eyeshadow, eyeliner, highlighter 컬러 → 퍼스널컬러로 오버라이드\n"
+            "- 위치·형태·제형(zone, shape, texture, method)은 얼굴형 기준을 그대로 유지\n"
+            "- 컬러(colorVibe)는 퍼스널컬러 기준으로 오버라이드\n"
+            "- 위 [퍼스널컬러] 블록에 있는 파트는 전부 그 컬러를 따른다 (파트 종류를 가리지 않음)\n"
+            "- 그 블록에 없는 파트는 얼굴형 기준을 그대로 쓴다. **색을 지어내지 말 것**\n"
             "- 모순 발생 시 반드시 해결하여 자연스러운 하나의 조합으로 통합\n"
             "- 충돌 우선순위: featureTip > personalcolor > face-makeup"
         )
@@ -371,6 +373,8 @@ TOTAL_CARDS_FORMAT = """[
   }
 ]"""
 
+# check-file:allow-policy-terms — 아래 프롬프트는 금지어를 "쓰지 말라"고 지시하는 본문이다.
+# 마커를 문자열 밖에 두는 이유: 안에 넣으면 그 줄이 Gemini 프롬프트로 그대로 전송된다.
 ANALYZE_PROMPT = """당신은 뷰티 전문가입니다. 다른 텍스트는 절대 포함하지 마세요.
 
 ## 우선 검사 — 분석 불가 판정 (보수적으로 판단할 것)

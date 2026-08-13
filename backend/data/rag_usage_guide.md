@@ -1,4 +1,19 @@
+---
+last-verified: "2026-08-12"
+---
+
 # RAG 데이터 사용 가이드
+
+> ⚠️ **병합은 Python 이 아니라 Gemini 가 한다.**
+> `rag_service.build_*_context()` 는 아래 규칙을 **텍스트로 조립해 프롬프트에 넣을 뿐**,
+> 코드에서 실제로 두 데이터를 합치지 않는다. 즉 병합은 결정적(deterministic)이지 않고
+> 모델이 지시를 따르는 데 의존한다. 규칙을 고치면 반드시 `/eval-face` 로 회귀를 돌린다.
+>
+> | 뷰 | 구현 함수 |
+> |----|----------|
+> | ① 헤어 | `build_hair_context()` |
+> | ② ③ 메이크업 | `build_makeup_context()` (퍼스널컬러 유무로 분기) |
+> | ④ 종합 | `build_total_context()` = 메이크업 + 헤어 이어붙이기 |
 
 ## 파일 구조 overview
 
@@ -64,12 +79,27 @@ feature-tips.json       → 부위별 보정 팁 (보정 레이어)
 → AI가 병합된 정보를 카드 형태로 자연스럽게 전달
 ```
 
-**병합 규칙:**
-- `blush.zone`, `blush.shape` → face-makeup 기준 유지
-- `blush.colorVibe` → personal-color-makeup으로 덮어쓰기
-- `lip.texture`, `lip.method` → face-makeup 기준 유지
-- `lip.colorVibe` → personal-color-makeup으로 덮어쓰기
-- `eyeshadow`, `eyeliner`, `highlighter`, `shading` 컬러 → personal-color-makeup으로 덮어쓰기
+**병합 규칙:** (`rag_service.py` 의 `[병합 규칙 — 반드시 준수]` 블록과 1:1로 일치해야 한다)
+- 위치·형태·제형(`zone`, `shape`, `texture`, `method`) → face-makeup 기준 유지
+- 컬러(`colorVibe`) → personal-color-makeup 으로 덮어쓰기
+- **퍼스널컬러 카드에 있는 파트는 종류를 가리지 않고 전부** 그 컬러를 따른다
+- 퍼스널컬러 카드에 **없는** 파트는 얼굴형 기준 그대로. 색을 지어내지 않는다
+
+> **파트를 열거하지 않는 이유:** `personal-color-makeup.json` 의 파트 구성이 4개 톤마다 다르다.
+>
+> | 퍼스널컬러 | 카드가 담는 파트 |
+> |---|---|
+> | spring_warm | lip, blush, eyeshadow, eyebrow, eyeliner, **highlighter** |
+> | summer_cool | lip, blush, baseSkin, eyeshadow, eyebrow, eyeliner |
+> | autumn_warm | lip, eyeshadow, eyebrow, blush, baseSkin, **shading** |
+> | winter_cool | **hair**, lip, baseSkin, eyebrow, eyeliner, eyeshadow, blush |
+>
+> `shading` 은 autumn_warm 에만, `highlighter` 는 spring_warm 에만 있다. 고정 목록으로 지시하면
+> 없는 파트의 색을 지어내거나, 있는 파트를 그냥 지나친다. 그래서 규칙으로 바꿨다.
+>
+> ⚠️ **카드 생성 프롬프트에는 회귀 도구가 없다.** `/eval-face` 는 `ANALYZE_PROMPT`(얼굴형 판정)
+> 전용이고, `backend/test_integration.py` 는 Gemini 를 mock 하므로 출력 품질을 보지 않는다.
+> 이 블록을 고치면 수동으로 카드 결과를 확인해야 한다.
 
 **AI 역할:** 병합 결과를 카드 형태로 자연스럽게 설명, 두 데이터 외 내용 추가 금지
 
@@ -153,4 +183,9 @@ feature: 광대 넓음 → featureTip: "블러셔 앞볼에 더 좁게"
 | `personal-color-makeup.json` | 컬러 팔레트 레이어 | featureTip에 의해 일부 오버라이드 됨 |
 | `feature-tips.json` | 개인 부위 보정 레이어 | 최우선순위, 오버라이드 당하지 않음 |
 
-- 메이크업 카드의 `recommendedProducts`는 위 3개 레이어에서 추출한 키워드를 바탕으로 구성하며, 쿠팡파트너스 URL은 RAG 범위 밖의 운영 데이터다.
+> **`recommendedProducts` 는 아직 없다 (계획).** `MAKEUP_CARDS_FORMAT` 에 그 필드가 없어
+> 백엔드가 채우지 않고, 프론트 `MakeupDetail` 은 `PRODUCTS_MOCK` 으로 대체하고 있다.
+> 도입하면 위 3개 레이어에서 뽑은 키워드로 구성하며, 쿠팡파트너스 URL 은 RAG 범위 밖의
+> 운영 데이터로 후처리에서 주입한다. 도입 시점은 Phase 5
+> (`docs/decisions/0007-phase5-monetization.md`).
+> 위 "AI 프롬프트 원칙" 7·8번은 그때를 대비한 규칙이며 지금은 적용될 대상이 없다.
