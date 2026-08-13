@@ -52,6 +52,7 @@ describe.skipIf(skip)('실제 Gemini 헤어 카드 응답 → 매퍼', () => {
     expect(avoid).toHaveLength(1);
   });
 
+  // check-file:allow-policy-terms — 금지어의 부재를 검사하는 가드 테스트다.
   it('퍼블리시티권 회귀: 인물 비교 표현이 없다', () => {
     const blob = JSON.stringify(raw);
     for (const w of ['st 룩', '닮은꼴', 'look-alike', 'celebrityMatch', '님 st']) {

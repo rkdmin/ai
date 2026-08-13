@@ -147,6 +147,7 @@ describe('백엔드 메이크업 카드 응답 → mappers 호환성', () => {
 });
 
 describe('퍼블리시티권 회귀 가드', () => {
+  // check-file:allow-policy-terms — 금지어의 부재를 검사하는 가드 테스트다.
   it('정규화된 응답 어디에도 인물 비교 표현이 없어야 한다', () => {
     const all = [
       ...mapCards(BACKEND_HAIR_RESPONSE, 'hair', ANALYSIS_CTX),
