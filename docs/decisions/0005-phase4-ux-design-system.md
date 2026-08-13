@@ -1,3 +1,13 @@
+---
+adr: "0005"
+title: "Beaumi 에디토리얼 디자인 시스템으로 UX 통일"
+phase: 4
+milestone: "v1.0"
+status: Accepted
+date: "2026-05-12"
+supersedes: []
+superseded_by: []
+---
 # Phase 4 UX/UI
 
 > 작성일: 2026-05-12

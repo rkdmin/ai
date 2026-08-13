@@ -1,3 +1,13 @@
+---
+adr: "0002"
+title: "얼굴 인식 정확도와 RAG 품질을 로컬 Python 으로 먼저 검증"
+phase: 1
+milestone: "v1.0"
+status: Accepted
+date: "2026-03-05"
+supersedes: []
+superseded_by: []
+---
 # Phase 1 — 얼굴 인식 정확도 + RAG 품질 개선
 
 > 가장 먼저 해야 할 것. 추천의 신뢰도가 앱의 핵심 가치다.

@@ -1,4 +1,19 @@
+---
+adr: "0001"
+title: "v1.0 범위 — 광고 없이 Android 1차 출시"
+phase: null
+milestone: "v1.0"
+status: Accepted
+date: "2026-03-05"
+supersedes: []
+superseded_by: []
+---
 # 🎯 MVP — Android 1차 출시 기준 (v1.0)
+
+> 📌 **아래 체크박스는 이 결정을 내린 시점의 스냅샷이다. 진행 상태로 읽지 마라.**
+> ADR 은 append-only 라 진행을 추적하지 않는다. 지금 어디까지 왔는지는
+> [`../ROADMAP.md`](../ROADMAP.md) 의 "현재 진행 상태" 를 본다.
+> 이 문서에서 유효한 것은 **v1.0 에 무엇을 넣고 무엇을 뺄지에 대한 범위 결정** 이다.
 
 > 목표: 기존 React 웹 앱을 그대로 활용해 `Capacitor`로 **Android 앱을 먼저 출시**한다.
 > 1차 출시는 광고/카드 잠금 없이 진행한다 (수익화는 v1.1).

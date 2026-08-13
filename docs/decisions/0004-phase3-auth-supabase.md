@@ -1,3 +1,13 @@
+---
+adr: "0004"
+title: "Supabase 인증 + 분석 히스토리 저장"
+phase: 3
+milestone: "v1.0"
+status: Accepted
+date: "2026-03-05"
+supersedes: []
+superseded_by: []
+---
 # Phase 3 — 인증 + 유저 시스템
 
 > 목표: 카카오/구글 로그인 + 분석 히스토리 저장
@@ -82,7 +92,7 @@ created_at   timestamptz DEFAULT now()
 
 ### `feedback`
 
-> 스키마만 선반영. 피드백 위젯 UI는 v1.0 제외(`phase1-quality.md` 1-5 참조)이며 v1.1 이후 도입한다.
+> 스키마만 선반영. 피드백 위젯 UI는 v1.0 제외(`0002-phase1-face-accuracy-rag.md` 1-5 참조)이며 v1.1 이후 도입한다.
 
 ```sql
 id          uuid PRIMARY KEY DEFAULT gen_random_uuid()

@@ -1,3 +1,13 @@
+---
+adr: "0008"
+title: "iOS 는 Android 지표 검증 후 후속 출시"
+phase: 7
+milestone: "v1.2"
+status: Accepted
+date: "2026-05-07"
+supersedes: []
+superseded_by: []
+---
 # Phase 7 — iOS 앱 출시 (2차)
 
 > 목표: Android 출시 이후 지표 검증이 끝나면 iOS App Store에 후속 출시한다.

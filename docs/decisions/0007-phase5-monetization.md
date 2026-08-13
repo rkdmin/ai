@@ -1,3 +1,13 @@
+---
+adr: "0007"
+title: "수익화는 v1.1 로 연기 (광고 + 쿠팡파트너스)"
+phase: 5
+milestone: "v1.1"
+status: Accepted
+date: "2026-03-05"
+supersedes: []
+superseded_by: []
+---
 # Phase 5 — 수익화 시스템 (v1.1)
 
 > ⚠️ **이 단계는 v1.1 — 즉 Android 1차 출시(v1.0) 이후에 진행한다.**

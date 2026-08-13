@@ -1,3 +1,7 @@
+---
+last-verified: "2026-08-12"
+---
+
 # 🗺️ AI 뷰티 코치 — 전체 로드맵
 
 > 최종 목표: Android 우선 출시 후 iOS 확장, 그리고 수익화까지 연결
@@ -27,15 +31,38 @@ Cross-cut │ 테스트 아키텍처 + 품질 게이트
 > **순서 변경 요지**: 광고/카드 잠금은 첫 출시 리스크와 일정 부담을 키우므로 **v1.1로 분리**한다.
 > Android 첫 출시(v1.0) → 광고·잠금 도입(v1.1) → iOS 출시(Phase 7) 순서로 간다.
 
-| Phase | 핵심 목표 | 세부 계획 파일 | 시점 | 완료 기준 |
-|-------|----------|--------------|------|---------|
-| 1 | 얼굴 인식 정확도 검증 (로컬 Python) + RAG 데이터 보강 | `phase1-quality.md` | v1.0 | 골든셋 자가평가 정확도 90% 이상 (10장 중 9장 납득) |
-| 2 | FastAPI 백엔드 셋업 + AI 키 보호 + 배포 전환 | `phase2-backend.md` | v1.0 | API 키 클라이언트 노출 없음 |
-| 3 | 로그인 + 히스토리 저장 | `phase3-auth.md` | v1.0 | 카카오/구글 로그인 + 내 기록 조회 |
-| 4 | UI/UX 폴리싱 | `phase4-ux.md` | v1.0 | 디자인 시스템 확립 + 온보딩 완성 |
-| 6 | Android 1차 출시 | `phase6-mobile.md` | v1.0 | Play Store 출시 |
-| 5 | 수익화 (광고 + 카드 잠금) — 쿠팡 정적 링크는 v1.0부터 | `phase5-monetization.md` | v1.1 | 첫 수익 발생 |
-| 7 | iOS 후속 출시 | `phase7-ios.md` | v1.2 | App Store 출시 |
+| Phase | 핵심 목표 | 결정 기록 (ADR) | 시점 | 완료 기준 |
+|-------|----------|----------------|------|---------|
+| 1 | 얼굴 인식 정확도 검증 (로컬 Python) + RAG 데이터 보강 | [0002](./decisions/0002-phase1-face-accuracy-rag.md) | v1.0 | 골든셋 자가평가 정확도 90% 이상 (10장 중 9장 납득) |
+| 2 | FastAPI 백엔드 셋업 + AI 키 보호 + 배포 전환 | [0003](./decisions/0003-phase2-backend-split.md) | v1.0 | API 키 클라이언트 노출 없음 |
+| 3 | 로그인 + 히스토리 저장 | [0004](./decisions/0004-phase3-auth-supabase.md) | v1.0 | 카카오/구글 로그인 + 내 기록 조회 |
+| 4 | UI/UX 폴리싱 | [0005](./decisions/0005-phase4-ux-design-system.md) | v1.0 | 디자인 시스템 확립 + 온보딩 완성 |
+| 6 | Android 1차 출시 | [0006](./decisions/0006-phase6-capacitor-android.md) | v1.0 | Play Store 출시 |
+| 5 | 수익화 (광고 + 카드 잠금) — 쿠팡 정적 링크는 v1.0부터 | [0007](./decisions/0007-phase5-monetization.md) | v1.1 | 첫 수익 발생 |
+| 7 | iOS 후속 출시 | [0008](./decisions/0008-phase7-ios.md) | v1.2 | App Store 출시 |
+
+---
+
+## 현재 진행 상태
+
+> **이 표가 Phase 진행 상태의 단일 출처다.** ADR(`decisions/`)은 append-only 결정 기록이라
+> 진행을 추적하지 않는다 — `0001` 의 체크리스트는 작성 당시 스냅샷이므로 신뢰하지 마라.
+> 엔드포인트 단위의 세부 현황은 [`connection-status.md`](./connection-status.md).
+
+| Phase | 상태 | 남은 것 |
+|-------|------|--------|
+| 1 정확도·RAG | 🟡 도구 완비 | 골든셋 9장 + `tools/eval.py` + `/eval-face` 존재. **정확도 90% 달성 여부는 미측정** |
+| 2 백엔드 분리 | 🟢 코드 완료 | 라우트 8개 + AI 키 백엔드 이동 완료. Render/Railway 실배포는 미확인 |
+| 3 인증·히스토리 | 🟡 코드 완료 | 코드 경로는 전부 연결. **Supabase 콘솔 설정·실기기 OAuth PoC 대기** |
+| 4 UI/UX | 🟢 완료 | Beaumi 디자인 시스템 적용 + 4-4~4-8 마감 |
+| 6 Android 출시 | 🟡 진행 중 | 네이티브 브리지 4종(카메라·공유·외부링크·Sentry) 완료. **`.aab` 생성·Play Store 제출 남음** |
+| 5 수익화 | ⚪ 미착수 | v1.1. 쿠팡 링크 여는 경로만 선행 구현됨 |
+| 7 iOS | ⚪ 미착수 | v1.2. Android 지표 확보 후 |
+
+`🟢 완료 · 🟡 진행 중 · ⚪ 미착수`
+
+**품질 게이트 현황** — `npm run lint` ✅ / `npm run test` ✅ 75개 / `npm run docs:check` ✅
+상세는 [`test.md`](./test.md) 의 "출시 전 최소 품질 게이트".
 
 ---
 
@@ -75,12 +102,13 @@ Phase 1 (정확도 검증 / 골든셋)
 
 ## MVP 정의
 
-→ `MVP.md` 참고
+→ [`decisions/0001-mvp-scope-android-first.md`](./decisions/0001-mvp-scope-android-first.md) 참고
 
 ## 테스트 전략
 
-→ `test.md` 참고
+→ [`test.md`](./test.md) 참고
 
 ## 각 Phase 상세
 
-→ `phase1-quality.md`, `phase2-backend.md`, `phase3-auth.md`, `phase4-ux.md`, `phase5-monetization.md`, `phase6-mobile.md`, `phase7-ios.md`
+→ [`decisions/`](./decisions/README.md) — Phase 별 계획은 번호가 붙은 ADR 로 이관됐다.
+인덱스 표에서 Phase 번호로 찾을 수 있다.

@@ -1,6 +1,6 @@
 """
 Pydantic 요청/응답 스키마.
-docs/phase2-backend.md 의 인터페이스 정의를 준수한다.
+docs/decisions/0003-phase2-backend-split.md 의 인터페이스 정의를 준수한다.
 """
 from __future__ import annotations
 

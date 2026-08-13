@@ -91,4 +91,4 @@ Supabase 설정:
 - 개발/QA: Render 무료 (15분 비활성 슬립)
 - 출시 운영: Railway Hobby (슬립 없음)
 
-자세한 단계는 `docs/phase2-backend.md` 의 "2-5. 배포 단계" 참고.
+자세한 단계는 `docs/decisions/0003-phase2-backend-split.md` 의 "2-5. 배포 단계" 참고.

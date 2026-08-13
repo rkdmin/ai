@@ -1,8 +1,18 @@
+---
+adr: "0006"
+title: "Capacitor 로 패키징해 Play Store 1차 출시"
+phase: 6
+milestone: "v1.0"
+status: Accepted
+date: "2026-03-05"
+supersedes: []
+superseded_by: []
+---
 # Phase 6 — Android 앱 출시 (1차)
 
 > 목표: 기존 React + Vite 앱을 `Capacitor`로 패키징해 **Play Store에 1차 출시**한다.
 > 선행 조건: Phase 1~4 완료 (Phase 5 수익화는 v1.1로 연기)
-> iOS 출시는 별도 `phase7-ios.md`에서 다룬다.
+> iOS 출시는 별도 `0008-phase7-ios.md`에서 다룬다.
 
 ---
 
@@ -192,7 +202,7 @@ npx cap open android
 
 ### 카카오 OAuth 리스크
 
-카카오 OAuth는 Phase 3 시작 전 1일 PoC를 거친다. 상세 케이스와 기준은 `phase3-auth.md` 3-1 "카카오 OAuth PoC" 섹션 참고.
+카카오 OAuth는 Phase 3 시작 전 1일 PoC를 거친다. 상세 케이스와 기준은 `0004-phase3-auth-supabase.md` 3-1 "카카오 OAuth PoC" 섹션 참고.
 Phase 6에서는 release candidate 빌드에서 PoC 케이스를 device smoke로 다시 검증한다.
 
 ---

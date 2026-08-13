@@ -1,3 +1,13 @@
+---
+adr: "0003"
+title: "FastAPI 백엔드 분리로 AI 키를 프론트에서 제거"
+phase: 2
+milestone: "v1.0"
+status: Accepted
+date: "2026-03-05"
+supersedes: []
+superseded_by: []
+---
 # Phase 2 — 백엔드 셋업 + 보안
 
 > 현재: AI API 키가 프론트에 노출될 수 있음
