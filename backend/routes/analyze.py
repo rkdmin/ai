@@ -19,8 +19,17 @@ async def analyze(
 ):
     rate_limit.consume("analyze", principal, request)
 
-    # MediaPipe 비율 추출 — 실패해도(얼굴 미검출) Gemini가 이미지로 단독 분석 가능.
+    # MediaPipe 로 얼굴을 못 찾으면 여기서 끊는다 — Gemini 유료 호출을 막는 무료 게이트.
+    # 프론트는 status < 500 이라 error_face 화면으로 분기한다.
+    #
+    # 단 일러스트·3D 렌더링·마네킹은 랜드마크가 잡혀 이 게이트를 통과한다.
+    # 실사 여부 판별은 ANALYZE_PROMPT 의 거부 조건(Gemini)이 계속 담당한다.
     face_ratios = mediapipe_service.extract_face_ratios(body.frontImage)
+    if face_ratios is None:
+        raise HTTPException(
+            status_code=400,
+            detail="사진에서 얼굴을 찾을 수 없어요. 정면 얼굴이 잘 보이는 사진으로 다시 시도해 주세요.",
+        )
 
     try:
         result = await gemini_service.analyze_face(body.frontImage, face_ratios)

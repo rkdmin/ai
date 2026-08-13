@@ -166,8 +166,24 @@ def _patch_gemini(call_response_text: str):
     )
 
 
-def _patch_mediapipe():
-    return patch("services.mediapipe_service.extract_face_ratios", return_value=None)
+# MediaPipe 가 얼굴을 찾았을 때의 대표 비율값 (_compute_ratios 반환 형태).
+_FACE_RATIOS = {
+    "foreheadRatio": 0.95,
+    "jawRatio": 0.82,
+    "aspectRatio": 1.38,
+    "jawAngle": 121.4,
+    "upperFaceRatio": 0.31,
+    "midFaceRatio": 0.35,
+    "lowerFaceRatio": 0.34,
+    "eyeGapRatio": 0.26,
+    "eyeOpennessRatio": 0.07,
+    "lipWidthRatio": 0.32,
+}
+
+
+def _patch_mediapipe(ratios=_FACE_RATIOS):
+    """기본은 얼굴 검출 성공. `ratios=None` 을 넘기면 미검출 상황을 재현한다."""
+    return patch("services.mediapipe_service.extract_face_ratios", return_value=ratios)
 
 
 # ─── 테스트 ────────────────────────────────────────────────────────
@@ -191,6 +207,18 @@ def test_analyze_returns_valid_schema():
     assert isinstance(data["features"], list)
     assert isinstance(data["moodArchetype"], list)
     assert len(data["moodArchetype"]) == 3
+
+
+def test_analyze_skips_gemini_when_no_face_detected():
+    """얼굴 미검출이면 Gemini 를 호출하지 않고 400 으로 끊는다 (토큰 낭비 방지)."""
+    with _patch_mediapipe(ratios=None), _patch_gemini(_ANALYZE_TEXT) as call_gemini:
+        with TestClient(app) as client:
+            r = client.post("/api/analyze", json={"frontImage": "data:image/jpeg;base64,xxx"})
+
+    assert r.status_code == 400, r.text
+    assert "얼굴을 찾을 수 없어요" in r.json()["detail"]
+    # 핵심 — 유료 호출이 발생하지 않았는지.
+    call_gemini.assert_not_awaited()
 
 
 def test_cards_hair_returns_4_cards_with_required_fields():
@@ -247,6 +275,7 @@ def test_cards_request_schema_validation():
     assert r.status_code == 422
 
 
+# check-file:allow-policy-terms — 금지어의 부재를 검사하는 가드 테스트다.
 def test_no_personality_reference_in_hair_cards():
     """퍼블리시티권 정책 — 응답에 인물 비교 표현이 없어야 한다."""
     with _patch_gemini(_HAIR_CARDS_TEXT):

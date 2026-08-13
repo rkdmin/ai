@@ -88,7 +88,8 @@ def test_analyze_logged_in_user_persists_analysis_and_returns_id():
 
 def test_analyze_transient_gemini_error_returns_503():
     with (
-        patch("services.mediapipe_service.extract_face_ratios", return_value=None),
+        # 얼굴은 정상 검출된 상태여야 Gemini 까지 도달한다 (미검출이면 400 으로 먼저 끊긴다).
+        patch("services.mediapipe_service.extract_face_ratios", return_value={"jawRatio": 0.8}),
         patch(
             "services.gemini_service.analyze_face",
             new=AsyncMock(side_effect=GeminiError("This model is currently experiencing high demand. Please try again later.")),
