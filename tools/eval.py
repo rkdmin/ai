@@ -9,6 +9,11 @@ Phase 1 — 1-7 / 1-2 검증.
 
 각 모드에서 N회 호출해 변동성도 같이 본다.
 
+두 축을 채점한다:
+  얼굴형 — 골든셋 expectedFaceType 대비 정확/인접/빗나감 (이 파일)
+  features — 수율·커버리지·안정성·어휘·정합성 (`score_features.py`, 라벨 없이도 측정)
+             골든셋 item 에 expectedFeatures/forbiddenFeatures 를 넣으면 정확도까지 계산한다.
+
 사용법:
     python tools/eval.py                  # 기본 (golden-set.json, runs=2)
     python tools/eval.py --runs 3
@@ -51,78 +56,16 @@ GEMINI_URL = (
     f"https://generativelanguage.googleapis.com/v1beta/models/{GEMINI_MODEL}:generateContent"
 )
 
-# ⚠️ src/utils/ragUtils.js 의 ANALYZE_PROMPT 와 동기 유지.
-# Phase 1-2 프롬프트 변경 시 양쪽을 같이 고친다.
-ANALYZE_PROMPT = """당신은 뷰티 전문가입니다. 다른 텍스트는 절대 포함하지 마세요.
+# ANALYZE_PROMPT 는 backend/services/rag_service.py 가 단일 소스다.
+# 사본을 두면 조용히 어긋나 회귀 평가가 운영과 다른 프롬프트를 재게 된다
+# (실제로 그랬다 — 사본이 실사 판별·무드·정합성 규칙이 빠진 옛 버전에 멈춰 있었다).
+sys.path.insert(0, str(PROJECT_ROOT / "backend"))
+from services.rag_service import ANALYZE_PROMPT  # noqa: E402
 
-## 우선 검사 — 분석 불가 판정
-아래 조건 중 하나라도 해당되면, 다른 분석 없이 이 형식으로만 응답하세요:
-{"error": "사유를 한 문장으로"}
-
-거부 조건:
-- 사람 얼굴이 없는 경우 (동물, 사물, 음식, 풍경, 텍스트 이미지 등)
-- 얼굴이 너무 작거나 흐려서 이목구비를 식별할 수 없는 경우
-- 측면·뒷모습으로 정면 분석이 불가능한 경우
-- 마스크·선글라스 등으로 얼굴이 절반 이상 가려진 경우
-- 여러 사람이 있어 분석 대상을 특정할 수 없는 경우
-
-위 조건에 해당하지 않으면 아래 JSON으로 응답하세요:
-
-{
-  "faceType": "계란형 | 둥근형 | 사각형 | 하트형 | 긴형 | 다이아몬드형 | 땅콩형 | 판정 어려움 중 하나",
-  "features": ["확실히 보이는 특징만, 0개도 가능"]
-}
-
-## 분석 원칙 (반드시 준수)
-- **확실한 것만 포함**: 사진을 보고 즉시 "이건 확실하다"고 판단되는 것만 포함하세요.
-- **애매하면 제외**: "아마도", "~인 것 같다", "~일 수도 있다" 수준이면 포함하지 마세요.
-- **억지로 채우지 말 것**: 목록을 채우기 위해 불확실한 항목을 넣는 것은 잘못된 분석입니다. 빈 배열([])도 정답입니다.
-
----
-
-## 얼굴형 판단 기준
-
-### 분류 우선순위 (위에서부터 순서대로 검사)
-1. **사각형/땅콩형 검사 — 턱 모서리(gonial 코너) 각짐 우선**
-   - 턱 좌우 모서리가 직선적으로 각져 있으면 우선 사각/땅콩 후보
-   - 턱끝의 모양(V/U)이나 얼굴 길이는 무관 — 짧은 사각, 긴 사각, V턱 사각 모두 포함
-   - 광대까지 발달했으면 땅콩형, 광대 부드러우면 사각형
-2. **하트형/다이아몬드형 검사 — 광대가 가장 넓은가**
-   - 광대 폭이 이마·턱보다 명확히 넓으면 후보
-   - 이마도 넓으면 하트형, 이마·턱 모두 좁으면 다이아몬드형
-3. **긴형 검사 — 세로 길이 압도적**
-   - 위에 해당 안 되고 세로/가로 비율이 1.4 이상으로 명확히 길면 긴형
-4. **계란형/둥근형** (위 모두 해당 안 됨)
-   - 골격 특징 약하고 부드러우면 — 길이 적당하면 계란형, 둥근편이면 둥근형
-
-### 형별 정의
-- 계란형: 이마가 약간 넓고 턱으로 갈수록 자연스럽게 좁아지는 형태. **gonial 코너 부드러움**.
-- 둥근형: 얼굴 폭과 길이가 비슷하고 전체 윤곽이 부드럽고 볼살이 있는 형태. gonial 코너 부드러움.
-- 사각형: **턱 좌우 모서리(gonial 코너)가 직선적으로 각져 있는 형태**. 광대 아래에서 턱 모서리까지 이어지는 라인이 곡선이 아닌 직선적·모서리가 뚜렷함. 턱끝은 V/U/사각 어느 형태든 무관. 얼굴 길이도 무관 (짧은 사각/긴 사각 모두 포함).
-- 하트형: 이마·광대가 넓고 턱 끝이 뾰족하게 좁아지는 형태. gonial 부드러움.
-- 긴형: 얼굴 세로 길이가 가로 폭보다 확연히 긴 형태. gonial 부드러움 (각지면 사각형으로).
-- 다이아몬드형: 옆광대가 가장 넓고 이마와 턱이 모두 좁은 형태. gonial 부드러움.
-- 땅콩형: **gonial 코너 각짐 + 광대도 발달**. 볼이 살짝 패여 라인이 울퉁불퉁.
-
-### 경계형 처리 — "판정 어려움"
-두 얼굴형 사이 경계(예: 다이아몬드/하트, 땅콩/사각, 계란/긴)에서 어느 쪽으로도 80% 이상 확신할 수 없다면 "판정 어려움"으로 응답하세요.
-이 값은 사용자가 어느 한 쪽으로 잘못 안내받는 것보다 낫다고 판단될 때만 사용하세요. 남발하지 마세요.
-
----
-
-## features 판단 기준
-아래 목록에서 **사진에서 명확하게 눈에 띄는 특징만** 골라 정확히 이 텍스트 그대로 사용하세요.
-확신도 80% 미만이면 포함하지 마세요. 0개~3개가 적절하며, 4개 이상이면 다시 검토하세요.
-
-선택 가능 목록:
-"눈 간격 넓음", "눈 간격 좁음", "코 낮음", "코 높음", "코 큼",
-"이마 넓음", "이마 좁음", "눈 작음", "광대 넓음", "입술 얇음",
-"입술 두꺼움", "중안부 긴 유형", "중안부 짧은 유형", "눈두덩이 좁음",
-"눈두덩이 넓음", "관자놀이 여백 넓음", "사각턱", "돌출입", "목 짧음",
-"무쌍", "속쌍꺼풀", "눈꼬리 처짐", "눈꼬리 올라감", "눈꼬리 막힘",
-"눈두덩이 살 두꺼움", "눈두덩이 살 얇음", "둥근 눈", "아몬드 눈", "긴 눈",
-"삼백안", "인중 긺", "인중 짧음", "무턱", "주걱턱", "콘헤드",
-"어깨 너비 넓음", "승모근 발달\""""
+# features 축 채점은 /eval-face 스킬과 공유한다 (같은 이유로 사본을 두지 않는다).
+from score_features import load_entries as load_feature_entries  # noqa: E402
+from score_features import render_report as render_feature_report  # noqa: E402
+from score_features import score as score_features_axis  # noqa: E402
 
 
 def load_env() -> str:
@@ -377,8 +320,20 @@ def main():
             f"일관성(같은입력 N회 동일)={s['consistent']}, 정확도={rate}"
         )
 
+    # features 축 — 얼굴형과 달리 라벨이 없어도 수율·커버리지·안정성·어휘·정합성은 재진다.
+    features_summary = {}
+    for m in modes:
+        entries = load_feature_entries({"results": results}, mode=m, golden=gset)
+        if not entries:
+            continue
+        scored = score_features_axis(entries)
+        features_summary[m] = scored["summary"]
+        print(f"\n=== features 축 — Mode {m} ===")
+        print(render_feature_report(scored))
+
     output = {"model": GEMINI_MODEL, "runs": args.runs, "modes": modes,
-              "results": results, "summary": summary}
+              "results": results, "summary": summary,
+              "featuresSummary": features_summary}
     if args.output:
         args.output.parent.mkdir(parents=True, exist_ok=True)
         args.output.write_text(json.dumps(output, indent=2, ensure_ascii=False), encoding="utf-8")

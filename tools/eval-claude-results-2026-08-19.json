@@ -1,0 +1,236 @@
+{
+  "model": "claude sonnet (subscription, via Agent tool)",
+  "ranAt": "2026-08-19",
+  "promptSource": "backend/services/rag_service.py :: ANALYZE_PROMPT (ADR 0009 적용 후)",
+  "promptDelivery": "파일 Read (스크래치패드에 덤프한 프롬프트를 서브에이전트가 Read)",
+  "results": [
+    {
+      "file": "계란형/고윤정.jpg",
+      "expectedFaceType": "계란형",
+      "expectedAlternatives": [],
+      "actual": {
+        "faceType": "계란형",
+        "features": [
+          "아몬드 눈"
+        ],
+        "moodArchetype": [
+          "CLEAN",
+          "ELEGANT",
+          "FRESH"
+        ]
+      },
+      "verdict": "hits",
+      "consistencyViolations": {
+        "features": [],
+        "moods": []
+      }
+    },
+    {
+      "file": "둥근형/강미나.png",
+      "expectedFaceType": "둥근형",
+      "expectedAlternatives": [],
+      "actual": {
+        "faceType": "둥근형",
+        "features": [],
+        "moodArchetype": [
+          "ROMANTIC",
+          "SOFT",
+          "FRESH"
+        ]
+      },
+      "verdict": "hits",
+      "consistencyViolations": {
+        "features": [],
+        "moods": []
+      }
+    },
+    {
+      "file": "사각형/정유미.jpg",
+      "expectedFaceType": "사각형",
+      "expectedAlternatives": [],
+      "actual": {
+        "faceType": "사각형",
+        "features": [
+          "아몬드 눈"
+        ],
+        "moodArchetype": [
+          "ELEGANT",
+          "CLASSIC",
+          "CLEAN"
+        ]
+      },
+      "verdict": "hits",
+      "consistencyViolations": {
+        "features": [],
+        "moods": []
+      }
+    },
+    {
+      "file": "사각형/정채연.jpg",
+      "expectedFaceType": "사각형",
+      "expectedAlternatives": [],
+      "actual": {
+        "faceType": "계란형",
+        "features": [],
+        "moodArchetype": [
+          "ELEGANT",
+          "CLEAN",
+          "FRESH"
+        ]
+      },
+      "verdict": "miss",
+      "consistencyViolations": {
+        "features": [],
+        "moods": []
+      }
+    },
+    {
+      "file": "하트형/사나.png",
+      "expectedFaceType": "하트형",
+      "expectedAlternatives": [],
+      "actual": {
+        "faceType": "하트형",
+        "features": [],
+        "moodArchetype": [
+          "ROMANTIC",
+          "SOFT",
+          "ELEGANT"
+        ]
+      },
+      "verdict": "hits",
+      "consistencyViolations": {
+        "features": [],
+        "moods": []
+      }
+    },
+    {
+      "file": "긴형/로제.jpg",
+      "expectedFaceType": "긴형",
+      "expectedAlternatives": [],
+      "actual": {
+        "faceType": "긴형",
+        "features": [
+          "눈꼬리 올라감"
+        ],
+        "moodArchetype": [
+          "ELEGANT",
+          "CLASSIC",
+          "FRESH"
+        ]
+      },
+      "verdict": "hits",
+      "consistencyViolations": {
+        "features": [],
+        "moods": []
+      }
+    },
+    {
+      "file": "다이아몬드형/지젤.png",
+      "expectedFaceType": "다이아몬드형",
+      "expectedAlternatives": [],
+      "actual": {
+        "faceType": "계란형",
+        "features": [
+          "입술 두꺼움"
+        ],
+        "moodArchetype": [
+          "CLEAN",
+          "ELEGANT",
+          "CLASSIC"
+        ]
+      },
+      "verdict": "miss",
+      "consistencyViolations": {
+        "features": [],
+        "moods": []
+      }
+    },
+    {
+      "file": "땅콩형/천우희.jpg",
+      "expectedFaceType": "땅콩형",
+      "expectedAlternatives": [],
+      "actual": {
+        "faceType": "계란형",
+        "features": [
+          "둥근 눈"
+        ],
+        "moodArchetype": [
+          "CLEAN",
+          "ELEGANT",
+          "FRESH"
+        ]
+      },
+      "verdict": "miss",
+      "consistencyViolations": {
+        "features": [],
+        "moods": []
+      }
+    },
+    {
+      "file": "땅콩형/천우희2.jpg",
+      "expectedFaceType": "땅콩형",
+      "expectedAlternatives": [],
+      "actual": {
+        "faceType": "계란형",
+        "features": [
+          "속쌍꺼풀",
+          "입술 두꺼움"
+        ],
+        "moodArchetype": [
+          "CLEAN",
+          "ELEGANT",
+          "CLASSIC"
+        ]
+      },
+      "verdict": "miss",
+      "consistencyViolations": {
+        "features": [],
+        "moods": []
+      }
+    }
+  ],
+  "summary": {
+    "total": 9,
+    "hits": 5,
+    "near": 0,
+    "miss": 4,
+    "ambiguous": 0,
+    "errors": 0,
+    "accuracy": "5/9 (55.6%)",
+    "consistencyViolations": 0
+  },
+  "note": [
+    "2026-05-31 기록은 9/9 (100%) 였으나 현재 어떤 조건에서도 재현되지 않는다.",
+    "ADR 0009 변경이 원인인지 가리기 위해 오판 3장을 변경 전(HEAD) 프롬프트로 재평가했고,",
+    "세 장 모두 동일하게 오판했다 — 즉 이번 프롬프트 변경이 유발한 회귀가 아니다.",
+    "평가 방식(프롬프트 인라인 vs 파일 Read)도 지젤 1장으로 교차 확인했고 결과가 같았다.",
+    "남는 설명은 평가 모델 버전 차이(2026-05 기록은 claude-sonnet-4-6)로 보인다.",
+    "이번 변경이 목표한 지표인 정합성 위반은 9장 전부 0건이다."
+  ],
+  "abControl": [
+    {
+      "file": "사각형/정채연.jpg",
+      "prompt": "HEAD(변경 전)",
+      "faceType": "계란형",
+      "verdict": "miss"
+    },
+    {
+      "file": "다이아몬드형/지젤.png",
+      "prompt": "HEAD(변경 전)",
+      "faceType": "계란형",
+      "verdict": "miss"
+    },
+    {
+      "file": "땅콩형/천우희.jpg",
+      "prompt": "HEAD(변경 전)",
+      "faceType": "둥근형",
+      "verdict": "miss"
+    },
+    {
+      "file": "다이아몬드형/지젤.png",
+      "prompt": "변경 후 · 인라인 전달",
+      "faceType": "계란형",
+      "verdict": "miss"
+    }
+  ]
+}

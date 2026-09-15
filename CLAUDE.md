@@ -168,7 +168,7 @@ src/          프론트엔드 (웹/Capacitor 공용) — 상세: .claude/rules/f
 backend/      FastAPI — 상세: .claude/rules/backend.md
   routes/ services/ middleware/ models/ data/(RAG JSON) supabase_schema.sql
 test/         vitest + Testing Library (컴포넌트 + 통합)
-tools/        골든셋 회귀 평가 CLI (landmark.py / eval.py / golden-set.json)
+tools/        골든셋 회귀 평가 CLI (landmark.py / eval.py / score_features.py / golden-set.json)
 docs/         문서 — 지도: docs/README.md, 결정 기록: docs/decisions/
 android/      npx cap add android 산출물 (signed .aab 는 Android Studio 필요)
 capacitor.config.json   appId app.beaumi.coach / appName Beaumi / webDir dist
@@ -182,6 +182,7 @@ capacitor.config.json   appId app.beaumi.coach / appName Beaumi / webDir dist
 | 증상 | 먼저 볼 곳 |
 |------|-----------|
 | 얼굴형 판정이 이상하다 | `backend/services/rag_service.py` 의 `ANALYZE_PROMPT` → `/eval-face` 로 골든셋 회귀 |
+| 얼굴 특징(features)이 빈약하거나 매번 같은 것만 나온다 | `/eval-face features` 로 수율·커버리지 측정 → `ANALYZE_PROMPT` 의 features 섹션 |
 | 카드 내용이 엉뚱하다 | `backend/data/*.json` + `rag_service.build_*_context` |
 | 화면 흐름이 안 맞다 | `docs/ui-flow.md` → `src/App.jsx` |
 | API 가 붙지 않는다 | `docs/connection-status.md` → `src/api/ai.js` |
@@ -193,7 +194,9 @@ capacitor.config.json   appId app.beaumi.coach / appName Beaumi / webDir dist
 
 ## 스킬
 
-- `/eval-face` — 골든셋 사진에 `ANALYZE_PROMPT` 를 돌려 얼굴형 판정을 수집·비교한다.
-  Gemini API 비용 없이 동작. 프롬프트를 수정했으면 반드시 회귀를 돌린다.
+- `/eval-face` — 골든셋 사진에 `ANALYZE_PROMPT` 를 돌려 **두 축**을 채점한다 — 얼굴형 판정 정확도와
+  features 의 수율·커버리지·안정성·어휘·정합성. Gemini API 비용 없이 동작.
+  프롬프트를 수정했으면 반드시 회귀를 돌린다. features 축 채점기는 `tools/score_features.py` 하나이고
+  `tools/eval.py`(Gemini 판) 도 같은 것을 쓴다.
 - `/docs-audit` — 문서가 코드와 어긋났는지 점검하고 `last-verified` 를 갱신한다.
   `docs:check` 가 못 잡는 산문 주장("~는 mock 이다")을 코드와 직접 대조하는 절차.

@@ -78,13 +78,15 @@ last-verified: "2026-08-12"
 현재 커버리지:
 - `backend/test_integration.py`: Phase 2 API schema + Gemini 응답 contract
 - `backend/test_phase3.py`: Phase 3 auth/history/storage route wiring
+- `backend/test_consistency.py`: 얼굴형↔features↔무드 정합성 (ADR 0009) — Gemini 호출 0
+- `tools/test_score_features.py`: features 축 채점기 회귀 (화이트리스트 파싱·안정성·Phase B 라벨) — `backend/.venv/Scripts/python.exe -m pytest tools/test_score_features.py`
 - `test/backendAuth.test.js`: 프론트 API 클라이언트 Authorization/history payload
 - `test/App.flow.test.jsx`: splash/onboarding/login/home 진입 회귀
 - `test/Home.test.jsx`: 게스트 recent fetch 차단, 로그인 recent fetch + 상세 진입
 - `test/History.test.jsx`: 히스토리 로딩/만료/에러 UI + 상세 진입 + 새 분석 CTA
 - `test/HistoryDetail.test.jsx`: 저장된 카드 재오픈 시 `analysisId` 복원
 - `test/authBridge.test.js`: post-login return target 저장/1회 소비 + guest 전환 시 target 정리
-- `test/AnalysisResult.test.jsx`: 헤어=1차/메이크업=2차 CTA wiring + analysisId 유무에 따른 SAVED 배지 (Phase 4-4)
+- `test/AnalysisResult.test.jsx`: 헤어=1차/메이크업=2차 CTA wiring + analysisId 유무에 따른 SAVED 배지 (Phase 4-4) + features 0~3개 렌더 (ADR 0009)
 - `test/CardDetail.test.jsx`: 합성 전/후 sticky CTA 조건 분기 (합성 보기↔결과 공유/다시 보기) (Phase 4-5)
 - `test/MakeupDetail.test.jsx`: 사진 생성 CTA 미노출(규칙 6) + 제품 블록 쿠팡 링크/검색 키워드 분기 (Phase 4-5)
 - `test/Trend.test.jsx`: 준비중 경량화 — mock 피드/search 버튼 제거 + START ANALYSIS→home (Phase 4-6)
@@ -132,13 +134,28 @@ last-verified: "2026-08-12"
 - 메이크업 카드에서 임의 상품명/임의 제휴 링크 생성 여부
 
 도구:
-- 별도 eval 스크립트
-- 골든셋 / 평가셋
+- `/eval-face` 스킬 — Claude 정액제로 골든셋 회귀 (Gemini 비용 0)
+- `tools/eval.py` — Gemini 호출판 (운영 정확도)
+- `tools/score_features.py` — features 축 채점기. 위 둘이 **같은 것을 공유한다**
+- 골든셋 / 평가셋 — `tools/golden-set.json`
+
+채점하는 축은 둘이고 성격이 다르다:
+
+| 축 | 지표 | ground truth |
+|---|---|---|
+| 얼굴형 | 정확/인접/빗나감/판정어려움 + 회차 일관성 | 골든셋 폴더명 (자가평가) |
+| features | 수율·커버리지·안정성·어휘·정합성 | **없다** — 라벨 없이 재는 지표만 쓴다 |
 
 원칙:
 - exact match보다 납득률, 충돌 여부, 금지 출력 여부를 본다
 - 프롬프트/RAG 수정 시 eval 재실행이 기본이다
 - 초기 골든셋은 10~15장으로 시작하고, 출시 후 점진적으로 늘린다
+- **features 에 라벨이 없다는 것을 정확도로 위조하지 않는다.** 정확도(Phase B)는 골든셋 item 에
+  `expectedFeatures`/`forbiddenFeatures` 를 붙인 사진만 계산하고 나머지는 무채점이다.
+- 같은 사진 N회 반복의 라벨 불일치(안정성)를 가장 강한 신호로 본다 — 회차마다 "눈 간격 넓음/좁음" 이
+  갈리면 정확도를 논할 필요 없이 판단 기준이 모호한 것이다.
+- 모델 raw 응답의 정합성 위반은 `/eval-face` 가 재고, 사후 필터가 그것을 걷어내는지는
+  `backend/test_consistency.py` 가 결정론적으로 검증한다 (역할이 다르므로 둘 다 필요하다).
 
 ### 6. Device Smoke
 
@@ -186,7 +203,7 @@ tests/
 | 백엔드 contract/integration | `pytest`, `fastapi.testclient` |
 | 웹 E2E | `Playwright` |
 | DB/RLS | Supabase SQL 테스트 또는 클라이언트 테스트 |
-| AI eval | 별도 eval 스크립트 + 골든셋 |
+| AI eval | `/eval-face` 스킬 · `tools/eval.py` + `tools/score_features.py` + 골든셋 |
 | 디바이스 QA | 실기기 smoke checklist |
 
 ---
