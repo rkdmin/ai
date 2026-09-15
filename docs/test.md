@@ -1,5 +1,5 @@
 ---
-last-verified: "2026-08-12"
+last-verified: "2026-09-15"
 ---
 
 # Test Strategy
@@ -267,6 +267,7 @@ tests/
 - [x] 인증/권한 integration test 구축
 - [x] 정적 분석(lint) 게이트 동작 — `npm run lint` (ESLint 9 flat config, 루트 `eslint.config.js`)
 - [x] 문서 검증 게이트 동작 — `npm run docs:check` (`scripts/docs-check.mjs`)
+- [x] 실행 계획 규율 게이트 동작 — `npm run plans:progress` (`scripts/plans.mjs`, `docs:check` 에도 포함)
 - [x] 저장 시점 강제 검사 — `.claude/hooks/check-file.mjs` (인코딩·퍼블리시티권 금지어)
 - [ ] 업로드 → 분석 → 카드, 로그인 → 히스토리 중 핵심 E2E 1~2개 구축
 - [ ] 메이크업 카드 추천 제품/쿠팡 링크 핵심 흐름 테스트 구축
@@ -295,6 +296,8 @@ npm run verify
 
 `lint` → `test` → `docs:check` 를 순서대로 돌린다. 개별로도 실행할 수 있다.
 
+plan 진행률만 따로 보려면 `npm run plans:progress` — `docs:check` 와 같은 검사를 쓰고 표로 출력한다.
+
 `lint` 는 `src/`·`test/` 와 `.claude/hooks/` 만 본다. `backend/`·`tools/` (Python) 과
 `src/handoff/` (디자인 스냅샷 사본) 은 제외 대상이다.
 
@@ -307,6 +310,7 @@ npm run verify
 |------|----------|
 | `.claude/rules/` frontmatter + `paths` 글롭 | YAML 이 깨지거나 글롭이 아무것도 안 잡아 **규칙이 조용히 로드되지 않는 경우** |
 | ADR frontmatter 규율 | 번호 중복, 파일명 불일치, `status`/`superseded_by` 모순 |
+| plan 규율 (`scripts/plans.mjs`) | 번호 중복·파일명 불일치, 인덱스 미등록, 근거 ADR 부재, **`status` 와 체크 상태의 모순**(전부 체크됐는데 `In Progress`, 남았는데 `Done`) |
 | 마크다운 상대 링크 | 파일 이동·개명 후 방치된 죽은 링크 |
 | 백틱 경로 참조 | 실존하지 않거나 base 가 모호한 경로 |
 | `api-contract.md` 주장 필드 | **백엔드에 없는 유령 필드를 계약처럼 서술** |

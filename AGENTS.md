@@ -12,8 +12,9 @@
 - 테스트 전략과 품질 게이트: [`docs/test.md`](./docs/test.md)
 - 프론트↔백엔드 연결 현황: [`docs/connection-status.md`](./docs/connection-status.md)
 - RAG 데이터 사용 가이드: [`backend/data/rag_usage_guide.md`](./backend/data/rag_usage_guide.md)
-- 로드맵·진행 현황: [`docs/ROADMAP.md`](./docs/ROADMAP.md)
-- 아키텍처 결정 기록 (ADR, Phase별 계획 포함): [`docs/decisions/README.md`](./docs/decisions/README.md)
+- 로드맵·큰 그림: [`docs/ROADMAP.md`](./docs/ROADMAP.md)
+- **실행 계획과 체크리스트**: [`docs/plans/README.md`](./docs/plans/README.md)
+- 아키텍처 결정 기록 (ADR, append-only): [`docs/decisions/README.md`](./docs/decisions/README.md)
 - Supabase/Google Auth 설정 메모: [`docs/auth-setup.md`](./docs/auth-setup.md)
 
 ## Claude Code 전용 컨텍스트
@@ -36,3 +37,21 @@ Claude Code 는 아래를 추가로 자동 로드합니다. 다른 도구를 쓴
 
 기능이 변경되면 대응 문서를 같은 작업에서 갱신합니다.
 갱신 대상 표는 [`CLAUDE.md` 의 "문서 업데이트 규칙"](./CLAUDE.md) 섹션에 있습니다.
+
+### 작업을 끝냈으면 plan 체크를 갱신하세요
+
+할 일과 완료 여부는 [`docs/plans/`](./docs/plans/README.md) 가 단일 출처입니다.
+번호가 붙은 실행 계획(`NNNN-*.md`)에 상세 체크리스트가 있습니다.
+
+- 끝난 항목은 `- [x]` 로 체크합니다. **코드로 확인한 것만** 체크하세요.
+- 접은 항목은 지우지 말고 `- [ ] ~~내용~~ — 취소: 이유` 로 남깁니다. 취소는 진행률 분모에서 빠집니다.
+- 남은 항목이 0개가 되면 frontmatter 의 `status` 를 `Done` 으로 바꿉니다.
+
+```bash
+npm run plans:progress    # 진행률 + 규율 검사
+```
+
+`status` 와 체크 상태가 어긋나면 `npm run docs:check` 가 막습니다.
+
+> ⚠️ **`docs/decisions/` 의 ADR 본문에도 체크박스가 남아 있지만 작성 당시 스냅샷입니다.**
+> ADR 은 append-only 라 갱신하지 않습니다. 두 곳이 어긋나면 `docs/plans/` 가 맞습니다.
