@@ -9,6 +9,14 @@ const delay = (ms) => new Promise((r) => setTimeout(r, ms))
 export async function analyzeFace(_imageBase64, _faceRatios = null) {
   await delay(1200)
   return {
+    // 얼굴형 판정 근거 — 진단용이라 UI 는 쓰지 않는다 (ADR 0009)
+    faceTypeReason: {
+      step1_sideLine: '곡선 — 광대 아래 옆선이 완만하게 이어짐',
+      step2_cheekbone: '아님 — 이마·턱과 폭 차이가 크지 않음',
+      step3_vertical: '약 1.15 — 1.4 미만',
+      decidedAt: 4,
+      confidence: 78,
+    },
     faceType: '둥근형',
     features: ['눈 간격 넓음', '코 낮음', '광대 넓음'],
     moodArchetype: ['ROMANTIC', 'CLEAN', 'SOFT'],

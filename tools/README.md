@@ -94,6 +94,61 @@ python tools/landmark.py path/to/folder/ -o results.json
 
 ---
 
+## features 축 채점 — `score_features.py`
+
+골든셋은 **얼굴형만** 라벨을 갖고 있다 (폴더명). `features` 에는 ground truth 가 없으므로
+라벨 없이 측정 가능한 지표만 Phase A 로 재고, 정확도는 부분 라벨이 붙은 뒤에만(Phase B) 계산한다.
+
+| 지표 | 재는 것 |
+|------|--------|
+| 수율 | 장당 features 개수 (프롬프트 목표 3개), 0개 비율 |
+| 커버리지 | 화이트리스트 37개 중 등장한 라벨 수, 미등장 목록 (→ `feature-tips.json` 죽은 데이터 후보) |
+| 안정성 | 같은 사진 N회 반복의 라벨 집합 Jaccard, 회차 간 반대 속성 충돌 |
+| 어휘 | 화이트리스트 밖 라벨, 표기 흔들림(`사각턱 (하관 발달)`) 발생률 |
+| 정합성 | `CONFLICTING_FEATURES` · `EXCLUSIVE_FEATURE_PAIRS` 위반 (사후 필터 적용 **전** raw 기준) |
+
+화이트리스트와 정합성 규칙은 `backend/services/rag_service.py` 에서 import·파싱한다. 사본이 없으므로
+`ANALYZE_PROMPT` 의 라벨 목록을 고치면 채점기가 그대로 따라간다.
+
+`eval.py` 는 이 채점을 자동으로 함께 출력한다 (`featuresSummary`). 이미 있는 결과 파일만 다시 채점하려면:
+
+```powershell
+python tools/score_features.py tools/eval-claude-results.json --golden tools/golden-set.json
+python tools/score_features.py tools/report.json --mode A --json   # 지표만 JSON
+```
+
+> `eval.py` 결과와 `/eval-face` 결과를 **같은 채점기**로 재므로 Gemini 판정과 Claude 판정을
+> 같은 척도로 비교할 수 있다.
+
+채점기 자체의 회귀 테스트:
+
+```powershell
+backend\.venv\Scripts\python.exe -m pytest tools/test_score_features.py -q
+```
+
+> `tools/.venv` 에는 pytest 가 없다. 채점기는 mediapipe 를 쓰지 않으므로 백엔드 venv 로 돌린다.
+
+### Phase B — 정확도를 재려면
+
+`golden-set.json` 의 item 에 선택 필드를 붙인다. 붙은 사진만 채점되고 나머지는 무채점이다.
+
+```json
+{ "file": "계란형/…jpg", "expectedFaceType": "계란형",
+  "expectedFeatures": ["무쌍"], "forbiddenFeatures": ["사각턱"] }
+```
+
+`expectedFeatures` 는 **사진에서 명백히 보이는 것만** 넣는다. 애매한 특징을 억지로 라벨링하면
+정밀도를 위조하게 되고, 그 숫자를 근거로 프롬프트를 잘못 고치게 된다.
+
+### 사후 필터와 역할 분담
+
+- `backend/test_consistency.py` — `sanitize_analysis` 가 모순을 걷어내는지 결정론적으로 검증
+- 이 채점기 — 모델 **raw 응답**이 규칙을 애초에 지키는지 실사진에서 측정
+
+정합성 위반이 0이 아니면 "필터가 있으니 괜찮다" 가 아니라 "프롬프트가 안 먹고 있다" 로 읽는다.
+
+---
+
 ## 비율값 해석 가이드
 
 | 키 | 의미 | 일반 범위 (참고) |

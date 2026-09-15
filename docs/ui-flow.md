@@ -210,8 +210,10 @@ Capacitor Android 하드웨어 back 은 브라우저 `popstate` 와 같은 `onPo
 - 업로드 사진 또는 저장된 `frontImageUrl`
 - 얼굴형
 - 퍼스널컬러
-- `moodArchetype` 3개
-- `features` 최대 3개
+- `moodArchetype` 3개 (얼굴형별 금지 무드는 백엔드가 제외하고 보낸다)
+- `features` **0~3개** — 개수에 맞춰 제목이 `TOP n FEATURES` 로 바뀐다.
+  0개면 `FEATURES` + "뚜렷하게 두드러지는 특징 없이 전체적으로 균형 잡힌 얼굴이에요" 안내.
+  **더미 특징으로 채우지 않는다** (`docs/decisions/0009-analysis-consistency-rules.md`)
 - 공유 버튼
 - `result.analysisId` 가 있으면(로그인 분석) CTA 위에 `SAVED · 이 분석은 히스토리에 저장됐어요` 배지
 

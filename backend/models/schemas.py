@@ -19,6 +19,10 @@ class AnalyzeResponse(BaseModel):
     features: list[str]
     moodArchetype: list[str] = []  # 8개 키워드 중 3개 (퍼블리시티권 회피 — 연예인 레퍼런스 대체)
     faceRatios: dict | None = None
+    # 얼굴형 판정 근거. 모델이 결론을 먼저 뱉고 근거를 끼워맞추지 않도록 프롬프트에서
+    # faceType 보다 **먼저** 채우게 한다 — 이 단계 추론 강제가 정확도를 올린다 (ADR 0009).
+    # 진단용이라 UI 에 노출하지 않고 DB 에도 저장하지 않는다.
+    faceTypeReason: dict | None = None
     analysisId: str | None = None  # Phase 3 (Supabase) 에서 발급
 
 

@@ -19,6 +19,13 @@ paths:
   "faceType": "계란형 | 둥근형 | 사각형 | 하트형 | 긴형 | 다이아몬드형 | 땅콩형 | 판정 어려움",
   "features": ["눈 간격 넓음", "광대 넓음"],
   "moodArchetype": ["ROMANTIC", "CLEAN", "SOFT"],
+  "faceTypeReason": {
+    "step1_sideLine": "곡선 — 광대 아래 옆선이 완만하게 이어짐",
+    "step2_cheekbone": "아님 — 이마·턱과 폭 차이가 크지 않음",
+    "step3_vertical": "약 1.15 — 1.4 미만",
+    "decidedAt": 4,
+    "confidence": 78
+  },
   "faceRatios": { "foreheadRatio": 0.95, "jawRatio": 0.82, "...": "..." },
   "analysisId": "uuid (로그인 유저만 발급)"
 }
@@ -26,8 +33,20 @@ paths:
 
 - `판정 어려움` — Gemini 가 경계형 얼굴(다이아몬드/하트, 땅콩/사각 등)에서 확신이 부족할 때 반환.
   프론트는 카드 생성 대신 `"여러 얼굴형 특징이 섞여 있어요"` 안내 카드를 보여준다.
+- `features` — **0~3개.** 얼굴형과 모순되는 항목(둥근형 + `사각턱` 등)과 같은 부위의 반대 속성
+  (`눈꼬리 처짐` + `눈꼬리 올라감`)은 `sanitize_analysis` 가 제거하므로 빈 배열도 정상 응답이다.
+  **비었다고 프론트가 더미로 채우면 안 된다** — 분석하지 않은 특징을 진짜처럼 보여주게 된다.
+  규칙: `docs/decisions/0009-analysis-consistency-rules.md`
 - `moodArchetype` — 8개 키워드(`ROMANTIC / CLEAN / SOFT / ELEGANT / SHARP / CLASSIC / FRESH / EDGY`)
-  중 **정확히 3개**. 퍼블리시티권 회피 정책으로 도입 — 연예인·인물 비교는 모든 응답에서 절대 금지.
+  중 **정확히 3개**. 단 얼굴형별 금지 무드(`face-hair.json[].moodBanned`)는 제외된다 —
+  둥근형에 `SHARP` 가 오지 않는다. 3개가 안 되면 얼굴형 선호 무드로 채운다.
+  퍼블리시티권 회피 정책으로 도입 — 연예인·인물 비교는 모든 응답에서 절대 금지.
+- `faceTypeReason` — 얼굴형 판정 근거. **프론트는 표시하지 않는다** (진단용). DB 에도 저장하지 않는다.
+  `ANALYZE_PROMPT` 가 이 필드를 `faceType` **보다 먼저** 채우게 해서 분류 우선순위 1~3번을
+  실제로 밟도록 강제한다 — 결론을 먼저 뱉으면 인상만으로 답한다는 것이 골든셋에서 확인됐다.
+  `step1_sideLine`/`step2_cheekbone`/`step3_vertical` 은 각각 분류 1·2·3번 검사에 대응하고,
+  볼 수 없으면 `"관찰 불가"` 가 들어간다. `decidedAt` 은 결정된 단계(1~4), `confidence` 는 0~100.
+  선택 필드라 없어도 스키마를 통과한다. 배경: `docs/decisions/0009-analysis-consistency-rules.md`
 - `faceRatios` — MediaPipe 계산값. 디버깅·골든셋 회귀 비교용. **프론트는 표시하지 않는다.**
 - `analysisId` — 로그인 유저에게만 발급. 카드 저장(`POST /api/history`)과
   사진 생성(`POST /api/photo/generate`)에 사용된다.
@@ -51,7 +70,8 @@ MediaPipe 가 얼굴을 찾지 못하면(`extract_face_ratios → None`) **Gemin
 
 - `moodLabel` — 무드 아키타입 키워드 + 한국어 분위기 (예: `ELEGANT · 우아한 분위기`).
   `rag_service.py` 의 `HAIR_CARDS_FORMAT` / `MAKEUP_CARDS_FORMAT` 에 정의되어 있고
-  `gemini_service.py` 가 8개 키워드 준수를 프롬프트로 강제한다. **구현됨.**
+  `gemini_service.py` 가 **얼굴형별 허용 무드**(`mood_allowed`) 준수를 프롬프트로 강제한다.
+  8개 전체가 아니라 금지 무드를 뺀 목록이 프롬프트에 들어간다. **구현됨.**
 
 > ⚠️ **`styleLabel` 은 아직 없다.** 백엔드 스키마·프롬프트·카드 포맷 어디에도 없다.
 > 프론트(`AnalysisResult`, `ShareCard`)가 fallback 텍스트로 때우고 있다.

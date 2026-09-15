@@ -34,6 +34,8 @@ const STALE_DAYS = 45;
  * 결정 기록(`docs/decisions/`)은 여기 넣지 않는다 — append-only 라 낡는 것이 정상이다.
  */
 const LIVE_DOCS = [
+  // 다른 에이전트(Codex 등)의 유일한 진입점이다. 여기가 낡으면 그 세션 전체가 잘못된 전제로 간다.
+  'AGENTS.md',
   // 실행 추적의 단일 출처. 인덱스가 실제 plan 목록과 어긋나면 진행 상황을 못 믿는다.
   'docs/plans/README.md',
   'docs/ui-flow.md',

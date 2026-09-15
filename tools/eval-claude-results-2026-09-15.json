@@ -2,9 +2,8 @@
   "model": "claude-sonnet (subscription, general-purpose subagent)",
   "ranAt": "2026-09-15",
   "runs": 3,
-  "promptVersion": "v2 — features 판단 순서 + 라벨별 관찰 기준 + 관찰 불가 기준 추가 (7995자)",
   "promptSource": "backend/services/rag_service.py:ANALYZE_PROMPT",
-  "comparedWith": "tools/eval-claude-results-2026-09-15.json (v1, 5837자)",
+  "promptDelivery": "런타임 해석본(무드 표 주입 완료, 5837자)을 스크래치패드 파일로 전달. 저장소 코드 접근 금지 지시로 정답 노출 차단.",
   "results": [
     {
       "file": "계란형/고윤정.jpg",
@@ -16,10 +15,14 @@
           "features": [
             "아몬드 눈"
           ],
+          "moodArchetype": [
+            "CLEAN",
+            "ELEGANT",
+            "CLASSIC"
+          ],
           "faceTypeReason": {
             "decidedAt": 4,
-            "confidence": 75,
-            "unobservableCount": 0
+            "confidence": 68
           }
         },
         {
@@ -27,22 +30,30 @@
           "features": [
             "아몬드 눈"
           ],
+          "moodArchetype": [
+            "CLEAN",
+            "ELEGANT",
+            "CLASSIC"
+          ],
           "faceTypeReason": {
             "decidedAt": 4,
-            "confidence": 62,
-            "unobservableCount": 1
+            "confidence": 75
           }
         },
         {
           "faceType": "계란형",
           "features": [
             "아몬드 눈",
-            "입술 두꺼움"
+            "눈꼬리 올라감"
+          ],
+          "moodArchetype": [
+            "CLEAN",
+            "ELEGANT",
+            "FRESH"
           ],
           "faceTypeReason": {
             "decidedAt": 4,
-            "confidence": 72,
-            "unobservableCount": 0
+            "confidence": 75
           }
         }
       ],
@@ -59,34 +70,43 @@
       "runs": [
         {
           "faceType": "둥근형",
-          "features": [
-            "입술 두꺼움",
-            "눈꼬리 처짐"
+          "features": [],
+          "moodArchetype": [
+            "ROMANTIC",
+            "SOFT",
+            "CLEAN"
           ],
           "faceTypeReason": {
             "decidedAt": 4,
-            "confidence": 65,
-            "unobservableCount": 1
-          }
-        },
-        {
-          "faceType": "둥근형",
-          "features": [
-            "아몬드 눈"
-          ],
-          "faceTypeReason": {
-            "decidedAt": 4,
-            "confidence": 65,
-            "unobservableCount": 0
+            "confidence": 60
           }
         },
         {
           "faceType": "둥근형",
           "features": [],
+          "moodArchetype": [
+            "ROMANTIC",
+            "SOFT",
+            "FRESH"
+          ],
           "faceTypeReason": {
             "decidedAt": 4,
-            "confidence": 68,
-            "unobservableCount": 0
+            "confidence": 72
+          }
+        },
+        {
+          "faceType": "둥근형",
+          "features": [
+            "둥근 눈"
+          ],
+          "moodArchetype": [
+            "ROMANTIC",
+            "SOFT",
+            "FRESH"
+          ],
+          "faceTypeReason": {
+            "decidedAt": 4,
+            "confidence": 68
           }
         }
       ],
@@ -104,35 +124,45 @@
         {
           "faceType": "사각형",
           "features": [
+            "아몬드 눈"
+          ],
+          "moodArchetype": [
+            "ELEGANT",
+            "CLASSIC",
+            "CLEAN"
+          ],
+          "faceTypeReason": {
+            "decidedAt": 1,
+            "confidence": 62
+          }
+        },
+        {
+          "faceType": "사각형",
+          "features": [],
+          "moodArchetype": [
+            "ELEGANT",
+            "CLASSIC",
+            "CLEAN"
+          ],
+          "faceTypeReason": {
+            "decidedAt": 1,
+            "confidence": 65
+          }
+        },
+        {
+          "faceType": "사각형",
+          "features": [
             "아몬드 눈",
             "인중 짧음"
           ],
-          "faceTypeReason": {
-            "decidedAt": 1,
-            "confidence": 65,
-            "unobservableCount": 0
-          }
-        },
-        {
-          "faceType": "사각형",
-          "features": [
-            "아몬드 눈"
+          "moodArchetype": [
+            "ELEGANT",
+            "CLASSIC",
+            "CLEAN"
           ],
           "faceTypeReason": {
             "decidedAt": 1,
-            "confidence": 65,
-            "unobservableCount": 0
-          }
-        },
-        {
-          "faceType": "사각형",
-          "features": [
-            "아몬드 눈"
-          ],
-          "faceTypeReason": {
-            "decidedAt": 1,
-            "confidence": 62,
-            "unobservableCount": 0
+            "confidence": 65
           }
         }
       ],
@@ -149,42 +179,49 @@
       "runs": [
         {
           "faceType": "계란형",
-          "features": [
-            "아몬드 눈"
+          "features": [],
+          "moodArchetype": [
+            "CLEAN",
+            "ELEGANT",
+            "CLASSIC"
           ],
           "faceTypeReason": {
             "decidedAt": 4,
-            "confidence": 55,
-            "unobservableCount": 1
+            "confidence": 65
           }
         },
         {
-          "faceType": "판정 어려움",
-          "features": [
-            "눈꼬리 올라감"
+          "faceType": "계란형",
+          "features": [],
+          "moodArchetype": [
+            "CLEAN",
+            "ELEGANT",
+            "CLASSIC"
           ],
           "faceTypeReason": {
             "decidedAt": 4,
-            "confidence": 45,
-            "unobservableCount": 2
+            "confidence": 65
           }
         },
         {
           "faceType": "계란형",
           "features": [
-            "아몬드 눈",
-            "눈두덩이 살 두꺼움"
+            "눈꼬리 올라감"
+          ],
+          "moodArchetype": [
+            "CLEAN",
+            "ELEGANT",
+            "FRESH"
           ],
           "faceTypeReason": {
             "decidedAt": 4,
-            "confidence": 55,
-            "unobservableCount": 1
+            "confidence": 62
           }
         }
       ],
       "verdicts": [
         "miss",
-        "ambiguous",
+        "miss",
         "miss"
       ]
     },
@@ -194,44 +231,51 @@
       "expectedAlternatives": [],
       "runs": [
         {
-          "faceType": "하트형",
+          "faceType": "계란형",
           "features": [
-            "아몬드 눈",
-            "입술 두꺼움"
+            "아몬드 눈"
+          ],
+          "moodArchetype": [
+            "CLEAN",
+            "ELEGANT",
+            "FRESH"
           ],
           "faceTypeReason": {
-            "decidedAt": 2,
-            "confidence": 60,
-            "unobservableCount": 1
+            "decidedAt": 4,
+            "confidence": 62
           }
         },
         {
           "faceType": "계란형",
           "features": [
-            "아몬드 눈",
             "입술 두꺼움"
+          ],
+          "moodArchetype": [
+            "ELEGANT",
+            "CLASSIC",
+            "ROMANTIC"
           ],
           "faceTypeReason": {
             "decidedAt": 4,
-            "confidence": 62,
-            "unobservableCount": 1
+            "confidence": 62
           }
         },
         {
           "faceType": "계란형",
-          "features": [
-            "아몬드 눈",
-            "입술 두꺼움"
+          "features": [],
+          "moodArchetype": [
+            "ELEGANT",
+            "CLASSIC",
+            "ROMANTIC"
           ],
           "faceTypeReason": {
             "decidedAt": 4,
-            "confidence": 55,
-            "unobservableCount": 1
+            "confidence": 55
           }
         }
       ],
       "verdicts": [
-        "hits",
+        "miss",
         "miss",
         "miss"
       ]
@@ -244,42 +288,53 @@
         {
           "faceType": "긴형",
           "features": [
-            "눈꼬리 올라감"
+            "아몬드 눈"
+          ],
+          "moodArchetype": [
+            "ELEGANT",
+            "CLASSIC",
+            "CLEAN"
           ],
           "faceTypeReason": {
             "decidedAt": 3,
-            "confidence": 62,
-            "unobservableCount": 1
-          }
-        },
-        {
-          "faceType": "계란형",
-          "features": [
-            "눈꼬리 올라감",
-            "코 높음"
-          ],
-          "faceTypeReason": {
-            "decidedAt": 4,
-            "confidence": 60,
-            "unobservableCount": 0
+            "confidence": 65
           }
         },
         {
           "faceType": "긴형",
           "features": [
             "눈꼬리 올라감",
-            "코 높음"
+            "아몬드 눈"
+          ],
+          "moodArchetype": [
+            "ELEGANT",
+            "CLASSIC",
+            "EDGY"
           ],
           "faceTypeReason": {
             "decidedAt": 3,
-            "confidence": 68,
-            "unobservableCount": 0
+            "confidence": 72
+          }
+        },
+        {
+          "faceType": "긴형",
+          "features": [
+            "눈꼬리 올라감"
+          ],
+          "moodArchetype": [
+            "ELEGANT",
+            "CLASSIC",
+            "CLEAN"
+          ],
+          "faceTypeReason": {
+            "decidedAt": 3,
+            "confidence": 70
           }
         }
       ],
       "verdicts": [
         "hits",
-        "miss",
+        "hits",
         "hits"
       ]
     },
@@ -293,43 +348,52 @@
           "features": [
             "아몬드 눈"
           ],
+          "moodArchetype": [
+            "CLEAN",
+            "ELEGANT",
+            "FRESH"
+          ],
           "faceTypeReason": {
             "decidedAt": 4,
-            "confidence": 62,
-            "unobservableCount": 0
+            "confidence": 60
+          }
+        },
+        {
+          "faceType": "계란형",
+          "features": [
+            "아몬드 눈"
+          ],
+          "moodArchetype": [
+            "CLEAN",
+            "ELEGANT",
+            "FRESH"
+          ],
+          "faceTypeReason": {
+            "decidedAt": 4,
+            "confidence": 60
           }
         },
         {
           "faceType": "계란형",
           "features": [
             "아몬드 눈",
-            "코 높음",
-            "입술 두꺼움"
+            "눈꼬리 올라감"
+          ],
+          "moodArchetype": [
+            "CLEAN",
+            "ELEGANT",
+            "FRESH"
           ],
           "faceTypeReason": {
             "decidedAt": 4,
-            "confidence": 55,
-            "unobservableCount": 1
-          }
-        },
-        {
-          "faceType": "판정 어려움",
-          "features": [
-            "아몬드 눈",
-            "코 높음",
-            "입술 두꺼움"
-          ],
-          "faceTypeReason": {
-            "decidedAt": 2,
-            "confidence": 55,
-            "unobservableCount": 2
+            "confidence": 60
           }
         }
       ],
       "verdicts": [
         "miss",
         "miss",
-        "ambiguous"
+        "miss"
       ]
     },
     {
@@ -338,43 +402,56 @@
       "expectedAlternatives": [],
       "runs": [
         {
-          "faceType": "판정 어려움",
-          "features": [
-            "아몬드 눈"
-          ],
-          "faceTypeReason": {
-            "decidedAt": 2,
-            "confidence": 40,
-            "unobservableCount": 2
-          }
-        },
-        {
-          "faceType": "판정 어려움",
-          "features": [
-            "아몬드 눈"
-          ],
-          "faceTypeReason": {
-            "decidedAt": 2,
-            "confidence": 35,
-            "unobservableCount": 2
-          }
-        },
-        {
-          "faceType": "판정 어려움",
+          "faceType": "둥근형",
           "features": [
             "둥근 눈"
           ],
+          "moodArchetype": [
+            "ROMANTIC",
+            "SOFT",
+            "CLEAN"
+          ],
           "faceTypeReason": {
             "decidedAt": 4,
-            "confidence": 45,
-            "unobservableCount": 2
+            "confidence": 65
+          }
+        },
+        {
+          "faceType": "계란형",
+          "features": [
+            "둥근 눈",
+            "입술 두꺼움"
+          ],
+          "moodArchetype": [
+            "CLEAN",
+            "ELEGANT",
+            "FRESH"
+          ],
+          "faceTypeReason": {
+            "decidedAt": 4,
+            "confidence": 65
+          }
+        },
+        {
+          "faceType": "계란형",
+          "features": [
+            "속쌍꺼풀"
+          ],
+          "moodArchetype": [
+            "CLEAN",
+            "ELEGANT",
+            "FRESH"
+          ],
+          "faceTypeReason": {
+            "decidedAt": 4,
+            "confidence": 60
           }
         }
       ],
       "verdicts": [
-        "ambiguous",
-        "ambiguous",
-        "ambiguous"
+        "miss",
+        "miss",
+        "miss"
       ]
     },
     {
@@ -383,12 +460,19 @@
       "expectedAlternatives": [],
       "runs": [
         {
-          "faceType": "계란형",
-          "features": [],
+          "faceType": "땅콩형",
+          "features": [
+            "속쌍꺼풀",
+            "아몬드 눈"
+          ],
+          "moodArchetype": [
+            "SHARP",
+            "CLASSIC",
+            "ELEGANT"
+          ],
           "faceTypeReason": {
-            "decidedAt": 4,
-            "confidence": 65,
-            "unobservableCount": 0
+            "decidedAt": 1,
+            "confidence": 62
           }
         },
         {
@@ -396,51 +480,49 @@
           "features": [
             "아몬드 눈"
           ],
+          "moodArchetype": [
+            "CLEAN",
+            "ELEGANT",
+            "CLASSIC"
+          ],
           "faceTypeReason": {
             "decidedAt": 4,
-            "confidence": 65,
-            "unobservableCount": 0
+            "confidence": 65
           }
         },
         {
-          "faceType": "판정 어려움",
+          "faceType": "계란형",
           "features": [
             "아몬드 눈"
           ],
+          "moodArchetype": [
+            "CLEAN",
+            "ELEGANT",
+            "CLASSIC"
+          ],
           "faceTypeReason": {
-            "decidedAt": 2,
-            "confidence": 45,
-            "unobservableCount": 2
+            "decidedAt": 4,
+            "confidence": 62
           }
         }
       ],
       "verdicts": [
+        "hits",
         "miss",
-        "miss",
-        "ambiguous"
+        "miss"
       ]
     }
   ],
   "summary": {
     "total": 9,
     "totalRuns": 27,
-    "hits": 12,
+    "hits": 13,
     "near": 0,
-    "miss": 9,
-    "ambiguous": 6,
+    "miss": 14,
+    "ambiguous": 0,
     "errors": 0,
-    "accuracy": "12/27 (44.4%)",
-    "consistent": "4/9"
-  },
-  "confidenceObservation": {
-    "min": 35,
-    "max": 75,
-    "mean": 58.8,
-    "below80": 27,
-    "ambiguousReturned": 6,
-    "unobservableReported": 15,
-    "unobservableTwoOrMore": 6,
-    "note": "v1 은 관찰 불가 신고 0건·판정 어려움 0건. v2 는 관찰 불가 기준을 명시해 신고가 살아났고 판정 어려움이 실제로 발동한다."
+    "accuracy": "13/27 (48.1%)",
+    "consistent": "7/9"
   },
   "featuresSummary": {
     "photos": 9,
@@ -450,32 +532,30 @@
     "totalRuns": 27,
     "yield": {
       "target": 3,
-      "mean": 1.41,
+      "mean": 1.0,
       "distribution": {
-        "0": 2,
-        "1": 14,
-        "2": 9,
-        "3": 2
+        "0": 6,
+        "1": 15,
+        "2": 6
       },
-      "zeroRate": "2/27"
+      "zeroRate": "6/27"
     },
     "coverage": {
-      "used": 8,
+      "used": 6,
       "total": 37,
       "topLabels": {
-        "아몬드 눈": 19,
-        "입술 두꺼움": 7,
-        "눈꼬리 올라감": 4,
-        "코 높음": 4,
-        "눈꼬리 처짐": 1,
-        "인중 짧음": 1,
-        "눈두덩이 살 두꺼움": 1,
-        "둥근 눈": 1
+        "아몬드 눈": 14,
+        "눈꼬리 올라감": 5,
+        "둥근 눈": 3,
+        "입술 두꺼움": 2,
+        "속쌍꺼풀": 2,
+        "인중 짧음": 1
       },
       "neverUsed": [
         "눈 간격 넓음",
         "눈 간격 좁음",
         "코 낮음",
+        "코 높음",
         "코 큼",
         "이마 넓음",
         "이마 좁음",
@@ -491,8 +571,9 @@
         "돌출입",
         "목 짧음",
         "무쌍",
-        "속쌍꺼풀",
+        "눈꼬리 처짐",
         "눈꼬리 막힘",
+        "눈두덩이 살 두꺼움",
         "눈두덩이 살 얇음",
         "긴 눈",
         "삼백안",
@@ -511,32 +592,31 @@
       ]
     },
     "stability": {
-      "mean": 0.488,
+      "mean": 0.37,
       "worst": [
         {
-          "file": "둥근형/강미나.png",
+          "file": "하트형/사나.png",
           "jaccard": 0.0,
           "flaky": [
-            "눈꼬리 처짐",
             "아몬드 눈",
             "입술 두꺼움"
           ]
         },
         {
-          "file": "사각형/정채연.jpg",
+          "file": "사각형/정유미.jpg",
           "jaccard": 0.167,
           "flaky": [
-            "눈꼬리 올라감",
-            "눈두덩이 살 두꺼움",
-            "아몬드 눈"
+            "아몬드 눈",
+            "인중 짧음"
           ]
         },
         {
           "file": "땅콩형/천우희.jpg",
-          "jaccard": 0.333,
+          "jaccard": 0.167,
           "flaky": [
             "둥근 눈",
-            "아몬드 눈"
+            "속쌍꺼풀",
+            "입술 두꺼움"
           ]
         }
       ],
@@ -558,5 +638,18 @@
       }
     },
     "labeled": null
+  },
+  "confidenceObservation": {
+    "min": 55,
+    "max": 75,
+    "mean": 64.7,
+    "below80": 27,
+    "ambiguousReturned": 0,
+    "note": "전 회차가 프롬프트의 '판정 어려움' 임계(80%) 미달인데 판정 어려움은 0건 — 임계가 작동하지 않는다.",
+    "decidedAtDistribution": {
+      "1": 4,
+      "3": 3,
+      "4": 20
+    }
   }
 }

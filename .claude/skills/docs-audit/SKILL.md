@@ -94,6 +94,7 @@ npm run docs:check
 
 | 문서 | 무엇을 주장하나 | 대조 대상 |
 |------|----------------|----------|
+| `AGENTS.md` | 다른 에이전트(Codex 등)가 지킬 규칙과 **직접 실행해야 할 검사 명령** | `.claude/hooks/` · `.claude/settings.json` · `package.json` scripts |
 | `docs/plans/README.md` | plan 인덱스와 규약 | `docs/plans/*.md` 실제 목록 · `npm run plans:progress` |
 | `docs/connection-status.md` | 엔드포인트별 연결/미연결 상태 | `backend/routes/` · `src/api/` · `src/App.jsx` |
 | `docs/ui-flow.md` | 화면 흐름, 컴포넌트 동작·조건·state | `src/App.jsx` 의 view case · `src/components/` |
@@ -120,6 +121,17 @@ npm run docs:check
 - **취소 항목에 이유가 있는가.** `~~취소선~~` 만 긋고 이유를 안 적으면 다음 사람이 다시 논의하게 된다.
 - **`status` 가 현실과 맞는가.** 전부 체크됐는데 `In Progress` 면 스크립트가 잡지만, 반대로
   한 항목도 진행 안 했는데 `In Progress` 인 것은 사람이 판단해야 한다.
+
+## AGENTS.md 를 볼 때 특히 확인할 것
+
+이 파일은 **Claude Code 가 아닌 도구의 유일한 진입점**이라, 여기가 틀리면 그 세션 전체가 잘못된
+전제로 간다. 그런데 `.claude/` 안의 자동 로드 자산을 우리가 매일 쓰다 보니 **"자동으로 되는 것"과
+"Claude Code 에서만 자동인 것"을 혼동한 서술이 쌓이기 쉽다.** 실제로 "hook 이 에이전트 종류와
+무관하게 적용된다"는 틀린 문장이 한 달 넘게 남아 있었다 (링크는 멀쩡해 `docs:check` 가 못 잡는다).
+
+- hook·skill·`.claude/rules/` 를 "자동"이라고 쓴 문장이 있으면, **Claude Code 전용임이 명시돼 있는지** 본다.
+- 안내된 수동 검사 명령이 `package.json` 의 scripts 에 실제로 있는지 확인한다.
+- `.claude/skills/` 목록이 실제 디렉토리와 맞는지 본다.
 
 ## 참고
 

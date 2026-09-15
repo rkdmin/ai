@@ -18,9 +18,9 @@ export default function AnalysisResult({ result, photoUrl, onCardList, onShare }
   const moods = (result?.moodArchetype && result.moodArchetype.length === 3)
     ? result.moodArchetype
     : ['ROMANTIC', 'CLEAN', 'SOFT'];
-  const features = (result?.features && result.features.length > 0)
-    ? result.features.slice(0, 3)
-    : ['균형잡힌 비율', '입체적인 골격', '부드러운 눈매'];
+  // 백엔드가 얼굴형과 모순되는 특징을 걸러내므로 0~3개로 온다.
+  // 빈 배열을 더미로 메우면 분석하지 않은 특징을 진짜처럼 보여주게 된다 — 개수 그대로 렌더한다.
+  const features = (result?.features || []).slice(0, 3);
 
   const label = emotionalLabel(result);
   const [labelHead, labelTail] = splitLabel(label);
@@ -99,9 +99,14 @@ export default function AnalysisResult({ result, photoUrl, onCardList, onShare }
 
         <div style={{ padding: '24px 22px 8px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 14 }}>
-            <div className="label">TOP 3 FEATURES</div>
+            <div className="label">{features.length > 0 ? `TOP ${features.length} FEATURES` : 'FEATURES'}</div>
             <IndexMark n="nº 03" />
           </div>
+          {features.length === 0 && (
+            <div className="ko" style={{ fontSize: 13.5, fontWeight: 300, color: '#7a7a7a', padding: '13px 0', borderBottom: '1px solid #e8e8e8' }}>
+              뚜렷하게 두드러지는 특징 없이 전체적으로 균형 잡힌 얼굴이에요.
+            </div>
+          )}
           {features.map((f, i) => (
             <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '13px 0', borderBottom: '1px solid #e8e8e8' }}>
               <span className="serif-i" style={{ fontSize: 14, color: '#a8a8a8', width: 22 }}>0{i + 1}</span>

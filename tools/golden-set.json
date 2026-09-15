@@ -3,7 +3,12 @@
     "골든셋 라벨. 폴더명이 expectedFaceType (사용자 자가평가 ground truth).",
     "옵션: '계란형' | '둥근형' | '사각형' | '하트형' | '긴형' | '다이아몬드형' | '땅콩형'",
     "각 폴더에 정면 사진을 넣으면 골든셋이 됨.",
-    "imagesDir 기준 상대경로(faceType/filename)로 file을 명시."
+    "imagesDir 기준 상대경로(faceType/filename)로 file을 명시.",
+    "features 축은 라벨이 없어도 채점된다 (tools/score_features.py — 수율·커버리지·안정성·어휘·정합성).",
+    "정확도까지 재려면 item 에 선택 필드를 붙인다:",
+    "  expectedFeatures: 사진에서 명백히 보여 반드시 나와야 하는 라벨 (애매한 건 넣지 말 것)",
+    "  forbiddenFeatures: 나오면 오검출로 볼 라벨",
+    "라벨 없는 사진은 정확도 무채점이다. 애매한 특징을 억지로 라벨링해 정밀도를 위조하지 않는다."
   ],
   "imagesDir": "src/data/test",
   "items": [

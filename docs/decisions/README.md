@@ -15,6 +15,7 @@
 | [0006](./0006-phase6-capacitor-android.md) | 6 | v1.0 | Capacitor 로 패키징해 Play Store 1차 출시 | Accepted |
 | [0007](./0007-phase5-monetization.md) | 5 | v1.1 | 수익화는 v1.1 로 연기 (광고 + 쿠팡파트너스) | Accepted |
 | [0008](./0008-phase7-ios.md) | 7 | v1.2 | iOS 는 Android 지표 검증 후 후속 출시 | Accepted |
+| [0009](./0009-analysis-consistency-rules.md) | — | v1.0 | 얼굴형과 모순되는 분석 결과를 프롬프트 + 사후 필터로 차단 | Accepted |
 
 > ADR 번호는 **결정 시점 순서**다. Phase 번호와 어긋나는 구간이 있다 — Phase 6(Android 출시)을
 > Phase 5(수익화)보다 먼저 하기로 결정했기 때문이다. 이 역전 자체가 0001·0007 의 결정 내용이다.
