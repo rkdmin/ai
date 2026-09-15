@@ -4,6 +4,7 @@
       "faceType": "oval",
       "description": "균형 잡힌 얼굴형이나, 얼굴 길이감(짧거나 긴)에 따라 스타일링이 달라질 수 있음",
       "moodArchetype": ["CLEAN", "ELEGANT", "CLASSIC"],
+      "moodBanned": ["SHARP", "EDGY"],
       "recommend": [
         {
           "style": "칼단발 (태슬컷)",
@@ -39,6 +40,7 @@
       "faceType": "round",
       "description": "얼굴 가로폭과 세로폭이 비슷하고 볼살이 있어 귀여운 인상을 주는 얼굴형",
       "moodArchetype": ["ROMANTIC", "FRESH", "SOFT"],
+      "moodBanned": ["SHARP", "EDGY"],
       "recommend": [
         {
           "style": "단발 레이어드 컷",
@@ -78,6 +80,7 @@
       "faceType": "square",
       "description": "하관(턱)의 골격이 발달하여 강인하거나 지적인 인상을 주는 얼굴형 (육각형 포함)",
       "moodArchetype": ["SHARP", "CLASSIC", "ELEGANT"],
+      "moodBanned": ["ROMANTIC", "SOFT"],
       "recommend": [
         {
           "style": "단발 레이어드 컷 (C컬)",
@@ -117,6 +120,7 @@
       "faceType": "heart",
       "description": "이마와 광대가 넓고 턱 끝은 좁은 얼굴형. 얼굴 길이가 짧은 경우도 포함",
       "moodArchetype": ["ROMANTIC", "FRESH", "SOFT"],
+      "moodBanned": ["SHARP"],
       "recommend": [
         {
           "style": "사이드뱅 + 중단발",
@@ -152,6 +156,7 @@
       "faceType": "long",
       "description": "얼굴 세로 비율이 길거나, 인중 등 중안부가 긴 얼굴형",
       "moodArchetype": ["ELEGANT", "CLASSIC", "EDGY"],
+      "moodBanned": ["SHARP"],
       "recommend": [
         {
           "style": "단발 S컬 펌",
@@ -191,6 +196,7 @@
       "faceType": "peanut",
       "description": "옆광대와 하관(사각턱)이 모두 발달하고 볼이 패여 얼굴 라인이 울퉁불퉁한 얼굴형",
       "moodArchetype": ["SHARP", "EDGY", "CLASSIC"],
+      "moodBanned": ["ROMANTIC", "SOFT"],
       "recommend": [
         {
           "style": "히피펌 / 굵은 웨이브",
@@ -226,6 +232,7 @@
       "faceType": "diamond",
       "description": "옆광대가 발달하고 턱은 좁으며 턱 근육이 없는 얼굴형",
       "moodArchetype": ["SHARP", "ELEGANT", "EDGY"],
+      "moodBanned": ["ROMANTIC"],
       "recommend": [
         {
           "style": "반묶음 (Half-up)",

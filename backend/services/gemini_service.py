@@ -1,6 +1,6 @@
 """
 Gemini 2.5 Flash 호출 — 분석 / 카드 생성 / 스타일 적용 사진 생성.
-src/api/gemini.js 의 Python 포팅판.
+프론트는 이 경로를 거치지 않고 backend API 만 호출한다 (AI 키는 백엔드 전용).
 """
 from __future__ import annotations
 
@@ -19,6 +19,9 @@ from services.rag_service import (
     build_hair_context,
     build_makeup_context,
     build_total_context,
+    mood_allowed,
+    mood_banned,
+    sanitize_analysis,
 )
 
 VISION_MODEL = "gemini-2.5-flash"
@@ -130,7 +133,12 @@ def _build_cards_prompt(
     color_line = (
         f"- 퍼스널컬러: {pc}" if pc else "- 퍼스널컬러: 미정 (사용자가 퍼스널컬러를 모름)"
     )
-    features = ", ".join(analysis.get("features") or [])
+    # features 는 0개일 수 있다. 빈 문자열을 넘기면 모델이 특징을 지어내므로 명시적으로 말해준다.
+    features = ", ".join(analysis.get("features") or []) or "뚜렷하게 두드러지는 특징 없음"
+    face_type = analysis.get("faceType") or ""
+    analyzed_moods = ", ".join(analysis.get("moodArchetype") or []) or "—"
+    allowed_moods = " / ".join(mood_allowed(face_type))
+    banned_moods = ", ".join(mood_banned(face_type)) or "없음"
 
     return (
         f"당신은 전문 뷰티 코치입니다. 아래 얼굴 분석 결과와 RAG 지식베이스를 참고해 {domain} 코디 카드 4장을 JSON 배열로 생성하세요. 다른 텍스트 없이 JSON만 응답하세요.\n"
@@ -138,13 +146,21 @@ def _build_cards_prompt(
         "## 얼굴 분석\n"
         f"- 얼굴형: {analysis.get('faceType')}\n"
         f"{color_line}\n"
-        f"- 이목구비 특징: {features}\n\n"
+        f"- 이목구비 특징: {features}\n"
+        f"- 분석된 무드: {analyzed_moods}\n\n"
         "## RAG 지식베이스\n"
         f"{rag_context}\n\n"
         "## 출력 형식\n"
         f"{output_format}\n\n"
         f"규칙: {color_rule}\n"
-        "moodLabel 규칙(반드시 준수, 위반 시 응답 거부): 무드 아키타입 8개(ROMANTIC / CLEAN / SOFT / ELEGANT / SHARP / CLASSIC / FRESH / EDGY) 중 하나를 골라 '키워드 · 한국어 분위기' 형태로 작성하세요. "
+        "정합성 규칙(반드시 준수): 모든 이유문(hairReason·shadingReason·coachComment 등)은 위 [얼굴 분석]과 앞뒤가 맞아야 합니다. "
+        f"판정된 얼굴형({analysis.get('faceType')})이 갖지 않는 특성을 근거로 들지 마세요 — "
+        "둥근형에 '각진 턱선', 긴형에 '넓은 광대', 계란형에 '발달한 하관' 같은 서술이 그 예입니다. "
+        "이목구비 특징이 '뚜렷하게 두드러지는 특징 없음'이면 featureTip 을 지어내지 말고 null 로 두세요. "
+        "avoid 카드도 같은 규칙을 따릅니다. 추천 카드에서 권한 것을 avoid 카드에서 다시 피하라고 하지 마세요.\n"
+        f"moodLabel 규칙(반드시 준수, 위반 시 응답 거부): 이 얼굴형에 허용된 무드({allowed_moods}) 중 하나를 골라 "
+        "'키워드 · 한국어 분위기' 형태로 작성하세요. "
+        f"{banned_moods} 는 이 얼굴형과 어긋나므로 사용 금지입니다. 위 '분석된 무드'와 같은 방향을 유지하세요. "
         # check-file:allow-policy-terms — 아래는 금지어를 "쓰지 말라"고 지시하는 프롬프트다.
         "연예인·인물 이름·고유명사·'○○ st'·'look-alike' 등 인물 비교 표현은 모든 필드(mood, moodLabel, coachComment, hair, hairReason, featureTip 포함)에서 절대 사용하지 마세요. "
         "퍼블리시티권 침해 회피를 위한 강제 정책입니다."
@@ -166,6 +182,8 @@ async def analyze_face(image_b64: str, face_ratios: dict | None = None) -> dict:
     result = _extract_json_obj(text)
     if "error" in result:
         raise GeminiError(result["error"])
+    # 프롬프트로 같은 규칙을 지시하지만 모델 응답은 확률적이다. 마지막 방어선.
+    result = sanitize_analysis(result)
     if face_ratios:
         result["faceRatios"] = face_ratios
     return result
