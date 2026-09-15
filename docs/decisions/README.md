@@ -19,9 +19,14 @@
 > ADR 번호는 **결정 시점 순서**다. Phase 번호와 어긋나는 구간이 있다 — Phase 6(Android 출시)을
 > Phase 5(수익화)보다 먼저 하기로 결정했기 때문이다. 이 역전 자체가 0001·0007 의 결정 내용이다.
 
-**진행 현황(어디까지 실제로 됐는가)은 여기서 관리하지 않는다.** 라이브 현황은
-[`../ROADMAP.md`](../ROADMAP.md) 와 [`../connection-status.md`](../connection-status.md) 를 본다.
+**진행 현황(어디까지 실제로 됐는가)은 여기서 관리하지 않는다.** 실행 추적은
+[`../plans/`](../plans/README.md) 가 단일 출처이고, 큰 그림은 [`../ROADMAP.md`](../ROADMAP.md),
+엔드포인트 단위는 [`../connection-status.md`](../connection-status.md) 를 본다.
 ADR 의 `status` 는 "결정이 지금도 유효한가"만 나타낸다.
+
+> ⚠️ **ADR 본문에 남아 있는 체크박스는 작성 당시 스냅샷이다.** append-only 규율상 갱신하지 않으므로
+> 신뢰하지 마라. 같은 항목이 [`../plans/`](../plans/README.md) 에 살아 있는 체크리스트로 이관돼 있고,
+> 두 곳이 어긋나면 plan 이 맞다.
 
 ## 규율
 

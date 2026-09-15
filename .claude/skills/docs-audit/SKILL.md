@@ -94,6 +94,7 @@ npm run docs:check
 
 | 문서 | 무엇을 주장하나 | 대조 대상 |
 |------|----------------|----------|
+| `docs/plans/README.md` | plan 인덱스와 규약 | `docs/plans/*.md` 실제 목록 · `npm run plans:progress` |
 | `docs/connection-status.md` | 엔드포인트별 연결/미연결 상태 | `backend/routes/` · `src/api/` · `src/App.jsx` |
 | `docs/ui-flow.md` | 화면 흐름, 컴포넌트 동작·조건·state | `src/App.jsx` 의 view case · `src/components/` |
 | `docs/test.md` | 테스트 구조, 품질 게이트 | `test/` · `backend/test_*.py` · `package.json` scripts |
@@ -106,6 +107,19 @@ npm run docs:check
 - **커밋되지 않은 변경 위에서 `git checkout --` 이나 `git stash` 를 쓰지 마라.**
   문서 점검에 필요 없는 명령이고, 사용자의 작업 중인 파일을 되돌릴 수 있다.
 - 확인하지 않은 문서의 `last-verified` 를 올리지 마라 (위 5번).
+- **plan 의 체크박스를 임의로 체크하지 마라.** 코드로 확인한 항목만 체크하고, 근거를 항목 옆에 남긴다.
+  확신이 없으면 그대로 두는 게 맞다 — 가짜 진행률이 낡은 문서보다 나쁘다.
+
+## plan 을 볼 때 (`docs/plans/`)
+
+`npm run plans:progress` 가 번호·인덱스·`status` 정합성을 이미 검사한다. 스크립트가 못 보는 것은 이것이다.
+
+- **체크된 항목이 정말 끝났는가.** `- [x]` 인데 코드에 없는 경우를 찾는다. 특히 ADR 에서 이관된
+  항목은 작성 당시 기준이라, 이후 코드가 바뀌어 다시 미완료가 된 것이 있을 수 있다.
+- **미체크 항목 중 이미 끝난 것.** 작업만 하고 체크를 안 한 경우가 잦다.
+- **취소 항목에 이유가 있는가.** `~~취소선~~` 만 긋고 이유를 안 적으면 다음 사람이 다시 논의하게 된다.
+- **`status` 가 현실과 맞는가.** 전부 체크됐는데 `In Progress` 면 스크립트가 잡지만, 반대로
+  한 항목도 진행 안 했는데 `In Progress` 인 것은 사람이 판단해야 한다.
 
 ## 참고
 

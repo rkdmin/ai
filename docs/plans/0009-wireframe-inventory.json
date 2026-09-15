@@ -1,0 +1,495 @@
+{
+  "status": "Proposal evidence; not implementation",
+  "reviewDate": "2026-09-15",
+  "fileKey": "PCUCRGz6FRNmOrhynuHulp",
+  "canvasId": "108:2562",
+  "source": "Figma get_metadata cached page 0:1; names are layer names, not guaranteed current text characters",
+  "screens": [
+    {
+      "id": "158:574",
+      "name": "home-wireframe",
+      "visible": true,
+      "path": "horizontal-canvas_1/IA_SECTION_CORE",
+      "width": 390,
+      "height": 1318,
+      "url": "https://www.figma.com/design/PCUCRGz6FRNmOrhynuHulp?node-id=158-574"
+    },
+    {
+      "id": "158:657",
+      "name": "free-beauty-mood-result",
+      "visible": true,
+      "path": "horizontal-canvas_1/IA_SECTION_CORE",
+      "width": 390,
+      "height": 2107,
+      "url": "https://www.figma.com/design/PCUCRGz6FRNmOrhynuHulp?node-id=158-657"
+    },
+    {
+      "id": "108:2563",
+      "name": "home-wireframe",
+      "visible": true,
+      "path": "horizontal-canvas_1",
+      "width": 390,
+      "height": 844,
+      "url": "https://www.figma.com/design/PCUCRGz6FRNmOrhynuHulp?node-id=108-2563"
+    },
+    {
+      "id": "108:2714",
+      "name": "photo-guide",
+      "visible": true,
+      "path": "horizontal-canvas_1",
+      "width": 390,
+      "height": 844,
+      "url": "https://www.figma.com/design/PCUCRGz6FRNmOrhynuHulp?node-id=108-2714"
+    },
+    {
+      "id": "108:2772",
+      "name": "photo-confirm",
+      "visible": true,
+      "path": "horizontal-canvas_1",
+      "width": 390,
+      "height": 844,
+      "url": "https://www.figma.com/design/PCUCRGz6FRNmOrhynuHulp?node-id=108-2772"
+    },
+    {
+      "id": "108:2812",
+      "name": "analysis-loading",
+      "visible": true,
+      "path": "horizontal-canvas_1",
+      "width": 390,
+      "height": 844,
+      "url": "https://www.figma.com/design/PCUCRGz6FRNmOrhynuHulp?node-id=108-2812"
+    },
+    {
+      "id": "108:4120",
+      "name": "Splash",
+      "visible": true,
+      "path": "horizontal-canvas_1",
+      "width": 390,
+      "height": 844,
+      "url": "https://www.figma.com/design/PCUCRGz6FRNmOrhynuHulp?node-id=108-4120"
+    },
+    {
+      "id": "108:2862",
+      "name": "free-beauty-mood-result",
+      "visible": true,
+      "path": "horizontal-canvas_1",
+      "width": 390,
+      "height": 844,
+      "url": "https://www.figma.com/design/PCUCRGz6FRNmOrhynuHulp?node-id=108-2862"
+    },
+    {
+      "id": "108:3056",
+      "name": "checkout",
+      "visible": true,
+      "path": "horizontal-canvas_1",
+      "width": 390,
+      "height": 844,
+      "url": "https://www.figma.com/design/PCUCRGz6FRNmOrhynuHulp?node-id=108-3056"
+    },
+    {
+      "id": "108:3131",
+      "name": "payment-success",
+      "visible": true,
+      "path": "horizontal-canvas_1",
+      "width": 390,
+      "height": 844,
+      "url": "https://www.figma.com/design/PCUCRGz6FRNmOrhynuHulp?node-id=108-3131"
+    },
+    {
+      "id": "108:3175",
+      "name": "paid-beauty-report-hair",
+      "visible": true,
+      "path": "horizontal-canvas_1",
+      "width": 390,
+      "height": 2321,
+      "url": "https://www.figma.com/design/PCUCRGz6FRNmOrhynuHulp?node-id=108-3175"
+    },
+    {
+      "id": "108:3277",
+      "name": "paid-beauty-report-makeup",
+      "visible": true,
+      "path": "horizontal-canvas_1",
+      "width": 390,
+      "height": 2915,
+      "url": "https://www.figma.com/design/PCUCRGz6FRNmOrhynuHulp?node-id=108-3277"
+    },
+    {
+      "id": "108:3410",
+      "name": "hair-recommendation-detail",
+      "visible": true,
+      "path": "horizontal-canvas_1",
+      "width": 390,
+      "height": 1889,
+      "url": "https://www.figma.com/design/PCUCRGz6FRNmOrhynuHulp?node-id=108-3410"
+    },
+    {
+      "id": "108:3481",
+      "name": "makeup-recommendation-detail",
+      "visible": true,
+      "path": "horizontal-canvas_1",
+      "width": 390,
+      "height": 2539,
+      "url": "https://www.figma.com/design/PCUCRGz6FRNmOrhynuHulp?node-id=108-3481"
+    },
+    {
+      "id": "142:574",
+      "name": "my-tab-profile-exists",
+      "visible": true,
+      "path": "horizontal-canvas_1/IA_TOP-LEVEL STATES + STYLE",
+      "width": 390,
+      "height": 844,
+      "url": "https://www.figma.com/design/PCUCRGz6FRNmOrhynuHulp?node-id=142-574"
+    },
+    {
+      "id": "108:3897",
+      "name": "home-post-analysis-unpurchased",
+      "visible": true,
+      "path": "horizontal-canvas_1/IA_TOP-LEVEL STATES + STYLE",
+      "width": 390,
+      "height": 1022,
+      "url": "https://www.figma.com/design/PCUCRGz6FRNmOrhynuHulp?node-id=108-3897"
+    },
+    {
+      "id": "108:3983",
+      "name": "ARCHIVE_DUPLICATE__chemistry-home-room-empty",
+      "visible": false,
+      "path": "horizontal-canvas_1/IA_TOP-LEVEL STATES + STYLE",
+      "width": 390,
+      "height": 844,
+      "url": "https://www.figma.com/design/PCUCRGz6FRNmOrhynuHulp?node-id=108-3983"
+    },
+    {
+      "id": "108:4038",
+      "name": "ARCHIVE_DUPLICATE__chemistry-home-no-mood",
+      "visible": false,
+      "path": "horizontal-canvas_1/IA_TOP-LEVEL STATES + STYLE",
+      "width": 390,
+      "height": 844,
+      "url": "https://www.figma.com/design/PCUCRGz6FRNmOrhynuHulp?node-id=108-4038"
+    },
+    {
+      "id": "106:2374",
+      "name": "my-tab-no-profile",
+      "visible": true,
+      "path": "horizontal-canvas_1/IA_TOP-LEVEL STATES + STYLE",
+      "width": 390,
+      "height": 844,
+      "url": "https://www.figma.com/design/PCUCRGz6FRNmOrhynuHulp?node-id=106-2374"
+    },
+    {
+      "id": "112:1017",
+      "name": "account-link-sign-in",
+      "visible": true,
+      "path": "horizontal-canvas_1/IA_TOP-LEVEL STATES + STYLE",
+      "width": 390,
+      "height": 844,
+      "url": "https://www.figma.com/design/PCUCRGz6FRNmOrhynuHulp?node-id=112-1017"
+    },
+    {
+      "id": "126:574",
+      "name": "home-post-analysis-purchased",
+      "visible": true,
+      "path": "horizontal-canvas_1/IA_TOP-LEVEL STATES + STYLE/Group 34104",
+      "width": 390,
+      "height": 948,
+      "url": "https://www.figma.com/design/PCUCRGz6FRNmOrhynuHulp?node-id=126-574"
+    },
+    {
+      "id": "106:2005",
+      "name": "style-home-pre-analysis",
+      "visible": true,
+      "path": "horizontal-canvas_1/IA_TOP-LEVEL STATES + STYLE/Group 34108",
+      "width": 390,
+      "height": 844,
+      "url": "https://www.figma.com/design/PCUCRGz6FRNmOrhynuHulp?node-id=106-2005"
+    },
+    {
+      "id": "127:576",
+      "name": "style-post-analysis-for-you",
+      "visible": true,
+      "path": "horizontal-canvas_1/IA_TOP-LEVEL STATES + STYLE/Group 34105",
+      "width": 390,
+      "height": 2002,
+      "url": "https://www.figma.com/design/PCUCRGz6FRNmOrhynuHulp?node-id=127-576"
+    },
+    {
+      "id": "106:2131",
+      "name": "style-content-detail-pre-analysis",
+      "visible": true,
+      "path": "horizontal-canvas_1/IA_TOP-LEVEL STATES + STYLE/Group 34109",
+      "width": 390,
+      "height": 1832,
+      "url": "https://www.figma.com/design/PCUCRGz6FRNmOrhynuHulp?node-id=106-2131"
+    },
+    {
+      "id": "129:582",
+      "name": "style-content-detail-post-analysis",
+      "visible": true,
+      "path": "horizontal-canvas_1/IA_TOP-LEVEL STATES + STYLE/Group 34107",
+      "width": 390,
+      "height": 2134,
+      "url": "https://www.figma.com/design/PCUCRGz6FRNmOrhynuHulp?node-id=129-582"
+    },
+    {
+      "id": "106:2457",
+      "name": "product-recommendation-list-post-analysis",
+      "visible": true,
+      "path": "horizontal-canvas_1/IA_TOP-LEVEL STATES + STYLE",
+      "width": 390,
+      "height": 994,
+      "url": "https://www.figma.com/design/PCUCRGz6FRNmOrhynuHulp?node-id=106-2457"
+    },
+    {
+      "id": "141:1770",
+      "name": "product-recommendation-list-post-analysis",
+      "visible": true,
+      "path": "horizontal-canvas_1/IA_TOP-LEVEL STATES + STYLE",
+      "width": 390,
+      "height": 994,
+      "url": "https://www.figma.com/design/PCUCRGz6FRNmOrhynuHulp?node-id=141-1770"
+    },
+    {
+      "id": "144:576",
+      "name": "analysis-history",
+      "visible": true,
+      "path": "horizontal-canvas_1/IA_TOP-LEVEL STATES + STYLE",
+      "width": 390,
+      "height": 844,
+      "url": "https://www.figma.com/design/PCUCRGz6FRNmOrhynuHulp?node-id=144-576"
+    },
+    {
+      "id": "146:603",
+      "name": "saved-styles",
+      "visible": true,
+      "path": "horizontal-canvas_1/IA_TOP-LEVEL STATES + STYLE",
+      "width": 390,
+      "height": 844,
+      "url": "https://www.figma.com/design/PCUCRGz6FRNmOrhynuHulp?node-id=146-603"
+    },
+    {
+      "id": "146:683",
+      "name": "purchase-history",
+      "visible": true,
+      "path": "horizontal-canvas_1/IA_TOP-LEVEL STATES + STYLE",
+      "width": 390,
+      "height": 844,
+      "url": "https://www.figma.com/design/PCUCRGz6FRNmOrhynuHulp?node-id=146-683"
+    },
+    {
+      "id": "147:574",
+      "name": "restore-purchase-default",
+      "visible": true,
+      "path": "horizontal-canvas_1/IA_TOP-LEVEL STATES + STYLE",
+      "width": 390,
+      "height": 844,
+      "url": "https://www.figma.com/design/PCUCRGz6FRNmOrhynuHulp?node-id=147-574"
+    },
+    {
+      "id": "147:587",
+      "name": "restore-purchase-loading",
+      "visible": true,
+      "path": "horizontal-canvas_1/IA_TOP-LEVEL STATES + STYLE",
+      "width": 390,
+      "height": 844,
+      "url": "https://www.figma.com/design/PCUCRGz6FRNmOrhynuHulp?node-id=147-587"
+    },
+    {
+      "id": "147:597",
+      "name": "restore-purchase-success",
+      "visible": true,
+      "path": "horizontal-canvas_1/IA_TOP-LEVEL STATES + STYLE",
+      "width": 390,
+      "height": 844,
+      "url": "https://www.figma.com/design/PCUCRGz6FRNmOrhynuHulp?node-id=147-597"
+    },
+    {
+      "id": "147:609",
+      "name": "restore-purchase-not-found",
+      "visible": true,
+      "path": "horizontal-canvas_1/IA_TOP-LEVEL STATES + STYLE",
+      "width": 390,
+      "height": 844,
+      "url": "https://www.figma.com/design/PCUCRGz6FRNmOrhynuHulp?node-id=147-609"
+    },
+    {
+      "id": "147:619",
+      "name": "restore-purchase-error",
+      "visible": true,
+      "path": "horizontal-canvas_1/IA_TOP-LEVEL STATES + STYLE",
+      "width": 390,
+      "height": 844,
+      "url": "https://www.figma.com/design/PCUCRGz6FRNmOrhynuHulp?node-id=147-619"
+    },
+    {
+      "id": "148:656",
+      "name": "delete-account-confirmation",
+      "visible": true,
+      "path": "horizontal-canvas_1/IA_TOP-LEVEL STATES + STYLE",
+      "width": 390,
+      "height": 844,
+      "url": "https://www.figma.com/design/PCUCRGz6FRNmOrhynuHulp?node-id=148-656"
+    },
+    {
+      "id": "148:576",
+      "name": "privacy-and-security",
+      "visible": true,
+      "path": "horizontal-canvas_1/IA_TOP-LEVEL STATES + STYLE",
+      "width": 390,
+      "height": 844,
+      "url": "https://www.figma.com/design/PCUCRGz6FRNmOrhynuHulp?node-id=148-576"
+    },
+    {
+      "id": "149:574",
+      "name": "logout-confirmation",
+      "visible": true,
+      "path": "horizontal-canvas_1/IA_TOP-LEVEL STATES + STYLE",
+      "width": 390,
+      "height": 844,
+      "url": "https://www.figma.com/design/PCUCRGz6FRNmOrhynuHulp?node-id=149-574"
+    },
+    {
+      "id": "149:597",
+      "name": "account-guest",
+      "visible": true,
+      "path": "horizontal-canvas_1/IA_TOP-LEVEL STATES + STYLE",
+      "width": 390,
+      "height": 844,
+      "url": "https://www.figma.com/design/PCUCRGz6FRNmOrhynuHulp?node-id=149-597"
+    },
+    {
+      "id": "149:630",
+      "name": "account-connected",
+      "visible": true,
+      "path": "horizontal-canvas_1/IA_TOP-LEVEL STATES + STYLE",
+      "width": 390,
+      "height": 844,
+      "url": "https://www.figma.com/design/PCUCRGz6FRNmOrhynuHulp?node-id=149-630"
+    },
+    {
+      "id": "108:2984",
+      "name": "share-bottom-sheet-default",
+      "visible": true,
+      "path": "horizontal-canvas_1/IA_SECTION_CHEMISTRY",
+      "width": 390,
+      "height": 844,
+      "url": "https://www.figma.com/design/PCUCRGz6FRNmOrhynuHulp?node-id=108-2984"
+    },
+    {
+      "id": "108:3714",
+      "name": "owner-ranking",
+      "visible": true,
+      "path": "horizontal-canvas_1/IA_SECTION_CHEMISTRY",
+      "width": 390,
+      "height": 844,
+      "url": "https://www.figma.com/design/PCUCRGz6FRNmOrhynuHulp?node-id=108-3714"
+    },
+    {
+      "id": "108:3599",
+      "name": "beauty-chemistry-friend-landing",
+      "visible": true,
+      "path": "horizontal-canvas_1/IA_SECTION_CHEMISTRY/Frame 2147203814",
+      "width": 390,
+      "height": 844,
+      "url": "https://www.figma.com/design/PCUCRGz6FRNmOrhynuHulp?node-id=108-3599"
+    },
+    {
+      "id": "108:3641",
+      "name": "beauty-chemistry-result-web-invite",
+      "visible": true,
+      "path": "horizontal-canvas_1/IA_SECTION_CHEMISTRY/Frame 2147203814",
+      "width": 390,
+      "height": 1181,
+      "url": "https://www.figma.com/design/PCUCRGz6FRNmOrhynuHulp?node-id=108-3641"
+    },
+    {
+      "id": "106:2260",
+      "name": "ChemistryHome_NoMood",
+      "visible": true,
+      "path": "horizontal-canvas_1/IA_SECTION_CHEMISTRY/canvas",
+      "width": 390,
+      "height": 844,
+      "url": "https://www.figma.com/design/PCUCRGz6FRNmOrhynuHulp?node-id=106-2260"
+    },
+    {
+      "id": "106:2296",
+      "name": "ChemistryHome_NoFriends",
+      "visible": true,
+      "path": "horizontal-canvas_1/IA_SECTION_CHEMISTRY/canvas",
+      "width": 390,
+      "height": 844,
+      "url": "https://www.figma.com/design/PCUCRGz6FRNmOrhynuHulp?node-id=106-2296"
+    },
+    {
+      "id": "112:985",
+      "name": "profile-handoff-loading",
+      "visible": true,
+      "path": "horizontal-canvas_1/IA_SECTION_CHEMISTRY",
+      "width": 390,
+      "height": 844,
+      "url": "https://www.figma.com/design/PCUCRGz6FRNmOrhynuHulp?node-id=112-985"
+    },
+    {
+      "id": "108:2659",
+      "name": "sample-result-bottom-sheet",
+      "visible": true,
+      "path": "horizontal-canvas_1/IA_SECTION_STATES",
+      "width": 390,
+      "height": 844,
+      "url": "https://www.figma.com/design/PCUCRGz6FRNmOrhynuHulp?node-id=108-2659"
+    },
+    {
+      "id": "108:3021",
+      "name": "share-bottom-sheet-copied",
+      "visible": true,
+      "path": "horizontal-canvas_1/IA_SECTION_STATES",
+      "width": 390,
+      "height": 844,
+      "url": "https://www.figma.com/design/PCUCRGz6FRNmOrhynuHulp?node-id=108-3021"
+    },
+    {
+      "id": "108:3112",
+      "name": "payment-processing",
+      "visible": true,
+      "path": "horizontal-canvas_1/IA_SECTION_STATES",
+      "width": 390,
+      "height": 844,
+      "url": "https://www.figma.com/design/PCUCRGz6FRNmOrhynuHulp?node-id=108-3112"
+    },
+    {
+      "id": "108:3153",
+      "name": "payment-failure",
+      "visible": true,
+      "path": "horizontal-canvas_1/IA_SECTION_STATES",
+      "width": 390,
+      "height": 844,
+      "url": "https://www.figma.com/design/PCUCRGz6FRNmOrhynuHulp?node-id=108-3153"
+    },
+    {
+      "id": "112:993",
+      "name": "photo-error-no-face",
+      "visible": true,
+      "path": "horizontal-canvas_1/IA_SECTION_STATES",
+      "width": 390,
+      "height": 844,
+      "url": "https://www.figma.com/design/PCUCRGz6FRNmOrhynuHulp?node-id=112-993"
+    },
+    {
+      "id": "112:1002",
+      "name": "photo-error-multiple-faces",
+      "visible": true,
+      "path": "horizontal-canvas_1/IA_SECTION_STATES",
+      "width": 390,
+      "height": 844,
+      "url": "https://www.figma.com/design/PCUCRGz6FRNmOrhynuHulp?node-id=112-1002"
+    },
+    {
+      "id": "112:1010",
+      "name": "photo-permission-denied",
+      "visible": true,
+      "path": "horizontal-canvas_1/IA_SECTION_STATES",
+      "width": 390,
+      "height": 844,
+      "url": "https://www.figma.com/design/PCUCRGz6FRNmOrhynuHulp?node-id=112-1010"
+    }
+  ]
+}

@@ -1,5 +1,5 @@
 ---
-last-verified: "2026-08-12"
+last-verified: "2026-09-15"
 ---
 
 # 🗺️ AI 뷰티 코치 — 전체 로드맵
@@ -31,37 +31,44 @@ Cross-cut │ 테스트 아키텍처 + 품질 게이트
 > **순서 변경 요지**: 광고/카드 잠금은 첫 출시 리스크와 일정 부담을 키우므로 **v1.1로 분리**한다.
 > Android 첫 출시(v1.0) → 광고·잠금 도입(v1.1) → iOS 출시(Phase 7) 순서로 간다.
 
-| Phase | 핵심 목표 | 결정 기록 (ADR) | 시점 | 완료 기준 |
-|-------|----------|----------------|------|---------|
-| 1 | 얼굴 인식 정확도 검증 (로컬 Python) + RAG 데이터 보강 | [0002](./decisions/0002-phase1-face-accuracy-rag.md) | v1.0 | 골든셋 자가평가 정확도 90% 이상 (10장 중 9장 납득) |
-| 2 | FastAPI 백엔드 셋업 + AI 키 보호 + 배포 전환 | [0003](./decisions/0003-phase2-backend-split.md) | v1.0 | API 키 클라이언트 노출 없음 |
-| 3 | 로그인 + 히스토리 저장 | [0004](./decisions/0004-phase3-auth-supabase.md) | v1.0 | 카카오/구글 로그인 + 내 기록 조회 |
-| 4 | UI/UX 폴리싱 | [0005](./decisions/0005-phase4-ux-design-system.md) | v1.0 | 디자인 시스템 확립 + 온보딩 완성 |
-| 6 | Android 1차 출시 | [0006](./decisions/0006-phase6-capacitor-android.md) | v1.0 | Play Store 출시 |
-| 5 | 수익화 (광고 + 카드 잠금) — 쿠팡 정적 링크는 v1.0부터 | [0007](./decisions/0007-phase5-monetization.md) | v1.1 | 첫 수익 발생 |
-| 7 | iOS 후속 출시 | [0008](./decisions/0008-phase7-ios.md) | v1.2 | App Store 출시 |
+| Phase | 핵심 목표 | 실행 계획 | 결정 기록 (ADR) | 시점 | 완료 기준 |
+|-------|----------|----------|----------------|------|---------|
+| 1 | 얼굴 인식 정확도 검증 (로컬 Python) + RAG 데이터 보강 | [0002](./plans/0002-phase1-face-accuracy-rag.md) | [0002](./decisions/0002-phase1-face-accuracy-rag.md) | v1.0 | 골든셋 자가평가 정확도 90% 이상 (10장 중 9장 납득) |
+| 2 | FastAPI 백엔드 셋업 + AI 키 보호 + 배포 전환 | [0003](./plans/0003-phase2-backend-split.md) | [0003](./decisions/0003-phase2-backend-split.md) | v1.0 | API 키 클라이언트 노출 없음 |
+| 3 | 로그인 + 히스토리 저장 | [0004](./plans/0004-phase3-auth-supabase.md) | [0004](./decisions/0004-phase3-auth-supabase.md) | v1.0 | 카카오/구글 로그인 + 내 기록 조회 |
+| 4 | UI/UX 폴리싱 | [0005](./plans/0005-phase4-ux-design-system.md) | [0005](./decisions/0005-phase4-ux-design-system.md) | v1.0 | 디자인 시스템 확립 + 온보딩 완성 |
+| 6 | Android 1차 출시 | [0006](./plans/0006-phase6-capacitor-android.md) | [0006](./decisions/0006-phase6-capacitor-android.md) | v1.0 | Play Store 출시 |
+| 5 | 수익화 (광고 + 카드 잠금) — 쿠팡 정적 링크는 v1.0부터 | [0007](./plans/0007-phase5-monetization.md) | [0007](./decisions/0007-phase5-monetization.md) | v1.1 | 첫 수익 발생 |
+| 7 | iOS 후속 출시 | [0008](./plans/0008-phase7-ios.md) | [0008](./decisions/0008-phase7-ios.md) | v1.2 | App Store 출시 |
 
 ---
 
 ## 현재 진행 상태
 
-> **이 표가 Phase 진행 상태의 단일 출처다.** ADR(`decisions/`)은 append-only 결정 기록이라
-> 진행을 추적하지 않는다 — `0001` 의 체크리스트는 작성 당시 스냅샷이므로 신뢰하지 마라.
-> 엔드포인트 단위의 세부 현황은 [`connection-status.md`](./connection-status.md).
+> **상세 체크리스트는 [`plans/`](./plans/README.md) 에 있다.** 여기는 큰 그림만 본다.
+> 진행률은 `npm run plans:progress` 로 집계한다 — 이 표의 숫자를 손으로 고치지 마라.
+> 엔드포인트 단위 현황은 [`connection-status.md`](./connection-status.md).
 
-| Phase | 상태 | 남은 것 |
-|-------|------|--------|
-| 1 정확도·RAG | 🟡 도구 완비 | 골든셋 9장 + `tools/eval.py` + `/eval-face` 존재. **정확도 90% 달성 여부는 미측정** |
-| 2 백엔드 분리 | 🟢 코드 완료 | 라우트 8개 + AI 키 백엔드 이동 완료. Render/Railway 실배포는 미확인 |
-| 3 인증·히스토리 | 🟡 코드 완료 | 코드 경로는 전부 연결. **Supabase 콘솔 설정·실기기 OAuth PoC 대기** |
-| 4 UI/UX | 🟢 완료 | Beaumi 디자인 시스템 적용 + 4-4~4-8 마감 |
-| 6 Android 출시 | 🟡 진행 중 | 네이티브 브리지 4종(카메라·공유·외부링크·Sentry) 완료. **`.aab` 생성·Play Store 제출 남음** |
-| 5 수익화 | ⚪ 미착수 | v1.1. 쿠팡 링크 여는 경로만 선행 구현됨 |
-| 7 iOS | ⚪ 미착수 | v1.2. Android 지표 확보 후 |
+| Phase | 실행 계획 | 상태 | 남은 것 |
+|-------|----------|------|--------|
+| 1 정확도·RAG | [plan 0002](./plans/0002-phase1-face-accuracy-rag.md) | 🟡 도구 완비 | 골든셋·평가 도구 존재. **정확도 90% 달성 여부는 미측정** |
+| 2 백엔드 분리 | [plan 0003](./plans/0003-phase2-backend-split.md) | 🟡 코드 완료 | 라우트 8개 + AI 키 백엔드 이동 완료. 실배포 미확인 |
+| 3 인증·히스토리 | [plan 0004](./plans/0004-phase3-auth-supabase.md) | 🟡 코드 완료 | 코드 경로는 전부 연결. **Supabase 콘솔 설정·실기기 OAuth PoC 대기** |
+| 4 UI/UX | [plan 0005](./plans/0005-phase4-ux-design-system.md) | 🟡 구현 완료 | 디자인 시스템 적용 완료. 사용자 직접 확인 항목 남음 |
+| 6 Android 출시 | [plan 0006](./plans/0006-phase6-capacitor-android.md) | 🟡 진행 중 | 네이티브 브리지 4종 완료. **`.aab` 생성·Play Store 제출 남음** |
+| 5 수익화 | [plan 0007](./plans/0007-phase5-monetization.md) | ⚪ 미착수 | v1.1. 쿠팡 링크 여는 경로만 선행 구현됨 |
+| 7 iOS | [plan 0008](./plans/0008-phase7-ios.md) | ⚪ 미착수 | v1.2. Android 지표 확보 후 |
 
 `🟢 완료 · 🟡 진행 중 · ⚪ 미착수`
 
-**품질 게이트 현황** — `npm run lint` ✅ / `npm run test` ✅ 75개 / `npm run docs:check` ✅
+Phase 에 속하지 않는 계획:
+
+| 계획 | 상태 | 내용 |
+|------|------|------|
+| [plan 0001](./plans/0001-v10-release-criteria.md) | 🟡 진행 중 | v1.0 출시 기준 — 전 Phase 교차 |
+| [plan 0009](./plans/0009-wireframe-review.md) | ⚪ 검토 전 | 최신 와이어프레임 구현 계획 (승인 시 ADR 로 결정을 남긴다) |
+
+**품질 게이트 현황** — `npm run verify` (lint + test + docs:check) 통과.
 상세는 [`test.md`](./test.md) 의 "출시 전 최소 품질 게이트".
 
 ---
@@ -110,5 +117,8 @@ Phase 1 (정확도 검증 / 골든셋)
 
 ## 각 Phase 상세
 
-→ [`decisions/`](./decisions/README.md) — Phase 별 계획은 번호가 붙은 ADR 로 이관됐다.
-인덱스 표에서 Phase 번호로 찾을 수 있다.
+- **무엇을 할 것인가 (체크리스트)** → [`plans/`](./plans/README.md)
+- **왜 그렇게 정했나 (배경)** → [`decisions/`](./decisions/README.md)
+
+두 곳 모두 인덱스 표에서 Phase 번호로 찾을 수 있다.
+ADR 본문에도 체크박스가 남아 있지만 **작성 당시 스냅샷**이다 — 실행 추적은 `plans/` 가 한다.

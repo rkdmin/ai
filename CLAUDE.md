@@ -18,6 +18,7 @@
 | `.claude/rules/api-contract.md` | 분석/카드 응답 스키마, 데이터 흐름 | 위 계약 코드를 열 때 |
 | `.claude/hooks/` | 인코딩·금지어·문서동기화 **강제** 검사 | 파일 저장 / 작업 종료 시 |
 | `docs/README.md` | 문서 지도 — 무엇이 어디 있나 | 필요할 때 조회 |
+| `docs/plans/` | 무엇을 어떤 순서로 (번호 붙은 실행 계획 + 체크리스트) | 작업 범위를 잡을 때 조회 |
 | `docs/decisions/` | 왜 이렇게 정했나 (ADR, append-only) | 배경이 필요할 때 조회 |
 
 > **서브에이전트 주의**: Explore·Plan 서브에이전트는 이 파일과 `.claude/rules/` 를 읽지 않는다.
@@ -38,7 +39,8 @@
 | RAG 데이터 구조·병합 규칙·우선순위 | `backend/data/rag_usage_guide.md` |
 | 엔드포인트 wiring (연결/미연결 상태) | `docs/connection-status.md` |
 | Supabase/Auth/OAuth 콘솔 설정 | `docs/auth-setup.md` |
-| Phase 진행 상태 | `docs/ROADMAP.md` |
+| 작업 항목을 끝냈거나 접었을 때 | 해당 `docs/plans/NNNN-*.md` 체크박스 (접은 건 취소선 + 이유) |
+| Phase 진행 상태 · 큰 그림 | `docs/ROADMAP.md` (상세 체크리스트는 `docs/plans/` 가 갖는다) |
 | 디렉토리 구조·스택·실행 명령 | `CLAUDE.md` (이 파일) + 해당 `.claude/rules/` |
 | 결정을 번복 | **새 ADR 추가** (`docs/decisions/README.md` 규율 참조) |
 
@@ -48,7 +50,9 @@
 
 - **`npm run docs:check`** (수동) / **`.claude/hooks/check-docs.mjs`** (작업 종료 시 자동)
 - 무엇을 보나: 죽은 링크, 백엔드에 없는 API 필드, `.claude/rules/` YAML 유효성,
-  ADR 규율, `last-verified` 경과일. 즉 문서가 *주장하는 사실*이 맞는지 본다.
+  ADR 규율, **plan 규율(번호·인덱스·status 정합성)**, `last-verified` 경과일.
+  즉 문서가 *주장하는 사실*이 맞는지 본다.
+- plan 진행률만 따로 보려면 `npm run plans:progress`.
 - `FAIL` 이면 종료가 막힌다. `WARN`(`last-verified` 경과)은 막지 않는다.
 - 코드와 대조해 문서를 확인했으면 그 문서의 `last-verified` 를 그날 날짜로 갱신한다.
   **확인하지 않았으면 올리지 마라** — 경고가 뜨는 게 거짓 기록보다 낫다.
@@ -169,7 +173,7 @@ backend/      FastAPI — 상세: .claude/rules/backend.md
   routes/ services/ middleware/ models/ data/(RAG JSON) supabase_schema.sql
 test/         vitest + Testing Library (컴포넌트 + 통합)
 tools/        골든셋 회귀 평가 CLI (landmark.py / eval.py / golden-set.json)
-docs/         문서 — 지도: docs/README.md, 결정 기록: docs/decisions/
+docs/         문서 — 지도: docs/README.md, 실행 계획: docs/plans/, 결정 기록: docs/decisions/
 android/      npx cap add android 산출물 (signed .aab 는 Android Studio 필요)
 capacitor.config.json   appId app.beaumi.coach / appName Beaumi / webDir dist
 .claude/      rules/(경로 스코프 규칙) hooks/(강제 검사) skills/(반복 절차) settings.json
@@ -195,5 +199,7 @@ capacitor.config.json   appId app.beaumi.coach / appName Beaumi / webDir dist
 
 - `/eval-face` — 골든셋 사진에 `ANALYZE_PROMPT` 를 돌려 얼굴형 판정을 수집·비교한다.
   Gemini API 비용 없이 동작. 프롬프트를 수정했으면 반드시 회귀를 돌린다.
+- `/plan` — 실행 계획(`docs/plans/`)을 만들고 갱신한다. 새 계획 번호 부여, 끝난 항목 체크,
+  접은 항목 취소선 + 이유, 진행률 확인. 규약은 `docs/plans/README.md` 가 단일 소스다.
 - `/docs-audit` — 문서가 코드와 어긋났는지 점검하고 `last-verified` 를 갱신한다.
   `docs:check` 가 못 잡는 산문 주장("~는 mock 이다")을 코드와 직접 대조하는 절차.

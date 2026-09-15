@@ -22,6 +22,7 @@ import path from 'node:path';
 import { load as yamlLoad } from 'js-yaml';
 import picomatch from 'picomatch';
 import { execSync } from 'node:child_process';
+import { collect as collectPlans, verify as verifyPlans } from './plans.mjs';
 
 const ROOT = process.cwd();
 
@@ -33,6 +34,8 @@ const STALE_DAYS = 45;
  * 결정 기록(`docs/decisions/`)은 여기 넣지 않는다 — append-only 라 낡는 것이 정상이다.
  */
 const LIVE_DOCS = [
+  // 실행 추적의 단일 출처. 인덱스가 실제 plan 목록과 어긋나면 진행 상황을 못 믿는다.
+  'docs/plans/README.md',
   'docs/ui-flow.md',
   'docs/test.md',
   'docs/connection-status.md',
@@ -158,6 +161,24 @@ console.log('\n[2] docs/decisions/ — ADR frontmatter 규율');
   if (adrs.length) ok(`ADR ${adrs.length}개 검사 완료`);
 }
 
+// ─── 2.5 docs/plans/ — plan 규율 ──────────────────────────────────
+console.log('\n[2.5] docs/plans/ — plan 규율과 진행률');
+{
+  const plans = collectPlans();
+  if (!plans.length) {
+    ok('plan 없음 — 건너뜀');
+  } else {
+    for (const m of verifyPlans(plans)) fail(m);
+    const t = plans.reduce(
+      (a, p) => ({ done: a.done + p.done, total: a.total + p.total, cancelled: a.cancelled + p.cancelled }),
+      { done: 0, total: 0, cancelled: 0 }
+    );
+    const pct = t.total ? Math.round((t.done / t.total) * 100) : 0;
+    ok(`plan ${plans.length}개 · 항목 ${t.done}/${t.total} (${pct}%)` +
+       (t.cancelled ? ` · 취소 ${t.cancelled}` : ''));
+  }
+}
+
 // ─── 3. 상대 링크 실존 ─────────────────────────────────────────────
 console.log('\n[3] 마크다운 상대 링크');
 {
@@ -166,6 +187,7 @@ console.log('\n[3] 마크다운 상대 링크');
     'AGENTS.md',
     'docs/README.md',
     'docs/decisions/README.md',
+    'docs/plans/README.md',
     'docs/ROADMAP.md',
     'docs/connection-status.md',
     'docs/test.md',
