@@ -19,7 +19,7 @@ last-verified: "2026-09-15"
 
 ## 구현
 
-### 9. 저장소/구현 기준 체크리스트
+### 핵심 체크
 - [x] 홈 recent가 실제 히스토리를 반영한다
 - [x] dead button이 없다 (Phase 4 범위에서 플래그된 dead 버튼 모두 제거: `Trend` search / `My` settings / `MakeupDetail` 더보기)
 - [x] result 화면의 primary CTA가 하나로 읽힌다 (헤어=1차 dark CTA / 메이크업=2차 outline CTA + 로그인 시 SAVED 배지)
@@ -31,7 +31,11 @@ last-verified: "2026-09-15"
 - [x] my 페이지는 mock 과장이 줄어든다 (fake stats·유저 퍼스널컬러·dead 메뉴 제거, 프로필은 세션 JWT email/provider 실데이터화)
 - [x] 주요 empty / error / loading 상태 문구가 통일된다 (공용 `src/components/common/StateNotice.jsx` 로 구조 통일 + 톤 규칙 적용)
 
-### 9. 저장소/구현 기준 체크리스트 — 9.1 지금 사용자가 직접 체크해야 하는 것
+## 사용자 직접 확인
+
+> 코드로 검증할 수 없어 사람이 직접 해봐야 하는 항목이다.
+
+### 9.1 지금 사용자가 직접 체크해야 하는 것
 - [x] Phase 4 범위 dead 버튼 정리 완료 — `My` settings(gear) 제거, `Trend` search 제거(준비중 경량화), `MakeupDetail` `+ 파트별 추천 제품 더보기` 제거(onSynthesize 오연결)
 - [ ] 홈 recent 카드에서 상세 진입 후 뒤로가기 시 `home` 으로 복귀하는지 실기기/브라우저에서 확인
 - [ ] 히스토리 목록에서 상세 진입 후 뒤로가기 시 `history` 로 복귀하는지 확인

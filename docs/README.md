@@ -31,13 +31,7 @@
 
 배경이 궁금할 때만 열면 된다. 매 작업에서 읽을 필요는 없다.
 
-## 5. 방법론
-
-| 문서 | 내용 |
-|------|------|
-| [`ai-context-playbook.md`](./ai-context-playbook.md) | AI 에이전트용 md 컨텍스트 관리 방법론 (도구 중립) |
-
-## 4. 무엇을 어떤 순서로 할 것인가 (실행 계획)
+## 3. 무엇을 어떤 순서로 할 것인가 (실행 계획)
 
 [`plans/`](./plans/README.md) — 번호가 붙은 실행 계획. **상세 체크리스트가 여기 있다.**
 
@@ -50,6 +44,12 @@
 | Phase 실행 계획 | [0002 Phase 1](./plans/0002-phase1-face-accuracy-rag.md) ~ [0008 Phase 7](./plans/0008-phase7-ios.md) |
 | Phase 교차 | [0001 v1.0 출시 기준](./plans/0001-v10-release-criteria.md) |
 | 검토 전 제안 | [0009 와이어프레임 구현 계획](./plans/0009-wireframe-review.md) (`status: Proposed`) |
+
+## 4. 방법론
+
+| 문서 | 내용 |
+|------|------|
+| [`ai-context-playbook.md`](./ai-context-playbook.md) | AI 에이전트용 md 컨텍스트 관리 방법론 (도구 중립) |
 
 ## 이 저장소의 문서가 아닌 것
 
