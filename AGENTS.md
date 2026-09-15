@@ -1,3 +1,7 @@
+---
+last-verified: "2026-09-15"
+---
+
 # AGENTS.md
 
 > 이 프로젝트의 단일 진실 소스는 **`CLAUDE.md`** 입니다.
@@ -24,13 +28,43 @@ Claude Code 는 아래를 추가로 자동 로드합니다. 다른 도구를 쓴
 - `.claude/rules/backend.md` — RAG 데이터 구조, 키 매핑, 프롬프트 규칙 (`backend/**`, `tools/**`)
 - `.claude/rules/api-contract.md` — 분석/카드 응답 스키마, 데이터 흐름
 
-## 강제 규칙 (에이전트 종류와 무관하게 적용)
+## 필수 규칙 — 검사는 Claude Code 밖에서 자동으로 돌지 않습니다
 
-`.claude/hooks/` 가 도구 계층에서 다음을 차단합니다. 산문 규칙이 아니라 실제로 막힙니다.
+<!-- check-file:allow-encoding-sample — 아래 본문이 깨진 글자를 예시로 인용하므로 hook 의 글자 검사를 면제한다. -->
+
+아래 셋은 **규칙 자체는 에이전트 종류와 무관하게 적용**되지만, **자동 차단은 Claude Code 안에서만**
+동작합니다. `.claude/hooks/` 는 Claude Code 의 도구 이벤트에 붙어 있어, Codex 로 파일을 저장하면
+아무것도 검사하지 않습니다.
 
 - **인코딩** — BOM / CRLF / 깨진 글자(mojibake). UTF-8(BOM 없음) + LF 만 허용.
+  - 이 저장소는 한글과 `·`(U+00B7) 를 코드·테스트에 직접 씁니다. CP949 로 저장되면 `·` 가 `쨌` 로
+    바뀌어 **테스트는 통과하는데 UI 만 깨지는** 사고가 납니다 (2026-05 실제 발생).
 - **퍼블리시티권** — 연예인 비교·닮은꼴 관련 식별자. 무드 아키타입 8개 키워드로 대체.
-- **문서 동기화** — 코드를 바꿨는데 대응 문서가 그대로면 작업 종료 시점에 알립니다.
+  - 판례 리스크입니다. 적용 범위는 API 응답·UI·로그·공유 이미지·프롬프트 전부입니다.
+- **문서 동기화** — 코드를 바꿨는데 대응 문서가 그대로면 안 됩니다.
+
+### Claude Code 가 아닌 도구로 작업할 때
+
+**작업을 마치기 전에 반드시 아래를 직접 실행하세요.** hook 이 자동으로 잡아주지 않습니다.
+
+```bash
+npm run verify
+```
+
+`lint` → `test` → `check:files`(인코딩·금지어) → `docs:check`(죽은 링크·유령 필드·문서 경과일)
+순으로 돕니다. 변경 파일만 빠르게 보려면 `npm run check:files` 만 따로 돌려도 됩니다.
+
+백엔드를 건드렸다면 파이썬 테스트도 함께 돌립니다.
+
+```bash
+cd backend && .venv/Scripts/python.exe -m pytest -q
+```
+
+### 쓸 수 없는 것
+
+`.claude/skills/` 의 `/eval-face`, `/docs-audit` 는 Claude Code 전용입니다. 다른 도구에서는
+호출할 수 없으니, 프롬프트를 수정했다면 **골든셋 회귀는 Claude Code 세션에서 따로 돌리세요**
+(`backend/services/rag_service.py` 의 `ANALYZE_PROMPT` 를 바꾸면 필수입니다).
 
 ## 문서 업데이트 규칙
 

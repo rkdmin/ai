@@ -40,6 +40,7 @@
 | Supabase/Auth/OAuth 콘솔 설정 | `docs/auth-setup.md` |
 | Phase 진행 상태 | `docs/ROADMAP.md` |
 | 디렉토리 구조·스택·실행 명령 | `CLAUDE.md` (이 파일) + 해당 `.claude/rules/` |
+| hook·skill 추가/삭제, 검사 명령 변경 | `AGENTS.md` (다른 에이전트의 유일한 진입점 — 여기가 낡으면 그 세션이 통째로 어긋난다) |
 | 결정을 번복 | **새 ADR 추가** (`docs/decisions/README.md` 규율 참조) |
 
 ### 이 규칙이 어떻게 지켜지나
@@ -116,7 +117,10 @@ npm install
 npm run dev
 ```
 
-→ http://localhost:5173 · 검증은 `npm run verify` (lint + test + docs:check 일괄)
+→ http://localhost:5173 · 검증은 `npm run verify` (lint + test + check:files + docs:check 일괄)
+
+> `check:files` 는 저장 시점 hook 과 **같은 검사**(인코딩·금지어)를 명령으로 돌린다.
+> hook 은 Claude Code 안에서만 동작하므로, 다른 도구로 작업했다면 이게 유일한 방어선이다.
 
 루트 `.env`:
 ```
