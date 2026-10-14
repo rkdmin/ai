@@ -133,7 +133,9 @@ adapter 는 `supabase_service.analysis_from_row` 하나다. 모양을 또 바꾸
 - `GET /api/account/policy` → `{ photoRetentionDays, generatedPhotoRetentionDays, guestPhotoStored: false }`.
   **UI 카피("즉시 폐기", "90일 보관")는 이 값을 읽어 만든다.** 숫자를 화면에 박지 않는다 — 지금 `PhotoUpload` 의
   "분석 즉시 폐기" 문구는 로그인 사용자에겐 거짓이다 (코드 불일치, plan 0009 P1).
-- 만료 시각 기록과 실제 파일 삭제는 별개다. 만료 후 파일을 지우는 작업은 아직 없다 (F12, R16).
+- 만료 시각이 지난 파일은 `backend/jobs/cleanup_expired_photos.py`(cron) 또는 `POST /api/admin/cleanup-expired`(X-Admin-Token) 가
+  실제로 지운다. 정면 사진은 파일만 지우고 분석 행은 남긴다 (`front_image_url` null → `photoExpired: true`), 생성 사진은 행도 지운다.
+  **스케줄러에 걸어야 돈다** — 배포 환경에 하루 1회 cron 을 등록하는 건 운영 설정이다 (`docs/connection-status.md`).
 
 ### 계정 삭제 (`DELETE /api/account`) — 로그인 전용
 

@@ -19,6 +19,7 @@ paths:
 | `backend/routes/reports.py` | `POST/GET /api/reports`, `GET /api/reports/{id}`, `POST .../retry` — 통합 리포트 (F04) |
 | `backend/routes/rooms.py` | Beauty Room·초대·참여·랭킹·앱 인계 (F08·F09) |
 | `backend/routes/styles.py` | STYLE 피드·상세·제품 추천·북마크 (F07·F10) |
+| `backend/routes/admin.py` | `POST /api/admin/cleanup-expired` (X-Admin-Token, 비우면 404) |
 | `backend/routes/account.py` | `DELETE /api/account` (실제 데이터 삭제, 멱등) · `GET /api/account/policy` (보관 기간) |
 | `backend/services/mediapipe_service.py` | MediaPipe FaceMesh → `inspect_image` (얼굴 수·크기 검사 + `faceRatios`). `tools/landmark.py` 이관 |
 | `backend/services/gemini_service.py` | Gemini 2.5 Flash 호출 (분석/카드/이미지) |
@@ -30,6 +31,7 @@ paths:
 | `backend/services/room_store.py` | rooms·participants·invite/handoff token 저장소 (REST + 메모리) |
 | `backend/services/style_service.py` | 콘텐츠·제품 사전 조회, 태그 개인화 점수, 폴백 (`data/styles/`) |
 | `backend/services/bookmark_store.py` | bookmarks 저장소 (REST + 메모리) |
+| `backend/services/cleanup_service.py` · `backend/jobs/cleanup_expired_photos.py` | 만료 정면·생성 사진 실제 삭제 (멱등). cron 스크립트 또는 admin 엔드포인트 |
 | `backend/middleware/auth.py` | Supabase JWT 검증 + 로컬 개발 `X-User-Id` 폴백 |
 | `backend/middleware/rate_limit.py` | 인메모리 IP/유저 카운터 (UTC 일자 단위) |
 | `backend/models/schemas.py` | Pydantic 요청/응답 스키마 |
@@ -41,6 +43,7 @@ paths:
 | `backend/test_phase3.py` | 인증/히스토리 경로 스모크 (pytest) |
 | `backend/test_consistency.py` | 얼굴형↔features↔무드 정합성 회귀 (pytest, Gemini 호출 0) |
 | `backend/test_reports.py` | 리포트 생성·멱등·부분 실패·재시도·권한·소유권 (pytest) |
+| `backend/test_cleanup.py` | 만료 사진 정리 경로·admin 토큰 (pytest) |
 | `backend/test_styles.py` | 피드 개인화·폴백·초안 숨김·상세·제품·북마크 (pytest) |
 | `backend/test_chemistry.py` · `test_rooms.py` | 케미 규칙 결정성·타입·랭킹 / Room·초대·참여·회수·인계 (pytest) |
 
