@@ -113,22 +113,69 @@ Figma 가 답한 항목은 확정하고, Figma 가 비워 둔 항목은 **UX 프
 - [ ] Play Billing sandbox에서 상품 조회→구매→서버 검증→acknowledge→복원→회수 POC
 - [ ] 설치된 앱 App Links와 미설치 후 Install Referrer/수동 복원 폴백 POC
 - [ ] Figma의 23개 화면·81개 미확정 텍스트를 fixture/운영값/fallback으로 분류하고 담당자 확정 (분류는 [closeout 1절](./0009-figma-closeout.md) 완료, 운영값 24개 담당자 확정 남음)
-- [ ] CTA 260행 중 `추정` 162행의 목적지·복귀를 디자이너가 확정 ([closeout 2절](./0009-figma-closeout.md))
+- [ ] CTA 260행 중 `추정` 164행의 목적지·복귀를 디자이너가 확정 (재확인 정정 반영) ([closeout 2절](./0009-figma-closeout.md))
 - [ ] 누락 화면(친구 상세, 인계 실패·만료, 닉네임·동의, Room 관리, 필수 데이터 관리)을 설계하거나 명시적으로 범위에서 제외
 
-### P1~P4 — 기반·무료 분석·리포트·결제
+> 아래 F·D 번호는 [보고서](./0009-wireframe-review.html) 04·05절의 묶음 번호다. 한 항목은 한 PR 이 아니라
+> "완료 기준을 만족하는 기능 묶음"이고, 완료 기준은 보고서 본문이 단일 출처다. 여기엔 한 줄 요약만 둔다.
 
-- [ ] P1: 화면 주소/복귀 규칙, guest principal, active profile, schemaVersion, legacy adapter 구현
-- [ ] P2: 사진 사전검사·오류 코드, Primary/Traits 계약, 무료 결과·홈 전후·샘플 fixture 구현
-- [ ] P3: 구매 snapshot 기반 통합 Beauty Report, Hair/Makeup 탭, 상세·부분 재시도·TRY ON 권한 구현
-- [ ] P4: 상품·order·purchase token·entitlement 원장, RTDN, 구매 내역·복원·환불/회수 구현
+### P1 — 공통 기반
 
-### P5~P8 — STYLE·케미·관리·검수
+- [ ] F01 화면 이동·요청 상태 — 메인 4탭에만 하단 Nav, 상세는 출처로 복귀, 취소 후 늦은 응답이 화면을 덮지 않음
+- [ ] F02 Guest-first Beauty Profile — 앱 재진입 후 홈·MY·FOR YOU 가 같은 결과, 계정 전환 시 이전 데이터 비노출
+- [ ] D04 저장 스키마 — 분석 원형 JSON + schemaVersion, active profile 참조, reports·purchases·entitlements·bookmarks·rooms 설계 (소유자 컬럼은 R02 확정까지 추상화)
+- [ ] 기존 데이터 이전 — schemaVersion 없는 분석은 legacy adapter 로 읽고 무드 없음을 표현, 지어내지 않음
+- [ ] 안내 문구·코드 불일치 수정 — 사진 "즉시 폐기" 카피 vs 90일 만료, 계정 삭제 alert (R16·F12 선행)
 
-- [ ] P5: 운영 콘텐츠/제품 사전, 공개·FOR YOU 피드, 상세, 공통 제품 목록, 북마크·게스트 병합 구현
-- [ ] P6: Room·초대 token·참여 snapshot·케미 계산·랭킹·공개 웹·앱 인계 구현
-- [ ] P7: 계정 연결/충돌, 동기화 상태, 실제 로그아웃·삭제, 사진/이력/Room 관리 구현
-- [ ] P8: API 계약·RLS·E2E·AI 품질·Android 실기기·보관/삭제·접근성·문서 동기화 검수
+### P2 — 무료 분석
+
+- [ ] F03 사진 사전검사·오류 코드 — 얼굴 없음/여러 얼굴은 Gemini 호출 전 차단, NO_FACE 등 코드 계약, 권한 거절 복귀
+- [ ] D01 분석·무드 계약 — Primary 1 + Traits 0~2 + 근거 + distinctive point nullable + rule version, `/eval-face` 회귀 통과
+- [ ] D07 예시·미디어 — 샘플 결과 1세트·촬영 가상 예시, 내부 평가 사진은 제품 경로에 쓰지 않음
+- [ ] 홈 분석 전/후·사진 가이드·확인·로딩·무료 결과 화면 — 사진 검증→분석→결과→홈 복귀 전체 흐름
+
+### P3 — 통합 리포트
+
+- [ ] F04 구매 가능한 Beauty Report — reportId + 분석 snapshot + 권한, 한 권한으로 두 탭, 구매 전 전체 본문이 payload 에 없음
+- [ ] D02 헤어 RAG·리포트 — 전체 방향, 길이/앞머리/볼륨/레이어 값+이유, salon guide, 대안
+- [ ] D03 메이크업 RAG·리포트 — 공통 방향, 부위별 evidence·eligibility, 0~3개 확실한 부위, 적용 순서, 제형 추천
+- [ ] F06 TRY ON·저장·공유 재정의 — 추천별 합성 결과가 섞이지 않음, 캐시 재열람은 생성 차감 없음, 광고 mock 제거
+- [ ] 구 `/api/cards/*` 공개 범위 제한 — 권한 없이 유료 본문 생성·조회 불가
+
+### P4 — 결제·복원
+
+- [ ] F05 결제·구매 내역·복원 — 상품 조회·서버 검증·entitlement·거래 원장·RTDN, sandbox 에서 cancel/pending/중복/환불 통과
+- [ ] 결제 전 로그인 분기 (R02 확정 후) — 로그인 화면 삽입 또는 게스트 principal 중 하나로 구현
+- [ ] 홈 구매 완료·MY 구매 리포트·구매 내역에서 같은 리포트 재진입
+
+### P5 — STYLE·저장
+
+- [ ] D05 STYLE 콘텐츠 사전 — contentId·상태·카테고리·본문 block·mood/trait 태그·활용법, "인기" 집계 전엔 에디터 추천
+- [ ] D06 제품·제품 타입 사전 — 제품 타입과 실제 catalog 분리, 검토된 URL·활성 상태, AI 가 상품·가격·URL 생성 금지
+- [ ] F07 STYLE 콘텐츠·FOR YOU — 분석 전 에디토리얼, 미구매도 FOR YOU, 모든 더 보기에 목적지, 제품 목록은 `106:2457` canonical + 진입 파라미터
+- [ ] F10 저장한 스타일 — 안정적 content ID 로 저장/해제·필터·개수, 게스트→계정 병합 시 중복 없음
+
+### P6 — 케미·초대
+
+- [ ] D08 케미 사전 — 무드 조합·Traits 호환 규칙, 타입 이름·설명, score/rank tie-break, rule version
+- [ ] F08 Room·참여·랭킹 — 자기/중복 참여 방지, 점수 재현, token 으로 다른 Room 비공개 데이터 불가, 회수 시 공개 조회 즉시 제한
+- [ ] F09 초대 웹·앱 인계 — 초대 token 검증, 기존 프로필/새 분석 분기, 일회성 handoff token, 설치/미설치·만료·재시도 확인 (P0 POC 결과 반영)
+- [ ] Room 생성 로그인 규칙 (R02 와 함께 확정)
+
+### P7 — 계정·관리
+
+- [ ] F11 계정 연결·동기화·로그아웃 — 프로필·이력·북마크·Room·구매 병합, "동기화됨"은 서버 성공 확인 후만, 세션 갱신 보완
+- [ ] F12 개인정보·사진·계정 삭제 — 서버 삭제 + Storage + Room 공개 정보 회수, 재시도 가능, 안내 문구와 보관 정책 일치
+- [ ] 미확정 메뉴 처리 (R14) — 알림·로그인 기기는 숨김, 사진·이력 관리는 범위 확정 후 연결
+
+### P8 — 통합 검수
+
+- [ ] API 계약·RLS·소유권 테스트 — 타인 리포트·Room·구매 접근 차단
+- [ ] 핵심 흐름 E2E — 첫 체험·첫 구매·다시 열기·스타일 탐색·친구 초대·복원·계정 연결
+- [ ] AI 품질 — 얼굴형 회귀 + Primary/Traits/리포트 근거 일치·사전 밖 생성·임의 제품 평가
+- [ ] Android 실기기 — 결제 sandbox·App Links·카카오 인앱 브라우저·콜드/웜 시작
+- [ ] 화면·접근성 — 360/390/430·긴 제목·빈 필드·시트 포커스·뒤로가기
+- [ ] 문서 동기화 — ui-flow·api-contract·connection-status·RAG 가이드·test·ROADMAP·CLAUDE/rules 갱신
 
 ### 출시 게이트
 
