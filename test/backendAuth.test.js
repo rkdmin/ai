@@ -33,6 +33,43 @@ describe('backend API auth/history wiring', () => {
     );
   });
 
+  it('validatePhoto posts only the image to the validation endpoint', async () => {
+    vi.doMock('../src/utils/authBridge', () => ({ getAccessToken: () => null }));
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ ok: true, code: null, checks: {}, faceCount: 1 }),
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    const { validatePhoto } = await import('../src/api/backend.js');
+    await validatePhoto('data:image/jpeg;base64,photo');
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      'http://localhost:8000/api/photos/validate',
+      expect.objectContaining({
+        method: 'POST',
+        body: JSON.stringify({ image: 'data:image/jpeg;base64,photo' }),
+      }),
+    );
+    expect(fetchMock.mock.calls[0][1].body).not.toContain('personalColor');
+  });
+
+  it('parseError keeps the response code on the thrown error', async () => {
+    vi.doMock('../src/utils/authBridge', () => ({ getAccessToken: () => null }));
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
+      ok: false,
+      status: 400,
+      json: async () => ({ detail: '얼굴이 여러 개 보여요.', code: 'MULTIPLE_FACES' }),
+    }));
+
+    const { analyzeFace } = await import('../src/api/backend.js');
+    await expect(analyzeFace('image')).rejects.toMatchObject({
+      message: '얼굴이 여러 개 보여요.',
+      status: 400,
+      code: 'MULTIPLE_FACES',
+    });
+  });
+
   it('fetchHistory uses GET with Authorization header', async () => {
     vi.doMock('../src/utils/authBridge', () => ({
       getAccessToken: () => 'token-abc',

@@ -1,7 +1,8 @@
 import { useRef, useState } from 'react';
 import { StatusBar } from './common/StatusBar';
 import { BackHeader } from './common/Layout';
-import { isNativePlatform } from '../utils/platform';
+import { isNativePlatform, openPhotoPermissionSettings } from '../utils/platform';
+import { validatePhoto } from '../api/ai';
 import faceGuideAsset from '../assets/figma/face-guide-oval.svg';
 
 const MAX_FILE_BYTES = 10 * 1024 * 1024;
@@ -13,13 +14,53 @@ const GUIDE_ITEMS = [
   '필터 없이 자연스러운 표정을 지어요',
 ];
 const AVOID_ITEMS = ['측면 사진', '얼굴 가림', '강한 필터'];
+const VALIDATION_LABELS = [
+  ['imageDecoded', '사진을 확인했어요'],
+  ['faceDetected', '얼굴이 확인됐어요'],
+  ['singleFace', '한 명의 얼굴이 보여요'],
+  ['faceLargeEnough', '얼굴 크기가 충분해요'],
+];
 
 export default function PhotoUpload({ onUpload, onBack }) {
   const cameraRef = useRef(null);
   const galleryRef = useRef(null);
+  const validationIdRef = useRef(0);
   const [preview, setPreview] = useState(null);
   const [consent, setConsent] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+  const [validation, setValidation] = useState({ status: 'idle', result: null });
+  const [permissionDenied, setPermissionDenied] = useState(false);
+
+  function inspectSelection(file, dataUrl) {
+    const id = ++validationIdRef.current;
+    setPreview({ file, dataUrl });
+    setValidation({ status: 'checking', result: null });
+    setErrorMsg('');
+    validatePhoto(dataUrl)
+      .then((result) => {
+        if (id === validationIdRef.current) setValidation({ status: 'done', result });
+      })
+      .catch((error) => {
+        if (id !== validationIdRef.current) return;
+        if (error?.code) {
+          setValidation({
+            status: 'done',
+            result: { ok: false, code: error.code, message: error.message, checks: {} },
+          });
+          return;
+        }
+        setValidation({ status: 'error', result: null });
+        setErrorMsg(error?.message || '사진을 확인하지 못했어요. 다른 사진을 선택해 주세요.');
+      });
+  }
+
+  function resetSelection() {
+    validationIdRef.current += 1;
+    setPreview(null);
+    setConsent(false);
+    setValidation({ status: 'idle', result: null });
+    setErrorMsg('');
+  }
 
   async function pickNative(useCamera) {
     try {
@@ -40,11 +81,14 @@ export default function PhotoUpload({ onUpload, onBack }) {
         return;
       }
       const ext = (blob.type.split('/')[1] || 'jpg').replace('jpeg', 'jpg');
-      setPreview({ file: new File([blob], `capture.${ext}`, { type: blob.type || 'image/jpeg' }), dataUrl });
-      setErrorMsg('');
+      inspectSelection(new File([blob], `capture.${ext}`, { type: blob.type || 'image/jpeg' }), dataUrl);
     } catch (error) {
       const msg = String(error?.message || '');
       if (/cancel/i.test(msg) || /No image/i.test(msg)) return;
+      if (/permission|denied|not authorized|권한/i.test(msg)) {
+        setPermissionDenied(true);
+        return;
+      }
       setErrorMsg('카메라를 열 수 없어요. 권한을 확인하고 다시 시도해 주세요.');
     }
   }
@@ -73,8 +117,7 @@ export default function PhotoUpload({ onUpload, onBack }) {
     }
     const reader = new FileReader();
     reader.onload = () => {
-      setPreview({ file, dataUrl: reader.result });
-      setErrorMsg('');
+      inspectSelection(file, reader.result);
     };
     reader.onerror = () => setErrorMsg('파일을 읽을 수 없어요. 다시 시도해 주세요.');
     reader.readAsDataURL(file);
@@ -87,9 +130,8 @@ export default function PhotoUpload({ onUpload, onBack }) {
       const file = new File([blob], 'dev-sample-face.jpg', { type: blob.type || 'image/jpeg' });
       const reader = new FileReader();
       reader.onload = () => {
-        setPreview({ file, dataUrl: reader.result });
+        inspectSelection(file, reader.result);
         setConsent(true);
-        setErrorMsg('');
       };
       reader.readAsDataURL(file);
     } catch {
@@ -106,7 +148,43 @@ export default function PhotoUpload({ onUpload, onBack }) {
       pickFromGallery();
       return;
     }
+    if (validation.status !== 'done' || !validation.result?.ok) {
+      setErrorMsg(validation.status === 'checking' ? '사진과 얼굴을 확인하고 있어요.' : '다른 사진을 선택해 주세요.');
+      return;
+    }
     onUpload?.(preview.file, preview.dataUrl);
+  }
+
+  const failedValidation = preview && validation.status === 'done' && validation.result?.ok === false;
+
+  if (permissionDenied) {
+    return (
+      <PhotoPermissionDenied
+        native={isNativePlatform()}
+        onSettings={async () => {
+          const opened = await openPhotoPermissionSettings();
+          if (!opened) {
+            setPermissionDenied(false);
+            pickFromGallery();
+          }
+        }}
+        onReselect={() => { setPermissionDenied(false); pickFromGallery(); }}
+        onCancel={() => setPermissionDenied(false)}
+      />
+    );
+  }
+
+  if (failedValidation) {
+    return (
+      <PhotoValidationError
+        code={validation.result.code}
+        message={validation.result.message}
+        onChoose={pickFromGallery}
+        onGuide={resetSelection}
+      >
+        <input ref={galleryRef} type="file" accept="image/*" hidden onChange={onFileChange} />
+      </PhotoValidationError>
+    );
   }
 
   return (
@@ -122,6 +200,7 @@ export default function PhotoUpload({ onUpload, onBack }) {
           <PhotoConfirmation
             preview={preview.dataUrl}
             consent={consent}
+            validation={validation}
             onConsent={(checked) => { setConsent(checked); if (checked) setErrorMsg(''); }}
           />
         ) : (
@@ -140,7 +219,7 @@ export default function PhotoUpload({ onUpload, onBack }) {
       <footer style={{ borderTop: '1px solid #e5e7eb', padding: '16px 20px max(env(safe-area-inset-bottom), 20px)', background: '#fff', flexShrink: 0 }}>
         {preview ? (
           <>
-            <button type="button" className="wf-btn-primary" onClick={next} aria-disabled={!consent}>이 사진으로 분석하기</button>
+            <button type="button" className="wf-btn-primary" onClick={next} disabled={validation.status === 'checking'} aria-disabled={!consent || validation.status !== 'done' || !validation.result?.ok}>이 사진으로 분석하기</button>
             <button type="button" className="wf-btn-ghost" onClick={pickFromGallery}>다른 사진 선택</button>
           </>
         ) : (
@@ -181,7 +260,7 @@ function PhotoGuide() {
   );
 }
 
-function PhotoConfirmation({ preview, consent, onConsent }) {
+function PhotoConfirmation({ preview, consent, validation, onConsent }) {
   return (
     <>
       <h1 className="ko" style={{ margin: 0, fontSize: 22, fontWeight: 700 }}>이 사진으로 분석할까요?</h1>
@@ -189,10 +268,14 @@ function PhotoConfirmation({ preview, consent, onConsent }) {
         <img src={preview} alt="선택한 사진" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
       </div>
       <div style={{ display: 'grid', gap: 10, marginTop: 24, color: '#374151', fontSize: 14 }}>
-        {/* F03 사전검사가 연결되면 이 확인 요청 자리에 실제 검사 결과를 표시한다. */}
-        {['얼굴이 정면을 보고 있나요', '얼굴 전체 윤곽이 보이나요', '강한 필터·역광이 없나요'].map((item) => (
-          <div key={item} style={{ display: 'flex', gap: 8 }}><span aria-hidden="true">•</span><span>{item}</span></div>
-        ))}
+        {validation.status === 'checking' && (
+          <div role="status" style={{ display: 'flex', gap: 8 }}><span aria-hidden="true">•</span><span>사진과 얼굴을 확인하고 있어요</span></div>
+        )}
+        {validation.status === 'done' && validation.result?.ok && VALIDATION_LABELS
+          .filter(([key]) => validation.result.checks?.[key])
+          .map(([key, label]) => (
+            <div key={key} style={{ display: 'flex', gap: 8 }}><strong aria-hidden="true">✓</strong><span>{label}</span></div>
+          ))}
       </div>
       <p className="ko" style={{ margin: '20px 0 12px', color: '#9ca3af', fontSize: 12 }}>사진은 Beauty Mood 분석을 위해 사용돼요.</p>
       <label className="wf-card" style={{ display: 'flex', gap: 10, alignItems: 'flex-start', padding: 14, background: '#f9fafb', cursor: 'pointer' }}>
@@ -200,5 +283,72 @@ function PhotoConfirmation({ preview, consent, onConsent }) {
         <span className="ko" style={{ fontSize: 12, lineHeight: 1.55, color: '#374151' }}><strong>(필수)</strong> 얼굴형 분석을 위한 사진의 일시 처리에 동의합니다. 사진은 외부 공유나 AI 학습에 사용되지 않아요.</span>
       </label>
     </>
+  );
+}
+
+const PHOTO_ERROR_COPY = {
+  NO_FACE: {
+    title: '사진을 분석하기 어려워요',
+    placeholder: 'Face not detected',
+    lines: ['얼굴 전체가 보이는 정면 사진을 선택해 주세요.', '얼굴이 가려지거나 너무 작으면 확인하기 어려워요.'],
+  },
+  MULTIPLE_FACES: {
+    title: '한 명의 얼굴만 선택해 주세요',
+    placeholder: 'Multiple faces',
+    lines: ['사진에 여러 명이 함께 있어요.', '한 명의 얼굴이 선명하게 보이는 사진을 사용해 주세요.'],
+  },
+  FACE_TOO_SMALL: {
+    title: '얼굴이 더 크게 보이는 사진이 필요해요',
+    placeholder: 'Face too small',
+    lines: ['얼굴이 사진에서 너무 작게 보여요.', '얼굴 전체가 화면을 충분히 채우는 사진을 선택해 주세요.'],
+  },
+  INVALID_IMAGE: {
+    title: '사진 파일을 읽지 못했어요',
+    placeholder: 'Invalid image',
+    lines: ['선택한 사진 파일을 확인할 수 없어요.', 'JPG 또는 PNG 사진으로 다시 선택해 주세요.'],
+  },
+};
+
+export function PhotoValidationError({ code, message, onChoose, onGuide, children }) {
+  const copy = PHOTO_ERROR_COPY[code] || PHOTO_ERROR_COPY.INVALID_IMAGE;
+  return (
+    <div className="wf-screen">
+      <StatusBar />
+      {children}
+      <main className="wf-scroll" style={{ padding: '52px 20px 24px' }}>
+        <h1 className="ko" style={{ margin: 0, fontSize: 24, fontWeight: 800, lineHeight: 1.35 }}>{copy.title}</h1>
+        <div style={{ height: 240, marginTop: 28, borderRadius: 'var(--radius-md)', background: 'var(--color-surface)', display: 'grid', placeItems: 'center', fontSize: 14 }}>
+          {copy.placeholder}
+        </div>
+        <div className="ko" style={{ marginTop: 28, fontSize: 15, lineHeight: 1.45 }}>
+          {copy.lines.map((line) => <div key={line}>{line}</div>)}
+          {message && !PHOTO_ERROR_COPY[code] && <div>{message}</div>}
+        </div>
+      </main>
+      <footer style={{ padding: '16px 20px max(env(safe-area-inset-bottom), 20px)', background: 'var(--color-bg)' }}>
+        <button type="button" className="wf-btn-primary" onClick={onChoose}>다른 사진 선택하기</button>
+        {code !== 'MULTIPLE_FACES' && <button type="button" className="wf-btn-ghost" onClick={onGuide}>사진 가이드 다시 보기 →</button>}
+      </footer>
+    </div>
+  );
+}
+
+export function PhotoPermissionDenied({ native, onSettings, onReselect, onCancel }) {
+  return (
+    <div className="wf-screen">
+      <StatusBar />
+      <main style={{ flex: 1, padding: '180px 20px 24px', textAlign: 'center' }}>
+        <h1 className="ko" style={{ margin: 0, fontSize: 24, fontWeight: 800 }}>사진 접근 권한이 필요해요</h1>
+        <p className="ko" style={{ margin: '24px 0 0', fontSize: 15, lineHeight: 1.45 }}>
+          {native ? '사진을 선택하려면 사진 보관함 접근 권한을 허용해 주세요.' : '브라우저에서 사진을 다시 선택해 주세요.'}
+        </p>
+      </main>
+      <footer style={{ padding: '16px 20px max(env(safe-area-inset-bottom), 20px)', background: 'var(--color-bg)' }}>
+        <button type="button" className="wf-btn-primary" onClick={native ? onSettings : onReselect}>
+          {native ? '설정에서 권한 허용하기' : '사진 다시 선택하기'}
+        </button>
+        <button type="button" className="wf-btn-ghost" onClick={onCancel}>취소</button>
+      </footer>
+    </div>
   );
 }

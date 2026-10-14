@@ -28,6 +28,22 @@ export async function analyzeFace(_imageBase64, _faceRatios = null) {
   }
 }
 
+export async function validatePhoto(_image) {
+  await delay(120)
+  return {
+    ok: true,
+    code: null,
+    message: '얼굴이 확인됐어요.',
+    checks: {
+      imageDecoded: true,
+      faceDetected: true,
+      singleFace: true,
+      faceLargeEnough: true,
+    },
+    faceCount: 1,
+  }
+}
+
 // ─── 헤어 카드 4장 ───────────────────────────────────────────────
 export async function generateHairCards(_analysis) {
   await delay(800)

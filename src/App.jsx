@@ -40,6 +40,7 @@ import {
 } from './utils/navigation';
 import { createRequestGate, isStaleRequestError } from './utils/requestGate';
 import { loadLatestAnalysis, profileOwnerForSession, saveLatestAnalysis } from './utils/profileStorage';
+import { classifyAnalysisError } from './utils/analysisErrors';
 
 const KO_TO_KEY = {
   '봄 웜톤': 'spring_warm',
@@ -89,7 +90,7 @@ export default function App() {
   const [activeCard, setActiveCard] = useState(null);
   const [adReturn, setAdReturn] = useState({ done: 'card_detail', originRoute: null });
   const [synthByKey, setSynthByKey] = useState({});
-  const [errorInfo, setErrorInfo] = useState({ type: 'face', message: '' });
+  const [errorInfo, setErrorInfo] = useState({ type: 'face', code: null, message: '' });
   const [guestGateReason, setGuestGateReason] = useState('history');
   const [historySelection, setHistorySelection] = useState({ analysisId: null });
   const taskRef = useRef(null);
@@ -253,7 +254,7 @@ export default function App() {
 
   const startAnalysis = useCallback(() => {
     if (!photo?.dataUrl) {
-      setErrorInfo({ type: 'face', message: '사진이 준비되지 않았어요.' });
+      setErrorInfo({ type: 'face', code: 'INVALID_IMAGE', message: '사진이 준비되지 않았어요.' });
       go('error_face');
       return;
     }
@@ -263,7 +264,7 @@ export default function App() {
 
   const onAnalysisSuccess = useCallback((r) => {
     if (!r || r.faceType === '판정 어려움') {
-      setErrorInfo({ type: 'face', message: '얼굴 윤곽이 잘 보이는 정면 사진으로 다시 시도해 주세요.' });
+      setErrorInfo({ type: 'face', code: 'NO_FACE', message: '얼굴 윤곽이 잘 보이는 정면 사진으로 다시 시도해 주세요.' });
       go('error_face');
       return;
     }
@@ -280,9 +281,9 @@ export default function App() {
   const onAnalysisError = useCallback((e) => {
     if (isStaleRequestError(e)) return;
     const msg = String(e?.message || e || '');
-    const isNet = e?.status >= 500 || /연결|네트워크|fetch|Network|timeout|high demand|try again later|temporarily|unavailable|overloaded/i.test(msg);
-    setErrorInfo({ type: isNet ? 'network' : 'face', message: msg });
-    go(isNet ? 'error_network' : 'error_face');
+    const type = classifyAnalysisError(e);
+    setErrorInfo({ type, code: e?.code || null, message: msg });
+    go(type === 'network' ? 'error_network' : 'error_face');
   }, [go]);
 
   const startCardGeneration = useCallback((type) => {
@@ -432,6 +433,7 @@ export default function App() {
       view = (
         <ErrorScreen
           type="face"
+          code={errorInfo.code}
           message={errorInfo.message}
           onRetry={() => go('upload')}
           onBack={back}
@@ -442,6 +444,7 @@ export default function App() {
       view = (
         <ErrorScreen
           type="network"
+          code={errorInfo.code}
           message={errorInfo.message}
           onRetry={() => {
             if (!hairCards && !makeupCards) {

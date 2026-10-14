@@ -174,9 +174,12 @@ Beauty Profile 복원 규칙:
 - 촬영 가이드 5항목(앞머리를 올린 정면 / 후면 기본 카메라 / 얼굴 윤곽과 어깨 / 밝은 곳·역광 없음 /
   필터 없는 자연스러운 표정)과 피하면 좋은 사진 3항목(측면 / 얼굴 가림 / 강한 필터)을 노출한다.
   전체 촬영 기준과 UI 축약 원칙은 `docs/PHOTO_GUIDE.md`에 있다.
-- 사진 선택 후 확인 화면은 사전검사 결과를 단정하지 않고 정면·전체 윤곽·필터/역광을 사용자가 다시 보는
-  질문형 체크리스트를 표시한다. F03 사전검사가 연결되기 전까지 중립 불릿만 쓴다.
-- **`이 사진으로 분석하기`는 사진 + 동의 체크가 모두 있어야 진행된다.** 사진만 고르면 넘어가지 않는다
+- 사진 선택 직후 `validatePhoto(image)`가 `POST /api/photos/validate`를 호출한다. Gemini 분석은 이 단계에서 호출하지 않는다.
+- 확인 화면은 서버 `checks`의 `imageDecoded`·`faceDetected`·`singleFace`·`faceLargeEnough`만 체크로 표시한다.
+  실사 여부는 검사하지 않으므로 "분석 가능"이라고 단정하지 않는다.
+- `ok=false`는 `NO_FACE`·`MULTIPLE_FACES`·`FACE_TOO_SMALL`·`INVALID_IMAGE` 코드별 화면으로 분기해 다른 사진 선택을 안내한다.
+- 네이티브 카메라/사진 권한 거절은 설정 이동 화면을 표시하고, 웹에서는 사진 재선택 안내로 폴백한다.
+- **`이 사진으로 분석하기`는 사전검사 통과 + 사진 + 동의 체크가 모두 있어야 진행된다.** 사진만 고르면 넘어가지 않는다.
   - 동의 없음 → "사진 분석 동의에 체크해 주세요"
   - 사진 없음 → 카메라 선택 시트를 다시 연다
 - 10MB 초과 시 거부
@@ -209,11 +212,9 @@ Beauty Profile 복원 규칙:
   - 정상 결과 → `result_home`
   - `faceType === '판정 어려움'` → `error_face`
 - 실패:
-  - 네트워크성 에러 → `error_network`
-  - 그 외 → `error_face`
-- 백엔드에서 MediaPipe 가 얼굴을 못 찾으면 **Gemini 를 호출하지 않고 400** 으로 끊는다
-  (유료 호출을 막는 무료 게이트). 프론트는 `status < 500` 이라 `error_face` 로 분기한다.
-  단 일러스트·3D 렌더링·마네킹은 랜드마크가 잡혀 이 게이트를 통과한다
+  - `INVALID_IMAGE`·`NO_FACE`·`MULTIPLE_FACES`·`FACE_TOO_SMALL`·`UNSUPPORTED_PHOTO` → `error_face`
+  - `RATE_LIMITED`·`AI_UNAVAILABLE`·`AI_ERROR` → `error_network`
+  - 코드가 없을 때만 5xx·네트워크 문자열 → `error_network`, 그 외 → `error_face`
 
 ### Error (`stage: 'error_face' | 'error_network'`)
 
@@ -427,7 +428,7 @@ makeupCards: CardObject[] | null
 activeCard: CardObject | null
 adReturn: { done: string, back: string }
 synthByKey: Record<string, string>
-errorInfo: { type: 'face' | 'network', message: string }
+errorInfo: { type: 'face' | 'network', code: string | null, message: string }
 guestGateReason: 'history' | 'history_detail' | 'my' | 'unlock'
 historySelection: { analysisId: string | null }
 ```

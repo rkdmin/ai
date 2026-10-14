@@ -1,5 +1,5 @@
 ---
-last-verified: "2026-08-12"
+last-verified: "2026-10-14"
 ---
 
 # 프론트–백엔드 연결 현황
@@ -24,7 +24,7 @@ last-verified: "2026-08-12"
 | 통합 리포트 | `POST/GET /api/reports`, `/{id}`, `/{id}/retry` ✅ (migration 0003, 권한은 `REPORT_ACCESS_MODE`) | ❌ 없음 | 리포트 화면 없음 | **백엔드만** (F04, 결제 P4 전) |
 | 계정 삭제 | `DELETE /api/account` ✅ (Storage·행·auth 삭제, 멱등) | ❌ 없음 | `My.jsx` 는 alert 만 띄움 — 미연결 | **백엔드만** (F12 선행, Codex 연결 대기) |
 | 보관 정책 조회 | `GET /api/account/policy` ✅ | ❌ 없음 | 안내 문구가 아직 숫자를 박아 씀 | **백엔드만** |
-| 사진 사전검사 | `POST /api/photos/validate` ✅ (MediaPipe 만, 에러 코드 계약 포함) | ❌ 없음 | `PhotoUpload` 확인 화면 — 미연결 | **백엔드만** (F03, Codex 연결 대기) |
+| 사진 사전검사 | `POST /api/photos/validate` ✅ (MediaPipe 만, 에러 코드 계약 포함) | `validatePhoto()` ✅ | `PhotoUpload` 선택 직후 검사 + 코드별 오류·권한 화면 ✅ | **연결됨** (F03) |
 | 히스토리 저장 | `POST /api/history` ✅ + 카드 생성 시 자동 저장 ✅ | `saveHistoryCard()` ✅ | 카드 생성 플로우 ✅ | **연결됨** (Supabase 필요) |
 | 히스토리 조회 | `GET /api/history` ✅ / `GET /api/history/{id}` ✅ | `fetchHistory()` / `fetchHistoryDetail()` ✅ | `Home` · `History` · `HistoryDetail` ✅ | **연결됨** (Supabase 필요) |
 | 카카오/구글 로그인 | Supabase JWT 검증 ✅ | OAuth redirect bridge ✅ | `Login.jsx` ✅ | **코드 연결됨** (콘솔 설정·실기기 PoC 필요) |
@@ -45,9 +45,10 @@ last-verified: "2026-08-12"
 ## 2. 검증된 흐름
 
 - **업로드 → 분석 → 결과**
-  `PhotoUpload` → `PersonalColor` → `analyzeFace(photo.dataUrl)` → `Loading` → `AnalysisResult`
-  - MediaPipe 가 얼굴을 못 찾으면 **Gemini 호출 없이 400** → 프론트 `error_face` 분기
-  - `'판정 어려움'` 응답도 `error_face`, fetch 실패는 `error_network`
+  `PhotoUpload` → `validatePhoto(photo.dataUrl)` → `PersonalColor` → `analyzeFace(photo.dataUrl)` → `Loading` → `AnalysisResult`
+  - 사전검사는 MediaPipe 만 호출하며 `NO_FACE`·`MULTIPLE_FACES`·`FACE_TOO_SMALL`·`INVALID_IMAGE`를 사진 선택 화면에서 분기한다.
+  - 분석 API 오류도 `err.code`를 우선해 사진/서비스 오류 화면으로 분기하고, 코드가 없을 때만 status·문자열 폴백을 쓴다.
+  - 네이티브 사진 권한 거절은 앱 설정 이동을 제공하고, 웹은 파일 재선택으로 폴백한다.
 - **카드 생성**
   `AnalysisResult.onCardList(type)` → `startCardGeneration(type)` → `generateHairCards|MakeupCards`
   → `mappers.mapCards` → `CardList` → `CardDetail` | `MakeupDetail`

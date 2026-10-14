@@ -44,10 +44,10 @@ paths:
 | `Onboarding.jsx` | 3-step 온보딩 (로컬 플래그) |
 | `Home.jsx` | 홈 랜딩 + 최근 기록 1~3개 이어보기 (로그인 사용자만 fetch) |
 | `Login.jsx` | OAuth 로그인 + 게스트 체험 + guest gate 카피 분기 |
-| `PhotoUpload.jsx` | STEP 01 — 정면 사진 1장 + 촬영 가이드 5항목·피하면 좋은 사진 3항목·질문형 확인 체크리스트 (네이티브 카메라/갤러리 브리지 + 웹 폴백) |
+| `PhotoUpload.jsx` | STEP 01 — 정면 사진 1장 + 촬영 가이드 + MediaPipe 사전검사 checks + 사진 오류 코드/권한 거절 화면 (네이티브 설정 이동 + 웹 재선택 폴백) |
 | `PersonalColor.jsx` | `wf-*` 4계절 팔레트 카드 + 선택/건너뛰기 footer (분석 직전 보조 입력) |
 | `Loading.jsx` | STEP 02 — 원형 사진 + 4단계 분석 상태 + 순환 로딩 점 |
-| `ErrorScreen.jsx` | face / network 에러 화면 (type별 tip + CTA) |
+| `ErrorScreen.jsx` | 분석 API의 사진/서비스 오류를 `code` 우선으로 표시 (코드 없으면 status·문자열 폴백) |
 | `AnalysisResult.jsx` | STEP 02 결과 — Primary·함께 나타난 무드 / 얼굴 특징 / 헤어·메이크업 추천 |
 | `CardList.jsx` | STEP 03 — 카드 4장 (rank1 무료 + 2·3 광고 잠금 + AVOID) |
 | `CardDetail.jsx` | STEP 04 — AI COMMENTARY / PERSONAL FIT / MOOD BOARD / AI SYNTHESIS (헤어/종합) |

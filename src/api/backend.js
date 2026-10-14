@@ -27,9 +27,10 @@ function getUserId() {
   }
 }
 
-function responseError(detail, status) {
+function responseError(detail, status, code = null) {
   const err = new Error(detail)
   err.status = status
+  if (code) err.code = code
   return err
 }
 
@@ -47,11 +48,13 @@ function authHeaders(base = {}) {
 
 async function parseError(resp) {
   let detail = `요청 실패 (${resp.status})`
+  let code = null
   try {
     const j = await resp.json()
     detail = j.detail || j.error || detail
+    code = j.code || null
   } catch { /* non-JSON */ }
-  return responseError(detail, resp.status)
+  return responseError(detail, resp.status, code)
 }
 
 async function http(path, body) {
@@ -84,6 +87,11 @@ async function httpGet(path) {
 // ─── 얼굴 분석 ─────────────────────────────────────────────────────
 export async function analyzeFace(imageBase64, personalColor = null) {
   return http('/api/analyze', { frontImage: imageBase64, personalColor })
+}
+
+// Gemini 분석 전에 디코딩·얼굴 수·얼굴 크기만 검사한다.
+export async function validatePhoto(image) {
+  return http('/api/photos/validate', { image })
 }
 
 // ─── 카드 생성 ────────────────────────────────────────────────────

@@ -80,7 +80,7 @@ last-verified: "2026-10-14"
 - `backend/test_phase3.py`: Phase 3 auth/history/storage route wiring
 - `backend/test_consistency.py`: 얼굴형↔features↔무드 정합성 (ADR 0009) — Gemini 호출 0
 - `tools/test_score_features.py`: features 축 채점기 회귀 (화이트리스트 파싱·안정성·Phase B 라벨) — `backend/.venv/Scripts/python.exe -m pytest tools/test_score_features.py`
-- `test/backendAuth.test.js`: 프론트 API 클라이언트 Authorization/history payload
+- `test/backendAuth.test.js`: Authorization/history payload + 사진 검사 전용 payload + 공통 에러 `code` 보존
 - `test/App.flow.test.jsx`: splash/onboarding/login/home 진입 회귀
 - `test/Home.test.jsx`: 게스트 recent fetch 차단, 로그인 recent fetch + 상세 진입
 - `test/History.test.jsx`: 히스토리 로딩/만료/에러 UI + 상세 진입 + 새 분석 CTA
@@ -89,7 +89,8 @@ last-verified: "2026-10-14"
 - `test/navigation.test.js`: main/analysis/detail/sheet route 분리 + 메인 4탭 한정 TabBar + 상세 origin 복귀 + 탭 전환 시 결과 유지
 - `test/requestGate.test.js`: 요청 이탈·교체 뒤 늦게 끝난 분석/카드 응답 무효화
 - `test/profileStorage.test.js`: 게스트 재진입 결과 복원 + schemaVersion 포함 키 + 사진 미저장 + 계정별 저장본 격리 + legacy 무드 비보정
-- `test/PhotoUpload.test.jsx`: 가이드→사진 확인 전환 + 검사 결과를 단정하지 않는 질문형 체크리스트 + 동의 필수 + 업로드 payload
+- `test/PhotoUpload.test.jsx`: 선택 즉시 사전검사만 호출 + checks 표시 + 4개 사진 오류 코드 화면 + 권한 거절의 네이티브/웹 CTA + 동의 필수
+- `test/analysisErrors.test.js`: 분석 오류의 code 우선 분기와 코드 없는 응답의 기존 status·문자열 폴백
 - `test/AnalysisResult.test.jsx`: 헤어=1차/메이크업=2차 CTA wiring + analysisId 유무에 따른 SAVED 배지 (Phase 4-4) + 동급 무드 3개/Traits 미노출 + features 0~3개 렌더 (ADR 0009)
 - `test/CardDetail.test.jsx`: 합성 전/후 sticky CTA 조건 분기 (합성 보기↔결과 공유/다시 보기) (Phase 4-5)
 - `test/MakeupDetail.test.jsx`: 사진 생성 CTA 미노출(규칙 6) + 제품 블록 쿠팡 링크/검색 키워드 분기 (Phase 4-5)

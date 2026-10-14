@@ -18,9 +18,21 @@ const NETWORK_TIPS = [
   { n: '03', label: '잠시 후 다시 시도' },
 ];
 
-export default function ErrorScreen({ type = 'face', message, onRetry, onBack }) {
+const CODE_COPY = {
+  INVALID_IMAGE: { eyebrow: 'ERROR · INVALID IMAGE', title: <>사진 파일을<br />읽지 못했어요</> },
+  NO_FACE: { eyebrow: 'ERROR · FACE NOT FOUND', title: <>사진에서 얼굴을<br />찾지 못했어요</> },
+  MULTIPLE_FACES: { eyebrow: 'ERROR · MULTIPLE FACES', title: <>한 명의 얼굴만<br />선택해 주세요</> },
+  FACE_TOO_SMALL: { eyebrow: 'ERROR · FACE TOO SMALL', title: <>얼굴이 더 크게 보이는<br />사진을 선택해 주세요</> },
+  UNSUPPORTED_PHOTO: { eyebrow: 'ERROR · PHOTO', title: <>다른 정면 사진으로<br />다시 시도해 주세요</> },
+  RATE_LIMITED: { eyebrow: 'ERROR · LIMIT', title: <>오늘 사용량을<br />모두 사용했어요</> },
+  AI_UNAVAILABLE: { eyebrow: 'ERROR · SERVER', title: <>분석 서버가 잠시<br />바빠요</> },
+  AI_ERROR: { eyebrow: 'ERROR · SERVER', title: <>분석을 마치지<br />못했어요</> },
+};
+
+export default function ErrorScreen({ type = 'face', code = null, message, onRetry, onBack }) {
   const isFace = type === 'face';
   const tips = isFace ? FACE_TIPS : NETWORK_TIPS;
+  const codeCopy = CODE_COPY[code];
   return (
     <div style={{ width: '100%', minHeight: '100dvh', background: '#fff', color: '#000', display: 'flex', flexDirection: 'column' }}>
       <StatusBar />
@@ -38,10 +50,10 @@ export default function ErrorScreen({ type = 'face', message, onRetry, onBack })
           {isFace ? Icons.warn(24) : Icons.wifiOff(24)}
         </div>
         <div className="label" style={{ marginBottom: 8, color: '#7a7a7a' }}>
-          {isFace ? 'ERROR · FACE NOT FOUND' : 'ERROR · NETWORK'}
+          {codeCopy?.eyebrow || (isFace ? 'ERROR · FACE NOT FOUND' : 'ERROR · NETWORK')}
         </div>
         <h1 className="ko" style={{ margin: 0, fontSize: 24, fontWeight: 300, lineHeight: 1.3, letterSpacing: '-.01em' }}>
-          {isFace ? <>사진에서 얼굴을<br />찾지 못했어요</> : <>연결이 잠시<br />불안정해요</>}
+          {codeCopy?.title || (isFace ? <>사진에서 얼굴을<br />찾지 못했어요</> : <>연결이 잠시<br />불안정해요</>)}
         </h1>
         <p className="ko" style={{ margin: '16px 0 26px', fontSize: 13, lineHeight: 1.7, color: '#5a5a5a', fontWeight: 300 }}>
           {isFace
