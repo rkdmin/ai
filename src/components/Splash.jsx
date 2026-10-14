@@ -9,28 +9,21 @@ export default function Splash({ onNext }) {
     return () => clearTimeout(t);
   }, [onNext]);
   return (
-    <div
-      style={{
-        width: '100%',
-        minHeight: '100dvh',
-        background: '#000',
-        color: '#fff',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        position: 'relative',
-      }}
-    >
-      <div className="wm" style={{ fontSize: 42, letterSpacing: '-.01em', fontWeight: 200, lineHeight: 1 }}>
-        beaumi
-      </div>
-      <div style={{ width: 24, height: 1, background: 'rgba(255,255,255,.5)', margin: '24px 0' }} />
-      <div className="serif-i" style={{ fontSize: 14, color: 'rgba(255,255,255,.55)', letterSpacing: '.02em' }}>
-        Sharing your beauty, every day
-      </div>
-      <div style={{ position: 'absolute', bottom: 42, left: 0, right: 0, textAlign: 'center' }}>
-        <span className="label" style={{ color: 'rgba(255,255,255,.3)' }}>© 2026 BEAUMI</span>
+    <div className="wf-screen" style={{ alignItems: 'center', justifyContent: 'center', paddingBottom: 60 }}>
+      <div
+        aria-label="beaumi"
+        style={{
+          width: 100,
+          height: 100,
+          borderRadius: 50,
+          background: '#f3f4f6',
+          color: '#111827',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <span className="wm" style={{ fontSize: 20 }}>b</span>
       </div>
     </div>
   );

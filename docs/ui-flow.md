@@ -1,5 +1,5 @@
 ---
-last-verified: "2026-08-12"
+last-verified: "2026-10-14"
 ---
 
 # UI Flow
@@ -129,12 +129,11 @@ Capacitor Android 하드웨어 back 은 브라우저 `popstate` 와 같은 `onPo
 
 구성:
 - 상단 history 아이콘
-- Hero CTA: `START ANALYSIS`
-- 탐색 타일 4개
-  - `ANALYZE` → `upload`
-  - `RESULTS` → `history`
-  - `HISTORY` → `history`
-  - `MY` → `my`
+- Figma `home-wireframe`의 Hero 설명
+- `AI가 이렇게 분석해요` 3단계 구조 카드
+- 분석 결과 미리보기 카드 (운영값을 지어내지 않고 중립 이미지·fallback 제목 사용)
+- Primary CTA: `내 Beauty Mood 분석하기` → `upload`
+- 미리보기 카드 CTA도 Figma의 `전체 결과 예시 보기 →`(샘플 결과 시트 `108:2659`) 대신 `내 결과 만들기 →`로 `upload`에 연결한다. 아직 제품 경로에 제공할 검증된 샘플 결과 시트가 없어 막힌 예시 화면보다 실제 분석 시작을 우선한 결정이다.
 - `RECENT` 섹션
 
 `RECENT` 규칙:
@@ -149,11 +148,15 @@ Capacitor Android 하드웨어 back 은 브라우저 `popstate` 와 같은 `onPo
 
 **컴포넌트:** `PhotoUpload.jsx`
 
+- 한 컴포넌트 안에서 Figma의 두 상태를 전환한다: 사진이 없으면 `photo-guide`, 선택 후에는 `photo-confirm`.
 - 정면 사진 1장. 입력 경로는 플랫폼 분기 — 네이티브는 `@capacitor/camera`(카메라/갤러리),
   웹은 파일 picker 폴백
-- DO/DON'T 가이드 타일 4개 노출 (포니테일·민소매 / 후면 카메라 / 앞머리·마스크 ✗ / 필터·역광 ✗).
-  전체 기준은 `docs/PHOTO_GUIDE.md`
-- **NEXT 는 사진 + 동의 체크가 모두 있어야 진행된다.** 사진만 고르면 넘어가지 않는다
+- 촬영 가이드 5항목(앞머리를 올린 정면 / 후면 기본 카메라 / 얼굴 윤곽과 어깨 / 밝은 곳·역광 없음 /
+  필터 없는 자연스러운 표정)과 피하면 좋은 사진 3항목(측면 / 얼굴 가림 / 강한 필터)을 노출한다.
+  전체 촬영 기준과 UI 축약 원칙은 `docs/PHOTO_GUIDE.md`에 있다.
+- 사진 선택 후 확인 화면은 사전검사 결과를 단정하지 않고 정면·전체 윤곽·필터/역광을 사용자가 다시 보는
+  질문형 체크리스트를 표시한다. F03 사전검사가 연결되기 전까지 중립 불릿만 쓴다.
+- **`이 사진으로 분석하기`는 사진 + 동의 체크가 모두 있어야 진행된다.** 사진만 고르면 넘어가지 않는다
   - 동의 없음 → "사진 분석 동의에 체크해 주세요"
   - 사진 없음 → 카메라 선택 시트를 다시 연다
 - 10MB 초과 시 거부
@@ -166,7 +169,8 @@ Capacitor Android 하드웨어 back 은 브라우저 `popstate` 와 같은 `onPo
 
 **컴포넌트:** `PersonalColor.jsx`
 
-- 퍼스널컬러 선택
+- `wf-*` 시스템의 `BackHeader`·스크롤 본문·하단 footer를 사용하고, 4계절 선택지는 radius 8의 `wf-card`로 표시한다.
+- 퍼스널컬러 선택 후 `선택하고 분석하기`, 모르면 `잘 모르겠어요 · 건너뛰기`
 - 선택값은 한국어 라벨로 `personalColor` 상태에 저장
 - 다음 진행 시 `startAnalysis()`
 
@@ -179,6 +183,8 @@ Capacitor Android 하드웨어 back 은 브라우저 `popstate` 와 같은 `onPo
 **컴포넌트:** `Loading.jsx`
 
 - 내부 task: `analyzeFace(photo.dataUrl, backendPersonalColorKey(personalColor))`
+- Figma `analysis-loading`에 맞춰 원형 사진, 4단계 상태(`완료 / 분석 중 / 대기`), 보조 문구와 1.2초 주기로
+  순환하는 점 3개를 표시한다. 모션 감소 설정에서는 점을 정지한다.
 - 성공:
   - 정상 결과 → `result_home`
   - `faceType === '판정 어려움'` → `error_face`
@@ -207,14 +213,16 @@ Capacitor Android 하드웨어 back 은 브라우저 `popstate` 와 같은 `onPo
 **컴포넌트:** `AnalysisResult.jsx`
 
 표시:
-- 업로드 사진 또는 저장된 `frontImageUrl`
-- 얼굴형
-- 퍼스널컬러
-- `moodArchetype` 3개 (얼굴형별 금지 무드는 백엔드가 제외하고 보낸다)
+- 업로드 사진 또는 저장된 `frontImageUrl`을 결과 Hero에 표시
+- `MY BEAUTY MOOD` 제목 (`styleLabel`이 없으면 거짓 라벨을 만들지 않고 `나의 Beauty Mood`)
+- 얼굴형·퍼스널컬러
+- 현재 API의 `moodArchetype` 3개는 동급 무드다. 첫 항목은 Primary, 나머지 0~2개는 `함께 나타난 무드`
+  칩으로 표시한다. D01의 별도 사전이 생기기 전에는 이 값을 Traits로 부르지 않는다.
 - `features` **0~3개** — 개수에 맞춰 제목이 `TOP n FEATURES` 로 바뀐다.
   0개면 `FEATURES` + "뚜렷하게 두드러지는 특징 없이 전체적으로 균형 잡힌 얼굴이에요" 안내.
   **더미 특징으로 채우지 않는다** (`docs/decisions/0009-analysis-consistency-rules.md`)
 - 공유 버튼
+- 헤더 뒤로가기 → `home`
 - `result.analysisId` 가 있으면(로그인 분석) CTA 위에 `SAVED · 이 분석은 히스토리에 저장됐어요` 배지
 
 CTA (1차/2차 위계 — 동등 그리드 아님):
@@ -224,6 +232,7 @@ CTA (1차/2차 위계 — 동등 그리드 아님):
 주의:
 - 결과 화면 핵심 결정("헤어 vs 메이크업")의 망설임을 줄이기 위해 헤어를 1차 CTA 로 고정한다.
 - 백엔드에는 `total` 카드 API 가 있지만 현재 v1.0 UI에는 진입 CTA 가 없다.
+- Figma의 결제·케미·통합 리포트 CTA는 현재 프론트 흐름에 연결된 기능이 없어 이번 시각 정렬 범위에서 제외한다.
 
 ---
 

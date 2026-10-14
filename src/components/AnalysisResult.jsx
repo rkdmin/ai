@@ -1,185 +1,107 @@
 import { StatusBar } from './common/StatusBar';
 import { Icons } from './common/Icons';
-import { IndexMark } from './common/Layout';
-import { FacePlaceholder } from './common/Placeholders';
-import { MOOD_KR, MOOD_PALETTES as MOOD_COLORS } from '../api/moodPalette';
+import { MOOD_KR } from '../api/moodPalette';
+import shareAsset from '../assets/figma/share.svg';
+import dividerAsset from '../assets/figma/result-divider.svg';
 
-// 백엔드 응답 → 감성 라벨 ("봄날의 햇살형" 같은) 매핑.
-// TODO: Gemini 가 응답에 styleLabel(또는 emotionalLabel) 을 포함하도록 프롬프트 보강.
-//   현재는 faceType + 첫 번째 mood 로 임시 라벨 생성.
-function emotionalLabel(result) {
+function moodTitle(result) {
   if (result?.styleLabel) return result.styleLabel.split(' · ')[0] || result.styleLabel;
-  return '봄날의 햇살형';
+  return '나의 Beauty Mood';
 }
 
-export default function AnalysisResult({ result, photoUrl, onCardList, onShare }) {
-  const faceType = result?.faceType || '계란형';
-  const personalColor = result?.personalColor || '봄 웜톤';
-  const moods = (result?.moodArchetype && result.moodArchetype.length === 3)
-    ? result.moodArchetype
-    : ['ROMANTIC', 'CLEAN', 'SOFT'];
-  // 백엔드가 얼굴형과 모순되는 특징을 걸러내므로 0~3개로 온다.
-  // 빈 배열을 더미로 메우면 분석하지 않은 특징을 진짜처럼 보여주게 된다 — 개수 그대로 렌더한다.
+export default function AnalysisResult({ result, photoUrl, onCardList, onShare, onBack }) {
+  const faceType = result?.faceType || '';
+  const personalColor = result?.personalColor || '';
+  const moods = Array.isArray(result?.moodArchetype) ? result.moodArchetype.slice(0, 3) : [];
+  const primary = moods[0] || '';
+  const relatedMoods = moods.slice(1, 3);
   const features = (result?.features || []).slice(0, 3);
 
-  const label = emotionalLabel(result);
-  const [labelHead, labelTail] = splitLabel(label);
-
   return (
-    <div style={{ width: '100%', minHeight: '100dvh', background: '#fff', color: '#000', display: 'flex', flexDirection: 'column' }}>
+    <div className="wf-screen">
       <StatusBar />
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '4px 14px 6px', flexShrink: 0, minHeight: 52 }}>
-        <span className="label" style={{ paddingLeft: 8 }}>RESULT</span>
-        <button
-          onClick={onShare}
-          className="icon-btn"
-          style={{ paddingLeft: 12, paddingRight: 6, gap: 6, minWidth: 0 }}
-        >
-          {Icons.share(16)}
-          <span className="label">SHARE</span>
+      <header className="wf-header">
+        <button type="button" className="icon-btn" onClick={onBack} aria-label="뒤로가기" style={{ marginLeft: -12 }}>
+          {Icons.back(20, '#111827')}
         </button>
-      </div>
-      <div style={{ height: 1, background: '#000', flexShrink: 0 }} />
+        <button type="button" className="icon-btn" onClick={onShare} aria-label="결과 공유" style={{ marginRight: -10 }}>
+          <img src={shareAsset} alt="" width="14" height="14" />
+        </button>
+      </header>
 
-      <div style={{ flex: 1, overflowY: 'auto' }}>
-        <div style={{ position: 'relative', aspectRatio: '1/1.15', background: '#000', overflow: 'hidden' }}>
-          {photoUrl ? (
-            <img
-              src={photoUrl}
-              alt="분석한 정면 사진"
-              decoding="async"
-              style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', filter: 'grayscale(0.05) contrast(1.02)' }}
-            />
+      <main className="wf-scroll" style={{ padding: '32px 20px 120px' }}>
+        <section>
+          <div className="wf-eyebrow">MY BEAUTY MOOD</div>
+          <h1 className="ko" style={{ margin: '8px 0 12px', fontSize: 28, fontWeight: 800, lineHeight: 1.25, letterSpacing: '-.035em' }}>{moodTitle(result)}</h1>
+          <p className="ko" style={{ color: '#6b7280', fontSize: 14, lineHeight: 1.5, margin: 0 }}>
+            분석에서 확인된 무드를 한눈에 정리했어요.
+          </p>
+          <div style={{ height: 158, marginTop: 20, background: '#f3f4f6', borderRadius: 4, overflow: 'hidden' }}>
+            {photoUrl ? <img src={photoUrl} alt="분석한 정면 사진" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : null}
+          </div>
+        </section>
+
+        <Divider />
+
+        <section>
+          <div className="wf-eyebrow">PRIMARY MOOD</div>
+          <div className="ko" style={{ marginTop: 8, fontSize: 18, fontWeight: 700 }}>{primary ? (MOOD_KR[primary] || primary) : '확인된 대표 무드 없음'}</div>
+          <div className="wf-eyebrow" style={{ marginTop: 20 }}>함께 나타난 무드</div>
+          {relatedMoods.length > 0 ? (
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 8 }}>
+              {relatedMoods.map((mood) => <span key={mood} className="ko" style={{ padding: '6px 10px', borderRadius: 20, background: '#f3f4f6', color: '#374151', fontSize: 13, fontWeight: 600 }}>{MOOD_KR[mood] || mood}</span>)}
+            </div>
+          ) : <p className="ko" style={{ color: '#9ca3af', fontSize: 13, margin: '8px 0 0' }}>함께 확인된 다른 무드가 없어요.</p>}
+        </section>
+
+        <Divider />
+
+        <section>
+          <h2 className="ko" style={{ margin: 0, fontSize: 17, fontWeight: 700 }}>AI가 발견한 나의 특징</h2>
+          {faceType && (
+            <div style={{ marginTop: 20 }}>
+              <div className="wf-eyebrow">FACE SHAPE</div>
+              <div className="ko" style={{ marginTop: 8, fontSize: 18, fontWeight: 700 }}>{faceType}</div>
+            </div>
+          )}
+          {personalColor && <div className="ko" style={{ marginTop: 6, color: '#6b7280', fontSize: 13 }}>{personalColor}</div>}
+          <div className="wf-eyebrow" style={{ marginTop: 20 }}>{features.length > 0 ? `TOP ${features.length} FEATURES` : 'FEATURES'}</div>
+          {features.length > 0 ? (
+            <ul style={{ margin: '8px 0 0', padding: 0, listStyle: 'none', display: 'grid', gap: 8 }}>
+              {features.map((feature) => <li key={feature} className="ko" style={{ display: 'flex', gap: 8, color: '#6b7280', fontSize: 13, lineHeight: 1.5 }}><strong aria-hidden="true">•</strong><span>{feature}</span></li>)}
+            </ul>
           ) : (
-            <FacePlaceholder w="100%" h="100%" tone="dark" label="" />
+            <p className="ko" style={{ margin: '8px 0 0', color: '#6b7280', fontSize: 13, lineHeight: 1.5 }}>뚜렷하게 두드러지는 특징 없이 전체적으로 균형 잡힌 얼굴이에요.</p>
           )}
-          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg,transparent 40%,rgba(0,0,0,.85) 100%)' }} />
-          <div className="serif-i" style={{ position: 'absolute', top: 18, right: 22, color: 'rgba(255,255,255,.55)', fontSize: 13 }}>
-            nº 01 · profile
-          </div>
-          <div className="label" style={{ position: 'absolute', top: 18, left: 22, color: 'rgba(255,255,255,.55)' }}>YOUR LABEL</div>
+        </section>
 
-          <div style={{ position: 'absolute', bottom: 24, left: 22, right: 22, color: '#fff' }}>
-            <div className="ko" style={{ fontSize: 32, fontWeight: 300, lineHeight: 1.15, letterSpacing: '-.015em', marginBottom: 8 }}>
-              {labelHead}<br />{labelTail}
-              <span className="serif-i" style={{ fontSize: 18, fontWeight: 300, marginLeft: 8, opacity: 0.7 }}>·</span>
-            </div>
-            <div style={{ display: 'flex', gap: 8, alignItems: 'center', color: 'rgba(255,255,255,.7)' }}>
-              <span className="ko" style={{ fontSize: 12, fontWeight: 300 }}>{faceType} · {personalColor}</span>
-              <span style={{ width: 3, height: 3, borderRadius: '50%', background: 'rgba(255,255,255,.4)' }} />
-              <span className="label" style={{ fontSize: 9.5, color: 'rgba(255,255,255,.85)' }}>HIGH-CONFIDENCE MATCH</span>
-            </div>
-          </div>
-        </div>
+        <Divider />
 
-        <div style={{ padding: '24px 22px 18px', borderBottom: '1px solid #000' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 14 }}>
-            <div className="label">MOOD KEYS</div>
-            <IndexMark n="nº 02" />
-          </div>
-          <div style={{ display: 'flex', gap: 10 }}>
-            {moods.map((kw, i) => {
-              const palette = MOOD_COLORS[kw] || MOOD_COLORS.ROMANTIC;
-              return (
-                <div key={`${kw}-${i}`} style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
-                  <div style={{ aspectRatio: '1/1.2', background: palette.c1, position: 'relative', overflow: 'hidden' }}>
-                    <div style={{ position: 'absolute', inset: 0, backgroundImage: `radial-gradient(circle at 30% 30%, ${palette.c2} 0%, transparent 55%)` }} />
-                    <div style={{ position: 'absolute', inset: 0, backgroundImage: 'repeating-linear-gradient(45deg, rgba(0,0,0,.04) 0 1px, transparent 1px 7px)' }} />
-                    <span className="label" style={{ position: 'absolute', bottom: 10, left: 10, fontSize: 9, color: 'rgba(0,0,0,.65)' }}>{kw}</span>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
-                    <span className="serif-i" style={{ fontSize: 13, color: '#a8a8a8' }}>nº 0{i + 1}</span>
-                    <div className="ko" style={{ fontSize: 12, fontWeight: 500 }}>{MOOD_KR[kw] || kw}</div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        <div style={{ padding: '24px 22px 8px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 14 }}>
-            <div className="label">{features.length > 0 ? `TOP ${features.length} FEATURES` : 'FEATURES'}</div>
-            <IndexMark n="nº 03" />
-          </div>
-          {features.length === 0 && (
-            <div className="ko" style={{ fontSize: 13.5, fontWeight: 300, color: '#7a7a7a', padding: '13px 0', borderBottom: '1px solid #e8e8e8' }}>
-              뚜렷하게 두드러지는 특징 없이 전체적으로 균형 잡힌 얼굴이에요.
-            </div>
-          )}
-          {features.map((f, i) => (
-            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '13px 0', borderBottom: '1px solid #e8e8e8' }}>
-              <span className="serif-i" style={{ fontSize: 14, color: '#a8a8a8', width: 22 }}>0{i + 1}</span>
-              <div style={{ flex: 1 }}>
-                <div className="ko" style={{ fontSize: 14, fontWeight: 400, letterSpacing: '-.005em' }}>{f}</div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <div style={{ margin: '8px 22px 30px' }}>
+        <section>
+          <h2 className="ko" style={{ margin: 0, fontSize: 17, fontWeight: 700 }}>나에게 어울리는 스타일 방향</h2>
+          <p className="ko" style={{ margin: '12px 0 20px', color: '#6b7280', fontSize: 14, lineHeight: 1.5 }}>분석 결과를 바탕으로 헤어와 메이크업 추천을 확인해보세요.</p>
           {result?.analysisId && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 14 }}>
-              {Icons.check(13, '#7a7a7a')}
-              <span className="label" style={{ fontSize: 9.5, color: '#7a7a7a' }}>SAVED</span>
-              <span className="ko" style={{ fontSize: 12, fontWeight: 300, color: '#7a7a7a' }}>
-                이 분석은 히스토리에 저장됐어요
-              </span>
+            <div className="wf-card" style={{ display: 'flex', alignItems: 'center', gap: 8, padding: 12, marginBottom: 12, background: '#f9fafb' }}>
+              {Icons.check(14, '#6b7280')}
+              <span className="ko" style={{ fontSize: 12, color: '#6b7280' }}>이 분석은 히스토리에 저장됐어요</span>
             </div>
           )}
-
-          {/* 1차 CTA — 헤어부터 보게 한다 (Phase 4: CTA 위계 정리) */}
-          <button
-            onClick={() => onCardList?.('hair')}
-            className="tappable"
-            style={{
-              width: '100%', border: '1px solid #000', background: '#000', color: '#fff',
-              padding: '20px 18px', display: 'flex', alignItems: 'center',
-              justifyContent: 'space-between', textAlign: 'left', cursor: 'pointer',
-            }}
-          >
-            <span>
-              <span className="label" style={{ display: 'block', color: 'rgba(255,255,255,.5)', marginBottom: 8 }}>
-                1ST · START HERE
-              </span>
-              <span className="ko" style={{ display: 'block', fontSize: 17, fontWeight: 400, letterSpacing: '-.01em' }}>
-                헤어 추천 보기
-              </span>
-            </span>
-            {Icons.arrow(20, '#fff')}
+          <button type="button" className="wf-btn-primary" onClick={() => onCardList?.('hair')}>
+            <span style={{ flex: 1, textAlign: 'left' }}><small style={{ display: 'block', opacity: .65, fontSize: 10, letterSpacing: '.08em', marginBottom: 4 }}>1ST · START HERE</small>헤어 추천 보기</span>{Icons.arrow(18, '#fff')}
           </button>
-
-          {/* 2차 CTA — 메이크업 (시각 비중 낮춤) */}
-          <button
-            onClick={() => onCardList?.('makeup')}
-            className="tappable"
-            style={{
-              width: '100%', border: '1px solid #000', borderTop: 'none', background: '#fff', color: '#000',
-              padding: '16px 18px', display: 'flex', alignItems: 'center',
-              justifyContent: 'space-between', textAlign: 'left', cursor: 'pointer',
-            }}
-          >
-            <span>
-              <span className="label" style={{ display: 'block', color: '#7a7a7a', marginBottom: 6 }}>
-                MAKEUP
-              </span>
-              <span className="ko" style={{ display: 'block', fontSize: 14, fontWeight: 400, letterSpacing: '-.005em' }}>
-                메이크업 추천 보기
-              </span>
-            </span>
-            {Icons.arrow(18, '#000')}
+          <button type="button" className="wf-btn-secondary" onClick={() => onCardList?.('makeup')} style={{ marginTop: 10 }}>
+            <span style={{ flex: 1, textAlign: 'left' }}>메이크업 추천 보기</span>{Icons.arrow(18, '#111827')}
           </button>
-        </div>
-      </div>
+        </section>
+      </main>
     </div>
   );
 }
 
-// 감성 라벨을 두 줄로 쪼갠다. "봄날의 햇살형" → ["봄날의","햇살형"].
-// 공백이 있으면 마지막 토큰을 두 번째 줄로, 없으면 한 줄.
-function splitLabel(s) {
-  if (!s) return ['', ''];
-  const idx = s.lastIndexOf(' ');
-  if (idx <= 0) return [s, ''];
-  return [s.slice(0, idx).trim(), s.slice(idx + 1)];
+function Divider() {
+  return (
+    <div style={{ width: '100%', overflow: 'hidden', margin: '28px 0 24px' }} aria-hidden="true">
+      <img src={dividerAsset} alt="" width="350" height="1" style={{ display: 'block' }} />
+    </div>
+  );
 }

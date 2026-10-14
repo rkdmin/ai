@@ -387,6 +387,7 @@ export default function App() {
         <AnalysisResult
           result={result}
           photoUrl={photoUrl}
+          onBack={() => go('home')}
           onCardList={(type) => {
             const cached = type === 'makeup' ? makeupCards : hairCards;
             if (cached) {
@@ -585,7 +586,7 @@ export default function App() {
   const containerStyle = useMemo(() => ({
     width: '100%',
     minHeight: '100dvh',
-    maxWidth: 480,
+    maxWidth: 430,
     margin: '0 auto',
     background: '#fff',
     display: 'flex',

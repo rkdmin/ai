@@ -2,9 +2,9 @@
 import { Icons } from './Icons';
 
 export function FacePlaceholder({ w = '100%', h = '100%', label = 'portrait', tone = 'dark' }) {
-  const bg = tone === 'dark' ? '#1a1a1a' : '#efe9e3';
-  const fg = tone === 'dark' ? 'rgba(255,255,255,.06)' : 'rgba(0,0,0,.06)';
-  const txt = tone === 'dark' ? 'rgba(255,255,255,.4)' : 'rgba(0,0,0,.4)';
+  const bg = tone === 'dark' ? '#1a1a1a' : 'var(--color-surface)';
+  const fg = tone === 'dark' ? 'rgba(255,255,255,.06)' : 'var(--color-line)';
+  const txt = tone === 'dark' ? 'rgba(255,255,255,.4)' : 'var(--color-text-muted)';
   return (
     <div
       style={{

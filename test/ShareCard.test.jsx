@@ -31,6 +31,13 @@ describe('ShareCard — synthesized 반영', () => {
     expect(screen.getByText('REFERENCE')).toBeInTheDocument();
     expect(screen.queryByText('AFTER')).toBeNull();
   });
+
+  it('결과 데이터가 없으면 중립 제목만 쓰고 무드 줄은 생략', () => {
+    const { container } = render(<ShareCard variant="hair" card={card} onClose={() => {}} />);
+
+    expect(screen.getByText('나의 Beauty Mood')).toBeInTheDocument();
+    expect(container.textContent).not.toContain('ROMANTIC · CLEAN · SOFT');
+  });
 });
 
 describe('ShareCard — CTA 위계', () => {

@@ -1,17 +1,17 @@
 @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css');
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@200;300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 html, body, #root {
   margin: 0;
   padding: 0;
-  font-family: var(--font-ko);
+  font-family: var(--font-ui);
   color: var(--color-text);
   background: var(--color-bg);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  font-weight: 300;
+  font-weight: 400;
 }
 
 html, body { height: 100%; }
@@ -45,24 +45,24 @@ button:active:not(:disabled) { opacity: .55; transform: scale(.985); }
    포인터 클릭 시에는 노출하지 않아 디자인 톤을 해치지 않음. */
 :focus { outline: none; }
 :focus-visible {
-  outline: 2px solid #000;
+  outline: 2px solid var(--color-text);
   outline-offset: 2px;
 }
 @media (prefers-color-scheme: dark) {
   :focus-visible { outline-color: #fff; }
 }
 
-/* Wireframe wordmark — Cormorant Garamond 200, tight tracking */
+/* Wordmark in the current wireframe is a compact extra-bold text lockup. */
 .wm {
-  font-family: var(--font-serif);
-  font-weight: 300;
-  letter-spacing: -.01em;
+  font-family: var(--font-ui);
+  font-weight: 800;
+  letter-spacing: -.03em;
 }
 
 .label {
   font-family: var(--font-en);
-  font-size: 10px;
-  font-weight: 500;
+  font-size: 11px;
+  font-weight: 700;
   letter-spacing: var(--ls-label);
   text-transform: uppercase;
   color: var(--color-text);
@@ -73,11 +73,82 @@ button:active:not(:disabled) { opacity: .55; transform: scale(.985); }
   letter-spacing: -0.01em;
 }
 
-.serif-i {
-  font-family: var(--font-serif);
-  font-style: italic;
-  font-weight: 400;
+.serif-i { font-family: var(--font-ui); font-style: normal; font-weight: 500; }
+
+.wf-screen {
+  width: 100%;
+  min-height: 100dvh;
+  background: var(--color-bg);
+  color: var(--color-text);
+  display: flex;
+  flex-direction: column;
 }
+
+.wf-scroll { flex: 1; min-height: 0; overflow-y: auto; }
+
+.wf-header {
+  min-height: 52px;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--color-line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.wf-card {
+  background: var(--color-bg);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-md);
+}
+
+.wf-btn-primary,
+.wf-btn-secondary,
+.wf-btn-ghost {
+  width: 100%;
+  min-height: 52px;
+  border-radius: var(--radius-md);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 18px;
+  font-family: var(--font-ui);
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.wf-btn-primary { color: #fff; background: var(--color-text); border: 1px solid var(--color-text); }
+.wf-btn-secondary { color: var(--color-text); background: #fff; border: 1px solid var(--color-line-strong); }
+.wf-btn-ghost { color: var(--color-text-muted); background: transparent; border: 0; }
+.wf-btn-primary:disabled,
+.wf-btn-secondary:disabled { opacity: .45; cursor: default; }
+
+.wf-loading-dots { display: flex; gap: 8px; }
+.wf-loading-dot { position: relative; width: 8px; height: 8px; }
+.wf-loading-dot img { display: block; }
+.wf-loading-dot-active {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  animation: wf-loading-dot-cycle 1.2s steps(1, end) infinite;
+}
+
+@keyframes wf-loading-dot-cycle {
+  0%, 32% { opacity: 1; }
+  33%, 100% { opacity: 0; }
+}
+
+.wf-eyebrow {
+  color: var(--color-text-subtle);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+}
+
+.wf-divider { height: 1px; background: var(--color-line); width: 100%; }
 
 ::-webkit-scrollbar { width: 0; height: 0; }
 
@@ -137,28 +208,16 @@ button:active:not(:disabled) { opacity: .55; transform: scale(.985); }
   }
   .page-enter { animation: none; }
   button:active:not(:disabled), .tappable:active { transform: none; }
+  .wf-loading-dot-active { animation: none; opacity: 0; }
+  .wf-loading-dot:first-child .wf-loading-dot-active { opacity: 1; }
 }
 
-/* 시스템 다크모드 — 베이지 백드롭 / 카드 그림자만 가드.
-   디자인이 흑백 톤이라 본문은 그대로 두고, 데스크톱 stage 배경만 어둡게 매칭. */
-@media (prefers-color-scheme: dark) {
-  @media (min-width: 600px) {
-    html, body, #root { background: #0e0d0c; }
-    #root > div {
-      box-shadow: 0 18px 60px rgba(0,0,0,.6), 0 2px 10px rgba(0,0,0,.4);
-      border-left-color: rgba(255,255,255,.04);
-      border-right-color: rgba(255,255,255,.04);
-    }
-  }
-}
-
-/* 데스크톱 뷰포트(>=600px)에서는 따뜻한 베이지 무대 + 480 모바일 프레임 그림자.
-   "이건 모바일 앱"이라는 시그널을 시각적으로 전달. */
+/* Desktop preview keeps the 430px app frame readable without changing app colors. */
 @media (min-width: 600px) {
-  html, body, #root { background: #efe7df; }
+  html, body, #root { background: #eef0f3; }
   #root > div {
-    box-shadow: 0 18px 60px rgba(40,30,20,.18), 0 2px 10px rgba(40,30,20,.08);
-    border-left: 1px solid rgba(0,0,0,.04);
-    border-right: 1px solid rgba(0,0,0,.04);
+    box-shadow: 0 18px 60px rgba(17,24,39,.14), 0 2px 10px rgba(17,24,39,.08);
+    border-left: 1px solid var(--color-line);
+    border-right: 1px solid var(--color-line);
   }
 }

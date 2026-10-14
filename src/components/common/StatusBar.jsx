@@ -3,12 +3,16 @@
 // 디자인 시안에 그려져 있던 9:41/와이파이/배터리 글리프는 mock 이었으므로 제거.
 //
 // dark prop 은 호출부 호환을 위해 그대로 받지만, 색상은 부모 컨테이너에서 결정.
-// CSS env(safe-area-inset-top) 가 0 이어도 16px 의 최소 여백을 확보한다.
+// 네이티브는 시스템 상태바를 위해 32px 이상, 웹은 과한 빈 띠를 피하도록 16px만 확보한다.
+import { isNativePlatform } from '../../utils/platform';
+
 export function StatusBar() {
+  const height = isNativePlatform() ? 'max(env(safe-area-inset-top), 32px)' : 16;
   return (
     <div
+      aria-hidden="true"
       style={{
-        height: 'max(env(safe-area-inset-top), 16px)',
+        height,
         flexShrink: 0,
       }}
     />

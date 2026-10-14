@@ -1,5 +1,5 @@
 ---
-last-verified: "2026-09-15"
+last-verified: "2026-10-14"
 ---
 
 # Test Strategy
@@ -86,12 +86,13 @@ last-verified: "2026-09-15"
 - `test/History.test.jsx`: 히스토리 로딩/만료/에러 UI + 상세 진입 + 새 분석 CTA
 - `test/HistoryDetail.test.jsx`: 저장된 카드 재오픈 시 `analysisId` 복원
 - `test/authBridge.test.js`: post-login return target 저장/1회 소비 + guest 전환 시 target 정리
-- `test/AnalysisResult.test.jsx`: 헤어=1차/메이크업=2차 CTA wiring + analysisId 유무에 따른 SAVED 배지 (Phase 4-4) + features 0~3개 렌더 (ADR 0009)
+- `test/PhotoUpload.test.jsx`: 가이드→사진 확인 전환 + 검사 결과를 단정하지 않는 질문형 체크리스트 + 동의 필수 + 업로드 payload
+- `test/AnalysisResult.test.jsx`: 헤어=1차/메이크업=2차 CTA wiring + analysisId 유무에 따른 SAVED 배지 (Phase 4-4) + 동급 무드 3개/Traits 미노출 + features 0~3개 렌더 (ADR 0009)
 - `test/CardDetail.test.jsx`: 합성 전/후 sticky CTA 조건 분기 (합성 보기↔결과 공유/다시 보기) (Phase 4-5)
 - `test/MakeupDetail.test.jsx`: 사진 생성 CTA 미노출(규칙 6) + 제품 블록 쿠팡 링크/검색 키워드 분기 (Phase 4-5)
 - `test/Trend.test.jsx`: 준비중 경량화 — mock 피드/search 버튼 제거 + START ANALYSIS→home (Phase 4-6)
 - `test/My.test.jsx`: mock 축소 — fake stats/유저 퍼스널컬러/dead 메뉴·settings 제거 + 세션 JWT email/provider 실데이터 표시 (Phase 4-7)
-- `test/ShareCard.test.jsx`: 합성 사진 유무에 따른 before/after 비교형 ↔ 결과 카드형 + 저장 1차/공유 2차 CTA (Phase 4-8)
+- `test/ShareCard.test.jsx`: 합성 사진 유무에 따른 before/after 비교형 ↔ 결과 카드형 + 빈 결과의 중립 제목/무드 줄 생략 + 저장 1차/공유 2차 CTA (Phase 4-8)
 - `test/StateNotice.test.jsx`: 공통 empty/error/loading 블록 — variant별 eyebrow 색(loading 회색/error 경고색) + 본문 노드 렌더 (Phase 4 문구 통일)
 
 아직 비는 구간:

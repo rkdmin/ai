@@ -1,200 +1,108 @@
 import { useEffect, useRef, useState } from 'react';
 import { StatusBar } from './common/StatusBar';
-import { Icons } from './common/Icons';
-import { FacePlaceholder } from './common/Placeholders';
+import mutedDot from '../assets/figma/loading-dot-muted.svg';
+import activeDot from '../assets/figma/loading-dot-active.svg';
 
 const DEFAULT_STEPS = [
-  { label: '얼굴 인식', en: 'FACE DETECTION' },
-  { label: '얼굴형 분석', en: 'SHAPE ANALYSIS' },
-  { label: '특징 추출', en: 'FEATURE MAPPING' },
-  { label: '카드 큐레이션', en: 'CURATION' },
+  { label: '얼굴형 확인', en: 'FACE SHAPE' },
+  { label: '얼굴선과 비율 분석', en: 'FACE PROPORTION' },
+  { label: '전체적인 인상 패턴 해석', en: 'MOOD PATTERN' },
+  { label: 'Beauty Mood 정리', en: 'BEAUTY MOOD' },
 ];
-
 const STEP_INTERVAL_MS = 1100;
 
-/**
- * 로딩 화면.
- * - `task` (optional): 백엔드 호출 promise. 끝나면 onSuccess/onError 호출.
- * - `task` 없으면 기존 데모 동작(steps 만큼 진행 후 onNext) — 사진 업로드 후가 아닌
- *   카드 생성 단계처럼 데이터가 이미 있는 흐름에서만 사용.
- *
- * 단계 애니메이션은 백엔드 응답이 도착할 때까지 마지막 단계에서 머무르고,
- * 응답이 오면 즉시 onSuccess. 에러는 onError.
- */
-export default function Loading({
-  task,
-  onNext,
-  onSuccess,
-  onError,
-  onCancel,
-  label = '분석 중',
-  steps,
-  photoUrl,
-}) {
-  const s = steps || DEFAULT_STEPS;
+export default function Loading({ task, onNext, onSuccess, onError, onCancel, label = '분석 중', steps, photoUrl }) {
+  const items = steps || DEFAULT_STEPS;
   const [idx, setIdx] = useState(0);
   const [done, setDone] = useState(false);
   const fired = useRef(false);
 
   useEffect(() => {
     let alive = true;
-    const t = setInterval(() => {
-      setIdx((i) => Math.min(i + 1, s.length - 1));
-    }, STEP_INTERVAL_MS);
+    const interval = setInterval(() => setIdx((value) => Math.min(value + 1, items.length - 1)), STEP_INTERVAL_MS);
 
     if (task && typeof task.then === 'function') {
       task.then(
-        (r) => {
+        (result) => {
           if (!alive || fired.current) return;
           fired.current = true;
-          setIdx(s.length - 1);
+          setIdx(items.length - 1);
           setDone(true);
-          // 마지막 step 표시를 잠깐 보여준 뒤 콜백.
-          setTimeout(() => alive && onSuccess?.(r), 220);
+          setTimeout(() => alive && onSuccess?.(result), 220);
         },
-        (e) => {
+        (error) => {
           if (!alive || fired.current) return;
           fired.current = true;
-          onError?.(e);
+          onError?.(error);
         },
       );
     } else if (onNext) {
-      // task 가 없는 데모/내부 전환 흐름. 모든 step 보여준 뒤 onNext.
-      const total = setTimeout(() => {
+      const timeout = setTimeout(() => {
         if (!alive || fired.current) return;
         fired.current = true;
-        setIdx(s.length - 1);
+        setIdx(items.length - 1);
         setDone(true);
         setTimeout(() => alive && onNext?.(), 220);
-      }, STEP_INTERVAL_MS * (s.length + 1));
+      }, STEP_INTERVAL_MS * (items.length + 1));
       return () => {
         alive = false;
-        clearInterval(t);
-        clearTimeout(total);
+        clearInterval(interval);
+        clearTimeout(timeout);
       };
     }
     return () => {
       alive = false;
-      clearInterval(t);
+      clearInterval(interval);
     };
+    // The task belongs to the stage that mounted this screen and must run exactly once.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const currentLabel = done ? '완료' : (s[idx]?.label || '');
-
   return (
-    <div style={{ width: '100%', minHeight: '100dvh', background: '#fff', color: '#000', display: 'flex', flexDirection: 'column' }}>
+    <div className="wf-screen">
       <StatusBar />
-      <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '4px 14px 6px', flexShrink: 0, minHeight: 52 }}>
-        <button onClick={onCancel} className="icon-btn" style={{ marginRight: -6 }} aria-label="cancel">
-          {Icons.close(20)}
-        </button>
-      </div>
-      <div style={{ height: 1, background: '#000', flexShrink: 0 }} />
-
-      <div style={{ margin: '24px 24px 0', position: 'relative', aspectRatio: '1/1.05', overflow: 'hidden', background: '#000' }}>
-        {photoUrl ? (
-          <img
-            src={photoUrl}
-            alt=""
-            aria-hidden
-            decoding="async"
-            style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', filter: 'grayscale(0.4) contrast(1.05) brightness(0.85)' }}
-          />
-        ) : (
-          <FacePlaceholder w="100%" h="100%" tone="dark" label="" />
-        )}
-        <div
-          style={{
-            position: 'absolute',
-            left: 0,
-            right: 0,
-            top: `${15 + Math.min(idx, s.length - 1) * 18}%`,
-            height: 2,
-            background: 'linear-gradient(90deg,transparent,#fff,transparent)',
-            transition: 'top .8s',
-          }}
-        />
-        <div className="serif-i" style={{ position: 'absolute', top: 14, left: 16, fontSize: 12, color: 'rgba(255,255,255,.55)' }}>
-          analyzing…
+      <main style={{ flex: 1, padding: '40px 20px 24px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <div style={{ width: 100, height: 100, borderRadius: 50, overflow: 'hidden', background: '#f3f4f6', display: 'grid', placeItems: 'center', color: '#9ca3af', fontSize: 12, fontWeight: 500 }}>
+          {photoUrl ? <img src={photoUrl} alt="분석 중인 사진" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : 'Photo'}
         </div>
-        <div className="label" style={{ position: 'absolute', top: 16, right: 16, color: 'rgba(255,255,255,.55)' }}>
-          nº 01
-        </div>
-      </div>
+        <div className="wf-eyebrow" style={{ marginTop: 18 }}>{label.toUpperCase()}</div>
+        <h1 className="ko" style={{ margin: '8px 0 24px', textAlign: 'center', fontSize: 22, lineHeight: 1.35, fontWeight: 700 }}>
+          {label === '분석 중' ? <>나만의 Beauty Mood를<br />분석하고 있어요</> : <>{label}을<br />준비하고 있어요</>}
+        </h1>
 
-      <div style={{ padding: '24px 24px 0' }}>
-        <div className="label" style={{ marginBottom: 8 }}>{label.toUpperCase()}</div>
-        <div className="ko" style={{ fontSize: 18, fontWeight: 300, marginBottom: 22 }}>
-          {currentLabel}{' '}
-          <span className="serif-i" style={{ fontSize: 14, color: '#7a7a7a' }}>
-            · {Math.min(idx + 1, s.length)} / {s.length}
-          </span>
-        </div>
-
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 0, borderTop: '1px solid #e8e8e8' }}>
-          {s.map((step, i) => (
-            <div
-              key={i}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                padding: '12px 0',
-                borderBottom: '1px solid #e8e8e8',
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-                <span className="serif-i" style={{ fontSize: 13, color: '#a8a8a8', width: 22 }}>
-                  0{i + 1}
-                </span>
-                <div>
-                  <div className="label" style={{ fontSize: 9.5, color: i <= idx ? '#000' : '#a8a8a8', marginBottom: 2 }}>
-                    {step.en}
+        <div style={{ width: '100%', maxWidth: 300, display: 'grid', gap: 14 }} aria-live="polite">
+          {items.map((step, index) => {
+            const complete = done || index < idx;
+            const current = !done && index === idx;
+            return (
+              <div key={`${step.en}-${index}`} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, color: complete || current ? '#374151' : '#9ca3af' }}>
+                <div style={{ minWidth: 0 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 14, fontWeight: current ? 700 : 400 }}>
+                    <span aria-hidden="true">{complete ? '✓' : current ? '●' : '○'}</span>
+                    <span className="ko">{step.label}</span>
                   </div>
-                  <div className="ko" style={{ fontSize: 12.5, color: i <= idx ? '#000' : '#a8a8a8' }}>
-                    {step.label}
-                  </div>
+                  <div className="wf-eyebrow" style={{ marginLeft: 22, marginTop: 2, fontSize: 9, color: 'inherit' }}>{step.en}</div>
                 </div>
+                <span className="ko" style={{ fontSize: 12, flexShrink: 0 }}>{complete ? '완료' : current ? '분석 중...' : '대기'}</span>
               </div>
-              <div>
-                {(done || i < idx) && Icons.check(16, '#000')}
-                {!done && i === idx && (
-                  <div
-                    style={{
-                      width: 14,
-                      height: 14,
-                      border: '1.2px solid #000',
-                      borderTopColor: 'transparent',
-                      borderRadius: '50%',
-                      animation: 'spin 1s linear infinite',
-                    }}
-                  />
-                )}
-                {!done && i > idx && <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#d4d4d4' }} />}
-              </div>
-            </div>
+            );
+          })}
+        </div>
+
+        <p className="ko" style={{ margin: '28px 0 18px', textAlign: 'center', color: '#6b7280', fontSize: 13, lineHeight: 1.5 }}>
+          확실하게 확인되는 특징을 중심으로<br />분석하고 있어요.
+        </p>
+        <div className="wf-loading-dots" aria-hidden="true">
+          {[0, 1, 2].map((index) => (
+            <span key={index} className="wf-loading-dot">
+              <img src={mutedDot} alt="" width="8" height="8" />
+              <img className="wf-loading-dot-active" src={activeDot} alt="" width="8" height="8" style={{ animationDelay: `${index * 0.4}s` }} />
+            </span>
           ))}
         </div>
-      </div>
-
-      <div style={{ flex: 1 }} />
-      <div style={{ padding: '12px 24px max(env(safe-area-inset-bottom), 30px)', display: 'flex', justifyContent: 'center', flexShrink: 0 }}>
-        <button
-          onClick={onCancel}
-          style={{
-            background: '#fff',
-            border: '1px solid #d4d4d4',
-            padding: '10px 22px',
-            fontFamily: 'Pretendard',
-            fontSize: 12.5,
-            color: '#5a5a5a',
-            minHeight: 40,
-          }}
-        >
-          분석 취소
-        </button>
-      </div>
+        <div style={{ flex: 1 }} />
+        {onCancel && <button type="button" className="wf-btn-ghost" onClick={onCancel} style={{ width: 'auto', minWidth: 120 }}>분석 취소</button>}
+      </main>
     </div>
   );
 }

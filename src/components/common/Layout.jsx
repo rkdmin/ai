@@ -2,31 +2,28 @@ import { Icons } from './Icons';
 import { tapHaptic } from '../../hooks/useHaptic';
 
 export function BackHeader({ title, label, onBack, right, dark = false }) {
-  const c = dark ? '#fff' : '#000';
-  const sub = dark ? 'rgba(255,255,255,.6)' : '#7a7a7a';
+  const c = dark ? '#fff' : '#111827';
+  const sub = dark ? 'rgba(255,255,255,.65)' : '#6b7280';
   return (
-    <>
-      <div style={{ display: 'flex', alignItems: 'center', padding: '4px 14px 6px', gap: 8, flexShrink: 0, minHeight: 52 }}>
+      <div className="wf-header" style={{ background: dark ? '#111827' : '#fff', borderBottomColor: dark ? '#374151' : '#e5e7eb' }}>
         <button
           onClick={() => { tapHaptic('light'); onBack?.(); }}
           className="icon-btn"
-          style={{ marginLeft: -6, color: c }}
+          style={{ marginLeft: -12, color: c }}
           aria-label="뒤로가기"
         >
           {Icons.back(20, c)}
         </button>
         <div style={{ flex: 1, minWidth: 0 }}>
-          {label && <div className="label" style={{ color: sub, marginBottom: 2 }}>{label}</div>}
+          {label && <div className="wf-eyebrow" style={{ color: sub, marginBottom: 2 }}>{label}</div>}
           {title && (
-            <div className="ko" style={{ fontSize: 14, fontWeight: 500, color: c, letterSpacing: '-.005em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            <div className="ko" style={{ fontSize: 16, fontWeight: 700, color: c, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
               {title}
             </div>
           )}
         </div>
         {right}
       </div>
-      <div style={{ height: 1, background: dark ? '#1a1a1a' : '#000', flexShrink: 0 }} />
-    </>
   );
 }
 
@@ -117,17 +114,18 @@ export function TabBar({ active = 'home', dark = false, onNav }) {
     { id: 'history', label: 'HISTORY', icon: Icons.archive },
     { id: 'my', label: 'MY', icon: Icons.user },
   ];
-  const bg = dark ? '#000' : '#fff';
-  const border = dark ? '#1a1a1a' : '#000';
+  const bg = dark ? '#111827' : '#fff';
+  const border = dark ? '#374151' : '#e5e7eb';
   const activeColor = dark ? '#fff' : '#000';
-  const muteColor = dark ? '#5a5a5a' : '#bdbdbd';
+  const muteColor = '#9ca3af';
   return (
     <div
       style={{
         display: 'flex',
         background: bg,
         borderTop: `1px solid ${border}`,
-        padding: '8px 0 max(env(safe-area-inset-bottom), 22px)',
+        minHeight: 56,
+        padding: '4px 0 max(env(safe-area-inset-bottom), 8px)',
         flexShrink: 0,
         position: 'sticky',
         bottom: 0,
@@ -154,18 +152,17 @@ export function TabBar({ active = 'home', dark = false, onNav }) {
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            gap: 4,
-            paddingTop: 4,
+            gap: 3,
+            paddingTop: 6,
             paddingBottom: 4,
-            minHeight: 56,
+            minHeight: 48,
             justifyContent: 'center',
           }}
         >
           {t.icon(18, active === t.id ? activeColor : muteColor)}
-          <span className="label" style={{ fontSize: 9, color: active === t.id ? activeColor : muteColor }}>
+          <span className="ko" style={{ fontSize: 11, fontWeight: active === t.id ? 600 : 400, color: active === t.id ? activeColor : muteColor }}>
             {t.label}
           </span>
-          {active === t.id && <div style={{ width: 14, height: 1, background: activeColor, marginTop: -1 }} />}
         </div>
       ))}
     </div>

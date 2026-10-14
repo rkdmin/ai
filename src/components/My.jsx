@@ -181,7 +181,7 @@ function DeleteAccountSheet({ step, verifyText, verifyPhrase, onChangeVerify, on
       <div
         onClick={(e) => e.stopPropagation()}
         style={{
-          width: '100%', maxWidth: 480, background: '#fff', color: '#000',
+          width: '100%', maxWidth: 430, background: '#fff', color: '#000',
           padding: '22px 22px max(env(safe-area-inset-bottom), 22px)',
           borderTop: '1px solid #000',
           animation: 'fade-in .2s cubic-bezier(.2,.7,.3,1)',

@@ -55,7 +55,7 @@ describe('첫 방문자 흐름', () => {
     expect(screen.getByText('SIGN IN')).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: /카카오로 시작하기/ }));
-    expect(screen.getByText('START ANALYSIS')).toBeInTheDocument();
+    expect(screen.getByText('내 Beauty Mood 분석하기')).toBeInTheDocument();
 
     expect(window.localStorage.getItem('beaumi.onboarded')).toBe('1');
     vi.useRealTimers();
@@ -70,7 +70,7 @@ describe('재방문자 흐름', () => {
     await act(async () => {
       vi.advanceTimersByTime(1000);
     });
-    expect(screen.getByText('START ANALYSIS')).toBeInTheDocument();
+    expect(screen.getByText('내 Beauty Mood 분석하기')).toBeInTheDocument();
     expect(screen.queryByText('STEP 01 · ANALYSIS')).not.toBeInTheDocument();
     vi.useRealTimers();
   });

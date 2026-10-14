@@ -45,6 +45,18 @@ describe('AnalysisResult CTA 위계', () => {
   });
 });
 
+describe('AnalysisResult 무드 렌더', () => {
+  it('동급 무드 3개를 모두 보여주고 Trait으로 이름 붙이지 않는다', () => {
+    const { container } = render(<AnalysisResult result={baseResult} onCardList={() => {}} onShare={() => {}} />);
+
+    expect(screen.getByText('로맨틱')).toBeInTheDocument();
+    expect(screen.getByText('클린')).toBeInTheDocument();
+    expect(screen.getByText('소프트')).toBeInTheDocument();
+    expect(screen.getByText('함께 나타난 무드')).toBeInTheDocument();
+    expect(container.textContent).not.toMatch(/trait/i);
+  });
+});
+
 describe('AnalysisResult features 렌더', () => {
   const render1 = (features) =>
     render(<AnalysisResult result={{ ...baseResult, features }} onCardList={() => {}} onShare={() => {}} />);

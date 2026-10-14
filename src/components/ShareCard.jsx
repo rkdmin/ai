@@ -261,8 +261,9 @@ function ShareButton({ label, icon, onClick }) {
 }
 
 function HairBody({ result, card, photoUrl, synthesizedPhoto }) {
-  const label = result?.styleLabel || '봄날의 햇살형';
+  const label = result?.styleLabel || '나의 Beauty Mood';
   const subEn = result?.faceTypeEn || 'egg shape · spring warm';
+  const moods = Array.isArray(result?.moodArchetype) ? result.moodArchetype.slice(0, 3) : [];
   const tags = card?.name
     ? [card.name, '우아한 분위기 룩', 'ELEGANT MOOD']
     : ['쿠션 단발', '우아한 분위기 룩', 'ELEGANT MOOD'];
@@ -282,30 +283,28 @@ function HairBody({ result, card, photoUrl, synthesizedPhoto }) {
         // 합성 사진이 없으면 결과 카드형 — 가짜 AFTER 를 만들지 않는다.
         <ShareImage src={photoUrl} label="REFERENCE" ratio="1/1" />
       )}
-      <div
-        style={{ padding: '12px 18px', display: 'flex', gap: 6, alignItems: 'center', borderBottom: '1px solid #e8e8e8' }}
-      >
-        <div style={{ display: 'flex' }}>
-          {[
-            ['#f3d9c8', '#c97b6e'],
-            ['#ede2d0', '#a8896f'],
-            ['#e0d4c4', '#7a6549'],
-          ].map((cs, i) => (
-            <div
-              key={i}
-              style={{
-                width: 22, height: 22, borderRadius: 11,
-                marginLeft: i > 0 ? -6 : 0,
-                background: `radial-gradient(circle at 30% 30%, ${cs[1]} 0%, ${cs[0]} 70%)`,
-                border: '1px solid #fff',
-              }}
-            />
-          ))}
+      {moods.length > 0 && (
+        <div style={{ padding: '12px 18px', display: 'flex', gap: 6, alignItems: 'center', borderBottom: '1px solid #e8e8e8' }}>
+          <div style={{ display: 'flex' }}>
+            {[
+              ['#f3d9c8', '#c97b6e'],
+              ['#ede2d0', '#a8896f'],
+              ['#e0d4c4', '#7a6549'],
+            ].slice(0, moods.length).map((cs, i) => (
+              <div
+                key={i}
+                style={{
+                  width: 22, height: 22, borderRadius: 11,
+                  marginLeft: i > 0 ? -6 : 0,
+                  background: `radial-gradient(circle at 30% 30%, ${cs[1]} 0%, ${cs[0]} 70%)`,
+                  border: '1px solid #fff',
+                }}
+              />
+            ))}
+          </div>
+          <span className="ko" style={{ fontSize: 11, fontWeight: 300 }}>{moods.join(' · ')}</span>
         </div>
-        <span className="ko" style={{ fontSize: 11, fontWeight: 300 }}>
-          {(result?.moodArchetype || ['ROMANTIC', 'CLEAN', 'SOFT']).join(' · ')}
-        </span>
-      </div>
+      )}
       <div style={{ padding: '12px 18px', display: 'flex', gap: 6, flexWrap: 'wrap' }}>
         {tags.map((t, i) => (
           <span

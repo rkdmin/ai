@@ -11,18 +11,18 @@ paths:
 
 | 영역 | 값 |
 |------|---|
-| 컬러 | `#fff` 배경 + `#000` 라인/텍스트, 액센트 `#f6f1ed` (warm beige), 경고 `#c45a3b` |
-| 폰트 | Pretendard (한글), Jost (영문 라벨, `letter-spacing: .22em` uppercase), Cormorant Garamond Italic (nº 표기) |
-| 모서리 | 0px (사각 그리드) |
-| 톤 | 에디토리얼 매거진 — 1px 검정 라인 + 큰 흑백 사진 |
+| 컬러 | `#fff` 배경, `#111827` 본문, `#374151` 보조 텍스트, `#e5e7eb` 라인, `#f3f4f6` 보조 면, 경고 `#c2413b` |
+| 폰트 | Inter 우선 + Pretendard 한글 폴백. 본문 12~14px, 제목 17~28px, uppercase eyebrow 9~11px |
+| 모서리 | 카드·버튼 8px, 작은 이미지·아이콘 컨테이너 4~6px, 칩 pill |
+| 톤 | 밝고 구조적인 모바일 와이어프레임 — 얇은 회색 라인, 명확한 정보 위계, 짙은 1차 CTA |
 
 토큰은 `src/styles/tokens.css`, 유틸 클래스는 `src/styles/globals.css` 에 있다. 새 색·폰트·간격을
 컴포넌트에 하드코딩하지 말고 토큰에 추가한 뒤 참조한다.
 
 ### 라벨 패턴 (어디서든 동일)
-- `STEP 04 · TRY ON` (Jost uppercase + 12px) — `.label` 유틸 클래스
-- `nº 01` (serif italic) — `.serif-i`
-- `1ST · BEST MATCH` (Jost uppercase)
+- `MY BEAUTY MOOD` / `PRIMARY MOOD` (Inter bold uppercase + 11px) — `.wf-eyebrow`
+- 1차 CTA는 `#111827` 배경 + 흰색 16~17px bold, 높이 52~56px — `.wf-btn-primary`
+- 2차 CTA는 흰 배경 + 회색 라인 — `.wf-btn-secondary`
 - `ROMANTIC` / `CLEAN` / `SOFT` (무드 키워드 — **인물 이름 절대 X**)
 
 ### 절대 추가 금지 (법적 리스크 — 퍼블리시티권)
@@ -44,11 +44,11 @@ paths:
 | `Onboarding.jsx` | 3-step 온보딩 (로컬 플래그) |
 | `Home.jsx` | 홈 랜딩 + 최근 기록 1~3개 이어보기 (로그인 사용자만 fetch) |
 | `Login.jsx` | OAuth 로그인 + 게스트 체험 + guest gate 카피 분기 |
-| `PhotoUpload.jsx` | STEP 01 — 정면 사진 1장 + DO/DON'T 가이드 타일 (네이티브 카메라/갤러리 브리지 + 웹 폴백) |
-| `PersonalColor.jsx` | 퍼스널컬러 4계절 선택 / skip (분석 직전 보조 입력) |
-| `Loading.jsx` | STEP 02 — 4-step 분석 로딩 (FACE DETECTION → CARD CURATION) |
+| `PhotoUpload.jsx` | STEP 01 — 정면 사진 1장 + 촬영 가이드 5항목·피하면 좋은 사진 3항목·질문형 확인 체크리스트 (네이티브 카메라/갤러리 브리지 + 웹 폴백) |
+| `PersonalColor.jsx` | `wf-*` 4계절 팔레트 카드 + 선택/건너뛰기 footer (분석 직전 보조 입력) |
+| `Loading.jsx` | STEP 02 — 원형 사진 + 4단계 분석 상태 + 순환 로딩 점 |
 | `ErrorScreen.jsx` | face / network 에러 화면 (type별 tip + CTA) |
-| `AnalysisResult.jsx` | STEP 02 결과 — MOOD KEYS / FEATURES / RECOMMENDATIONS |
+| `AnalysisResult.jsx` | STEP 02 결과 — Primary·함께 나타난 무드 / 얼굴 특징 / 헤어·메이크업 추천 |
 | `CardList.jsx` | STEP 03 — 카드 4장 (rank1 무료 + 2·3 광고 잠금 + AVOID) |
 | `CardDetail.jsx` | STEP 04 — AI COMMENTARY / PERSONAL FIT / MOOD BOARD / AI SYNTHESIS (헤어/종합) |
 | `MakeupDetail.jsx` | 메이크업 카드 상세 — palette / part guide / 추천 제품 + 쿠팡 링크 |
