@@ -16,6 +16,7 @@ paths:
 | `backend/routes/cards.py` | `POST /api/cards/{hair\|makeup\|total}` |
 | `backend/routes/history.py` | `GET/POST /api/history` |
 | `backend/routes/photo.py` | `POST /api/photo/generate` (로그인 전용) |
+| `backend/routes/account.py` | `DELETE /api/account` (실제 데이터 삭제, 멱등) · `GET /api/account/policy` (보관 기간) |
 | `backend/services/mediapipe_service.py` | MediaPipe FaceMesh → `inspect_image` (얼굴 수·크기 검사 + `faceRatios`). `tools/landmark.py` 이관 |
 | `backend/services/gemini_service.py` | Gemini 2.5 Flash 호출 (분석/카드/이미지) |
 | `backend/services/rag_service.py` | RAG 컨텍스트 빌더 + 카드 포맷 + `ANALYZE_PROMPT` |

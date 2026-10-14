@@ -128,7 +128,7 @@ Figma 가 답한 항목은 확정하고, Figma 가 비워 둔 항목은 **UX 프
 - [ ] F02 Guest-first Beauty Profile — 앱 재진입 후 홈·MY·FOR YOU 가 같은 결과, 계정 전환 시 이전 데이터 비노출
 - [x] D04 저장 스키마 — 분석 원형 JSON + schemaVersion (`supabase_migrations/0002`), reports·purchases·entitlements·bookmarks·rooms 초안 (`supabase_schema_v10_draft.sql`, owner_id 는 R02 확정까지 auth.users 로 통일). active profile 참조는 F02 에서
 - [x] 기존 데이터 이전 — `analysis_from_row` 가 v1 행을 `legacy: true` + 빈 무드로 읽는다. UI 의 "무드 정보 없음" 표현은 Codex 몫 (api-contract 참조)
-- [ ] 안내 문구·코드 불일치 수정 — 사진 "즉시 폐기" 카피 vs 90일 만료, 계정 삭제 alert (R16·F12 선행)
+- [ ] 안내 문구·코드 불일치 수정 — 사진 "즉시 폐기" 카피 vs 90일 만료, 계정 삭제 alert (R16·F12 선행). 백엔드 완료 2026-10-14: `DELETE /api/account` 실제 삭제, `GET /api/account/policy` + 응답 `photoExpiresAt`. **카피 수정과 My.jsx 연결은 Codex**
 
 ### P2 — 무료 분석
 

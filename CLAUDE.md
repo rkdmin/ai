@@ -160,6 +160,8 @@ SUPABASE_URL=
 SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=
 SUPABASE_PHOTO_BUCKET=analysis-photos
+PHOTO_RETENTION_DAYS=90              # 정면 사진 보관 일수 (안내 문구는 /api/account/policy 로 읽는다)
+GENERATED_PHOTO_RETENTION_DAYS=30
 ```
 
 ---

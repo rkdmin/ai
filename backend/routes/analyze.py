@@ -41,13 +41,17 @@ async def analyze(
 
     # 저장본과 응답이 같은 모양 버전을 갖도록 insert 전에 찍는다.
     result["schemaVersion"] = ANALYSIS_SCHEMA_VERSION
+    # 사진 보관 정책을 응답에 싣는다 — 안내 문구가 코드와 어긋나지 않게 UI 는 이 값을 쓴다.
+    result["photoRetentionDays"] = supabase_service.PHOTO_RETENTION_DAYS
+    result["photoExpiresAt"] = None  # 게스트는 서버에 사진을 저장하지 않는다
 
     if not principal.is_guest:
         front_image_url, expires_at = await supabase_service.upload_image_data_url(
             body.frontImage,
             prefix=f"analyses/{principal.user_id}",
-            ttl_days=90,
+            ttl_days=supabase_service.PHOTO_RETENTION_DAYS,
         )
+        result["photoExpiresAt"] = expires_at.isoformat() if hasattr(expires_at, "isoformat") else str(expires_at)
         result["analysisId"] = await supabase_service.insert_analysis(
             user_id=principal.user_id,
             result=result,

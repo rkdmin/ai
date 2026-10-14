@@ -116,6 +116,28 @@ adapter 는 `supabase_service.analysis_from_row` 하나다. 모양을 또 바꾸
 `판정 어려움` 은 에러가 아니라 **200 응답의 `faceType` 값**이다 — 결과 화면이 처리한다.
 코드 없는 `HTTPException` (400 입력 검증 등)은 `code` 가 없다. 그땐 `detail` 만 보여준다.
 
+### 사진 보관 정책 — 안내 문구는 코드가 아니라 이 값을 보여준다
+
+- `POST /api/analyze` 응답의 `photoRetentionDays` / `photoExpiresAt`. 게스트는 서버에 사진을 저장하지 않으므로
+  `photoExpiresAt: null`. 로그인 사용자는 `PHOTO_RETENTION_DAYS`(기본 90) 뒤 만료.
+- `GET /api/account/policy` → `{ photoRetentionDays, generatedPhotoRetentionDays, guestPhotoStored: false }`.
+  **UI 카피("즉시 폐기", "90일 보관")는 이 값을 읽어 만든다.** 숫자를 화면에 박지 않는다 — 지금 `PhotoUpload` 의
+  "분석 즉시 폐기" 문구는 로그인 사용자에겐 거짓이다 (코드 불일치, plan 0009 P1).
+- 만료 시각 기록과 실제 파일 삭제는 별개다. 만료 후 파일을 지우는 작업은 아직 없다 (F12, R16).
+
+### 계정 삭제 (`DELETE /api/account`) — 로그인 전용
+
+분석·카드·피드백·생성 사진 행, Storage 의 정면·생성 사진, 사용량 카운터, auth 사용자를 지운다.
+
+```json
+{ "ok": true, "storageDeleted": 4, "analysesDeleted": true, "authUserDeleted": true, "errors": [] }
+```
+
+- **부분 실패도 200** 이다. `ok=false` 면 `errors` 에 남은 단계가 적혀 있고, **다시 호출하면 남은 것만 지운다** (멱등).
+  UI 는 `ok=false` 일 때 "일부가 남았어요. 다시 시도" 를 보여준다. 지금 `My.jsx` 의 alert 는 이 호출로 바꿔야 한다.
+- 게스트는 401. 게스트의 기기 저장본 삭제는 프론트가 한다 (서버에 없다).
+- 거래 원장(구매 기록)은 아직 테이블이 없다. 생기면 삭제가 아니라 익명화 대상이다 (F12 보관 설계).
+
 ### 사진 사전검사 (`POST /api/photos/validate`) — Gemini 없음
 
 Figma 의 "선택 사진 확인" 화면용. 요청 `{ "image": "<data URL>" }`, 응답:

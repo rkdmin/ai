@@ -44,6 +44,9 @@ class AnalyzeResponse(BaseModel):
     ruleVersion: int | None = None       # traits.json ruleVersion
     analysisId: str | None = None  # Phase 3 (Supabase) 에서 발급
     schemaVersion: int = ANALYSIS_SCHEMA_VERSION
+    # 사진 보관 정책 — 안내 문구가 참조할 실제 값. 게스트는 저장하지 않으므로 photoExpiresAt=None
+    photoRetentionDays: int | None = None
+    photoExpiresAt: str | None = None
 
 
 class CardsRequest(BaseModel):
@@ -109,3 +112,19 @@ class HistoryDetailResponse(BaseModel):
     analysis: dict
     cards: list[dict] = []
     generatedPhotos: list[dict] = []
+
+
+class AccountPolicyResponse(BaseModel):
+    """GET /api/account/policy — 안내 문구가 참조할 실제 보관 정책 값."""
+    photoRetentionDays: int
+    generatedPhotoRetentionDays: int
+    guestPhotoStored: bool = False
+
+
+class AccountDeleteResponse(BaseModel):
+    """DELETE /api/account — 부분 실패도 200 으로 돌려주고 ok=false + errors. 다시 호출하면 남은 것만 지운다."""
+    ok: bool
+    storageDeleted: int = 0
+    analysesDeleted: bool = False
+    authUserDeleted: bool = False
+    errors: list[str] = []

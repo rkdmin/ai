@@ -20,7 +20,7 @@ last-verified: "2026-08-12"
 - Storage bucket:
   - `analysis-photos`
   - Public bucket
-    - ⚠️ 저장되는 것은 **사용자 정면 얼굴 사진**(90일 보관)이다. Public bucket 은 URL 을 아는
+    - ⚠️ 저장되는 것은 **사용자 정면 얼굴 사진**(`PHOTO_RETENTION_DAYS` 일 보관, 기본 90)이다. Public bucket 은 URL 을 아는
       누구나 접근할 수 있다. 출시 전 private + signed URL 로 전환할지 결정이 필요하다.
       (`backend/services/supabase_service.py` 의 `upload_image_data_url` 이 업로드 담당)
 

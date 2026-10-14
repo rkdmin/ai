@@ -19,6 +19,11 @@ SUPABASE_ANON_KEY = os.getenv("SUPABASE_ANON_KEY", "")
 SUPABASE_SERVICE_ROLE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY", "")
 SUPABASE_PHOTO_BUCKET = os.getenv("SUPABASE_PHOTO_BUCKET", "analysis-photos")
 
+# 사진 보관 기간 (일). 코드에 박지 않고 설정으로 둔다 — 안내 문구(PhotoUpload·개인정보)는 이 값을 따라야 한다.
+# 기간 자체(R16)는 미결이라 기본값은 기존 동작(정면 90일, 생성 사진 30일)을 유지한다.
+PHOTO_RETENTION_DAYS = int(os.getenv("PHOTO_RETENTION_DAYS", "90"))
+GENERATED_PHOTO_RETENTION_DAYS = int(os.getenv("GENERATED_PHOTO_RETENTION_DAYS", "30"))
+
 
 def configured() -> bool:
     return bool(SUPABASE_URL and (SUPABASE_SERVICE_ROLE_KEY or SUPABASE_ANON_KEY))
@@ -327,3 +332,84 @@ async def _get_analysis(user_id: str, analysis_id: str, select: str) -> dict[str
         raise HTTPException(status_code=502, detail="분석 기록 조회에 실패했습니다.")
     rows = resp.json()
     return rows[0] if rows else None
+
+
+# ── 계정 데이터 삭제 (F12 선행) ───────────────────────────────────
+
+
+async def _storage_list(client: httpx.AsyncClient, prefix: str) -> list[str]:
+    """prefix 아래 객체 경로 목록. 폴더 한 단계만 본다 (analyses/<uid>/<file>, generated/<uid>/<analysis>/<file>)."""
+    paths: list[str] = []
+    resp = await client.post(
+        f"{SUPABASE_URL}/storage/v1/object/list/{SUPABASE_PHOTO_BUCKET}",
+        headers=_rest_headers(),
+        json={"prefix": prefix, "limit": 1000, "offset": 0},
+    )
+    if resp.status_code >= 400:
+        raise HTTPException(status_code=502, detail=f"Storage 목록 조회 실패 ({prefix})")
+    for obj in resp.json():
+        name = obj.get("name")
+        if not name:
+            continue
+        if obj.get("id") is None:  # 폴더 — 한 단계 더 내려간다
+            paths.extend(await _storage_list(client, f"{prefix}/{name}"))
+        else:
+            paths.append(f"{prefix}/{name}")
+    return paths
+
+
+async def delete_user_data(user_id: str) -> dict[str, Any]:
+    """
+    사용자의 서버 데이터를 전부 지운다. 순서: Storage 원본·생성 사진 → analyses(cascade: cards·feedback·
+    generated_photos) → usage_counters → auth 사용자. 각 단계는 독립이라 하나가 실패해도 나머지는 진행하고
+    errors 에 남긴다. 다시 호출하면 남은 것만 지운다 (없는 건 404 가 아니라 0건 삭제로 처리).
+    """
+    report: dict[str, Any] = {"storageDeleted": 0, "analysesDeleted": False, "authUserDeleted": False, "errors": []}
+    if not configured():
+        report["errors"].append("Supabase 미설정 — 서버에 지울 데이터가 없다")
+        return report
+
+    async with httpx.AsyncClient(timeout=30) as client:
+        # 1) Storage
+        try:
+            paths: list[str] = []
+            for prefix in (f"analyses/{user_id}", f"generated/{user_id}"):
+                paths.extend(await _storage_list(client, prefix))
+            if paths:
+                resp = await client.request(
+                    "DELETE",
+                    f"{SUPABASE_URL}/storage/v1/object/{SUPABASE_PHOTO_BUCKET}",
+                    headers=_rest_headers(),
+                    json={"prefixes": paths},
+                )
+                if resp.status_code >= 400:
+                    raise HTTPException(status_code=502, detail="Storage 삭제 실패")
+                report["storageDeleted"] = len(paths)
+        except Exception as e:  # noqa: BLE001 — 부분 실패를 모아서 돌려준다
+            report["errors"].append(f"storage: {getattr(e, 'detail', e)}")
+
+        # 2) 분석 행 (cascade) + 사용량 카운터
+        for table in ("analyses", "usage_counters"):
+            resp = await client.delete(
+                f"{SUPABASE_URL}/rest/v1/{table}",
+                headers=_rest_headers(),
+                params={"user_id": f"eq.{user_id}"},
+            )
+            if resp.status_code >= 400:
+                report["errors"].append(f"{table}: 삭제 실패 ({resp.status_code})")
+            elif table == "analyses":
+                report["analysesDeleted"] = True
+
+        # 3) auth 사용자 — service role 필요. 없으면 여기까지만 지우고 알린다.
+        if not SUPABASE_SERVICE_ROLE_KEY:
+            report["errors"].append("auth: SUPABASE_SERVICE_ROLE_KEY 없음 — 계정 행은 남는다")
+        else:
+            resp = await client.delete(
+                f"{SUPABASE_URL}/auth/v1/admin/users/{user_id}",
+                headers={"apikey": SUPABASE_SERVICE_ROLE_KEY, "authorization": f"Bearer {SUPABASE_SERVICE_ROLE_KEY}"},
+            )
+            if resp.status_code in (200, 204, 404):
+                report["authUserDeleted"] = True
+            else:
+                report["errors"].append(f"auth: 사용자 삭제 실패 ({resp.status_code})")
+    return report

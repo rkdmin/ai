@@ -50,7 +50,7 @@ async def generate_photo(
         storage_url, _ = await supabase_service.upload_image_data_url(
             image_data_url,
             prefix=f"generated/{principal.user_id}/{body.analysisId}",
-            ttl_days=30,
+            ttl_days=supabase_service.GENERATED_PHOTO_RETENTION_DAYS,
         )
         await supabase_service.insert_generated_photo(
             principal.user_id,

@@ -343,3 +343,52 @@ def test_photo_generate_uploads_and_records_new_image():
     assert r.status_code == 200, r.text
     assert r.json() == {"generatedImage": "data:image/jpeg;base64,out", "cached": False}
     insert_photo.assert_awaited_once_with("user-1", "analysis-1", "hair", "https://cdn.example/generated.jpg")
+
+
+# ─── 계정 삭제 · 보관 정책 (plan 0009 P1, F12 선행) ─────────────────
+
+
+def test_account_delete_requires_login():
+    with TestClient(app) as client:
+        r = client.delete("/api/account")
+    assert r.status_code == 401
+
+
+def test_account_delete_calls_service_and_reports_partial_failure():
+    report = {"storageDeleted": 3, "analysesDeleted": True, "authUserDeleted": False, "errors": ["auth: 사용자 삭제 실패 (500)"]}
+    with patch("services.supabase_service.delete_user_data", new=AsyncMock(return_value=report)) as svc:
+        with TestClient(app) as client:
+            r = client.delete("/api/account", headers={"X-User-Id": "user-1"})
+
+    assert r.status_code == 200, r.text
+    body = r.json()
+    assert body["ok"] is False and body["storageDeleted"] == 3 and body["authUserDeleted"] is False
+    svc.assert_awaited_once_with("user-1")
+
+
+def test_account_policy_exposes_retention_days():
+    with TestClient(app) as client:
+        r = client.get("/api/account/policy")
+    assert r.status_code == 200
+    body = r.json()
+    assert body["photoRetentionDays"] >= 1 and body["guestPhotoStored"] is False
+
+
+def test_analyze_returns_photo_policy_for_user_and_guest():
+    result = {"faceType": "계란형", "features": [], "moodArchetype": ["CLEAN"]}
+    with (
+        patch("services.mediapipe_service.inspect_image", return_value=_ok_check()),
+        patch("services.gemini_service.analyze_face", new=AsyncMock(return_value=dict(result))),
+        patch(
+            "services.supabase_service.upload_image_data_url",
+            new=AsyncMock(return_value=("https://cdn.example/front.jpg", "2026-08-09T00:00:00+00:00")),
+        ),
+        patch("services.supabase_service.insert_analysis", new=AsyncMock(return_value="analysis-1")),
+    ):
+        with TestClient(app) as client:
+            user = client.post("/api/analyze", headers={"X-User-Id": "user-1"}, json={"frontImage": "data:image/jpeg;base64,xxx"})
+            guest = client.post("/api/analyze", json={"frontImage": "data:image/jpeg;base64,xxx"})
+
+    assert user.json()["photoExpiresAt"] == "2026-08-09T00:00:00+00:00"
+    assert user.json()["photoRetentionDays"] >= 1
+    assert guest.json()["photoExpiresAt"] is None  # 게스트 사진은 서버에 남지 않는다
