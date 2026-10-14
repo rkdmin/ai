@@ -110,7 +110,6 @@ Figma 가 답한 항목은 확정하고, Figma 가 비워 둔 항목은 **UX 프
 - [ ] R00·R01·R03·R04·R06 확정분으로 ADR 0010 초안을 작성 (결정은 위 "결정 기록" 표, 2026-10-14)
 - [ ] UX 프로토타입을 보고 R02·R05·Room 로그인을 확정해 ADR 에 추가
 - [ ] R07~R18의 기본값과 보류 범위를 승인하고 CTA 목적지 표를 확정
-- [ ] Play Billing sandbox에서 상품 조회→구매→서버 검증→acknowledge→복원→회수 POC
 - [ ] 설치된 앱 App Links와 미설치 후 Install Referrer/수동 복원 폴백 POC
 - [ ] Figma의 23개 화면·81개 미확정 텍스트를 fixture/운영값/fallback으로 분류하고 담당자 확정 (분류는 [closeout 1절](./0009-figma-closeout.md) 완료, 운영값 24개 담당자 확정 남음)
 - [ ] CTA 260행 중 `추정` 164행의 목적지·복귀를 디자이너가 확정 (재확인 정정 반영) ([closeout 2절](./0009-figma-closeout.md))
@@ -144,6 +143,7 @@ Figma 가 답한 항목은 확정하고, Figma 가 비워 둔 항목은 **UX 프
 
 ### P4 — 결제·복원
 
+- [ ] Play Billing sandbox POC — 상품 조회→구매→서버 검증→acknowledge→복원→회수. 구글이 주는 토큰·pending·환불 알림 모양을 보고 D04 의 purchases·entitlements 를 확정 (P0 에서 이동, 2026-10-14)
 - [ ] F05 결제·구매 내역·복원 — 상품 조회·서버 검증·entitlement·거래 원장·RTDN, sandbox 에서 cancel/pending/중복/환불 통과
 - [ ] 결제 전 로그인 분기 (R02 확정 후) — 로그인 화면 삽입 또는 게스트 principal 중 하나로 구현
 - [ ] 홈 구매 완료·MY 구매 리포트·구매 내역에서 같은 리포트 재진입
