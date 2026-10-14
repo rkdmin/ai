@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { render, screen, fireEvent, act } from '@testing-library/react';
+import { render, screen, act } from '@testing-library/react';
 
 vi.mock('../src/api/ai.js', () => ({
   analyzeFace: vi.fn(),
@@ -36,28 +36,16 @@ describe('StatusBar 제거 가드', () => {
 });
 
 describe('첫 방문자 흐름', () => {
-  it('splash -> onboarding -> login -> home, 그리고 localStorage 플래그 set', async () => {
+  it('로그인이나 온보딩을 강제하지 않고 splash에서 home으로 진입', async () => {
     vi.useFakeTimers();
     render(<App />);
 
     await act(async () => {
       vi.advanceTimersByTime(1000);
     });
-    expect(screen.getByText('STEP 01 · ANALYSIS')).toBeInTheDocument();
-
-    fireEvent.click(screen.getByRole('button', { name: 'NEXT' }));
-    expect(screen.getByText('STEP 02 · CARDS')).toBeInTheDocument();
-
-    fireEvent.click(screen.getByRole('button', { name: 'NEXT' }));
-    expect(screen.getByText('STEP 03 · PRODUCTS')).toBeInTheDocument();
-
-    fireEvent.click(screen.getByRole('button', { name: 'GET STARTED' }));
-    expect(screen.getByText('SIGN IN')).toBeInTheDocument();
-
-    fireEvent.click(screen.getByRole('button', { name: /카카오로 시작하기/ }));
     expect(screen.getByText('내 Beauty Mood 분석하기')).toBeInTheDocument();
-
-    expect(window.localStorage.getItem('beaumi.onboarded')).toBe('1');
+    expect(screen.queryByText('STEP 01 · ANALYSIS')).not.toBeInTheDocument();
+    expect(screen.queryByText('SIGN IN')).not.toBeInTheDocument();
     vi.useRealTimers();
   });
 });

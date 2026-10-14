@@ -88,6 +88,7 @@ last-verified: "2026-10-14"
 - `test/authBridge.test.js`: post-login return target 저장/1회 소비 + guest 전환 시 target 정리
 - `test/navigation.test.js`: main/analysis/detail/sheet route 분리 + 메인 4탭 한정 TabBar + 상세 origin 복귀 + 탭 전환 시 결과 유지
 - `test/requestGate.test.js`: 요청 이탈·교체 뒤 늦게 끝난 분석/카드 응답 무효화
+- `test/profileStorage.test.js`: 게스트 재진입 결과 복원 + schemaVersion 포함 키 + 사진 미저장 + 계정별 저장본 격리 + legacy 무드 비보정
 - `test/PhotoUpload.test.jsx`: 가이드→사진 확인 전환 + 검사 결과를 단정하지 않는 질문형 체크리스트 + 동의 필수 + 업로드 payload
 - `test/AnalysisResult.test.jsx`: 헤어=1차/메이크업=2차 CTA wiring + analysisId 유무에 따른 SAVED 배지 (Phase 4-4) + 동급 무드 3개/Traits 미노출 + features 0~3개 렌더 (ADR 0009)
 - `test/CardDetail.test.jsx`: 합성 전/후 sticky CTA 조건 분기 (합성 보기↔결과 공유/다시 보기) (Phase 4-5)

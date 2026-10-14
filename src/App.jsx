@@ -21,7 +21,7 @@ import History from './components/History';
 import HistoryDetail from './components/HistoryDetail';
 import My from './components/My';
 
-import { analyzeFace, generateHairCards, generateMakeupCards, generateStyledPhoto } from './api/ai';
+import { analyzeFace, fetchHistory, fetchHistoryDetail, generateHairCards, generateMakeupCards, generateStyledPhoto } from './api/ai';
 import { mapCards } from './api/mappers';
 import { useAuth } from './contexts/AuthContext';
 import { consumePostAuthTarget, setPostAuthTarget } from './utils/authBridge';
@@ -39,6 +39,7 @@ import {
   transitionNavigation,
 } from './utils/navigation';
 import { createRequestGate, isStaleRequestError } from './utils/requestGate';
+import { loadLatestAnalysis, profileOwnerForSession, saveLatestAnalysis } from './utils/profileStorage';
 
 const KO_TO_KEY = {
   '봄 웜톤': 'spring_warm',
@@ -64,14 +65,6 @@ function backendPersonalColorKey(pickKo) {
 }
 
 const ONBOARDING_FLAG = 'beaumi.onboarded';
-
-function hasOnboarded() {
-  try {
-    return typeof window !== 'undefined' && window.localStorage.getItem(ONBOARDING_FLAG) === '1';
-  } catch {
-    return false;
-  }
-}
 
 function markOnboarded() {
   try {
@@ -103,12 +96,46 @@ export default function App() {
   const requestGateRef = useRef(createRequestGate());
   const activeRequestIdRef = useRef(null);
   const routeRef = useRef(route);
+  const profileLoadIdRef = useRef(0);
+  const profileOwner = useMemo(() => profileOwnerForSession(auth.session), [auth.session]);
 
   useEffect(() => { routeRef.current = route; }, [route]);
 
   const setResult = useCallback((nextResult) => {
     setAppState((current) => ({ ...current, result: nextResult }));
   }, []);
+
+  useEffect(() => {
+    const loadId = ++profileLoadIdRef.current;
+    setResult(null);
+
+    if (!auth.isAuthenticated) {
+      setResult(loadLatestAnalysis(profileOwner));
+      return undefined;
+    }
+
+    let alive = true;
+    const restore = async () => {
+      try {
+        const rows = await fetchHistory(1);
+        const latestId = Array.isArray(rows) ? rows[0]?.analysisId : null;
+        if (latestId) {
+          const detail = await fetchHistoryDetail(latestId);
+          if (alive && loadId === profileLoadIdRef.current && detail?.analysis) {
+            const clean = saveLatestAnalysis(profileOwner, detail.analysis);
+            setResult(clean);
+            return;
+          }
+        }
+      } catch { /* 기기 저장본으로 폴백 */ }
+
+      if (alive && loadId === profileLoadIdRef.current) {
+        setResult(loadLatestAnalysis(profileOwner));
+      }
+    };
+    restore();
+    return () => { alive = false; };
+  }, [auth.isAuthenticated, profileOwner, setResult]);
 
   const cancelActiveRequest = useCallback(() => {
     requestGateRef.current.cancel(activeRequestIdRef.current);
@@ -240,13 +267,15 @@ export default function App() {
       go('error_face');
       return;
     }
-    setResult({ ...r, personalColor: r.personalColor || personalColor });
+    const nextResult = { ...r, personalColor: r.personalColor || personalColor };
+    setResult(nextResult);
+    saveLatestAnalysis(profileOwner, nextResult);
     setHairCards(null);
     setMakeupCards(null);
     setActiveCard(null);
     setSynthByKey({});
     go('result_home');
-  }, [personalColor, go, setResult]);
+  }, [personalColor, go, profileOwner, setResult]);
 
   const onAnalysisError = useCallback((e) => {
     if (isStaleRequestError(e)) return;
@@ -328,7 +357,7 @@ export default function App() {
   let view;
   switch (screen) {
     case 'splash':
-      view = <Splash onNext={() => go(hasOnboarded() ? 'home' : 'onboarding1')} />;
+      view = <Splash onNext={() => go('home')} />;
       break;
     case 'onboarding1':
       view = <Onboarding idx={0} onNext={() => go('onboarding2')} onSkip={() => go('login')} />;
@@ -364,7 +393,7 @@ export default function App() {
       );
       break;
     case 'home':
-      view = <Home onNext={() => go('upload')} onNav={(target) => target === 'history' ? openHistory() : navTab(target)} onOpenRecent={openHistoryDetail} canAccessHistory={auth.isAuthenticated} />;
+      view = <Home profile={result} onNext={() => go('upload')} onNav={(target) => target === 'history' ? openHistory() : navTab(target)} onOpenRecent={openHistoryDetail} canAccessHistory={auth.isAuthenticated} />;
       break;
     case 'upload':
       view = (
@@ -625,10 +654,10 @@ export default function App() {
       );
       break;
     case 'my':
-      view = <My onNav={(target) => target === 'history' ? openHistory() : navTab(target)} onBack={back} onSignOut={() => { auth.signOut(); go('login'); }} />;
+      view = <My profile={result} onNav={(target) => target === 'history' ? openHistory() : target === 'login' ? go('login') : navTab(target)} onBack={back} onSignOut={() => { auth.signOut(); go('home'); }} />;
       break;
     default:
-      view = <Splash onNext={() => go('onboarding1')} />;
+      view = <Splash onNext={() => go('home')} />;
   }
 
   const containerStyle = useMemo(() => ({

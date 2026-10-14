@@ -30,14 +30,14 @@ function parseJwt(token) {
   }
 }
 
-export default function My({ onNav, onBack, onSignOut }) {
+export default function My({ profile = null, onNav, onBack, onSignOut }) {
   // Apple 5.1.1(v) + 개인정보보호법 §35.3 — 사용자가 앱 안에서 직접 계정 삭제를 시작할 수 있어야 함.
   // 두 단계 confirm: 1) 안내 모달, 2) 텍스트 일치 확인. 실제 호출은 deleteAccount 미구현 시점 안내만.
   const [confirmStep, setConfirmStep] = useState(null); // null | 'intro' | 'verify'
   const [verifyText, setVerifyText] = useState('');
   const VERIFY_PHRASE = '삭제';
 
-  const { session } = useAuth();
+  const { session, isAuthenticated } = useAuth();
   const claims = session?.accessToken ? parseJwt(session.accessToken) : null;
   const email = claims?.email || null;
   const provider = claims?.app_metadata?.provider || null;
@@ -67,15 +67,27 @@ export default function My({ onNav, onBack, onSignOut }) {
             <FacePlaceholder w="100%" h="100%" tone="light" label="" />
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div className="label" style={{ color: '#7a7a7a', marginBottom: 6 }}>SIGNED IN</div>
+            <div className="label" style={{ color: '#7a7a7a', marginBottom: 6 }}>{isAuthenticated ? 'SIGNED IN' : 'GUEST PROFILE'}</div>
             <div className="ko" style={{ fontSize: 16, fontWeight: 400, letterSpacing: '-.005em', wordBreak: 'break-all' }}>
-              {email || '내 계정'}
+              {email || (isAuthenticated ? '내 계정' : '게스트 프로필')}
             </div>
             <div className="ko" style={{ fontSize: 11.5, color: '#7a7a7a', fontWeight: 300, marginTop: 2 }}>
-              {providerLabel ? `${providerLabel} 로그인` : '로그인됨'}
+              {providerLabel ? `${providerLabel} 로그인` : (isAuthenticated ? '로그인됨' : '이 기기에만 저장됨')}
             </div>
           </div>
         </div>
+
+        {profile && (
+          <section style={{ padding: '20px 22px', borderBottom: '1px solid #000' }} aria-label="최근 Beauty Profile">
+            <div className="label" style={{ color: '#7a7a7a', marginBottom: 6 }}>LATEST BEAUTY PROFILE</div>
+            <div className="ko" style={{ fontSize: 18, lineHeight: 1.4 }}>
+              {profile.legacy ? (profile.faceType || '이전 분석 결과') : (profile.moodTitle || '나의 Beauty Mood')}
+            </div>
+            {!profile.legacy && profile.moodSummary && (
+              <p className="ko" style={{ margin: '8px 0 0', color: '#5a5a5a', fontSize: 12.5, lineHeight: 1.55 }}>{profile.moodSummary}</p>
+            )}
+          </section>
+        )}
 
         <div style={{ borderTop: '1px solid #000' }}>
           {MENU.map((m, i) => {
@@ -116,8 +128,8 @@ export default function My({ onNav, onBack, onSignOut }) {
           })}
         </div>
 
-        {/* 계정 삭제 — Apple 5.1.1(v) / 개보법 §35.3 필수. 메뉴와 분리해 강조. */}
-        <div style={{ padding: '18px 22px 4px' }}>
+        {/* 계정 삭제 — Apple 5.1.1(v) / 개보법 §35.3 필수. 로그인 계정에만 노출. */}
+        {isAuthenticated && <div style={{ padding: '18px 22px 4px' }}>
           <button
             onClick={() => setConfirmStep('intro')}
             style={{
@@ -131,19 +143,19 @@ export default function My({ onNav, onBack, onSignOut }) {
           <div className="ko" style={{ fontSize: 10.5, color: '#a8a8a8', marginTop: 8, lineHeight: 1.55, fontWeight: 300 }}>
             삭제 요청 시 분석 사진·결과 카드·계정 정보가 14일 내 영구 삭제되며, 복구할 수 없어요.
           </div>
-        </div>
+        </div>}
 
         <div style={{ padding: '24px 22px 30px', textAlign: 'center' }}>
           <div className="wm" style={{ fontSize: 18, fontWeight: 300, marginBottom: 6 }}>beaumi</div>
           <div className="serif-i" style={{ fontSize: 11, color: '#a8a8a8' }}>v 1.0.0 · sharing your beauty, every day</div>
           <button
-            onClick={onSignOut}
+            onClick={isAuthenticated ? onSignOut : () => onNav?.('login')}
             style={{
               marginTop: 16, background: '#fff', border: '1px solid #d4d4d4', padding: '10px 18px',
               fontFamily: 'Pretendard', fontSize: 12, color: '#5a5a5a', minHeight: 40,
             }}
           >
-            로그아웃
+            {isAuthenticated ? '로그아웃' : '로그인'}
           </button>
         </div>
       </div>

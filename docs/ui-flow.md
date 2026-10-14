@@ -31,9 +31,8 @@ last-verified: "2026-10-14"
 ## 화면 상태 맵 (`App.jsx`)
 
 ```txt
-flow: splash
-  → onboarding1 → onboarding2 → onboarding3
-  → login | home
+flow: splash → home
+  login과 onboarding 화면은 후속 시각 정렬을 위해 남아 있지만 첫 진입을 막지 않음
 
 main: home | style | chemistry | my
 
@@ -110,8 +109,7 @@ Capacitor Android 하드웨어 back 은 브라우저 `popstate` 와 같은 `onPo
 ### Splash (`stage: 'splash'`)
 
 - 200ms 후 다음 화면으로 이동 (`Splash.jsx` 의 `setTimeout`)
-- `localStorage['beaumi.onboarded'] === '1'` 이면 `home`
-- 아니면 `onboarding1`
+- 로그인·온보딩을 강제하지 않고 항상 `home`으로 이동한다.
 
 ### Onboarding (`onboarding1~3`)
 
@@ -138,7 +136,7 @@ Capacitor Android 하드웨어 back 은 브라우저 `popstate` 와 같은 `onPo
 
 ---
 
-## Home (`stage: 'home'`)
+## Home (`main: 'home'`)
 
 **컴포넌트:** `Home.jsx`
 
@@ -150,12 +148,19 @@ Capacitor Android 하드웨어 back 은 브라우저 `popstate` 와 같은 `onPo
 - Primary CTA: `내 Beauty Mood 분석하기` → `upload`
 - 미리보기 카드 CTA도 Figma의 `전체 결과 예시 보기 →`(샘플 결과 시트 `108:2659`) 대신 `내 결과 만들기 →`로 `upload`에 연결한다. 아직 제품 경로에 제공할 검증된 샘플 결과 시트가 없어 막힌 예시 화면보다 실제 분석 시작을 우선한 결정이다.
 - `RECENT` 섹션
+- 기기에 복원된 최근 Beauty Profile이 있으면 미리보기 카드에 같은 결과를 표시한다. 원본 사진은 기기 저장본에 넣지 않는다.
 
 `RECENT` 규칙:
 - 로그인 사용자만 `fetchHistory(3)` 호출
 - 게스트는 API 호출 없이 로그인 유도 empty copy만 노출
 - recent 카드 클릭 시 `history_detail` 진입
 - recent 카드에서 열린 상세는 뒤로가기 시 `home` 으로 복귀
+
+Beauty Profile 복원 규칙:
+- 저장 키는 사용자 범위와 응답 `schemaVersion`을 포함한다.
+- 게스트 결과와 로그인 계정 결과를 분리하며, 로그아웃·계정 전환 직후 이전 계정 결과를 먼저 비운다.
+- 로그인 사용자는 서버 최신 히스토리 상세를 우선하고, 서버를 불러올 수 없거나 기록이 없을 때만 해당 계정의 기기 저장본으로 폴백한다.
+- `legacy: true` 저장본에는 원래 없던 무드·Traits 필드를 채워 넣지 않는다.
 
 ---
 
@@ -391,14 +396,14 @@ CTA (1차/2차 위계 — 동등 그리드 아님):
 
 ---
 
-## My (`stage: 'my'`)
+## My (`main: 'my'`)
 
 **컴포넌트:** `My.jsx`
 
-- 로그인 필요
-- 프로필: 세션 access token(JWT)에서 `email` / `app_metadata.provider` 를 읽어 실데이터로 표시 (`내 계정` / `로그인됨` 은 fallback)
+- 게스트도 접근할 수 있으며 홈과 동일한 최근 Beauty Profile을 표시한다.
+- 로그인 프로필은 세션 access token(JWT)에서 `email` / `app_metadata.provider` 를 읽고, 게스트는 기기 저장 상태를 표시한다.
 - 메뉴: 분석 히스토리(→ history) + 개인정보/약관/고객센터 링크. 데이터 소스 없는 fake stats·유저 퍼스널컬러·dead 메뉴(저장한 카드/공유한 결과/알림 설정)·settings 버튼은 제거 (Phase 4-7 mock 축소)
-- 로그아웃 가능
+- 로그인 사용자는 로그아웃, 게스트는 로그인 화면 진입이 가능하다. 로그아웃 시 계정 저장본 대신 게스트 저장본으로 즉시 전환한다.
 - 계정 삭제 2단계 확인 시트 존재 (실제 삭제 API 는 아직 미연결 — alert 안내)
 - 분석 횟수 등 실통계는 `GET /api/me` 추가 시 연결 (v1.x)
 
@@ -407,7 +412,7 @@ CTA (1차/2차 위계 — 동등 그리드 아님):
 ## 주요 상태 (`App.jsx`)
 
 ```js
-stage: string
+route: { kind: 'main' | 'analysis' | 'detail' | 'sheet' | 'flow', tab?: string, screen?: string, origin?: Route }
 photo: { file, dataUrl } | null
 personalColor: string | null
 result: {
@@ -424,5 +429,5 @@ adReturn: { done: string, back: string }
 synthByKey: Record<string, string>
 errorInfo: { type: 'face' | 'network', message: string }
 guestGateReason: 'history' | 'history_detail' | 'my' | 'unlock'
-historySelection: { analysisId: string | null, back: 'home' | 'history' }
+historySelection: { analysisId: string | null }
 ```

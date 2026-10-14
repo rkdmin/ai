@@ -26,7 +26,7 @@ const ANALYSIS_STEPS = [
   { n: '03', title: 'STYLE DIRECTION', lines: ['Beauty Mood와 얼굴 구조를 기반으로', 'Hair · Makeup 추천'] },
 ];
 
-export default function Home({ onNext, onNav, onOpenRecent, canAccessHistory = false }) {
+export default function Home({ profile = null, onNext, onNav, onOpenRecent, canAccessHistory = false }) {
   const [recent, setRecent] = useState([]);
 
   useEffect(() => {
@@ -100,8 +100,12 @@ export default function Home({ onNext, onNav, onOpenRecent, canAccessHistory = f
           </div>
           <div style={{ paddingTop: 16 }}>
             <div className="wf-eyebrow" style={{ marginBottom: 3 }}>MY BEAUTY MOOD</div>
-            <div className="ko" style={{ fontSize: 18, fontWeight: 800, lineHeight: 1.3 }}>나의 Beauty Mood</div>
-            <p className="ko" style={{ margin: '12px 0', color: '#4b5563', fontSize: 13, lineHeight: 1.5 }}>얼굴선과 비율에서 안정적인 특징을 찾아 결과를 정리해드려요.</p>
+            <div className="ko" style={{ fontSize: 18, fontWeight: 800, lineHeight: 1.3 }}>
+              {profile?.legacy ? (profile.faceType || '이전 분석 결과') : (profile?.moodTitle || '나의 Beauty Mood')}
+            </div>
+            <p className="ko" style={{ margin: '12px 0', color: '#4b5563', fontSize: 13, lineHeight: 1.5 }}>
+              {profile?.legacy ? '이전 버전에서 저장된 분석이에요.' : (profile?.moodSummary || '얼굴선과 비율에서 안정적인 특징을 찾아 결과를 정리해드려요.')}
+            </p>
             <button type="button" className="wf-btn-ghost" onClick={onNext} style={{ minHeight: 36, padding: 0, justifyContent: 'flex-start', borderTop: '1px solid #e5e7eb', borderRadius: 0, fontSize: 14 }}>
               내 결과 만들기 →
             </button>
