@@ -48,6 +48,7 @@ import 한다 — 사본이 없으므로 라벨을 추가·삭제하면 채점�
 | `face-makeup.json` | 메이크업 위치·방법 베이스 | `makeupByFaceShape[].faceType` |
 | `personal-color-makeup.json` | 컬러 팔레트 레이어 | `makeupByPersonalColor[].personalColor` (spring_warm/summer_cool/autumn_warm/winter_cool) |
 | `feature-tips.json` | 이목구비 보정 팁 (최우선) | `featureTips[].label` (한국어 매칭) |
+| `traits.json` | **Traits 사전** (D01) — 윤곽·비율·대비 축, 라벨·관찰 기준·얼굴형 제외 | `axes.<axis>.traits[].label`, `ruleVersion`, `pickOrder` |
 
 병합 규칙·우선순위는 `backend/data/rag_usage_guide.md` 가 단일 진실 소스다.
 이 구조를 바꾸면 해당 가이드를 같은 작업에서 갱신한다.
@@ -98,6 +99,10 @@ Gemini 는 한국어 값을 반환하고 RAG JSON 은 영문 키를 쓴다. 새 
   영향을 준다 — 결론을 먼저 뱉으면 분류 우선순위를 밟지 않고 인상으로 답한다 (ADR 0009 골든셋 확인).
   출력 스키마의 필드 순서를 바꾸지 마라.
 - 프롬프트를 수정하면 반드시 `/eval-face` 로 골든셋 회귀를 돌린다. 목표는 정확도 90%+.
+- **traits 섹션은 `## features 판단 기준` 보다 앞에 둔다.** `tools/score_features.py` 가 features 섹션 이후의
+  따옴표 라벨을 화이트리스트로 읽으므로, 뒤에 두면 trait 라벨이 features 로 오인된다 (`test_consistency` 가 순서를 검사한다).
+- `primaryMood` 는 `moodArchetype` 안에서, `traits` 는 `traits.json` 라벨 안에서만. 제목(`moodTitle`)의 인물 비교 표현은
+  `sanitize_analysis` 가 런타임에 `null` 로 만든다. 무료 Hair/Makeup 방향은 모델이 아니라 `free_directions()` 가 RAG 에서 뽑는다.
 
 ## 불변식
 

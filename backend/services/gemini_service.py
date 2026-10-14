@@ -21,6 +21,7 @@ from services.rag_service import (
     build_total_context,
     mood_allowed,
     mood_banned,
+    free_directions,
     sanitize_analysis,
 )
 
@@ -188,6 +189,8 @@ async def analyze_face(image_b64: str, face_ratios: dict | None = None) -> dict:
         raise GeminiRejected(str(result["error"]))
     # 프롬프트로 같은 규칙을 지시하지만 모델 응답은 확률적이다. 마지막 방어선.
     result = sanitize_analysis(result)
+    # 무료 Hair/Makeup 방향은 모델이 아니라 RAG 에서 결정적으로 뽑는다 (D01).
+    result.update(free_directions(result))
     if face_ratios:
         result["faceRatios"] = face_ratios
     return result

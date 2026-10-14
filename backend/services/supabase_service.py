@@ -111,15 +111,15 @@ def analysis_from_row(row: dict[str, Any]) -> dict[str, Any]:
     """
     analyses 행 → 응답 analysis dict. **legacy adapter** 가 여기 있다.
 
-    schema v2 행은 result JSON 을 그대로 쓴다. v1 행(result 없음)은 컬럼으로만 복원하고
-    무드는 빈 배열로 둔 채 legacy=True 를 세운다 — 저장하지 않은 무드를 얼굴형 선호 무드로
-    채우면 "분석 결과"처럼 보이므로 하지 않는다. UI 는 legacy 를 보고 "무드 정보 없음"을 표현한다.
+    v2 이상 행은 result JSON 을 그대로 쓴다. v1 행(result 없음)은 컬럼으로만 복원하고
+    무드는 빈 배열로 둔다. 현재 버전보다 낮으면 legacy=True — 저장하지 않은 값(v1 의 무드,
+    v2 의 primaryMood·traits)을 지어내 채우지 않는다. UI 는 legacy 를 보고 "정보 없음"을 표현한다.
     """
     version = int(row.get("schema_version") or 1)
     stored = row.get("result") if version >= 2 else None
     if isinstance(stored, dict):
         analysis = dict(stored)
-        legacy = False
+        legacy = version < ANALYSIS_SCHEMA_VERSION
     else:
         analysis = {
             "faceType": row.get("face_type"),

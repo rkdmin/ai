@@ -11,9 +11,11 @@ from pydantic import BaseModel, Field
 # 분석 결과 JSON 의 모양 버전. analyses.schema_version 에 저장되고 응답 schemaVersion 으로 나간다.
 #   1 — 컬럼(face_type/features)만 저장. 무드 없음. result JSON 없음. (2026-10 이전 행)
 #   2 — result JSON + mood_archetype 저장. 저장본에서 무드가 복원된다.
+#   3 — D01: primaryMood·moodTitle·moodSummary·moodEvidence·distinctivePoint·traits·
+#       hairDirection·makeupDirection·ruleVersion 추가. v2 행은 무드는 있고 이 필드들이 없다 (legacy).
 # 모양을 바꾸면 번호를 올리고 supabase_service.analysis_from_row 의 adapter 에 분기를 추가한다.
 # 구버전 행을 새 모양으로 "지어내서" 채우지 않는다 — 없는 값은 없다고 표현한다 (ADR 0010, plan 0009 P1).
-ANALYSIS_SCHEMA_VERSION = 2
+ANALYSIS_SCHEMA_VERSION = 3
 
 
 class AnalyzeRequest(BaseModel):
@@ -30,6 +32,16 @@ class AnalyzeResponse(BaseModel):
     # faceType 보다 **먼저** 채우게 한다 — 이 단계 추론 강제가 정확도를 올린다 (ADR 0009).
     # 진단용이라 UI 에 노출하지 않고 DB 에도 저장하지 않는다.
     faceTypeReason: dict | None = None
+    # ── D01 (schema v3): 대표 무드와 Traits. 전부 선택 필드 — 구버전 저장본은 없다.
+    primaryMood: str | None = None       # moodArchetype 3개 중 대표 1개
+    moodTitle: str | None = None         # "우아하고 부드러운 이미지" — 인물 이름 금지
+    moodSummary: str | None = None
+    moodEvidence: list[str] = []         # 1~3개, 관찰한 얼굴형·특징·trait 인용
+    distinctivePoint: str | None = None
+    traits: list[str] = []               # backend/data/traits.json 라벨 0~2개 (축당 1개)
+    hairDirection: str | None = None     # RAG 에서 결정적으로 파생 (모델 생성 아님)
+    makeupDirection: str | None = None
+    ruleVersion: int | None = None       # traits.json ruleVersion
     analysisId: str | None = None  # Phase 3 (Supabase) 에서 발급
     schemaVersion: int = ANALYSIS_SCHEMA_VERSION
 

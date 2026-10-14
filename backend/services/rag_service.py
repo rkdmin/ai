@@ -5,6 +5,7 @@ ANALYZE_PROMPT 의 단일 소스다 — tools/eval.py 와 /eval-face 스킬이 �
 from __future__ import annotations
 
 import json
+import re
 import sys
 from pathlib import Path
 from typing import Any
@@ -20,6 +21,7 @@ _face_hair = _load("face-hair.json")
 _face_makeup = _load("face-makeup.json")
 _personal_color = _load("personal-color-makeup.json")
 _feature_tips = _load("feature-tips.json")
+_traits = _load("traits.json")
 
 FACE_TYPE_MAP = {
     "계란형": "oval",
@@ -50,6 +52,33 @@ MOOD_ARCHETYPES = {
     "FRESH": "활기차고 산뜻한",
     "EDGY": "개성있고 도시적인",
 }
+
+# ── Traits 사전 (D01 · R06) ───────────────────────────────────────
+# 무드와 다른 축 — 구조(윤곽)·비율·대비. traits.json 이 단일 소스다.
+TRAITS_RULE_VERSION: int = int(_traits.get("ruleVersion") or 1)
+TRAIT_AXES: dict[str, dict] = _traits.get("axes", {})
+TRAIT_PICK_ORDER: tuple[str, ...] = tuple(_traits.get("pickOrder") or TRAIT_AXES.keys())
+MAX_TRAITS: int = int(_traits.get("maxTraits") or 2)
+TRAIT_LABELS: tuple[str, ...] = tuple(
+    t["label"] for axis in TRAIT_PICK_ORDER for t in TRAIT_AXES[axis]["traits"]
+)
+_TRAIT_AXIS_OF: dict[str, str] = {
+    t["label"]: axis for axis in TRAIT_AXES for t in TRAIT_AXES[axis]["traits"]
+}
+_TRAIT_EXCLUDED: dict[str, tuple[str, ...]] = {
+    t["label"]: tuple(t.get("faceTypesExcluded") or ()) for axis in TRAIT_AXES for t in TRAIT_AXES[axis]["traits"]
+}
+
+
+def trait_allowed(face_type: str) -> list[str]:
+    """얼굴형과 모순되지 않는 trait 목록 (사각형엔 '곡선 윤곽' 이 올 수 없다)."""
+    return [t for t in TRAIT_LABELS if face_type not in _TRAIT_EXCLUDED[t]]
+
+
+# 제목·요약에 들어오면 안 되는 표현 — 퍼블리시티권 (CLAUDE.md 전역 불변식 1).
+# 프롬프트가 금지하지만 모델 응답은 확률적이라 런타임에도 한 번 더 거른다.
+_IDENTITY_BANNED_PATTERNS = (re.compile(r"\bst\b", re.I), re.compile("닮"), re.compile("look-?alike", re.I))
+
 
 # ── 정합성 규칙 ───────────────────────────────────────────────────
 # 얼굴형 판정과 정면으로 배치되는 feature. 근거는 ANALYZE_PROMPT 의 "형별 정의"다.
@@ -166,6 +195,33 @@ def _exclusive_conflict(feature: str, kept: list[str]) -> bool:
     return False
 
 
+def free_directions(analysis: dict) -> dict[str, str | None]:
+    """
+    무료 결과의 "헤어 방향 / 메이크업 방향" 한 줄 (D01). **모델이 아니라 RAG 에서 결정적으로 뽑는다.**
+
+    헤어는 얼굴형별 priority 1 스타일, 메이크업은 대표 무드가 제목에 들어간 카드가 있으면 그것,
+    없으면 priority 1 카드. 같은 얼굴형·무드면 항상 같은 문장이 나온다.
+    얼굴형이 '판정 어려움' 이거나 데이터가 없으면 None — 지어내지 않는다.
+    """
+    face_type = analysis.get("faceType") or ""
+    primary = str(analysis.get("primaryMood") or "").upper()
+
+    hair = None
+    recs = sorted(_hair_by_face_type(face_type).get("recommend") or [], key=lambda r: r.get("priority", 99))
+    if recs:
+        top = recs[0]
+        bangs = top.get("bangs")
+        hair = f"{top.get('style')} · 앞머리 {bangs}" if bangs else top.get("style")
+
+    makeup = None
+    cards = sorted(_get_face_makeup_data(analysis).get("recommendCards") or [], key=lambda c: c.get("priority", 99))
+    if cards:
+        pick = next((c for c in cards if primary and primary in str(c.get("title", "")).upper()), cards[0])
+        makeup = pick.get("title")
+
+    return {"hairDirection": hair or None, "makeupDirection": makeup or None}
+
+
 def sanitize_analysis(analysis: dict) -> dict:
     """얼굴형과 모순되는 값을 사용자 화면에 닿기 전에 걷어낸다.
 
@@ -203,11 +259,60 @@ def sanitize_analysis(analysis: dict) -> dict:
         if m not in moods and m not in banned:
             moods.append(m)
 
-    if dropped or dropped_moods:
+    # ── D01: 대표 무드·제목·traits ─────────────────────────────────
+    primary = str(analysis.get("primaryMood") or "").strip().upper()
+    if primary not in moods:
+        # 모델이 안 줬거나 3개 밖을 줬다. 얼굴형 선호 무드 중 응답에 있는 첫 번째 → 없으면 응답 첫 무드.
+        # RAG 가 정의한 선호 순서라 창작이 아니다. "3개 중 첫 원소" 가정은 여기서만, 마지막 폴백으로만 쓴다.
+        primary = next((m for m in mood_candidates(face_type) if m in moods), moods[0] if moods else None)
+    analysis["primaryMood"] = primary
+
+    for key in ("moodTitle", "moodSummary", "distinctivePoint"):
+        val = analysis.get(key)
+        if not isinstance(val, str) or not val.strip():
+            analysis[key] = None
+            continue
+        val = val.strip()
+        if any(pat.search(val) for pat in _IDENTITY_BANNED_PATTERNS) or len(val) > 80:
+            print(f"[rag] {key} 제거 (금지 표현 또는 길이): {val!r}", file=sys.stderr)
+            analysis[key] = None
+        else:
+            analysis[key] = val
+    evidence = [str(e).strip() for e in (analysis.get("moodEvidence") or []) if str(e).strip()]
+    analysis["moodEvidence"] = evidence[:3]
+
+    reason = analysis.get("faceTypeReason") if isinstance(analysis.get("faceTypeReason"), dict) else {}
+    side = str(reason.get("step1_sideLine") or "")
+    vertical = str(reason.get("step3_vertical") or "")
+    allowed_traits = set(trait_allowed(face_type))
+    traits: list[str] = []
+    dropped_traits: list[str] = []
+    seen_axes: set[str] = set()
+    for t in analysis.get("traits") or []:
+        label = str(t).strip()
+        axis = _TRAIT_AXIS_OF.get(label)
+        bad = (
+            label not in allowed_traits
+            or axis in seen_axes
+            or len(traits) >= MAX_TRAITS
+            # 판정 근거와 어긋나는 윤곽·비율은 버린다 — 근거가 "직선" 인데 "곡선 윤곽" 일 수 없다
+            or (label == "곡선 윤곽" and side.startswith("직선"))
+            or (label == "직선 윤곽" and side.startswith("곡선"))
+            or (label == "세로 긴 비율" and vertical.startswith("보통"))
+        )
+        if bad:
+            dropped_traits.append(label)
+            continue
+        traits.append(label)
+        seen_axes.add(axis)
+    analysis["traits"] = traits
+    analysis["ruleVersion"] = TRAITS_RULE_VERSION
+
+    if dropped or dropped_moods or dropped_traits:
         # 충돌이 잦으면 features 가 아니라 얼굴형 판정을 의심해야 한다. 그 신호로 남긴다.
         print(
             f"[rag] 정합성 필터 faceType={face_type} "
-            f"features 제거={dropped} moods 제거={dropped_moods}",
+            f"features 제거={dropped} moods 제거={dropped_moods} traits 제거={dropped_traits}",
             file=sys.stderr,
         )
 
@@ -546,7 +651,13 @@ ANALYZE_PROMPT = """당신은 뷰티 전문가입니다. 다른 텍스트는 절
   },
   "faceType": "계란형 | 둥근형 | 사각형 | 하트형 | 긴형 | 다이아몬드형 | 땅콩형 | 판정 어려움 중 하나",
   "features": ["확실히 보이는 특징만, 0개도 가능"],
-  "moodArchetype": ["이 얼굴이 풍기는 무드 키워드 3개"]
+  "moodArchetype": ["이 얼굴이 풍기는 무드 키워드 3개"],
+  "primaryMood": "위 3개 중 가장 대표적인 1개",
+  "moodTitle": "대표 무드를 한 구절로 — 예: 우아하고 부드러운 이미지",
+  "moodSummary": "대표 무드가 왜 그런지 한 문장",
+  "moodEvidence": ["판단 근거 1~3개 — 관찰한 얼굴형·특징·대비를 그대로 인용"],
+  "distinctivePoint": "가장 눈에 띄는 한 가지, 없으면 null",
+  "traits": ["구조·비율·대비 중 확실한 것 0~2개"]
 }
 
 ## faceTypeReason 작성 규칙 (반드시 faceType 보다 먼저 채울 것)
@@ -590,6 +701,25 @@ ANALYZE_PROMPT = """당신은 뷰티 전문가입니다. 다른 텍스트는 절
 
 얼굴형별 선호 / 금지 무드:
 <<MOOD_TABLE>>
+
+## primaryMood · moodTitle · moodSummary · moodEvidence · distinctivePoint 작성 규칙
+- `primaryMood` 는 `moodArchetype` 3개 **안에서** 가장 대표적인 1개입니다. 목록 밖 단어는 안 됩니다.
+- `moodTitle` 은 20자 안쪽의 한국어 한 구절입니다. 예: "우아하고 부드러운 이미지", "또렷하고 산뜻한 인상".
+  **사람 이름·연예인·"○○ 스타일"·"○○ st"·"닮은" 표현 절대 금지.** 무드와 인상만 적습니다.
+- `moodSummary` 는 한 문장. 왜 그 무드인지, 관찰한 것으로 설명합니다.
+- `moodEvidence` 는 1~3개. "곡선 윤곽", "저대비", "아몬드 눈" 처럼 **실제로 관찰한 항목**만 씁니다.
+  features·traits 에 넣지 않은 것을 근거로 쓰지 마세요.
+- `distinctivePoint` 는 그 얼굴에서 가장 눈에 띄는 한 가지. 확실하지 않으면 `null`.
+
+## traits 판단 기준 (무드와 다른 축 — 구조·비율·대비)
+무드는 "어떤 분위기인가" 이고 traits 는 "구조적으로 어떤가" 입니다. 아래 세 축에서 **확실한 것만** 고르되
+**축당 최대 1개, 전체 최대 2개**입니다. 0개도 정답입니다. 아래 순서로 검사하고 2개가 차면 멈춥니다.
+<<TRAITS_TABLE>>
+
+- 윤곽은 `faceTypeReason.step1_sideLine` 과 같아야 합니다 ('직선' 이면 '직선 윤곽' 만, '곡선' 이면 '곡선 윤곽' 만,
+  '관찰 불가' 면 윤곽 trait 를 넣지 않습니다). 비율의 '세로 긴 비율' 은 `step3_vertical` 이 '확연히 김' 일 때만.
+- 대비는 타고난 명암 차이입니다. 진한 메이크업으로 가려져 판단이 어려우면 넣지 않습니다.
+- 라벨은 **정확히 위 텍스트 그대로** 씁니다. 다른 단어를 만들지 마세요.
 
 ---
 
@@ -735,4 +865,19 @@ def _build_mood_table() -> str:
     return "\n".join(lines)
 
 
+def _build_traits_table() -> str:
+    """traits.json 을 단일 소스로 프롬프트에 주입한다. (features 섹션보다 앞에 있어야 한다 —
+    tools/score_features.py 가 features 섹션 이후의 따옴표 라벨을 화이트리스트로 읽는다.)"""
+    lines = []
+    for i, axis in enumerate(TRAIT_PICK_ORDER, 1):
+        spec = TRAIT_AXES[axis]
+        lines.append(f"{i}. **{spec['name']}** (둘 중 하나만, 애매하면 넣지 않음)")
+        for t in spec["traits"]:
+            excluded = t.get("faceTypesExcluded") or []
+            tail = f" — {', '.join(excluded)}에는 쓰지 않음" if excluded else ""
+            lines.append(f"   - {t['label']}: {t['criteria']}{tail}")
+    return "\n".join(lines)
+
+
 ANALYZE_PROMPT = ANALYZE_PROMPT.replace("<<MOOD_TABLE>>", _build_mood_table())
+ANALYZE_PROMPT = ANALYZE_PROMPT.replace("<<TRAITS_TABLE>>", _build_traits_table())

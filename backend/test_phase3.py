@@ -91,8 +91,10 @@ def test_analyze_logged_in_user_persists_analysis_and_returns_id():
     assert insert.await_args.kwargs["user_id"] == "user-1"
     assert insert.await_args.kwargs["personal_color"] == "spring_warm"
     # 저장본과 응답이 같은 모양 버전을 갖는다 (plan 0009 P1 · D04)
-    assert r.json()["schemaVersion"] == 2
-    assert insert.await_args.kwargs["result"]["schemaVersion"] == 2
+    from models.schemas import ANALYSIS_SCHEMA_VERSION
+
+    assert r.json()["schemaVersion"] == ANALYSIS_SCHEMA_VERSION
+    assert insert.await_args.kwargs["result"]["schemaVersion"] == ANALYSIS_SCHEMA_VERSION
 
 
 def test_analysis_from_row_v2_restores_mood_from_result_json():
@@ -113,11 +115,26 @@ def test_analysis_from_row_v2_restores_mood_from_result_json():
         },
     }
     a = analysis_from_row(row)
-    assert a["moodArchetype"] == ["SOFT", "ROMANTIC", "FRESH"]
+    assert a["moodArchetype"] == ["SOFT", "ROMANTIC", "FRESH"]  # v2 가 저장한 무드는 복원된다
     assert a["faceRatios"] == {"jawRatio": 0.9}
     assert a["analysisId"] == "analysis-2"
     assert a["schemaVersion"] == 2
+    assert a["legacy"] is True  # v3 의 primaryMood·traits 가 없다. 지어내지 않고 legacy 로 표시
+    assert "primaryMood" not in a and "traits" not in a
+
+
+def test_analysis_from_row_current_version_is_not_legacy():
+    from models.schemas import ANALYSIS_SCHEMA_VERSION
+    from services.supabase_service import analysis_from_row
+
+    stored = {
+        "faceType": "계란형", "features": [], "moodArchetype": ["CLEAN", "ELEGANT", "CLASSIC"],
+        "primaryMood": "ELEGANT", "moodTitle": "우아하고 단정한 이미지", "traits": ["저대비"],
+        "schemaVersion": ANALYSIS_SCHEMA_VERSION,
+    }
+    a = analysis_from_row({"id": "a3", "face_type": "계란형", "schema_version": ANALYSIS_SCHEMA_VERSION, "result": stored})
     assert a["legacy"] is False
+    assert a["primaryMood"] == "ELEGANT" and a["traits"] == ["저대비"]
 
 
 def test_analysis_from_row_v1_is_legacy_and_does_not_invent_mood():

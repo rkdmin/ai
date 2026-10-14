@@ -27,8 +27,17 @@ paths:
     "confidence": 78
   },
   "faceRatios": { "foreheadRatio": 0.95, "jawRatio": 0.82, "...": "..." },
+  "primaryMood": "SOFT",
+  "moodTitle": "자연스럽고 차분한 이미지",
+  "moodSummary": "곡선 윤곽과 낮은 대비가 부드러운 인상을 만든다.",
+  "moodEvidence": ["곡선 윤곽", "저대비"],
+  "distinctivePoint": "아몬드 눈 | null",
+  "traits": ["곡선 윤곽", "저대비"],
+  "hairDirection": "레이어드 컷 · 앞머리 사이드뱅",
+  "makeupDirection": "소프트 글로우 룩 (SOFT MOOD)",
+  "ruleVersion": 1,
   "analysisId": "uuid (로그인 유저만 발급)",
-  "schemaVersion": 2
+  "schemaVersion": 3
 }
 ```
 
@@ -51,14 +60,34 @@ paths:
 - `faceRatios` — MediaPipe 계산값. 디버깅·골든셋 회귀 비교용. **프론트는 표시하지 않는다.**
 - `analysisId` — 로그인 유저에게만 발급. 카드 저장(`POST /api/history`)과
   사진 생성(`POST /api/photo/generate`)에 사용된다.
-- `schemaVersion` — 분석 결과 JSON 의 모양 버전 (`backend/models/schemas.py` 의 `ANALYSIS_SCHEMA_VERSION`, 현재 2).
+- `schemaVersion` — 분석 결과 JSON 의 모양 버전 (`backend/models/schemas.py` 의 `ANALYSIS_SCHEMA_VERSION`, 현재 3).
   로그인 유저는 응답 전체가 `analyses.result` 에 같은 버전으로 저장된다.
+
+### 대표 무드 · Traits (D01, schema v3 — ADR 0010 R06)
+
+Figma 의 무료 결과 화면("Primary SOFT · Traits 곡선 윤곽 · 저대비", 제목, 근거, 방향 미리보기)을 채우는 필드다.
+전부 **선택 필드**라 구버전 저장본(`legacy: true`)에는 없다. 없으면 숨기고, 더미로 채우지 않는다.
+
+- `primaryMood` — `moodArchetype` 3개 **안의** 대표 1개. 모델이 안 주면 얼굴형 선호 무드 중 응답에 있는 첫 번째
+  (`sanitize_analysis`). "3개 중 첫 원소" 가정은 그 폴백에서만 쓴다.
+- `moodTitle` — 20자 안쪽 한 구절. **인물 이름·`○○ st`·"닮은" 표현은 런타임에도 걸러 `null` 로 만든다.** 빈 값이면 UI 는
+  "나의 Beauty Mood" (closeout fallback).
+- `moodSummary` 한 문장 · `moodEvidence` 1~3개(관찰 항목 인용) · `distinctivePoint` 또는 `null`.
+- `traits` — **무드와 다른 축.** `backend/data/traits.json` 의 라벨만, 축당 1개·전체 0~2개.
+  축: 윤곽(`곡선 윤곽`/`직선 윤곽`) · 비율(`세로 긴 비율`/`가로 넓은 비율`) · 대비(`고대비`/`저대비`).
+  얼굴형과 모순되는 라벨(사각형 + `곡선 윤곽`)과 판정 근거와 어긋나는 라벨은 `sanitize_analysis` 가 버린다.
+  0개면 UI 는 Traits 행을 숨긴다 (closeout 규칙).
+- `hairDirection` / `makeupDirection` — **AI 가 아니라 RAG 에서 결정적으로 뽑는다** (`free_directions`).
+  헤어는 얼굴형 priority 1 스타일, 메이크업은 대표 무드가 제목에 든 카드. 같은 입력이면 항상 같은 문장.
+  `판정 어려움` 이면 `null`.
+- `ruleVersion` — `traits.json` 의 `ruleVersion`. 사전이 바뀌면 올라간다. 케미 계산(D08)도 이 버전을 참조할 예정.
 
 ### 저장된 분석 다시 읽기 — legacy (`GET /api/history/{id}` · `GET /api/history`)
 
-`analysis` 에 `schemaVersion` 과 `legacy` 가 붙는다. **`legacy: true` 면 2026-10 이전에 저장된 v1 행**이라
-`moodArchetype` 이 빈 배열이다. 백엔드는 얼굴형 선호 무드로 채우지 않는다 — 분석하지 않은 값을
-분석 결과처럼 보이게 하지 않기 위해서다. UI 는 `legacy` 를 보고 "무드 정보 없음" 을 표현하거나 재분석을 권한다.
+`analysis` 에 `schemaVersion` 과 `legacy` 가 붙는다. **`legacy: true` 는 현재 버전보다 낮은 저장본**이다.
+v1(2026-10 이전)은 `moodArchetype` 이 빈 배열, v2 는 무드는 있지만 `primaryMood`·`traits` 가 없다.
+백엔드는 없는 값을 채우지 않는다 — 분석하지 않은 값을 분석 결과처럼 보이게 하지 않기 위해서다.
+UI 는 `legacy` 를 보고 없는 블록을 숨기거나 재분석을 권한다.
 adapter 는 `supabase_service.analysis_from_row` 하나다. 모양을 또 바꾸면 거기에 분기를 추가한다.
 목록 항목(`HistoryListItem`)에도 `moodArchetype` / `schemaVersion` / `legacy` 가 있다.
 

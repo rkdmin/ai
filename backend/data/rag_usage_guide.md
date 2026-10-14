@@ -22,7 +22,16 @@ face-makeup.json        → 얼굴형별 메이크업 베이스 (위치/방법)
 face-hair.json          → 얼굴형별 헤어 추천
 personal-color-makeup.json → 퍼스널컬러별 컬러 팔레트
 feature-tips.json       → 부위별 보정 팁 (보정 레이어)
+traits.json             → Traits 사전 — 윤곽·비율·대비 (분석 단계 전용, 카드 병합에는 아직 안 쓴다)
 ```
+
+### traits.json — 분석 단계 전용 (D01)
+
+무드(분위기)와 다른 축이다. `ANALYZE_PROMPT` 의 traits 섹션이 이 파일에서 런타임 생성되고
+(`_build_traits_table`), `sanitize_analysis` 가 `faceTypesExcluded` 와 판정 근거로 응답을 거른다.
+축당 1개·전체 최대 2개(`maxTraits`), 검사 순서는 `pickOrder`. 라벨을 바꾸면 `ruleVersion` 을 올린다.
+무료 결과의 "헤어/메이크업 방향" 은 이 파일이 아니라 `face-hair.json` priority 1 / `face-makeup.json` 의
+대표 무드 카드에서 `free_directions()` 가 결정적으로 뽑는다 — 모델 생성이 아니다.
 
 ---
 
@@ -182,6 +191,7 @@ feature: 광대 넓음 → featureTip: "블러셔 앞볼에 더 좁게"
 | `face-hair.json` | 헤어 스타일 추천 베이스 | featureTip에 의해 bangs 등 일부 오버라이드 됨 |
 | `personal-color-makeup.json` | 컬러 팔레트 레이어 | featureTip에 의해 일부 오버라이드 됨 |
 | `feature-tips.json` | 개인 부위 보정 레이어 | 최우선순위, 오버라이드 당하지 않음 |
+| `traits.json` | 분석 단계 Traits 사전 (윤곽·비율·대비) | 카드 병합에 참여하지 않음 — 분석 응답과 케미(D08) 전용 |
 
 > **`recommendedProducts` 는 아직 없다 (계획).** `MAKEUP_CARDS_FORMAT` 에 그 필드가 없어
 > 백엔드가 채우지 않고, 프론트 `MakeupDetail` 은 `PRODUCTS_MOCK` 으로 대체하고 있다.

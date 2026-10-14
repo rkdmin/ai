@@ -18,6 +18,10 @@ os.environ.setdefault("GEMINI_API_KEY", "test-key")
 
 from services import gemini_service  # noqa: E402
 from services.rag_service import (  # noqa: E402
+    TRAIT_LABELS,
+    mood_candidates,
+    free_directions,
+    trait_allowed,
     ANALYZE_PROMPT,
     MOOD_ARCHETYPES,
     build_hair_context,
@@ -201,3 +205,69 @@ def test_도달_불가능한_세로비_기준이_없다():
     상세: tools/eval-analysis-2026-08-19.json
     """
     assert "1.4" not in ANALYZE_PROMPT
+
+
+# ─── D01: 대표 무드·제목·traits (plan 0009 P2, ADR 0010 R06) ──────
+
+
+def _d01(face_type="둥근형", **extra):
+    base = {
+        "faceType": face_type,
+        "features": [],
+        "moodArchetype": ["SOFT", "ROMANTIC", "FRESH"],
+        "faceTypeReason": {"step1_sideLine": "곡선 — 옆선 완만", "step3_vertical": "보통 — 비슷"},
+    }
+    base.update(extra)
+    return sanitize_analysis(base)
+
+
+def test_primaryMood_는_moodArchetype_안의_값이어야_한다():
+    assert _d01(primaryMood="ROMANTIC")["primaryMood"] == "ROMANTIC"
+    # 3개 밖(또는 금지 무드)을 주면 얼굴형 선호 무드 중 응답에 있는 첫 번째로 되돌린다
+    out = _d01(primaryMood="SHARP")
+    assert out["primaryMood"] in out["moodArchetype"]
+    assert out["primaryMood"] == next(m for m in mood_candidates("둥근형") if m in out["moodArchetype"])
+
+
+def test_제목에_인물_비교_표현이_오면_버린다():
+    assert _d01(moodTitle="우아하고 부드러운 이미지")["moodTitle"] == "우아하고 부드러운 이미지"
+    assert _d01(moodTitle="아이유 st 느낌")["moodTitle"] is None
+    assert _d01(moodTitle="누구와 닮은 인상")["moodTitle"] is None
+    assert _d01(moodSummary="   ")["moodSummary"] is None
+
+
+def test_traits_는_축당_1개_전체_2개_얼굴형_정합():
+    out = _d01(traits=["고대비", "저대비", "곡선 윤곽", "가로 넓은 비율"])
+    assert out["traits"] == ["고대비", "곡선 윤곽"]  # 같은 축 중복 제거, 최대 2개
+    # 둥근형엔 '직선 윤곽'·'세로 긴 비율' 이 올 수 없다 (traits.json faceTypesExcluded)
+    assert _d01(traits=["직선 윤곽", "세로 긴 비율"])["traits"] == []
+    # 사각형엔 '곡선 윤곽' 이 올 수 없다
+    assert "곡선 윤곽" not in trait_allowed("사각형") and "직선 윤곽" in trait_allowed("사각형")
+
+
+def test_traits_윤곽은_판정_근거와_같아야_한다():
+    # 근거가 '직선' 인데 '곡선 윤곽' → 버림. 근거가 '관찰 불가' 면 윤곽 trait 를 쓰지 않는 건 프롬프트 몫
+    out = _d01(
+        face_type="사각형",
+        moodArchetype=["SHARP", "CLEAN", "EDGY"],
+        faceTypeReason={"step1_sideLine": "직선 — gonial 꺾임", "step3_vertical": "보통"},
+        traits=["곡선 윤곽", "세로 긴 비율"],
+    )
+    assert out["traits"] == []  # 곡선은 근거와 모순, 세로 긴 비율은 step3 '보통' 과 모순
+
+
+def test_traits_사전_라벨이_프롬프트에_그대로_있다():
+    for label in TRAIT_LABELS:
+        assert label in ANALYZE_PROMPT, label
+    # traits 섹션은 features 섹션보다 앞에 있어야 한다 — 채점기가 features 이후 따옴표를 화이트리스트로 읽는다
+    assert ANALYZE_PROMPT.index("## traits 판단 기준") < ANALYZE_PROMPT.index("## features 판단 기준")
+    assert ANALYZE_PROMPT.index('"primaryMood"') > ANALYZE_PROMPT.index('"moodArchetype"')
+    assert "○○ st" in ANALYZE_PROMPT  # 제목 규칙에 인물 비교 금지가 명시돼 있다
+
+
+def test_무료_방향은_RAG_에서_결정적으로_나온다():
+    a = _d01(primaryMood="ROMANTIC")
+    d1, d2 = free_directions(a), free_directions(a)
+    assert d1 == d2 and d1["hairDirection"] and d1["makeupDirection"]
+    # 얼굴형을 모르면 지어내지 않는다
+    assert free_directions({"faceType": "판정 어려움"}) == {"hairDirection": None, "makeupDirection": None}

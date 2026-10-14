@@ -1,10 +1,8 @@
 {
-  "model": "claude-sonnet (subscription, general-purpose subagent)",
-  "ranAt": "2026-09-15",
-  "runs": 3,
-  "promptVersion": "v2 — features 판단 순서 + 라벨별 관찰 기준 + 관찰 불가 기준 추가 (7995자)",
-  "promptSource": "backend/services/rag_service.py:ANALYZE_PROMPT",
-  "comparedWith": "tools/eval-claude-results-2026-09-15.json (v1, 5837자)",
+  "model": "claude-sonnet (subscription, /eval-face)",
+  "ranAt": "2026-10-14",
+  "runs": 1,
+  "promptSource": "backend/services/rag_service.py:ANALYZE_PROMPT (D01 traits/primaryMood 추가 후)",
   "results": [
     {
       "file": "계란형/고윤정.jpg",
@@ -12,43 +10,36 @@
       "expectedAlternatives": [],
       "runs": [
         {
+          "faceTypeReason": {
+            "step1_sideLine": "곡선 — 광대 아래 옆선이 각 없이 완만하게 이어져 턱끝까지 부드럽게 좁아진다.",
+            "step2_cheekbone": "아님 — 광대 폭이 이마나 턱 폭보다 뚜렷하게 넓지 않고 전체적으로 고르다.",
+            "step3_vertical": "보통 — 얼굴 세로 길이가 가로 폭에 비해 적당한 비율이다.",
+            "decidedAt": 4,
+            "confidence": 78
+          },
           "faceType": "계란형",
           "features": [
             "아몬드 눈"
           ],
-          "faceTypeReason": {
-            "decidedAt": 4,
-            "confidence": 75,
-            "unobservableCount": 0
-          }
-        },
-        {
-          "faceType": "계란형",
-          "features": [
+          "moodArchetype": [
+            "CLEAN",
+            "ELEGANT",
+            "SOFT"
+          ],
+          "primaryMood": "CLEAN",
+          "moodTitle": "깨끗하고 단정한 이미지",
+          "moodSummary": "부드러운 곡선 윤곽과 매끈하고 밝은 피부 톤, 차분한 눈매가 깨끗하고 단정한 인상을 만든다.",
+          "moodEvidence": [
+            "곡선 윤곽",
             "아몬드 눈"
           ],
-          "faceTypeReason": {
-            "decidedAt": 4,
-            "confidence": 62,
-            "unobservableCount": 1
-          }
-        },
-        {
-          "faceType": "계란형",
-          "features": [
-            "아몬드 눈",
-            "입술 두꺼움"
-          ],
-          "faceTypeReason": {
-            "decidedAt": 4,
-            "confidence": 72,
-            "unobservableCount": 0
-          }
+          "distinctivePoint": "부드러운 곡선으로 떨어지는 계란형 윤곽",
+          "traits": [
+            "곡선 윤곽"
+          ]
         }
       ],
       "verdicts": [
-        "hits",
-        "hits",
         "hits"
       ]
     },
@@ -58,41 +49,38 @@
       "expectedAlternatives": [],
       "runs": [
         {
+          "faceTypeReason": {
+            "step1_sideLine": "관찰 불가 - 양쪽 머리카락이 광대 아래 옆선과 턱 모서리를 덮고 있어 옆선의 직선·곡선을 확인할 수 없다.",
+            "step2_cheekbone": "아님 - 옆으로 넘긴 앞머리 사이로 이마가 보이는데, 광대 폭이 이마와 턱 폭보다 뚜렷하게 넓어 보이지 않는다.",
+            "step3_vertical": "보통 - 얼굴 폭과 길이가 비슷해 세로가 확연히 길어 보이지 않는다.",
+            "decidedAt": 4,
+            "confidence": 80
+          },
           "faceType": "둥근형",
           "features": [
-            "입술 두꺼움",
-            "눈꼬리 처짐"
+            "아몬드 눈",
+            "코 낮음"
           ],
-          "faceTypeReason": {
-            "decidedAt": 4,
-            "confidence": 65,
-            "unobservableCount": 1
-          }
-        },
-        {
-          "faceType": "둥근형",
-          "features": [
-            "아몬드 눈"
+          "moodArchetype": [
+            "ROMANTIC",
+            "SOFT",
+            "FRESH"
           ],
-          "faceTypeReason": {
-            "decidedAt": 4,
-            "confidence": 65,
-            "unobservableCount": 0
-          }
-        },
-        {
-          "faceType": "둥근형",
-          "features": [],
-          "faceTypeReason": {
-            "decidedAt": 4,
-            "confidence": 68,
-            "unobservableCount": 0
-          }
+          "primaryMood": "ROMANTIC",
+          "moodTitle": "부드럽고 사랑스러운 이미지",
+          "moodSummary": "폭과 길이가 비슷한 둥글고 부드러운 얼굴에 완만한 눈매와 평평한 코가 더해져 사랑스러운 인상을 준다.",
+          "moodEvidence": [
+            "가로 넓은 비율",
+            "아몬드 눈",
+            "코 낮음"
+          ],
+          "distinctivePoint": "볼살이 있어 전체적으로 부드럽게 이어지는 둥근 얼굴 윤곽",
+          "traits": [
+            "가로 넓은 비율"
+          ]
         }
       ],
       "verdicts": [
-        "hits",
-        "hits",
         "hits"
       ]
     },
@@ -102,43 +90,38 @@
       "expectedAlternatives": [],
       "runs": [
         {
+          "faceTypeReason": {
+            "step1_sideLine": "직선 - 광대 아래 옆선이 완만한 곡선 없이 거의 수직에 가까운 직선으로 내려와 턱 모서리에서 꺾이는 것이 보인다.",
+            "step2_cheekbone": "아님 - 광대 폭이 이마나 턱 폭보다 뚜렷하게 넓지 않고 비슷한 수준이다.",
+            "step3_vertical": "보통 - 얼굴 세로가 가로보다 길지만 압도적으로 길어 보이지는 않는다.",
+            "decidedAt": 1,
+            "confidence": 75
+          },
           "faceType": "사각형",
           "features": [
             "아몬드 눈",
-            "인중 짧음"
+            "코 높음"
           ],
-          "faceTypeReason": {
-            "decidedAt": 1,
-            "confidence": 65,
-            "unobservableCount": 0
-          }
-        },
-        {
-          "faceType": "사각형",
-          "features": [
-            "아몬드 눈"
+          "moodArchetype": [
+            "ELEGANT",
+            "CLASSIC",
+            "CLEAN"
           ],
-          "faceTypeReason": {
-            "decidedAt": 1,
-            "confidence": 65,
-            "unobservableCount": 0
-          }
-        },
-        {
-          "faceType": "사각형",
-          "features": [
-            "아몬드 눈"
+          "primaryMood": "ELEGANT",
+          "moodTitle": "단정하고 우아한 인상",
+          "moodSummary": "직선적으로 떨어지는 옆선과 길고 완만한 아몬드 눈매, 또렷한 콧대가 차분하고 도도한 분위기를 만든다.",
+          "moodEvidence": [
+            "직선 윤곽",
+            "아몬드 눈",
+            "코 높음"
           ],
-          "faceTypeReason": {
-            "decidedAt": 1,
-            "confidence": 62,
-            "unobservableCount": 0
-          }
+          "distinctivePoint": "차분하게 이어지는 아몬드 눈매",
+          "traits": [
+            "직선 윤곽"
+          ]
         }
       ],
       "verdicts": [
-        "hits",
-        "hits",
         "hits"
       ]
     },
@@ -148,44 +131,37 @@
       "expectedAlternatives": [],
       "runs": [
         {
-          "faceType": "계란형",
+          "faceTypeReason": {
+            "step1_sideLine": "직선 - 광대 아래 옆선이 완만하게 휘지 않고 비교적 곧게 내려와 턱 모서리 쪽에서 꺾이는 것이 양쪽 모두 보인다.",
+            "step2_cheekbone": "아님 - 광대 폭이 이마와 턱 폭보다 뚜렷하게 넓어 보이지 않는다.",
+            "step3_vertical": "보통 - 얼굴 세로가 가로보다 눈에 띄게 길지 않고 폭이 넉넉한 편이다.",
+            "decidedAt": 1,
+            "confidence": 70
+          },
+          "faceType": "사각형",
           "features": [
             "아몬드 눈"
           ],
-          "faceTypeReason": {
-            "decidedAt": 4,
-            "confidence": 55,
-            "unobservableCount": 1
-          }
-        },
-        {
-          "faceType": "판정 어려움",
-          "features": [
-            "눈꼬리 올라감"
+          "moodArchetype": [
+            "ELEGANT",
+            "CLASSIC",
+            "CLEAN"
           ],
-          "faceTypeReason": {
-            "decidedAt": 4,
-            "confidence": 45,
-            "unobservableCount": 2
-          }
-        },
-        {
-          "faceType": "계란형",
-          "features": [
-            "아몬드 눈",
-            "눈두덩이 살 두꺼움"
+          "primaryMood": "ELEGANT",
+          "moodTitle": "단정하고 우아한 이미지",
+          "moodSummary": "직선적인 옆선과 완만한 타원형 눈매가 어우러져 차분하면서 도도한 인상을 준다.",
+          "moodEvidence": [
+            "직선 윤곽",
+            "아몬드 눈"
           ],
-          "faceTypeReason": {
-            "decidedAt": 4,
-            "confidence": 55,
-            "unobservableCount": 1
-          }
+          "distinctivePoint": "또렷한 붉은 입술",
+          "traits": [
+            "직선 윤곽"
+          ]
         }
       ],
       "verdicts": [
-        "miss",
-        "ambiguous",
-        "miss"
+        "hits"
       ]
     },
     {
@@ -194,46 +170,38 @@
       "expectedAlternatives": [],
       "runs": [
         {
+          "faceTypeReason": {
+            "step1_sideLine": "곡선 — 광대 아래 옆선이 직선으로 내려오지 않고 볼에서 턱끝까지 완만한 곡선으로 좁아진다.",
+            "step2_cheekbone": "넓음 — 광대 폭이 뾰족한 턱끝보다 뚜렷하게 넓고 가르마 아래 이마도 폭이 넉넉해 보인다.",
+            "step3_vertical": "보통 — 얼굴 세로가 가로보다 눈에 띄게 길지 않고 폭과 길이가 균형 있다.",
+            "decidedAt": 2,
+            "confidence": 82
+          },
           "faceType": "하트형",
           "features": [
-            "아몬드 눈",
-            "입술 두꺼움"
+            "아몬드 눈"
           ],
-          "faceTypeReason": {
-            "decidedAt": 2,
-            "confidence": 60,
-            "unobservableCount": 1
-          }
-        },
-        {
-          "faceType": "계란형",
-          "features": [
-            "아몬드 눈",
-            "입술 두꺼움"
+          "moodArchetype": [
+            "ROMANTIC",
+            "SOFT",
+            "ELEGANT"
           ],
-          "faceTypeReason": {
-            "decidedAt": 4,
-            "confidence": 62,
-            "unobservableCount": 1
-          }
-        },
-        {
-          "faceType": "계란형",
-          "features": [
+          "primaryMood": "ROMANTIC",
+          "moodTitle": "부드럽고 사랑스러운 인상",
+          "moodSummary": "곡선 윤곽과 뾰족하게 좁아지는 턱선, 완만한 아몬드 눈매가 어우러져 부드럽고 사랑스러운 분위기를 만든다.",
+          "moodEvidence": [
+            "곡선 윤곽",
             "아몬드 눈",
-            "입술 두꺼움"
+            "하트형 얼굴형"
           ],
-          "faceTypeReason": {
-            "decidedAt": 4,
-            "confidence": 55,
-            "unobservableCount": 1
-          }
+          "distinctivePoint": "턱끝으로 갈수록 뾰족하게 좁아지는 턱선",
+          "traits": [
+            "곡선 윤곽"
+          ]
         }
       ],
       "verdicts": [
-        "hits",
-        "miss",
-        "miss"
+        "hits"
       ]
     },
     {
@@ -242,45 +210,37 @@
       "expectedAlternatives": [],
       "runs": [
         {
-          "faceType": "긴형",
-          "features": [
-            "눈꼬리 올라감"
-          ],
           "faceTypeReason": {
-            "decidedAt": 3,
-            "confidence": 62,
-            "unobservableCount": 1
-          }
-        },
-        {
+            "step1_sideLine": "관찰 불가 — 긴 머리카락이 광대 아래 옆선과 턱 모서리를 덮고 있어 직선인지 곡선인지 확인할 수 없다.",
+            "step2_cheekbone": "아님 — 앞머리 없이 가운데 가르마라 이마가 드러나고, 광대가 이마·턱보다 뚜렷하게 넓어 보이지는 않는다.",
+            "step3_vertical": "보통 — 세로가 가로보다 눈에 띄게 길어 보이지는 않고 이마·중안부·턱이 고르다.",
+            "decidedAt": 4,
+            "confidence": 72
+          },
           "faceType": "계란형",
           "features": [
-            "눈꼬리 올라감",
-            "코 높음"
+            "아몬드 눈",
+            "인중 짧음"
           ],
-          "faceTypeReason": {
-            "decidedAt": 4,
-            "confidence": 60,
-            "unobservableCount": 0
-          }
-        },
-        {
-          "faceType": "긴형",
-          "features": [
-            "눈꼬리 올라감",
-            "코 높음"
+          "moodArchetype": [
+            "ELEGANT",
+            "CLEAN",
+            "ROMANTIC"
           ],
-          "faceTypeReason": {
-            "decidedAt": 3,
-            "confidence": 68,
-            "unobservableCount": 0
-          }
+          "primaryMood": "ELEGANT",
+          "moodTitle": "우아하고 말끔한 이미지",
+          "moodSummary": "고르게 이어지는 계란형 인상에 아몬드 눈매와 짧은 인중이 어우러져 우아하고 단정한 분위기를 준다.",
+          "moodEvidence": [
+            "계란형",
+            "아몬드 눈",
+            "인중 짧음"
+          ],
+          "distinctivePoint": "아몬드 눈매",
+          "traits": []
         }
       ],
       "verdicts": [
-        "hits",
-        "miss",
-        "hits"
+        "miss"
       ]
     },
     {
@@ -289,46 +249,33 @@
       "expectedAlternatives": [],
       "runs": [
         {
-          "faceType": "계란형",
+          "faceTypeReason": {
+            "step1_sideLine": "관찰 불가 — 긴 머리카락이 광대 아래 옆선과 턱 모서리(gonial)를 양쪽 모두 덮고 있어 직선/곡선을 확인할 수 없다.",
+            "step2_cheekbone": "관찰 불가 — 가르마 양옆 머리카락이 이마 양끝과 관자놀이를 덮어 광대 폭을 이마·턱 폭과 비교할 수 없다.",
+            "step3_vertical": "보통 — 보이는 범위에서 얼굴 세로가 가로보다 눈에 띄게 길어 보이지 않는다.",
+            "decidedAt": 4,
+            "confidence": 40
+          },
+          "faceType": "판정 어려움",
           "features": [
             "아몬드 눈"
           ],
-          "faceTypeReason": {
-            "decidedAt": 4,
-            "confidence": 62,
-            "unobservableCount": 0
-          }
-        },
-        {
-          "faceType": "계란형",
-          "features": [
-            "아몬드 눈",
-            "코 높음",
-            "입술 두꺼움"
+          "moodArchetype": [
+            "ROMANTIC",
+            "CLEAN",
+            "FRESH"
           ],
-          "faceTypeReason": {
-            "decidedAt": 4,
-            "confidence": 55,
-            "unobservableCount": 1
-          }
-        },
-        {
-          "faceType": "판정 어려움",
-          "features": [
-            "아몬드 눈",
-            "코 높음",
-            "입술 두꺼움"
+          "primaryMood": "ROMANTIC",
+          "moodTitle": "부드럽고 산뜻한 이미지",
+          "moodSummary": "아몬드형의 완만한 눈매와 부드러운 미소가 사랑스럽고 깨끗한 인상을 준다.",
+          "moodEvidence": [
+            "아몬드 눈"
           ],
-          "faceTypeReason": {
-            "decidedAt": 2,
-            "confidence": 55,
-            "unobservableCount": 2
-          }
+          "distinctivePoint": "완만한 아몬드형 눈매",
+          "traits": []
         }
       ],
       "verdicts": [
-        "miss",
-        "miss",
         "ambiguous"
       ]
     },
@@ -338,43 +285,39 @@
       "expectedAlternatives": [],
       "runs": [
         {
-          "faceType": "판정 어려움",
-          "features": [
-            "아몬드 눈"
-          ],
           "faceTypeReason": {
-            "decidedAt": 2,
-            "confidence": 40,
-            "unobservableCount": 2
-          }
-        },
-        {
-          "faceType": "판정 어려움",
-          "features": [
-            "아몬드 눈"
-          ],
-          "faceTypeReason": {
-            "decidedAt": 2,
-            "confidence": 35,
-            "unobservableCount": 2
-          }
-        },
-        {
-          "faceType": "판정 어려움",
-          "features": [
-            "둥근 눈"
-          ],
-          "faceTypeReason": {
+            "step1_sideLine": "곡선 - 광대 아래 옆선이 완만한 곡선으로 둥글게 턱까지 이어지고 턱 모서리가 각지지 않는다.",
+            "step2_cheekbone": "관찰 불가 - 앞머리가 헤어라인을 덮고 있어 이마 폭과 광대 폭을 비교할 수 없다.",
+            "step3_vertical": "보통 - 얼굴 세로가 가로보다 눈에 띄게 길어 보이지 않는다.",
             "decidedAt": 4,
-            "confidence": 45,
-            "unobservableCount": 2
-          }
+            "confidence": 70
+          },
+          "faceType": "둥근형",
+          "features": [
+            "눈 간격 넓음",
+            "입술 두꺼움"
+          ],
+          "moodArchetype": [
+            "SOFT",
+            "ROMANTIC",
+            "CLEAN"
+          ],
+          "primaryMood": "SOFT",
+          "moodTitle": "자연스럽고 부드러운 이미지",
+          "moodSummary": "곡선으로 이어지는 부드러운 윤곽과 넓은 눈 간격이 차분하고 순한 인상을 만든다.",
+          "moodEvidence": [
+            "곡선 윤곽",
+            "눈 간격 넓음",
+            "입술 두꺼움"
+          ],
+          "distinctivePoint": "넓은 눈 간격과 또렷한 눈동자",
+          "traits": [
+            "곡선 윤곽"
+          ]
         }
       ],
       "verdicts": [
-        "ambiguous",
-        "ambiguous",
-        "ambiguous"
+        "miss"
       ]
     },
     {
@@ -383,180 +326,46 @@
       "expectedAlternatives": [],
       "runs": [
         {
-          "faceType": "계란형",
-          "features": [],
           "faceTypeReason": {
+            "step1_sideLine": "관찰 불가 - 긴 머리카락이 양쪽 광대 아래부터 턱 모서리까지 옆선을 덮고 있어 직선인지 곡선인지 확인할 수 없다.",
+            "step2_cheekbone": "관찰 불가 - 얼굴이 살짝 돌아가 있고 양쪽 머리카락이 이마 옆과 광대를 덮어 이마·광대·턱 폭을 비교할 수 없다.",
+            "step3_vertical": "보통 - 얼굴 세로가 가로보다 눈에 띄게 길어 보이지는 않는다.",
             "decidedAt": 4,
-            "confidence": 65,
-            "unobservableCount": 0
-          }
-        },
-        {
-          "faceType": "계란형",
-          "features": [
-            "아몬드 눈"
-          ],
-          "faceTypeReason": {
-            "decidedAt": 4,
-            "confidence": 65,
-            "unobservableCount": 0
-          }
-        },
-        {
+            "confidence": 40
+          },
           "faceType": "판정 어려움",
-          "features": [
-            "아몬드 눈"
+          "features": [],
+          "moodArchetype": [
+            "SOFT",
+            "CLEAN",
+            "FRESH"
           ],
-          "faceTypeReason": {
-            "decidedAt": 2,
-            "confidence": 45,
-            "unobservableCount": 2
-          }
+          "primaryMood": "SOFT",
+          "moodTitle": "자연스럽고 차분한 이미지",
+          "moodSummary": "머리카락이 감싼 부드러운 전체 인상과 차분한 눈매, 정돈된 가르마가 자연스럽고 깨끗한 분위기를 만든다.",
+          "moodEvidence": [
+            "부드러운 전체 윤곽 인상",
+            "차분한 눈매",
+            "정돈된 중앙 가르마"
+          ],
+          "distinctivePoint": null,
+          "traits": []
         }
       ],
       "verdicts": [
-        "miss",
-        "miss",
         "ambiguous"
       ]
     }
   ],
   "summary": {
     "total": 9,
-    "totalRuns": 27,
-    "hits": 12,
+    "totalRuns": 9,
+    "hits": 5,
     "near": 0,
-    "miss": 9,
-    "ambiguous": 6,
+    "miss": 2,
+    "ambiguous": 2,
     "errors": 0,
-    "accuracy": "12/27 (44.4%)",
-    "consistent": "4/9"
-  },
-  "confidenceObservation": {
-    "min": 35,
-    "max": 75,
-    "mean": 58.8,
-    "below80": 27,
-    "ambiguousReturned": 6,
-    "unobservableReported": 15,
-    "unobservableTwoOrMore": 6,
-    "note": "v1 은 관찰 불가 신고 0건·판정 어려움 0건. v2 는 관찰 불가 기준을 명시해 신고가 살아났고 판정 어려움이 실제로 발동한다."
-  },
-  "featuresSummary": {
-    "photos": 9,
-    "runsPerPhoto": [
-      3
-    ],
-    "totalRuns": 27,
-    "yield": {
-      "target": 3,
-      "mean": 1.41,
-      "distribution": {
-        "0": 2,
-        "1": 14,
-        "2": 9,
-        "3": 2
-      },
-      "zeroRate": "2/27"
-    },
-    "coverage": {
-      "used": 8,
-      "total": 37,
-      "topLabels": {
-        "아몬드 눈": 19,
-        "입술 두꺼움": 7,
-        "눈꼬리 올라감": 4,
-        "코 높음": 4,
-        "눈꼬리 처짐": 1,
-        "인중 짧음": 1,
-        "눈두덩이 살 두꺼움": 1,
-        "둥근 눈": 1
-      },
-      "neverUsed": [
-        "눈 간격 넓음",
-        "눈 간격 좁음",
-        "코 낮음",
-        "코 큼",
-        "이마 넓음",
-        "이마 좁음",
-        "눈 작음",
-        "광대 넓음",
-        "입술 얇음",
-        "중안부 긴 유형",
-        "중안부 짧은 유형",
-        "눈두덩이 좁음",
-        "눈두덩이 넓음",
-        "관자놀이 여백 넓음",
-        "사각턱",
-        "돌출입",
-        "목 짧음",
-        "무쌍",
-        "속쌍꺼풀",
-        "눈꼬리 막힘",
-        "눈두덩이 살 얇음",
-        "긴 눈",
-        "삼백안",
-        "인중 긺",
-        "무턱",
-        "주걱턱",
-        "콘헤드",
-        "어깨 너비 넓음",
-        "승모근 발달"
-      ],
-      "neverUsedSuspectUnobservable": [
-        "어깨 너비 넓음",
-        "승모근 발달",
-        "목 짧음",
-        "콘헤드"
-      ]
-    },
-    "stability": {
-      "mean": 0.488,
-      "worst": [
-        {
-          "file": "둥근형/강미나.png",
-          "jaccard": 0.0,
-          "flaky": [
-            "눈꼬리 처짐",
-            "아몬드 눈",
-            "입술 두꺼움"
-          ]
-        },
-        {
-          "file": "사각형/정채연.jpg",
-          "jaccard": 0.167,
-          "flaky": [
-            "눈꼬리 올라감",
-            "눈두덩이 살 두꺼움",
-            "아몬드 눈"
-          ]
-        },
-        {
-          "file": "땅콩형/천우희.jpg",
-          "jaccard": 0.333,
-          "flaky": [
-            "둥근 눈",
-            "아몬드 눈"
-          ]
-        }
-      ],
-      "contradictionFiles": []
-    },
-    "vocabulary": {
-      "offWhitelist": [],
-      "offWhitelistRate": "0/27",
-      "variantExamples": []
-    },
-    "consistency": {
-      "violationRuns": 0,
-      "byKind": {
-        "conflicting": 0,
-        "exclusive": 0,
-        "offWhitelist": 0,
-        "duplicates": 0,
-        "overCount": 0
-      }
-    },
-    "labeled": null
+    "accuracy": "5/9 (55.6%)",
+    "consistent": "미측정 (runs=1)"
   }
 }

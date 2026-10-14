@@ -73,7 +73,11 @@ description: 골든셋 사진들에 backend ANALYZE_PROMPT 를 돌려 두 축을
      </ANALYZE_PROMPT>
 
      출력 JSON 스키마는 ANALYZE_PROMPT 에 명시된 그대로:
-       { "faceTypeReason": {...}, "faceType": "...", "features": [...], "moodArchetype": [...] }
+       { "faceTypeReason": {...}, "faceType": "...", "features": [...], "moodArchetype": [...],
+         "primaryMood": "...", "moodTitle": "...", "moodSummary": "...", "moodEvidence": [...],
+         "distinctivePoint": ..., "traits": [...] }
+     (primaryMood 이하는 D01 필드. 채점기는 faceType·features 만 보지만 응답에서 빼지 마라 —
+      traits 가 사전 밖 라벨을 내는지는 리포트에서 눈으로 본다)
      또는 거부 케이스:
        { "error": "..." }
      ```

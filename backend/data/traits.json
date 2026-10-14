@@ -1,0 +1,56 @@
+{
+  "ruleVersion": 1,
+  "description": "Traits 사전 (plan 0009 D01 · ADR 0010 R06). 무드(분위기)와 다른 축 — 얼굴의 구조·비율·대비를 말한다. 분석 응답 traits 는 이 label 중 0~2개, 축당 최대 1개. 라벨을 바꾸면 ruleVersion 을 올리고 ANALYZE_PROMPT 의 traits 섹션·sanitize_analysis·/eval-face 회귀를 같이 본다.",
+  "pickOrder": ["contrast", "outline", "proportion"],
+  "maxTraits": 2,
+  "axes": {
+    "outline": {
+      "name": "윤곽",
+      "exclusive": true,
+      "traits": [
+        {
+          "label": "곡선 윤곽",
+          "criteria": "광대 아래 옆선이 완만한 곡선으로 턱까지 이어진다. faceTypeReason.step1_sideLine 이 '곡선' 일 때만.",
+          "faceTypesExcluded": ["사각형", "땅콩형"]
+        },
+        {
+          "label": "직선 윤곽",
+          "criteria": "광대 아래 옆선이 거의 직선으로 내려와 턱 모서리에서 꺾인다. faceTypeReason.step1_sideLine 이 '직선' 일 때만.",
+          "faceTypesExcluded": ["계란형", "둥근형", "하트형", "긴형", "다이아몬드형"]
+        }
+      ]
+    },
+    "proportion": {
+      "name": "비율",
+      "exclusive": true,
+      "traits": [
+        {
+          "label": "세로 긴 비율",
+          "criteria": "얼굴 세로가 가로보다 눈에 띄게 길다. faceTypeReason.step3_vertical 이 '확연히 김' 일 때만.",
+          "faceTypesExcluded": ["둥근형"]
+        },
+        {
+          "label": "가로 넓은 비율",
+          "criteria": "얼굴 폭과 길이가 비슷하거나 폭이 더 넓어 보인다. 긴형과 동시에 참일 수 없다.",
+          "faceTypesExcluded": ["긴형"]
+        }
+      ]
+    },
+    "contrast": {
+      "name": "대비",
+      "exclusive": true,
+      "traits": [
+        {
+          "label": "고대비",
+          "criteria": "눈썹·눈동자·속눈썹·입술 색이 피부보다 뚜렷하게 짙어 이목구비가 또렷하게 분리돼 보인다. 메이크업이 아니라 타고난 명암 차이로 판단한다.",
+          "faceTypesExcluded": []
+        },
+        {
+          "label": "저대비",
+          "criteria": "눈썹·눈·입술 색이 피부와 가까워 전체가 한 톤으로 부드럽게 이어져 보인다. 진한 메이크업으로 가려졌으면 넣지 않는다.",
+          "faceTypesExcluded": []
+        }
+      ]
+    }
+  }
+}
