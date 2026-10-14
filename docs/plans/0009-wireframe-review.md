@@ -4,15 +4,15 @@ title: "최신 와이어프레임 구현 계획"
 phase: null
 adr: ["0010"]
 milestone: "v1.0"
-status: Proposed
+status: In Progress
 last-verified: "2026-10-14"
 ---
 # Plan 0009 — 최신 와이어프레임 구현 계획
 
 > 전체 진행 상황: [ROADMAP](../ROADMAP.md) · 체크 표기는 [`README.md`](./README.md) 규약을 따른다.
 
-> 상태: **검토 전 제안** · 재검증일: 2026-10-12 · 앱 구현은 아직 변경하지 않았습니다.
-> 승인되면 결정을 ADR 로 남기고 이 plan 의 `status` 를 `In Progress` 로 바꾼다.
+> 상태: **진행 중** (2026-10-14 착수, 근거 [ADR 0010](../decisions/0010-wireframe-v10-scope.md)) · Figma 재검증일: 2026-10-12.
+> 백엔드(Claude)는 P1~P3 를 진행했고, 화면(Codex)은 핵심 흐름 정렬까지. 보류 결정 3개는 UX 프로토타입 뒤.
 
 ## 검토 보고서
 

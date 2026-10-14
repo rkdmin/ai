@@ -43,7 +43,7 @@
 |------|-----|
 | Phase 실행 계획 | [0002 Phase 1](./plans/0002-phase1-face-accuracy-rag.md) ~ [0008 Phase 7](./plans/0008-phase7-ios.md) |
 | Phase 교차 | [0001 v1.0 출시 기준](./plans/0001-v10-release-criteria.md) |
-| 새 v1.0 실행 계획 | [0009 와이어프레임 구현 계획](./plans/0009-wireframe-review.md) — 근거 [ADR 0010](./decisions/0010-wireframe-v10-scope.md) |
+| 새 v1.0 실행 계획 (진행 중) | [0009 와이어프레임 구현 계획](./plans/0009-wireframe-review.md) — 근거 [ADR 0010](./decisions/0010-wireframe-v10-scope.md) |
 
 ## 4. 방법론
 
