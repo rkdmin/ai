@@ -45,7 +45,9 @@ describe('F01 origin 기반 뒤로가기', () => {
   });
 
   it('분석 단계의 고정 복귀와 합성 중 back 무시를 유지한다', () => {
-    expect(resolveBackRoute(analysisRoute('personal_color'))).toEqual(analysisRoute('upload'));
+    // 퍼스널컬러 단계는 흐름에서 뺐다 (ADR 0010 R13) — upload 는 홈으로 돌아간다
+    expect(resolveBackRoute(analysisRoute('upload'))).toEqual(mainRoute('home'));
+    expect(resolveBackRoute(analysisRoute('personal_color'))).toBeUndefined();
     expect(resolveBackRoute(analysisRoute('result_home'))).toEqual(mainRoute('home'));
     expect(resolveBackRoute(analysisRoute('synth_loading'))).toBeUndefined();
   });

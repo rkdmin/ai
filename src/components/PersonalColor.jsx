@@ -1,6 +1,10 @@
-// 사용자가 알고 있는 퍼스널컬러를 선택받는 화면.
+// ⚠️ 흐름에서 제외됨 (2026-10-14, ADR 0010 R13). 어디서도 import 하지 않는다.
+// Figma 핵심 흐름(사진 가이드 → 확인 → 분석 → 무료 결과)에 퍼스널컬러 단계가 없어 App.jsx 에서 뺐다.
+// 파일을 남긴 이유: 리포트·설정에서 "알고 있으면 입력" 보조 입력으로 되살릴 가능성이 있어서다 (미결).
+// 그때까지 백엔드는 personalColor=null 로 받아 색 대신 질감·위치 위주로 추천한다.
+//
+// (원래 역할) 사용자가 알고 있는 퍼스널컬러를 선택받는 화면.
 // 선택값(spring/summer/autumn/winter)은 onNext(pick) 으로 전달되어 분석에 활용됨.
-// TODO: 미선택(skip) 시 분석 결과를 바탕으로 백엔드가 추정한 퍼스널컬러를 사용.
 import { useState } from 'react';
 import { StatusBar } from './common/StatusBar';
 import { BackHeader } from './common/Layout';

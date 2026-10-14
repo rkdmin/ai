@@ -5,7 +5,6 @@ export const MAIN_TABS = ['home', 'style', 'chemistry', 'my'];
 
 const ANALYSIS_SCREENS = new Set([
   'upload',
-  'personal_color',
   'loading',
   'error_face',
   'error_network',
@@ -43,7 +42,6 @@ export function flowRoute(screen) {
 
 const ANALYSIS_PARENT = {
   upload: mainRoute('home'),
-  personal_color: analysisRoute('upload'),
   loading: mainRoute('home'),
   error_face: mainRoute('home'),
   error_network: mainRoute('home'),

@@ -36,7 +36,7 @@ flow: splash → home
 
 main: home | style | chemistry | my
 
-analysis: upload → personal_color → loading → result_home
+analysis: upload → loading → result_home   (퍼스널컬러 단계 없음 — ADR 0010 R13)
   → hair_loading → result_tabs_hair
   → makeup_loading → result_tabs_makeup
   → synth_loading
@@ -48,7 +48,7 @@ sheet: guest_gate | ad_gate | share_card | share_card_makeup
   origin: 시트를 연 route
 
 home
-  → upload → personal_color → loading → result_home
+  → upload → loading → result_home
   → history → history_detail
   → guest_gate
 
@@ -76,7 +76,6 @@ result_home
 - `onboarding3` → `onboarding2`
 - `login` / `guest_gate` → `home`
 - `upload` → `home`
-- `personal_color` → `upload`
 - `loading` / `error_face` / `error_network` → `home`
 - `result_home` → `home`
 - `hair_loading` / `makeup_loading` → `result_home`
@@ -183,19 +182,16 @@ Beauty Profile 복원 규칙:
   - 동의 없음 → "사진 분석 동의에 체크해 주세요"
   - 사진 없음 → 카메라 선택 시트를 다시 연다
 - 10MB 초과 시 거부
-- NEXT 통과 시 `onUpload(file, dataUrl)` → `photo = { file, dataUrl }` 저장 후 `personal_color` 로 이동
+- NEXT 통과 시 `onUpload(file, dataUrl)` → `photo = { file, dataUrl }` 저장 후 **바로 분석 시작** (`startAnalysis(dataUrl)` → `loading`)
 - `VITE_MOCK=true` 일 때만 `🧪 샘플 얼굴 사용` 버튼 노출 (운영 빌드 제외)
 
 ---
 
-## Personal Color (`stage: 'personal_color'`)
+## ~~Personal Color (`stage: 'personal_color'`)~~ — 흐름에서 제외 (2026-10-14)
 
-**컴포넌트:** `PersonalColor.jsx`
-
-- `wf-*` 시스템의 `BackHeader`·스크롤 본문·하단 footer를 사용하고, 4계절 선택지는 radius 8의 `wf-card`로 표시한다.
-- 퍼스널컬러 선택 후 `선택하고 분석하기`, 모르면 `잘 모르겠어요 · 건너뛰기`
-- 선택값은 한국어 라벨로 `personalColor` 상태에 저장
-- 다음 진행 시 `startAnalysis()`
+Figma 핵심 흐름에 퍼스널컬러 단계가 없어 뺐다 (ADR 0010 R13). `PersonalColor.jsx` 는 리포트·설정의
+보조 입력으로 되살릴 가능성이 있어 파일만 남겨 두고 어디서도 import 하지 않는다.
+분석 요청은 `personalColor: null` 로 나가고, 백엔드는 색 대신 질감·위치 위주로 추천한다.
 
 ---
 
@@ -205,7 +201,7 @@ Beauty Profile 복원 규칙:
 
 **컴포넌트:** `Loading.jsx`
 
-- 내부 task: `analyzeFace(photo.dataUrl, backendPersonalColorKey(personalColor))`
+- 내부 task: `analyzeFace(dataUrl, null)` — 퍼스널컬러는 보내지 않는다
 - Figma `analysis-loading`에 맞춰 원형 사진, 4단계 상태(`완료 / 분석 중 / 대기`), 보조 문구와 1.2초 주기로
   순환하는 점 3개를 표시한다. 모션 감소 설정에서는 점을 정지한다.
 - 성공:

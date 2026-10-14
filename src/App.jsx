@@ -7,7 +7,6 @@ import Onboarding from './components/Onboarding';
 import Login from './components/Login';
 import Home from './components/Home';
 import PhotoUpload from './components/PhotoUpload';
-import PersonalColor from './components/PersonalColor';
 import Loading from './components/Loading';
 import ErrorScreen from './components/ErrorScreen';
 import AnalysisResult from './components/AnalysisResult';
@@ -48,18 +47,6 @@ const KO_TO_KEY = {
   '가을 웜톤': 'autumn_warm',
   '겨울 쿨톤': 'winter_cool',
 };
-const KEY_TO_KO = {
-  spring: '봄 웜톤',
-  summer: '여름 쿨톤',
-  autumn: '가을 웜톤',
-  winter: '겨울 쿨톤',
-};
-
-function normalizePersonalColor(pick) {
-  if (!pick) return null;
-  return KEY_TO_KO[pick] || pick;
-}
-
 function backendPersonalColorKey(pickKo) {
   if (!pickKo) return null;
   return KO_TO_KEY[pickKo] || null;
@@ -84,7 +71,6 @@ export default function App() {
   const [appState, setAppState] = useState({ route: flowRoute('splash'), result: null });
   const { route, result } = appState;
   const [photo, setPhoto] = useState(null);
-  const [personalColor, setPersonalColor] = useState(null);
   const [hairCards, setHairCards] = useState(null);
   const [makeupCards, setMakeupCards] = useState(null);
   const [activeCard, setActiveCard] = useState(null);
@@ -252,15 +238,17 @@ export default function App() {
     }
   }, [auth.isAuthenticated, go]);
 
-  const startAnalysis = useCallback(() => {
-    if (!photo?.dataUrl) {
+  // 사진 확인 직후 바로 분석한다. 퍼스널컬러 선택 단계는 Figma 핵심 흐름에 없어 뺐다 (ADR 0010 R13) —
+  // 백엔드는 personalColor 가 없으면 색 대신 질감·위치 위주로 추천한다. 보조 입력으로 되살리기 전까지 null.
+  const startAnalysis = useCallback((dataUrl = photo?.dataUrl) => {
+    if (!dataUrl) {
       setErrorInfo({ type: 'face', code: 'INVALID_IMAGE', message: '사진이 준비되지 않았어요.' });
       go('error_face');
       return;
     }
-    beginRequest(analyzeFace(photo.dataUrl, backendPersonalColorKey(personalColor)));
+    beginRequest(analyzeFace(dataUrl, null));
     go('loading');
-  }, [photo, personalColor, beginRequest, go]);
+  }, [photo, beginRequest, go]);
 
   const onAnalysisSuccess = useCallback((r) => {
     if (!r || r.faceType === '판정 어려움') {
@@ -268,7 +256,7 @@ export default function App() {
       go('error_face');
       return;
     }
-    const nextResult = { ...r, personalColor: r.personalColor || personalColor };
+    const nextResult = { ...r, personalColor: r.personalColor || null };
     setResult(nextResult);
     saveLatestAnalysis(profileOwner, nextResult);
     setHairCards(null);
@@ -276,7 +264,7 @@ export default function App() {
     setActiveCard(null);
     setSynthByKey({});
     go('result_home');
-  }, [personalColor, go, profileOwner, setResult]);
+  }, [go, profileOwner, setResult]);
 
   const onAnalysisError = useCallback((e) => {
     if (isStaleRequestError(e)) return;
@@ -401,18 +389,7 @@ export default function App() {
         <PhotoUpload
           onUpload={(file, dataUrl) => {
             setPhoto({ file, dataUrl });
-            go('personal_color');
-          }}
-          onBack={back}
-        />
-      );
-      break;
-    case 'personal_color':
-      view = (
-        <PersonalColor
-          onNext={(pick) => {
-            setPersonalColor(normalizePersonalColor(pick));
-            startAnalysis();
+            startAnalysis(dataUrl);
           }}
           onBack={back}
         />
