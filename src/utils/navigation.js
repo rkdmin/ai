@@ -14,9 +14,11 @@ const ANALYSIS_SCREENS = new Set([
   'makeup_loading',
   'result_tabs_makeup',
   'synth_loading',
+  'report_loading',
 ]);
 
-const DETAIL_SCREENS = new Set(['history', 'history_detail', 'card_detail', 'makeup_detail']);
+// report* — 통합 Beauty Report (F04). 리포트는 홈/MY/무료 결과에서 열리므로 origin 을 보관하는 detail 이다.
+const DETAIL_SCREENS = new Set(['history', 'history_detail', 'card_detail', 'makeup_detail', 'report', 'report_hair_detail', 'report_makeup_detail']);
 // 온보딩·독립 로그인·광고 게이트는 Figma 에 없어 뺐다 (ADR 0010). 계정 연결은 guest_gate 시트 하나다.
 const SHEET_SCREENS = new Set(['guest_gate', 'share_card', 'share_card_makeup']);
 const FLOW_SCREENS = new Set(['splash']);
@@ -53,6 +55,7 @@ const ANALYSIS_PARENT = {
   result_tabs_makeup: analysisRoute('result_home'),
   // 합성 요청 중에는 시스템 back 을 무시한다. 화면의 취소 버튼은 명시적으로 상세로 이동한다.
   synth_loading: null,
+  report_loading: analysisRoute('result_home'),
 };
 
 const FLOW_PARENT = {}; // splash 는 뒤로 갈 곳이 없다
@@ -94,5 +97,5 @@ export function transitionNavigation(appState, nextRoute) {
 }
 
 export function isRequestRoute(route) {
-  return ['loading', 'hair_loading', 'makeup_loading', 'synth_loading'].includes(routeScreen(route));
+  return ['loading', 'hair_loading', 'makeup_loading', 'synth_loading', 'report_loading'].includes(routeScreen(route));
 }

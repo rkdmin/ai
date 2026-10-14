@@ -21,7 +21,7 @@ last-verified: "2026-10-14"
 | 만료 사진 정리 | `backend/jobs/cleanup_expired_photos.py` · `POST /api/admin/cleanup-expired` ✅ | — | — | **스케줄 미등록** — 배포 환경에 하루 1회 cron 필요 |
 | STYLE 피드·상세·제품·북마크 | `/api/styles*`, `/api/products/recommendations`, `/api/bookmarks*` ✅ (migration 0006, 사전은 초안만) | ❌ 없음 | `Trend.jsx` 는 "준비 중" | **백엔드만** (F07·F10, 운영 콘텐츠 대기) |
 | Beauty Room·초대·케미 | `/api/rooms*`, `/api/invites/{token}[/join]`, `/api/handoffs/{token}/claim` ✅ (migration 0005, 규칙 계산) | ❌ 없음 | 케미 탭·초대 웹 화면 없음 | **백엔드만** (F08·F09) |
-| 통합 리포트 | `POST/GET /api/reports`, `/{id}`, `/{id}/retry` ✅ (migration 0003, 권한은 `REPORT_ACCESS_MODE`) | ❌ 없음 | 리포트 화면 없음 | **백엔드만** (F04, 결제 P4 전) |
+| 통합 리포트 | `POST/GET /api/reports`, `/{id}`, `/{id}/retry` ✅ (migration 0003, 권한은 `REPORT_ACCESS_MODE`) | `createReport()` / `fetchReport()` / `retryReport()` ✅ | `Report` · `ReportHairDetail` · `ReportMakeupDetail` ✅ | **연결됨** (F04. 결제·결제 전 로그인은 P4/R02 대기 — 지금은 백엔드 모드가 권한) |
 | 계정 삭제 | `DELETE /api/account` ✅ (Storage·행·auth 삭제, 멱등) | ❌ 없음 | `My.jsx` 는 alert 만 띄움 — 미연결 | **백엔드만** (F12 선행, Codex 연결 대기) |
 | 보관 정책 조회 | `GET /api/account/policy` ✅ | ❌ 없음 | 안내 문구가 아직 숫자를 박아 씀 | **백엔드만** |
 | 사진 사전검사 | `POST /api/photos/validate` ✅ (MediaPipe 만, 에러 코드 계약 포함) | `validatePhoto()` ✅ | `PhotoUpload` 선택 직후 검사 + 코드별 오류·권한 화면 ✅ | **연결됨** (F03) |

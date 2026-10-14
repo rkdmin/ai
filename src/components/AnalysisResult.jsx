@@ -5,7 +5,7 @@ import { moodProfileData, orderedMoodArchetypes } from '../utils/moodProfile';
 import shareAsset from '../assets/figma/share.svg';
 import dividerAsset from '../assets/figma/result-divider.svg';
 
-export default function AnalysisResult({ result, photoUrl, onCardList, onShare, onBack }) {
+export default function AnalysisResult({ result, photoUrl, onReport, onShare, onBack }) {
   const faceType = result?.faceType || '';
   const personalColor = result?.personalColor || '';
   const profile = moodProfileData(result);
@@ -125,11 +125,9 @@ export default function AnalysisResult({ result, photoUrl, onCardList, onShare, 
               <span className="ko" style={{ fontSize: 12, color: '#6b7280' }}>이 분석은 히스토리에 저장됐어요</span>
             </div>
           )}
-          <button type="button" className="wf-btn-primary" onClick={() => onCardList?.('hair')}>
-            <span style={{ flex: 1, textAlign: 'left' }}><small style={{ display: 'block', opacity: .65, fontSize: 10, letterSpacing: '.08em', marginBottom: 4 }}>1ST · START HERE</small>헤어 추천 보기</span>{Icons.arrow(18, '#fff')}
-          </button>
-          <button type="button" className="wf-btn-secondary" onClick={() => onCardList?.('makeup')} style={{ marginTop: 10 }}>
-            <span style={{ flex: 1, textAlign: 'left' }}>메이크업 추천 보기</span>{Icons.arrow(18, '#111827')}
+          {/* Figma 158:657/108:2862 — "전체 Beauty Report 보기" (연결선 → 결제/리포트). 카드 4장 CTA 는 리포트로 대체됐다 (F04). */}
+          <button type="button" className="wf-btn-primary" onClick={onReport}>
+            <span style={{ flex: 1, textAlign: 'left' }}><small style={{ display: 'block', opacity: .65, fontSize: 10, letterSpacing: '.08em', marginBottom: 4 }}>HAIR + MAKEUP · FULL GUIDE</small>전체 Beauty Report 보기</span>{Icons.arrow(18, '#fff')}
           </button>
         </section>
       </main>

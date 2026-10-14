@@ -17,37 +17,30 @@ const baseResult = {
 };
 
 describe('AnalysisResult CTA 위계', () => {
-  it('헤어가 1차 CTA(START HERE)로 노출되고 클릭 시 onCardList("hair")', () => {
-    const onCardList = vi.fn();
-    render(<AnalysisResult result={baseResult} onCardList={onCardList} onShare={() => {}} />);
+  it('1차 CTA 는 "전체 Beauty Report 보기" 이고 클릭 시 onReport (F04 — 카드 4장 CTA 대체)', () => {
+    const onReport = vi.fn();
+    render(<AnalysisResult result={baseResult} onReport={onReport} onShare={() => {}} />);
 
-    expect(screen.getByText('1ST · START HERE')).toBeInTheDocument();
-    fireEvent.click(screen.getByText('헤어 추천 보기'));
-    expect(onCardList).toHaveBeenCalledWith('hair');
-  });
-
-  it('메이크업은 2차 CTA로 노출되고 클릭 시 onCardList("makeup")', () => {
-    const onCardList = vi.fn();
-    render(<AnalysisResult result={baseResult} onCardList={onCardList} onShare={() => {}} />);
-
-    fireEvent.click(screen.getByText('메이크업 추천 보기'));
-    expect(onCardList).toHaveBeenCalledWith('makeup');
+    fireEvent.click(screen.getByText('전체 Beauty Report 보기'));
+    expect(onReport).toHaveBeenCalled();
+    expect(screen.queryByText('헤어 추천 보기')).toBeNull();
+    expect(screen.queryByText('메이크업 추천 보기')).toBeNull();
   });
 
   it('로그인 분석(analysisId 있음)이면 SAVED 배지를 노출', () => {
-    render(<AnalysisResult result={{ ...baseResult, analysisId: 'a-1' }} onCardList={() => {}} onShare={() => {}} />);
+    render(<AnalysisResult result={{ ...baseResult, analysisId: 'a-1' }} onReport={() => {}} onShare={() => {}} />);
     expect(screen.getByText('이 분석은 히스토리에 저장됐어요')).toBeInTheDocument();
   });
 
   it('게스트 분석(analysisId 없음)이면 SAVED 배지를 노출하지 않음', () => {
-    render(<AnalysisResult result={baseResult} onCardList={() => {}} onShare={() => {}} />);
+    render(<AnalysisResult result={baseResult} onReport={() => {}} onShare={() => {}} />);
     expect(screen.queryByText('이 분석은 히스토리에 저장됐어요')).toBeNull();
   });
 });
 
 describe('AnalysisResult 무드 렌더', () => {
   it('moodArchetype 3개를 모두 보여준다', () => {
-    render(<AnalysisResult result={baseResult} onCardList={() => {}} onShare={() => {}} />);
+    render(<AnalysisResult result={baseResult} onReport={() => {}} onShare={() => {}} />);
 
     expect(screen.getByText('로맨틱')).toBeInTheDocument();
     expect(screen.getByText('클린')).toBeInTheDocument();
@@ -67,7 +60,7 @@ describe('AnalysisResult 무드 렌더', () => {
       hairDirection: '부드러운 레이어',
       makeupDirection: '낮은 대비의 음영',
     };
-    render(<AnalysisResult result={result} onCardList={() => {}} onShare={() => {}} />);
+    render(<AnalysisResult result={result} onReport={() => {}} onShare={() => {}} />);
 
     expect(screen.getByText('차분하고 부드러운 이미지')).toBeInTheDocument();
     expect(screen.getByText('Primary · SOFT · 곡선 윤곽 · 저대비')).toBeInTheDocument();
@@ -81,7 +74,7 @@ describe('AnalysisResult 무드 렌더', () => {
   });
 
   it('새 필드가 없으면 명시된 제목·설명 fallback만 쓰고 선택 필드 영역은 숨긴다', () => {
-    render(<AnalysisResult result={baseResult} onCardList={() => {}} onShare={() => {}} />);
+    render(<AnalysisResult result={baseResult} onReport={() => {}} onShare={() => {}} />);
 
     expect(screen.getByRole('heading', { name: '나의 Beauty Mood' })).toBeInTheDocument();
     expect(screen.getByText('대표 무드의 분위기를 중심으로 추천을 준비했어요.')).toBeInTheDocument();
@@ -93,7 +86,7 @@ describe('AnalysisResult 무드 렌더', () => {
   });
 
   it('legacy 저장본은 D01 블록을 숨기고 없는 값을 지어내지 않는다', () => {
-    render(<AnalysisResult result={{ ...baseResult, legacy: true }} onCardList={() => {}} onShare={() => {}} />);
+    render(<AnalysisResult result={{ ...baseResult, legacy: true }} onReport={() => {}} onShare={() => {}} />);
 
     expect(screen.queryByTestId('mood-profile')).toBeNull();
     expect(screen.queryByTestId('mood-profile-details')).toBeNull();
@@ -105,7 +98,7 @@ describe('AnalysisResult 무드 렌더', () => {
 
 describe('AnalysisResult features 렌더', () => {
   const render1 = (features) =>
-    render(<AnalysisResult result={{ ...baseResult, features }} onCardList={() => {}} onShare={() => {}} />);
+    render(<AnalysisResult result={{ ...baseResult, features }} onReport={() => {}} onShare={() => {}} />);
 
   it('features 개수에 맞춰 제목이 바뀐다', () => {
     render1(['무쌍', '입술 두꺼움', '코 낮음']);

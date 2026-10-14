@@ -48,7 +48,9 @@ paths:
 | `Loading.jsx` | STEP 02 — 원형 사진 + 4단계 분석 상태 + 순환 로딩 점 |
 | `ErrorScreen.jsx` | 분석 API의 사진/서비스 오류를 `code` 우선으로 표시 (코드 없으면 status·문자열 폴백) |
 | `AnalysisResult.jsx` | STEP 02 결과 — schema v3 제목·Primary/Traits·근거·포인트·방향 + 3개 무드 (legacy 블록 숨김) |
-| `CardList.jsx` | STEP 03 — 카드 4장 (잠금 없음 + AVOID). 리포트 화면(F04)이 생기면 대체 예정 |
+| `Report.jsx` | 통합 Beauty Report (Figma 108:3175/108:3277) — HAIR/MAKEUP 탭, 방향·기장·추천 3·미용실 가이드 / 근거 부위·룩 3. locked·partial_failed 상태 |
+| `ReportHairDetail.jsx` · `ReportMakeupDetail.jsx` | 리포트 상세 (108:3410/108:3481) — 근거·스타일링·대안·미용실 문장·TRY ON / 부위별 가이드·적용 순서·제형 |
+| `CardList.jsx` | (레거시) 카드 4장 — **MY 기록의 저장 카드 재열람 전용.** 새 분석 흐름은 리포트로 간다. 기록 화면 재작성 시 정리 |
 | `CardDetail.jsx` | STEP 04 — AI COMMENTARY / PERSONAL FIT / MOOD BOARD / AI SYNTHESIS (헤어/종합) |
 | `MakeupDetail.jsx` | 메이크업 카드 상세 — palette / part guide / 추천 제품 + 쿠팡 링크 |
 | `ShareCard.jsx` | 공유 카드 오버레이 (결과 카드형 / before·after 비교형, 네이티브 공유·저장 브리지 + 웹 폴백) |
@@ -66,6 +68,8 @@ paths:
 ## 그 외 디렉토리
 
 - `src/api/` — `ai.js` 가 프로바이더 라우터(mock/backend 분기). 컴포넌트는 `backend.js` 를 직접 import 하지 않고 `ai.js` 만 쓴다.
+  리포트(`createReport`/`fetchReport`/`retryReport`)의 mock 은 `src/data/sample-report.json` 고정 샘플이다.
+- `src/utils/moodLabel.js` — `moodLabelText("SOFT · …") → "SOFT"`. 카드·리포트 눈썹 라벨용.
 - `src/contexts/AuthContext.jsx` — Supabase 세션/로그인 상태. `signInAsTestUser` 는 mock 전용.
 - `src/utils/` — `authBridge.js` (OAuth redirect 복원 + post-login return target), `external.js` (외부 URL 시스템 브라우저), `platform.js` (`isNativePlatform`), `sentry.js` (`VITE_SENTRY_DSN` 게이트), `validateImage.js` (Canvas 유효성 검사)
 - `src/hooks/useHaptic.js` — Capacitor Haptics 브리지 (웹 폴백 분기)

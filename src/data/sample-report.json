@@ -1,0 +1,75 @@
+{
+  "_comment": [
+    "VITE_MOCK 용 통합 Beauty Report 샘플 (plan 0009 F04). 모양은 GET /api/reports/{id} 응답(ReportResponse)과 같고,",
+    "hair/makeup 본문은 backend/services/rag_service.py 의 REPORT_HAIR_FORMAT / REPORT_MAKEUP_FORMAT 을 따른다.",
+    "실제 인물·브랜드·가격 없음. 제품은 제형·형태(productType)만."
+  ],
+  "id": "sample-report",
+  "analysisId": null,
+  "status": "ready",
+  "locked": false,
+  "analysis": { "faceType": "계란형", "primaryMood": "SOFT", "moodTitle": "자연스럽고 차분한 이미지", "traits": ["곡선 윤곽", "저대비"], "personalColor": null, "schemaVersion": 3 },
+  "hair": {
+    "overview": {
+      "direction": "완만한 곡선 윤곽과 낮은 대비를 살리는 방향이에요. 선을 세우기보다 결을 부드럽게 흘려 얼굴선을 감싸는 스타일이 잘 맞아요.",
+      "length": { "value": "쇄골 아래 미디엄", "reason": "세로 비율이 보통이라 턱선 아래로 길이를 두면 얼굴이 길어 보이지 않으면서 윤곽이 부드럽게 이어져요." },
+      "bangs": { "value": "사이드뱅 또는 없음", "reason": "이마 비율이 균형 잡혀 있어 이마를 가릴 필요가 없고, 옆으로 흘리면 곡선 윤곽이 더 살아요." },
+      "volume": { "value": "끝쪽·옆", "reason": "정수리보다 끝에 볼륨을 두면 곡선 윤곽의 부드러움이 유지돼요." },
+      "layer": { "value": "얼굴선 레이어", "reason": "턱선 주변에 가벼운 레이어를 넣어 얼굴선을 감싸면 저대비 인상이 또렷해 보여요." }
+    },
+    "styles": [
+      { "rank": 1, "cardType": "hair", "mood": "소프트 내추럴", "moodLabel": "SOFT · 자연스럽고 차분한", "hair": "레이어드 미디엄", "bangs": "사이드뱅",
+        "hairReason": "계란형의 균형을 그대로 두고 끝에만 움직임을 더해요.", "structureReason": "곡선 윤곽을 따라 떨어지는 레이어가 얼굴선을 감싸 저대비 인상을 부드럽게 정리해요.",
+        "stylingNote": "드라이 후 끝만 안쪽으로 한 번 말고, 사이드뱅은 손으로 흘려 넘기세요.", "alternative": "C컬 미디엄",
+        "salonRequest": "쇄골 아래 길이로 맞추고, 턱선부터 가벼운 레이어 넣어 주세요. 앞머리는 옆으로 흘릴 수 있게 사이드뱅으로 부탁드려요.",
+        "featureTip": "아몬드 눈이라 사이드뱅이 눈매를 가리지 않게 눈썹 아래에서 끝내 주세요.", "coachComment": "힘을 뺀 결이 가장 잘 어울려요. 과한 컬이나 정수리 볼륨은 피하고, 끝의 움직임만으로 충분해요." },
+      { "rank": 2, "cardType": "hair", "mood": "클린 미니멀", "moodLabel": "CLEAN · 깨끗하고 단정한", "hair": "칼단발 (태슬컷)", "bangs": "없음",
+        "hairReason": "곡선 윤곽에 직선 끝단이 대비를 만들어 또렷해 보여요.", "structureReason": "턱선 길이의 직선 끝이 저대비 인상에 선 하나를 더해 단정함을 줘요.",
+        "stylingNote": "5:5 또는 6:4 가르마, 끝은 일자로 매끈하게.", "alternative": "턱선 보브",
+        "salonRequest": "턱선 길이 일자 단발로, 레이어 없이 끝을 무겁게 잘라 주세요. 앞머리 없이 가르마만 탈 수 있게요.",
+        "featureTip": null, "coachComment": "입술이 도톰한 편이라 짧은 길이가 얼굴 아래쪽을 가볍게 보이게 해요." },
+      { "rank": 3, "cardType": "hair", "mood": "엘레강스 웨이브", "moodLabel": "ELEGANT · 우아하고 도도한", "hair": "루즈 웨이브 롱", "bangs": "없음",
+        "hairReason": "긴 길이에 느슨한 웨이브가 곡선 윤곽을 길게 이어 줘요.", "structureReason": "가로 폭이 넓지 않아 긴 웨이브가 세로 흐름을 만들어도 답답하지 않아요.",
+        "stylingNote": "굵은 봉으로 중간부터만 말고 손으로 풀어 주세요.", "alternative": "S컬 미디엄 롱",
+        "salonRequest": "가슴 위 길이로 유지하고, 귀 아래부터 굵은 웨이브 펌 부탁드려요. 앞머리는 없이요.",
+        "featureTip": null, "coachComment": "격식 있는 자리에 어울려요. 평소엔 묶어도 윤곽이 예쁘게 드러나요." }
+    ],
+    "avoid": { "cardType": "hair", "hair": "무거운 풀뱅 + 정수리 볼륨", "bangs": null, "hairReason": "이마를 다 덮고 위로 볼륨을 올리면 부드러운 윤곽이 눌려 보여요.", "coachComment": "선을 세우는 스타일은 저대비 인상과 어긋나요. 앞머리를 두더라도 비치는 정도로 가볍게." },
+    "salonGuide": "길이는 쇄골 아래 미디엄, 턱선부터 가벼운 얼굴선 레이어, 앞머리는 사이드뱅 또는 없음. 볼륨은 정수리가 아니라 끝과 옆에 두고, 끝을 안쪽으로 한 번 마는 정도의 움직임만 주세요."
+  },
+  "makeup": {
+    "overview": {
+      "direction": "경계를 흐리는 메이크업이에요. 낮은 대비를 억지로 올리지 말고 질감과 음영으로 입체감을 더해요.",
+      "faceBalance": "얼굴 균형이 좋은 편이라 특정 부위를 키우기보다 볼 중앙과 눈꼬리에만 포인트를 두면 돼요."
+    },
+    "focusParts": [
+      { "part": "EYE", "evidence": "아몬드 눈", "recommendation": "라인 대신 중간 톤 섀도우로 눈꼬리 쪽 음영만 넓혀 주세요.", "productType": "크림 섀도우" },
+      { "part": "LIP", "evidence": "입술 두꺼움", "recommendation": "입술선을 또렷이 그리지 말고 안쪽에서 바깥으로 풀어 주세요.", "productType": "틴트 (블러)" }
+    ],
+    "looks": [
+      { "rank": 1, "cardType": "makeup", "mood": "소프트 글로우", "moodLabel": "SOFT · 자연스럽고 차분한", "baseSkin": "Semi-Glow",
+        "makeup": { "shading": "턱선 아래 넓게 흐리듯", "shadingReason": "곡선 윤곽을 깎지 않고 그림자만 더해요.", "highlight": "C존·콧등 은은하게", "highlightReason": "낮은 대비에 윤광만 더해 생기를 줘요.",
+          "blush": "앞볼 중앙에서 바깥으로 넓게, 피부 톤에 가까운 색", "blushReason": "경계 없이 번지면 저대비 인상이 부드럽게 정리돼요.", "eyebrow": "결을 살린 자연 아치", "eyebrowReason": "진한 눈썹은 대비를 급히 올려 어색해요.",
+          "lip": "블러 틴트, 안쪽 그라데이션", "lipReason": "도톰한 입술의 경계를 풀어 전체 톤에 녹여요.", "eyeshadow": null, "eyeshadowReason": null, "eyeliner": null, "eyelinerReason": null },
+        "applyOrder": ["베이스", "쉐딩", "눈썹", "아이", "블러셔", "립"], "productTypes": ["크림 블러셔", "크림 섀도우", "블러 틴트"],
+        "featureTip": "아몬드 눈은 눈꼬리 끝만 살짝 길게 음영을 두면 돼요.", "coachComment": "선명함보다 번짐이에요. 손으로 경계를 풀어 주는 단계만 잊지 마세요." },
+      { "rank": 2, "cardType": "makeup", "mood": "클린 스킨", "moodLabel": "CLEAN · 깨끗하고 단정한", "baseSkin": "Matte-Satin",
+        "makeup": { "shading": "최소, 턱선만", "shadingReason": "피부 결 자체를 보여 주는 룩이에요.", "highlight": "없음", "highlightReason": "광을 빼야 단정해 보여요.",
+          "blush": "광대 위 얇게 한 번", "blushReason": "혈색만 살짝.", "eyebrow": "결 정리 + 빈 곳만 채움", "eyebrowReason": "선을 긋지 않아요.",
+          "lip": "MLBB 새틴", "lipReason": "입술 색을 피부에 가깝게.", "eyeshadow": null, "eyeshadowReason": null, "eyeliner": null, "eyelinerReason": null },
+        "applyOrder": ["베이스", "눈썹", "블러셔", "립"], "productTypes": ["새틴 파운데이션", "브로우 마스카라", "새틴 립"],
+        "featureTip": null, "coachComment": "출근·일상용. 피부 표현에 시간을 쓰고 나머지는 덜어 내세요." },
+      { "rank": 3, "cardType": "makeup", "mood": "엘레강스 스머지", "moodLabel": "ELEGANT · 우아하고 도도한", "baseSkin": "Semi-Glow",
+        "makeup": { "shading": "코 옆 음영 연결", "shadingReason": "눈매 깊이를 더해요.", "highlight": "광대 위 윤광", "highlightReason": "고급스러운 윤기.",
+          "blush": "광대 감싸듯 넓은 타원", "blushReason": "성숙한 느낌.", "eyebrow": "내추럴 아치", "eyebrowReason": "따뜻한 아우라.",
+          "lip": "누드 로즈 글로우", "lipReason": "경계를 흐려 우아하게.", "eyeshadow": null, "eyeshadowReason": null, "eyeliner": null, "eyelinerReason": null },
+        "applyOrder": ["베이스", "쉐딩", "하이라이트", "눈썹", "아이", "블러셔", "립"], "productTypes": ["크림 섀도우", "파우더 블러셔", "글로우 립"],
+        "featureTip": null, "coachComment": "아이라인 꼬리와 립 라인을 스머징하는 게 핵심이에요." }
+    ],
+    "avoid": { "cardType": "makeup", "mood": "피해야 할 메이크업", "makeup": { "shading": "각을 세우는 직선 쉐딩", "shadingReason": "곡선 윤곽과 어긋나요.", "blush": "작게 진하게 찍는 블러셔", "blushReason": "대비가 급히 올라가 어색해요.", "lip": "선명한 립라인 + 매트", "lipReason": "저대비 인상에서 입술만 분리돼 보여요." }, "coachComment": "선을 긋고 각을 세우는 쪽은 전부 피하세요." }
+  },
+  "hairError": null,
+  "makeupError": null,
+  "createdAt": "2026-10-14T00:00:00+00:00",
+  "updatedAt": "2026-10-14T00:00:00+00:00"
+}

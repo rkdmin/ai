@@ -18,3 +18,8 @@ export const generateStyledPhoto = (imageBase64, card) => provider.generateStyle
 export const fetchHistory = (limit) => provider.fetchHistory?.(limit) ?? Promise.resolve([])
 export const fetchHistoryDetail = (analysisId) => provider.fetchHistoryDetail?.(analysisId) ?? Promise.resolve(null)
 export const saveHistoryCard = (analysisId, cardType, cardData) => provider.saveHistoryCard?.(analysisId, cardType, cardData) ?? Promise.resolve({ ok: true })
+// 통합 Beauty Report (F04)
+export const createReport = (analysisId) => provider.createReport(analysisId)
+export const fetchReport = (reportId) => provider.fetchReport(reportId)
+export const fetchReports = () => provider.fetchReports?.() ?? Promise.resolve([])
+export const retryReport = (reportId) => provider.retryReport(reportId)

@@ -17,13 +17,16 @@ import Trend from './components/Trend';
 import History from './components/History';
 import HistoryDetail from './components/HistoryDetail';
 import My from './components/My';
+import Report from './components/Report';
+import ReportHairDetail from './components/ReportHairDetail';
+import ReportMakeupDetail from './components/ReportMakeupDetail';
 
-import { analyzeFace, fetchHistory, fetchHistoryDetail, generateHairCards, generateMakeupCards, generateStyledPhoto } from './api/ai';
-import { mapCards } from './api/mappers';
+import { analyzeFace, createReport, fetchHistory, fetchHistoryDetail, generateStyledPhoto, retryReport } from './api/ai';
 import { useAuth } from './contexts/AuthContext';
 import { consumePostAuthTarget, setPostAuthTarget } from './utils/authBridge';
 import {
   MAIN_TABS,
+  analysisRoute,
   detailRoute,
   flowRoute,
   isRequestRoute,
@@ -39,17 +42,6 @@ import { createRequestGate, isStaleRequestError } from './utils/requestGate';
 import { loadLatestAnalysis, profileOwnerForSession, saveLatestAnalysis } from './utils/profileStorage';
 import { classifyAnalysisError } from './utils/analysisErrors';
 
-const KO_TO_KEY = {
-  '봄 웜톤': 'spring_warm',
-  '여름 쿨톤': 'summer_cool',
-  '가을 웜톤': 'autumn_warm',
-  '겨울 쿨톤': 'winter_cool',
-};
-function backendPersonalColorKey(pickKo) {
-  if (!pickKo) return null;
-  return KO_TO_KEY[pickKo] || null;
-}
-
 function cardKey(card) {
   if (!card) return '';
   return `${card.cardType || 'hair'}-${card.rank ?? 0}-${card.name || card.hair || card.mood || ''}`;
@@ -64,6 +56,11 @@ export default function App() {
   const [hairCards, setHairCards] = useState(null);
   const [makeupCards, setMakeupCards] = useState(null);
   const [activeCard, setActiveCard] = useState(null);
+  // 통합 Beauty Report (F04) — 한 리포트에 HAIR/MAKEUP 탭. 상세는 styles[n]/looks[n] 하나.
+  const [report, setReport] = useState(null);
+  const [reportTab, setReportTab] = useState('hair');
+  const [activeStyle, setActiveStyle] = useState(null);
+  const [activeLook, setActiveLook] = useState(null);
   const [synthByKey, setSynthByKey] = useState({});
   const [errorInfo, setErrorInfo] = useState({ type: 'face', code: null, message: '' });
   const [guestGateReason, setGuestGateReason] = useState('history');
@@ -264,40 +261,50 @@ export default function App() {
     go(type === 'network' ? 'error_network' : 'error_face');
   }, [go]);
 
-  const startCardGeneration = useCallback((type) => {
+  // ── 통합 Beauty Report (F04) ─────────────────────────────────────
+  // 무료 결과의 "전체 Beauty Report 보기" → 생성(멱등) → HAIR 탭. 결제(P4)·결제 전 로그인(R02)은 아직 없어
+  // 백엔드 REPORT_ACCESS_MODE 가 권한을 정한다. 구 카드 4장 흐름은 MY 기록에서 저장 카드를 다시 열 때만 쓴다.
+  const startReport = useCallback(() => {
     if (!result) return;
-    const payload = {
-      analysisId: result.analysisId ?? null,
-      faceType: result.faceType,
-      personalColor: backendPersonalColorKey(result.personalColor) || null,
-      features: result.features || [],
-    };
-    const fn = type === 'makeup' ? generateMakeupCards : generateHairCards;
-    beginRequest(fn(payload).then((arr) =>
-      mapCards(arr, type, { result, features: result.features }).map((card) => ({
-        ...card,
-        analysisId: result.analysisId ?? null,
-      })),
-    ));
-    go(type === 'makeup' ? 'makeup_loading' : 'hair_loading');
+    setReportTab('hair');
+    beginRequest(createReport(result.analysisId ?? null));
+    go('report_loading');
   }, [result, beginRequest, go]);
 
-  const onCardsSuccess = useCallback((type, cards) => {
-    if (type === 'makeup') {
-      setMakeupCards(cards);
-      go('result_tabs_makeup');
-    } else {
-      setHairCards(cards);
-      go('result_tabs_hair');
+  const onReportSuccess = useCallback((r) => {
+    if (!r) {
+      go('result_home');
+      return;
     }
+    setReport(r);
+    go(detailRoute('report', analysisRoute('result_home')));
   }, [go]);
 
-  const onCardsError = useCallback((e) => {
+  const onReportError = useCallback((e) => {
     if (isStaleRequestError(e)) return;
     const msg = String(e?.message || e || '');
-    setErrorInfo({ type: 'network', message: msg });
+    setErrorInfo({ type: 'network', code: e?.code || null, message: msg });
     go('error_network');
   }, [go]);
+
+  const retryReportNow = useCallback(() => {
+    if (!report?.id) return;
+    beginRequest(retryReport(report.id));
+    go('report_loading');
+  }, [report, beginRequest, go]);
+
+  const openStyle = useCallback((style) => {
+    setActiveStyle(style);
+    // TRY ON 캐시 키(cardKey)와 공유 카드가 쓰는 모양으로 맞춘다. reportId 로 리포트 권한을 함께 보낸다 (F06).
+    setActiveCard({ ...style, cardType: 'hair', name: style.hair, analysisId: report?.analysisId ?? result?.analysisId ?? null, reportId: report?.id ?? null });
+    go(detailRoute('report_hair_detail', routeRef.current));
+  }, [report, result, go]);
+
+  const openLook = useCallback((look) => {
+    setActiveLook(look);
+    setActiveCard({ ...look, cardType: 'makeup', name: look.mood, analysisId: report?.analysisId ?? result?.analysisId ?? null });
+    go(detailRoute('report_makeup_detail', routeRef.current));
+  }, [report, result, go]);
 
   const startSynthesis = useCallback((card) => {
     if (!card || card.cardType === 'makeup') return;
@@ -412,15 +419,7 @@ export default function App() {
           result={result}
           photoUrl={photoUrl}
           onBack={back}
-          onCardList={(type) => {
-            const cached = type === 'makeup' ? makeupCards : hairCards;
-            if (cached) {
-              setActiveCard(null);
-              go(type === 'makeup' ? 'result_tabs_makeup' : 'result_tabs_hair');
-              return;
-            }
-            startCardGeneration(type);
-          }}
+          onReport={startReport}
           onShare={() => {
             setActiveCard(null);
             go('share_card');
@@ -428,23 +427,64 @@ export default function App() {
         />
       );
       break;
-    case 'hair_loading':
+    case 'report_loading':
       view = (
         <Loading
           task={taskRef.current}
           photoUrl={photoUrl}
-          label="헤어 추천"
+          label="Beauty Report"
           steps={[
-            { label: '얼굴형 매칭', en: 'SHAPE MATCH' },
-            { label: '레퍼런스 검토', en: 'REFERENCE' },
-            { label: '카드 큐레이션', en: 'CURATION' },
+            { label: '헤어 방향 정리', en: 'HAIR' },
+            { label: '메이크업 방향 정리', en: 'MAKEUP' },
+            { label: '미용실 가이드 작성', en: 'SALON GUIDE' },
           ]}
-          onSuccess={(cards) => onCardsSuccess('hair', cards)}
-          onError={onCardsError}
+          onSuccess={onReportSuccess}
+          onError={onReportError}
           onCancel={back}
         />
       );
       break;
+    case 'report':
+      view = (
+        <Report
+          report={report}
+          tab={reportTab}
+          onTab={setReportTab}
+          onBack={back}
+          onShare={() => { setActiveCard(null); go('share_card'); }}
+          onOpenStyle={openStyle}
+          onOpenLook={openLook}
+          onRetry={retryReportNow}
+          onUnlock={startReport}
+        />
+      );
+      break;
+    case 'report_hair_detail':
+      view = (
+        <ReportHairDetail
+          style={activeStyle}
+          analysis={report?.analysis}
+          photoUrl={photoUrl}
+          synthesizedPhoto={activeCard ? synthByKey[cardKey(activeCard)] : null}
+          canTryOn={Boolean(photoUrl || activeCard?.analysisId)}
+          onBack={back}
+          onShare={() => go('share_card')}
+          onTryOn={() => startSynthesis(activeCard)}
+        />
+      );
+      break;
+    case 'report_makeup_detail':
+      view = (
+        <ReportMakeupDetail
+          look={activeLook}
+          analysis={report?.analysis}
+          onBack={back}
+          onShare={() => go('share_card_makeup')}
+        />
+      );
+      break;
+    // ── 아래 카드 4장 화면(result_tabs_*·card_detail·makeup_detail)은 MY 기록의 저장 카드 재열람 전용이다.
+    // 새 분석 흐름은 리포트로 간다. MY 기록 화면을 Figma 모양으로 다시 만들 때 함께 정리한다.
     case 'result_tabs_hair':
       view = (
         <CardList
@@ -497,23 +537,6 @@ export default function App() {
           photoUrl={photoUrl}
           synthesizedPhoto={activeCard ? synthByKey[cardKey(activeCard)] : null}
           onClose={back}
-        />
-      );
-      break;
-    case 'makeup_loading':
-      view = (
-        <Loading
-          task={taskRef.current}
-          photoUrl={photoUrl}
-          label="메이크업 추천"
-          steps={[
-            { label: '얼굴 특징 분석', en: 'FEATURES' },
-            { label: '컬러 팔레트', en: 'PALETTE' },
-            { label: '파트별 가이드', en: 'GUIDE' },
-          ]}
-          onSuccess={(cards) => onCardsSuccess('makeup', cards)}
-          onError={onCardsError}
-          onCancel={back}
         />
       );
       break;

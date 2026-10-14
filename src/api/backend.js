@@ -130,11 +130,30 @@ export async function generateAllCards(analysis) {
 export async function generateStyledPhoto(imageBase64, card) {
   const result = await http('/api/photo/generate', {
     analysisId: card.analysisId ?? null,
+    reportId: card.reportId ?? null, // F06: 리포트 안의 TRY ON 은 리포트 권한을 요구한다
     cardType: card.cardType,
     card,
     frontImage: imageBase64,
   })
   return result.generatedImage
+}
+
+// ─── 통합 Beauty Report (F04) ──────────────────────────────────────
+// 계약: .claude/rules/api-contract.md "통합 Beauty Report". 생성은 멱등, 권한 없으면 403 REPORT_ACCESS_REQUIRED.
+export async function createReport(analysisId) {
+  return http('/api/reports', { analysisId })
+}
+
+export async function fetchReport(reportId) {
+  return httpGet(`/api/reports/${encodeURIComponent(reportId)}`)
+}
+
+export async function fetchReports() {
+  return httpGet('/api/reports')
+}
+
+export async function retryReport(reportId) {
+  return http(`/api/reports/${encodeURIComponent(reportId)}/retry`, {})
 }
 
 export async function fetchHistory(limit = 5) {

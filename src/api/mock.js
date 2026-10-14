@@ -4,6 +4,7 @@
  */
 
 import sampleResult from '../data/sample-result.json'
+import sampleReportFixture from '../data/sample-report.json'
 
 const delay = (ms) => new Promise((r) => setTimeout(r, ms))
 
@@ -249,4 +250,31 @@ export async function fetchHistoryDetail() {
 export async function saveHistoryCard() {
   await delay(100)
   return { ok: true }
+}
+
+// ─── 통합 Beauty Report (F04) — 고정 샘플 ─────────────────────────
+function sampleReport(analysisId) {
+  const report = { ...sampleReportFixture }
+  delete report._comment
+  return { ...report, analysisId: analysisId ?? null }
+}
+
+export async function createReport(analysisId) {
+  await delay(1500)
+  return sampleReport(analysisId)
+}
+
+export async function fetchReport(_reportId) {
+  await delay(200)
+  return sampleReport(null)
+}
+
+export async function fetchReports() {
+  await delay(200)
+  return [sampleReport(null)]
+}
+
+export async function retryReport(_reportId) {
+  await delay(800)
+  return sampleReport(null)
 }

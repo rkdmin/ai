@@ -37,11 +37,11 @@ flow: splash → home
 main: home | style | chemistry | my
 
 analysis: upload → loading → result_home   (퍼스널컬러 단계 없음 — ADR 0010 R13)
-  → hair_loading → result_tabs_hair
-  → makeup_loading → result_tabs_makeup
+  → report_loading → (detail) report
   → synth_loading
+  (result_tabs_* 는 history_detail 의 저장 카드 재열람 전용 — 레거시)
 
-detail: history | history_detail | card_detail | makeup_detail
+detail: history | history_detail | report | report_hair_detail | report_makeup_detail | card_detail | makeup_detail
   origin: 진입한 main/analysis/detail route
 
 sheet: guest_gate | share_card | share_card_makeup   (ad_gate 삭제 — 광고 없음, ADR 0010)
@@ -53,8 +53,9 @@ home
   → guest_gate
 
 result_home
-  → hair_loading → result_tabs_hair → card_detail → synth_loading
-  → makeup_loading → result_tabs_makeup → makeup_detail
+  → report_loading → report (HAIR ↔ MAKEUP)
+      → report_hair_detail → synth_loading (TRY ON)
+      → report_makeup_detail
   → share_card | share_card_makeup
 ```
 
@@ -76,7 +77,8 @@ result_home
 - `upload` → `home`
 - `loading` / `error_face` / `error_network` → `home`
 - `result_home` → `home`
-- `hair_loading` / `makeup_loading` → `result_home`
+- `report_loading` → `result_home`
+- `report` / `report_*_detail` → 시트·상세의 `origin`
 - `result_tabs_hair` / `result_tabs_makeup` → `result_home`
 - `card_detail` → `result_tabs_hair`
 - `makeup_detail` → `result_tabs_makeup`
@@ -232,23 +234,40 @@ Figma 핵심 흐름에 퍼스널컬러 단계가 없어 뺐다 (ADR 0010 R13). `
 - 헤더 뒤로가기 → `home`
 - `result.analysisId` 가 있으면(로그인 분석) CTA 위에 `SAVED · 이 분석은 히스토리에 저장됐어요` 배지
 
-CTA (1차/2차 위계 — 동등 그리드 아님):
-- 1차: `헤어 추천 보기` (full-width dark 버튼, `1ST · START HERE` 라벨) → 캐시 없으면 `hair_loading`, 있으면 `result_tabs_hair`
-- 2차: `메이크업 추천 보기` (full-width outline 버튼, 시각 비중 낮춤) → 캐시 없으면 `makeup_loading`, 있으면 `result_tabs_makeup`
-
-주의:
-- 결과 화면 핵심 결정("헤어 vs 메이크업")의 망설임을 줄이기 위해 헤어를 1차 CTA 로 고정한다.
-- 백엔드에는 `total` 카드 API 가 있지만 현재 v1.0 UI에는 진입 CTA 가 없다.
-- Figma의 결제·케미·통합 리포트 CTA는 현재 프론트 흐름에 연결된 기능이 없어 이번 시각 정렬 범위에서 제외한다.
+CTA:
+- 1차: `전체 Beauty Report 보기` (Figma 158:657/108:2862 연결선) → `report_loading` → `report` (HAIR 탭)
+  - 결제 화면(P4)과 결제 전 로그인(R02)은 아직 없다. 권한은 백엔드 `REPORT_ACCESS_MODE` 가 정하고,
+    거부되면 `error_network` 에 `REPORT_ACCESS_REQUIRED` 메시지가 뜬다.
+- "친구 초대 링크 만들기"(Figma 2차 CTA)는 케미 화면(P6 UI)과 함께 붙인다.
+- 카드 4장 CTA(헤어/메이크업 추천 보기)는 리포트로 대체됐다 (2026-10-14, F04).
 
 ---
 
-## 헤어 카드 플로우
+## 통합 Beauty Report (`detail: 'report'`, F04)
 
-### Hair Loading (`stage: 'hair_loading'`)
+**컴포넌트:** `Report.jsx` · `ReportHairDetail.jsx` · `ReportMakeupDetail.jsx`
+**계약:** `.claude/rules/api-contract.md` "통합 Beauty Report". mock 은 `src/data/sample-report.json`.
 
-- `generateHairCards(payload)` 호출
-- 성공 → `result_tabs_hair`
+- `report_loading`: `createReport(analysisId)` (멱등) 또는 `retryReport(id)`. 취소는 `result_home`.
+- `report`: 헤더(제목 = `analysis.moodTitle`, 공유) + `HAIR | MAKEUP` 탭. 탭 전환은 state 만 바뀌고 재생성하지 않는다.
+  - HAIR: 방향 문단 → LENGTH/BANGS/VOLUME/LAYER 행(값 + 이유) → 추천 스타일 3 카드(`자세히 보기`) → AVOID → SALON GUIDE
+  - MAKEUP: 방향·얼굴 균형 → FOCUS PARTS(0~3, 근거 칩) → 추천 룩 3 카드 → AVOID
+  - `locked: true` → 본문 대신 "구매가 필요해요" + 구매 CTA(지금은 `startReport` 재호출)
+  - `status: generating|not_started` → 만드는 중 안내
+  - 한 탭이 `null` 이면 그 탭에만 "이 탭만 다시 만들기" (`retryReport` — 성공한 탭은 건드리지 않는다)
+  - 뒤로가기 → `origin` (`result_home`, 나중엔 홈/MY)
+- `report_hair_detail`: `styles[n]` — 사진/합성 결과 영역, 왜 어울리나(얼굴형·traits 칩), 스타일링 노트, 이목구비 팁, 대안,
+  미용실 문장, 코치 코멘트. 하단 sticky `TRY ON` → `synth_loading` (광고 없음). `activeCard` 에 `reportId` 를 실어 보낸다.
+- `report_makeup_detail`: `looks[n]` — 부위별 가이드(값 + 이유), 적용 순서, 제형·형태 칩, 이목구비 팁, 코치 코멘트.
+  "관련 제품 둘러보기" 는 `onProducts` 가 있을 때만 — 제품 목록 화면(F07 UI) 뒤에 연결.
+- 공유는 기존 `share_card`/`share_card_makeup` 재사용 (`activeCard` = 스타일/룩을 카드 모양으로 맞춘 것).
+
+---
+
+## (레거시) 헤어 카드 플로우 — MY 기록의 저장 카드 재열람 전용
+
+새 분석은 리포트로 간다. 아래 화면은 `history_detail` 에서 저장된 카드를 다시 열 때만 쓰며,
+MY 기록 화면을 Figma 모양으로 다시 만들 때 정리한다. `hair_loading`/`makeup_loading` 은 삭제됐다.
 
 ### Hair List (`stage: 'result_tabs_hair'`)
 
@@ -279,12 +298,7 @@ CTA (1차/2차 위계 — 동등 그리드 아님):
 
 ---
 
-## 메이크업 카드 플로우
-
-### Makeup Loading (`stage: 'makeup_loading'`)
-
-- `generateMakeupCards(payload)` 호출
-- 성공 → `result_tabs_makeup`
+## (레거시) 메이크업 카드 플로우 — MY 기록의 저장 카드 재열람 전용
 
 ### Makeup List (`stage: 'result_tabs_makeup'`)
 
