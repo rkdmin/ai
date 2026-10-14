@@ -116,6 +116,16 @@ adapter 는 `supabase_service.analysis_from_row` 하나다. 모양을 또 바꾸
 `판정 어려움` 은 에러가 아니라 **200 응답의 `faceType` 값**이다 — 결과 화면이 처리한다.
 코드 없는 `HTTPException` (400 입력 검증 등)은 `code` 가 없다. 그땐 `detail` 만 보여준다.
 
+### 샘플 결과 fixture (D07) — 홈 "전체 결과 예시 보기"
+
+`src/data/sample-result.json`. `POST /api/analyze` 응답과 **같은 모양**(schemaVersion 3)에 `isSample: true` 가 붙어 있다.
+네트워크·AI 호출 없이 바텀시트(Figma `108:2659`)를 채우는 용도다.
+
+- UI 는 `isSample` 을 보고 "예시" 라벨을 붙이고, **어디에도 저장하지 않는다** (히스토리·기기 보관본 금지).
+- 인물 사진은 없다. 비주얼은 `Placeholders.jsx` 의 `FacePlaceholder`. 내부 평가 사진(`src/data/test/`)을 쓰지 않는다.
+- `backend/test_phase3.py` 가 이 파일을 `AnalyzeResponse` 와 `sanitize_analysis` 로 검증한다. 모양이 바뀌면 거기서 깨진다.
+- `VITE_MOCK=true` 의 `mock.analyzeFace` 도 이 fixture 를 돌려준다 — mock 과 샘플이 한 소스다.
+
 ### 사진 보관 정책 — 안내 문구는 코드가 아니라 이 값을 보여준다
 
 - `POST /api/analyze` 응답의 `photoRetentionDays` / `photoExpiresAt`. 게스트는 서버에 사진을 저장하지 않으므로

@@ -3,27 +3,28 @@
  * 토큰 소비 없이 UI 흐름 전체를 테스트할 수 있습니다.
  */
 
+import sampleResult from '../data/sample-result.json'
+
 const delay = (ms) => new Promise((r) => setTimeout(r, ms))
 
 // ─── 얼굴 분석 ────────────────────────────────────────────────────
 export async function analyzeFace(_imageBase64, _faceRatios = null) {
   await delay(1200)
+  // 실제 응답 계약(schemaVersion 3 — primaryMood·traits·방향 포함)과 같은 모양의 고정 샘플을 돌려준다.
+  // src/data/sample-result.json 은 backend/test_phase3.py 가 AnalyzeResponse 로 검증한다.
+  // eslint-disable-next-line no-unused-vars
+  const { _comment, isSample, ...analysis } = sampleResult
   return {
+    ...analysis,
     // 얼굴형 판정 근거 — 진단용이라 UI 는 쓰지 않는다 (ADR 0009)
     faceTypeReason: {
       step1_sideLine: '곡선 — 광대 아래 옆선이 완만하게 이어짐',
       step2_cheekbone: '아님 — 이마·턱과 폭 차이가 크지 않음',
-      step3_vertical: '약 1.15 — 1.4 미만',
+      step3_vertical: '보통 — 세로가 두드러지지 않음',
       decidedAt: 4,
       confidence: 78,
     },
-    faceType: '둥근형',
-    features: ['눈 간격 넓음', '코 낮음', '광대 넓음'],
-    moodArchetype: ['ROMANTIC', 'CLEAN', 'SOFT'],
     personalColor: '봄 웜톤',
-    styleLabel: '봄날의 햇살형',
-    faceRatios: null,
-    analysisId: null,
   }
 }
 

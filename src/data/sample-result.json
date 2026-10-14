@@ -1,0 +1,28 @@
+{
+  "_comment": [
+    "홈 '전체 결과 예시 보기' 바텀시트(Figma 108:2659)용 고정 샘플 (plan 0009 D07).",
+    "실제 사용자 데이터가 아니다 — isSample=true 를 보고 UI 가 '예시' 라벨을 붙이고, 어디에도 저장하지 않는다.",
+    "모양은 POST /api/analyze 응답(schemaVersion 3)과 같다. backend/test_phase3.py 가 AnalyzeResponse 로 검증한다.",
+    "인물 사진·실제 인물 이름은 넣지 않는다. 비주얼은 Placeholders.jsx 의 FacePlaceholder 를 쓴다.",
+    "hairDirection/makeupDirection 은 backend free_directions(계란형, SOFT) 의 실제 출력이다 — RAG 가 바뀌면 같이 갱신한다."
+  ],
+  "isSample": true,
+  "schemaVersion": 3,
+  "ruleVersion": 1,
+  "faceType": "계란형",
+  "features": ["아몬드 눈", "입술 두꺼움"],
+  "moodArchetype": ["SOFT", "CLEAN", "ELEGANT"],
+  "primaryMood": "SOFT",
+  "moodTitle": "자연스럽고 차분한 이미지",
+  "moodSummary": "완만하게 이어지는 곡선 윤곽과 낮은 대비가 힘을 빼도 정돈돼 보이는 인상을 만들어요.",
+  "moodEvidence": ["곡선 윤곽", "저대비", "아몬드 눈"],
+  "distinctivePoint": "도톰한 입술이 전체 인상의 포인트",
+  "traits": ["곡선 윤곽", "저대비"],
+  "hairDirection": "칼단발 (태슬컷) · 앞머리 없음 (5:5 또는 6:4 가르마)",
+  "makeupDirection": "우아한 분위기 룩 (ELEGANT MOOD)",
+  "faceRatios": null,
+  "faceTypeReason": null,
+  "analysisId": null,
+  "photoRetentionDays": null,
+  "photoExpiresAt": null
+}

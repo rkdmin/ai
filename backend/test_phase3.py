@@ -392,3 +392,30 @@ def test_analyze_returns_photo_policy_for_user_and_guest():
     assert user.json()["photoExpiresAt"] == "2026-08-09T00:00:00+00:00"
     assert user.json()["photoRetentionDays"] >= 1
     assert guest.json()["photoExpiresAt"] is None  # 게스트 사진은 서버에 남지 않는다
+
+
+# ─── D07 샘플 fixture 가 실제 응답 계약과 같은 모양인지 (plan 0009 P2) ─────
+
+
+def test_sample_result_fixture_matches_analyze_contract():
+    """src/data/sample-result.json 은 홈 '결과 예시 보기' 용 고정 샘플이다.
+    응답 스키마를 통과하고, 정합성 필터를 거쳐도 바뀌지 않아야 한다 (바뀌면 fixture 가 규칙을 어긴 것)."""
+    import json
+    from copy import deepcopy
+
+    from models.schemas import ANALYSIS_SCHEMA_VERSION, AnalyzeResponse
+    from services.rag_service import TRAIT_LABELS, free_directions, mood_allowed, sanitize_analysis
+
+    fixture = json.loads((Path(__file__).parent.parent / "src/data/sample-result.json").read_text(encoding="utf-8"))
+    fixture.pop("_comment", None)
+    assert fixture.pop("isSample") is True
+    assert fixture["schemaVersion"] == ANALYSIS_SCHEMA_VERSION
+
+    AnalyzeResponse(**fixture)  # 계약 통과
+    cleaned = sanitize_analysis(deepcopy(fixture))
+    for key in ("faceType", "features", "moodArchetype", "primaryMood", "moodTitle", "traits"):
+        assert cleaned[key] == fixture[key], key
+    assert fixture["primaryMood"] in mood_allowed(fixture["faceType"])
+    assert all(t in TRAIT_LABELS for t in fixture["traits"])
+    # 방향은 RAG 의 실제 출력과 같아야 한다 — RAG 가 바뀌면 fixture 도 갱신한다
+    assert free_directions(fixture) == {"hairDirection": fixture["hairDirection"], "makeupDirection": fixture["makeupDirection"]}
