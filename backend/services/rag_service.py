@@ -564,6 +564,76 @@ MAKEUP_CARDS_FORMAT = """[
   }
 ]"""
 
+# ── 리포트 출력 포맷 (D02 · D03 — 유료 통합 리포트, Figma paid-beauty-report-hair/makeup) ──
+# 무료 카드 포맷(HAIR/MAKEUP_CARDS_FORMAT)은 그대로 두고, 리포트는 "방향 + 수치 + 근거 + 미용실 문장" 까지 넓힌다.
+# RAG 컨텍스트는 카드와 같다 (build_hair_context / build_makeup_context). 지식이 아니라 출력 모양이 다르다.
+# 필드는 추가만 하고 제거하지 않는다 — 프론트가 카드 포맷 키(hair, bangs, makeup.*)를 그대로 재사용할 수 있게.
+REPORT_HAIR_FORMAT = """{
+  "overview": {
+    "direction": "이 얼굴에 맞는 전체 헤어 방향 1~2문장 (얼굴형·대표 무드·traits 를 근거로)",
+    "length": { "value": "추천 기장 (예: 쇄골 아래 미디엄 / 턱선 단발)", "reason": "얼굴형·비율 근거 1문장" },
+    "bangs": { "value": "앞머리 (예: 없음 / 시스루뱅 / 사이드뱅 / 풀뱅)", "reason": "이마·세로 비율 근거 1문장" },
+    "volume": { "value": "볼륨을 둘 위치 (예: 정수리 / 옆 / 끝)", "reason": "폭·광대·윤곽 근거 1문장" },
+    "layer": { "value": "레이어 (예: 없음 / 얼굴선 레이어 / 전체 레이어)", "reason": "윤곽 근거 1문장" }
+  },
+  "styles": [
+    {
+      "rank": 1, "cardType": "hair", "mood": "스타일 무드명",
+      "moodLabel": "무드 아키타입 + 한국어 분위기 (예: ELEGANT · 우아한 분위기). 연예인 비교 절대 금지.",
+      "hair": "헤어스타일명", "bangs": "앞머리",
+      "hairReason": "얼굴형 기준으로 왜 어울리는지 1문장",
+      "structureReason": "구조·비율·윤곽(traits) 기준 근거 1문장. 분석에 없는 특성을 근거로 들지 말 것",
+      "stylingNote": "집에서 연출하는 방법 1~2문장",
+      "alternative": "비슷한 효과의 대안 스타일 1개",
+      "salonRequest": "미용실에서 그대로 말할 수 있는 요청 문장 1~2문장 (기장·앞머리·레이어·볼륨 포함)",
+      "featureTip": "이목구비 특징 기반 팁 1문장 (특징 없으면 null)",
+      "coachComment": "전체 조언 2~3문장"
+    },
+    { "rank": 2, "...": "같은 필드" },
+    { "rank": 3, "...": "같은 필드" }
+  ],
+  "avoid": { "cardType": "hair", "hair": "피해야 할 헤어", "bangs": null, "hairReason": "왜 안 맞는지 1문장", "coachComment": "2~3문장" },
+  "salonGuide": "리포트 전체를 요약해 미용실에 보여줄 한 단락 (3~4문장). 수치·위치를 구체적으로"
+}"""
+
+REPORT_MAKEUP_FORMAT = """{
+  "overview": {
+    "direction": "이 얼굴에 맞는 전체 메이크업 방향 1~2문장 (대표 무드·대비·윤곽 근거)",
+    "faceBalance": "얼굴 균형에서 무엇을 살리고 무엇을 정리할지 1~2문장"
+  },
+  "focusParts": [
+    {
+      "part": "EYE | BROW | LIP 중 하나",
+      "evidence": "위 [얼굴 분석]의 features·traits 에 실제로 있는 항목만 인용 (예: '아몬드 눈', '저대비')",
+      "recommendation": "그 부위에 무엇을 어떻게 1~2문장",
+      "productType": "브랜드 없는 제형·형태 (예: 크림 섀도우, 펜슬 브로우, 틴트). 상품명·브랜드·가격 금지"
+    }
+  ],
+  "looks": [
+    {
+      "rank": 1, "cardType": "makeup", "mood": "룩 무드명",
+      "moodLabel": "무드 아키타입 + 한국어 분위기. 연예인 비교 절대 금지.",
+      "baseSkin": "피부 표현 (예: Semi-Glow, Matte)",
+      "makeup": {
+        "shading": "위치+방법", "shadingReason": "이유 1문장",
+        "highlight": "위치+방법", "highlightReason": "이유 1문장",
+        "blush": "위치+형태+컬러", "blushReason": "이유 1문장",
+        "eyebrow": "형태+컬러", "eyebrowReason": "이유 1문장",
+        "lip": "제형+방법+컬러", "lipReason": "이유 1문장",
+        "eyeshadow": "컬러 (퍼스널컬러 없으면 null)", "eyeshadowReason": "이유 (없으면 null)",
+        "eyeliner": "컬러 (퍼스널컬러 없으면 null)", "eyelinerReason": "이유 (없으면 null)"
+      },
+      "applyOrder": ["적용 순서 — 예: 베이스", "쉐딩", "눈썹", "아이", "블러셔", "립"],
+      "productTypes": ["이 룩에 필요한 제형·형태 2~4개. 브랜드·상품명·가격 금지"],
+      "featureTip": "이목구비 특징 기반 팁 (특징 없으면 null)",
+      "coachComment": "전체 조언 2~3문장"
+    },
+    { "rank": 2, "...": "같은 필드" },
+    { "rank": 3, "...": "같은 필드" }
+  ],
+  "avoid": { "cardType": "makeup", "mood": "피해야 할 메이크업", "makeup": { "shading": "피해야 할 쉐딩", "shadingReason": "이유", "blush": "피해야 할 블러셔", "blushReason": "이유", "lip": "피해야 할 립", "lipReason": "이유" }, "coachComment": "2~3문장" }
+}"""
+
 TOTAL_CARDS_FORMAT = """[
   {
     "type": "recommend",

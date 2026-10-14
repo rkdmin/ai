@@ -19,8 +19,8 @@ from main import app  # noqa: E402
 from services import report_store  # noqa: E402
 from services.gemini_service import GeminiError  # noqa: E402
 
-HAIR = [{"type": "recommend", "rank": 1, "cardType": "hair", "hair": "레이어드"}]
-MAKEUP = [{"type": "recommend", "rank": 1, "cardType": "makeup", "mood": "SOFT"}]
+HAIR = {"overview": {"direction": "부드럽게"}, "styles": [{"rank": 1, "hair": "레이어드", "salonRequest": "턱선 단발"}], "avoid": {}, "salonGuide": "..."}
+MAKEUP = {"overview": {"direction": "저대비 살리기"}, "focusParts": [], "looks": [{"rank": 1, "mood": "SOFT"}], "avoid": {}}
 H = {"X-User-Id": "user-1"}
 
 
@@ -34,8 +34,8 @@ def _open_access(monkeypatch):
 
 def _patch_gen(hair=HAIR, makeup=MAKEUP):
     return (
-        patch("services.gemini_service.generate_hair_cards", new=AsyncMock(side_effect=hair if isinstance(hair, Exception) else None, return_value=None if isinstance(hair, Exception) else hair)),
-        patch("services.gemini_service.generate_makeup_cards", new=AsyncMock(side_effect=makeup if isinstance(makeup, Exception) else None, return_value=None if isinstance(makeup, Exception) else makeup)),
+        patch("services.gemini_service.generate_hair_report", new=AsyncMock(side_effect=hair if isinstance(hair, Exception) else None, return_value=None if isinstance(hair, Exception) else hair)),
+        patch("services.gemini_service.generate_makeup_report", new=AsyncMock(side_effect=makeup if isinstance(makeup, Exception) else None, return_value=None if isinstance(makeup, Exception) else makeup)),
     )
 
 
@@ -101,3 +101,35 @@ def test_other_users_report_is_not_found():
             created = client.post("/api/reports", json={"analysisId": "a1"}, headers=H).json()
             r = client.get(f"/api/reports/{created['id']}", headers={"X-User-Id": "user-2"})
     assert r.status_code == 404 and r.json()["code"] == "NOT_FOUND"
+
+
+def test_report_formats_carry_figma_fields_and_ban_brands():
+    from services.rag_service import REPORT_HAIR_FORMAT, REPORT_MAKEUP_FORMAT
+
+    for key in ("overview", "length", "bangs", "volume", "layer", "styles", "salonRequest", "salonGuide", "alternative"):
+        assert key in REPORT_HAIR_FORMAT, key
+    for key in ("overview", "faceBalance", "focusParts", "evidence", "looks", "applyOrder", "productTypes"):
+        assert key in REPORT_MAKEUP_FORMAT, key
+    assert "브랜드" in REPORT_MAKEUP_FORMAT and "금지" in REPORT_MAKEUP_FORMAT
+
+
+def test_makeup_report_drops_focus_parts_with_invented_evidence():
+    """evidence 가 분석에 없는 항목이면 그 부위를 버린다 — 지어낸 근거를 유료 본문에 싣지 않는다."""
+    import asyncio
+
+    from services import gemini_service
+
+    raw = {
+        "overview": {"direction": "x", "faceBalance": "y"},
+        "focusParts": [
+            {"part": "EYE", "evidence": "아몬드 눈", "recommendation": "..."},
+            {"part": "LIP", "evidence": "입술 두꺼움", "recommendation": "..."},   # 분석에 없음
+        ],
+        "looks": [{"rank": 1}, {"rank": 2}, {"rank": 3}],
+        "avoid": {},
+    }
+    with patch("services.gemini_service._call_gemini", new=AsyncMock(return_value={})), \
+         patch("services.gemini_service._extract_text", return_value="{}"), \
+         patch("services.gemini_service._extract_json_obj", return_value=raw):
+        out = asyncio.run(gemini_service.generate_makeup_report({"faceType": "계란형", "features": ["아몬드 눈"], "traits": ["저대비"]}))
+    assert [fp["part"] for fp in out["focusParts"]] == ["EYE"]

@@ -130,6 +130,16 @@ traits.json             → Traits 사전 — 윤곽·비율·대비 (분석 단
 
 ---
 
+### 뷰 ⑤ 유료 리포트 (Hair / Makeup 탭) — D02 · D03
+
+컨텍스트는 뷰 ①·②③ 과 **같다**. 다른 것은 출력 포맷뿐이다.
+`REPORT_HAIR_FORMAT` (overview 기장·앞머리·볼륨·레이어 + styles 3 + salonGuide) /
+`REPORT_MAKEUP_FORMAT` (overview + focusParts 0~3 + looks 3 + applyOrder·productTypes).
+구현은 `gemini_service.generate_hair_report / generate_makeup_report`.
+추가 규칙: 근거는 [얼굴 분석]의 얼굴형·features·traits·대표 무드만, 제품은 제형·형태만(브랜드 금지),
+`focusParts.evidence` 가 관찰 목록 밖이면 백엔드가 그 부위를 버린다.
+리포트용 RAG 필드(기장·볼륨 지식, 미용실 문장 사전)는 아직 없다 — 모델이 기존 RAG 를 근거로 쓴다.
+
 ## feature-tips 적용 방식 (공통)
 
 **사용 파일:** `feature-tips.json`

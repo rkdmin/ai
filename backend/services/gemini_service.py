@@ -15,6 +15,8 @@ from services.rag_service import (
     ANALYZE_PROMPT,
     HAIR_CARDS_FORMAT,
     MAKEUP_CARDS_FORMAT,
+    REPORT_HAIR_FORMAT,
+    REPORT_MAKEUP_FORMAT,
     TOTAL_CARDS_FORMAT,
     build_hair_context,
     build_makeup_context,
@@ -238,6 +240,67 @@ async def generate_total_cards(analysis: dict) -> list:
 
 
 # ── 스타일 적용 사진 생성 ────────────────────────────────────────
+
+
+# ── 리포트 생성 (D02 · D03) ─────────────────────────────────────────
+
+# check-file:allow-policy-terms — 아래 규칙 문장은 금지 표현을 "쓰지 말라"고 지시한다.
+_REPORT_COMMON_RULES = (
+    "이것은 유료 통합 리포트입니다. 무료 카드보다 구체적으로 — 기장·위치·순서를 수치와 명사로 적으세요.\n"
+    "근거 규칙(반드시 준수): structureReason·evidence·overview 의 근거는 위 [얼굴 분석]에 적힌 얼굴형·특징·traits·대표 무드만 "
+    "인용하세요. 분석에 없는 특성(둥근형에 '각진 턱선' 등)을 지어내 근거로 삼지 마세요.\n"
+    "제품 규칙: 브랜드·상품명·가격·구매처를 쓰지 마세요. 제형·형태(크림 섀도우, 펜슬 브로우, 틴트 등)만 씁니다.\n"
+    "연예인·인물 이름·'○○ st'·'look-alike' 등 인물 비교 표현은 모든 필드에서 금지입니다 (퍼블리시티권).\n"
+    "다른 텍스트 없이 JSON 객체 하나만 응답하세요."
+)
+
+
+def _analysis_lines(analysis: dict) -> str:
+    traits = ", ".join(analysis.get("traits") or []) or "없음"
+    return (
+        f"- 대표 무드: {analysis.get('primaryMood') or '—'} ({analysis.get('moodTitle') or ''})\n"
+        f"- traits(구조·비율·대비): {traits}\n"
+    )
+
+
+async def generate_hair_report(analysis: dict) -> dict:
+    rag_context = build_hair_context(analysis)
+    prompt = _build_cards_prompt(analysis, rag_context, REPORT_HAIR_FORMAT, "헤어 리포트", _COLOR_RULE_DEFAULT)
+    prompt = prompt.replace("## RAG 지식베이스", _analysis_lines(analysis) + "\n## RAG 지식베이스", 1)
+    prompt += "\n" + _REPORT_COMMON_RULES + (
+        "\nstyles 는 정확히 3개(rank 1~3), 각 스타일에 salonRequest 를 반드시 채우세요. "
+        "overview 의 length/bangs/volume/layer 는 value 와 reason 을 모두 채우세요."
+    )
+    raw = await _call_gemini(VISION_MODEL, [{"text": prompt}], response_mime="application/json")
+    report = _extract_json_obj(_extract_text(raw))
+    if not isinstance(report.get("styles"), list) or len(report["styles"]) < 3 or not isinstance(report.get("overview"), dict):
+        raise GeminiError("헤어 리포트 응답 형식이 맞지 않습니다.")
+    return report
+
+
+async def generate_makeup_report(analysis: dict) -> dict:
+    rag_context = build_makeup_context(analysis)
+    color_rule = _COLOR_RULE_DEFAULT if analysis.get("personalColor") else _COLOR_RULE_NO_PC
+    prompt = _build_cards_prompt(analysis, rag_context, REPORT_MAKEUP_FORMAT, "메이크업 리포트", color_rule)
+    prompt = prompt.replace("## RAG 지식베이스", _analysis_lines(analysis) + "\n## RAG 지식베이스", 1)
+    observed = [*(analysis.get("features") or []), *(analysis.get("traits") or [])]
+    prompt += "\n" + _REPORT_COMMON_RULES + (
+        "\nfocusParts 는 0~3개입니다. evidence 는 다음 목록에 있는 항목만 쓸 수 있습니다: "
+        f"{', '.join(observed) or '(없음 — focusParts 를 빈 배열로 두세요)'}. "
+        "근거가 없는 부위는 넣지 마세요. 빈 배열도 정답입니다. looks 는 정확히 3개(rank 1~3)."
+    )
+    raw = await _call_gemini(VISION_MODEL, [{"text": prompt}], response_mime="application/json")
+    report = _extract_json_obj(_extract_text(raw))
+    if not isinstance(report.get("looks"), list) or len(report["looks"]) < 3 or not isinstance(report.get("overview"), dict):
+        raise GeminiError("메이크업 리포트 응답 형식이 맞지 않습니다.")
+    # focusParts 의 evidence 가 관찰 목록 밖이면 그 부위를 버린다 — 지어낸 근거를 노출하지 않는다
+    kept = []
+    for fp in report.get("focusParts") or []:
+        ev = str(fp.get("evidence") or "")
+        if any(o and o in ev for o in observed):
+            kept.append(fp)
+    report["focusParts"] = kept[:3]
+    return report
 
 
 async def generate_styled_photo(image_b64: str, card: dict) -> str:

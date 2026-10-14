@@ -66,6 +66,10 @@ def _analysis_for_cards(snapshot: dict[str, Any]) -> dict[str, Any]:
         "faceType": snapshot.get("faceType"),
         "personalColor": snapshot.get("personalColor"),
         "features": snapshot.get("features") or [],
+        "moodArchetype": snapshot.get("moodArchetype") or [],
+        "primaryMood": snapshot.get("primaryMood"),
+        "moodTitle": snapshot.get("moodTitle"),
+        "traits": snapshot.get("traits") or [],
     }
 
 
@@ -73,7 +77,8 @@ async def _generate_parts(row: dict[str, Any], parts: tuple[str, ...]) -> dict[s
     """지정한 탭만 생성한다. 한 탭이 실패해도 다른 탭은 저장한다."""
     analysis = _analysis_for_cards(row.get("analysis_snapshot") or {})
     patch: dict[str, Any] = {}
-    generators = {"hair": gemini_service.generate_hair_cards, "makeup": gemini_service.generate_makeup_cards}
+    # D02·D03 — 리포트 전용 포맷 (overview·styles/looks·salonGuide·focusParts). 무료 카드 생성과 분리
+    generators = {"hair": gemini_service.generate_hair_report, "makeup": gemini_service.generate_makeup_report}
     for part in parts:
         try:
             patch[part] = await generators[part](analysis)

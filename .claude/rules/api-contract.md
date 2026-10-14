@@ -189,8 +189,15 @@ Figma 의 "선택 사진 확인" 화면용. 요청 `{ "image": "<data URL>" }`, 
 - **권한**: 결제(P4) 전까지 `REPORT_ACCESS_MODE` 가 정한다. `entitlement`(기본)는 항상 403 `REPORT_ACCESS_REQUIRED`,
   `open` 은 로그인만으로 허용 (로컬·테스트). P4 가 끝나면 `report_service.has_access()` 가 `entitlements` 를 조회한다.
 - **권한이 사라지면(환불 등) 본문을 내려주지 않는다** — `locked: true`, `hair`/`makeup` 은 `null`, `analysis` 요약만.
-- 리포트 본문은 지금 기존 카드 포맷(HAIR/MAKEUP_CARDS_FORMAT) 그대로다. Figma 의 "길이·볼륨·미용실 문장·부위별 근거"는
-  D02·D03 RAG 확장 후 포맷이 넓어진다. 필드가 **추가**되지 제거되진 않는다.
+- **본문 모양 (D02·D03, `rag_service.REPORT_HAIR_FORMAT` / `REPORT_MAKEUP_FORMAT`)** — 무료 카드와 다르다.
+  - `hair`: `overview{direction, length{value,reason}, bangs{…}, volume{…}, layer{…}}`, `styles[3]`(카드 필드 + `structureReason`·
+    `stylingNote`·`alternative`·`salonRequest`), `avoid`, `salonGuide`(미용실에 보여줄 한 단락).
+  - `makeup`: `overview{direction, faceBalance}`, `focusParts[0~3]{part: EYE|BROW|LIP, evidence, recommendation, productType}`,
+    `looks[3]`(카드 필드 + `applyOrder[]`·`productTypes[]`), `avoid`.
+  - `focusParts.evidence` 는 **분석의 features·traits 에 있는 항목만**. 밖의 근거를 든 부위는 백엔드가 버린다. 0개도 정상.
+  - `productType(s)` 는 브랜드·상품명·가격 없는 **제형·형태**다. 실제 상품 카드는 STYLE(D06) 쪽이다.
+  - RAG 지식은 무료 카드와 같다 (`build_hair_context`/`build_makeup_context`). 출력 모양만 넓혔다. 미용실 문장·기장 수치는
+    모델이 RAG 를 근거로 쓴 것이라 **운영 검수 전**이다 (plan 0009 D02·D03 의 "검토된 지식" 항목은 열려 있다).
 - Hair 탭 상세의 TRY ON(`/api/photo/generate`)은 아직 리포트 권한과 연결되지 않았다 (F06).
 
 ## 카드 공통 필드

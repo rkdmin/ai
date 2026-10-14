@@ -141,8 +141,8 @@ class ReportResponse(BaseModel):
     status: str  # not_started | generating | ready | partial_failed | failed
     locked: bool = False
     analysis: dict  # snapshot 요약: faceType·primaryMood·moodTitle·traits·personalColor·schemaVersion
-    hair: list[dict] | None = None
-    makeup: list[dict] | None = None
+    hair: dict | None = None    # REPORT_HAIR_FORMAT — overview·styles[3]·avoid·salonGuide
+    makeup: dict | None = None  # REPORT_MAKEUP_FORMAT — overview·focusParts[0~3]·looks[3]·avoid
     hairError: str | None = None
     makeupError: str | None = None
     createdAt: str | None = None
