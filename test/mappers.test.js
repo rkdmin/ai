@@ -51,6 +51,14 @@ describe('mapHairCard', () => {
     expect(new Set(kws).size).toBe(kws.length);
     expect(kws).toContain('ROMANTIC');
   });
+
+  it('카드 무드가 없으면 result.primaryMood를 moodArchetype 첫 원소보다 먼저 쓴다', () => {
+    const c = mapHairCard(
+      { ...baseHair, moodLabel: null },
+      { result: { primaryMood: 'SOFT', moodArchetype: ['CLEAN', 'SOFT', 'ELEGANT'] } },
+    );
+    expect(c.moodBoard.map((mood) => mood.kw)).toEqual(['SOFT', 'CLEAN', 'ELEGANT']);
+  });
 });
 
 describe('mapMakeupCard', () => {

@@ -41,25 +41,24 @@ paths:
 | 파일 | 역할 |
 |------|------|
 | `Splash.jsx` | 진입 스플래시 + 세션/딥링크 복원 |
-| `Onboarding.jsx` | 3-step 온보딩 (로컬 플래그) |
-| `Home.jsx` | 홈 랜딩 + 최근 기록 1~3개 이어보기 (로그인 사용자만 fetch) |
-| `Login.jsx` | OAuth 로그인 + 게스트 체험 + guest gate 카피 분기 |
+| `Home.jsx` | 홈 랜딩 + 기기 Beauty Profile 요약 + 최근 기록 1~3개 이어보기 (로그인 사용자만 fetch) |
+| `Login.jsx` | 계정 연결 시트(`guest_gate`, Figma 112:1017) — OAuth + 게스트로 계속 + 진입 이유별 카피. 독립 로그인 화면·온보딩은 삭제됨 (ADR 0010) |
 | `PhotoUpload.jsx` | STEP 01 — 정면 사진 1장 + 촬영 가이드 + MediaPipe 사전검사 checks + 사진 오류 코드/권한 거절 화면 (네이티브 설정 이동 + 웹 재선택 폴백) |
 | `PersonalColor.jsx` | **흐름에서 제외** (ADR 0010 R13) — import 하지 않는다. 보조 입력으로 되살릴 가능성 때문에 파일만 보관 |
 | `Loading.jsx` | STEP 02 — 원형 사진 + 4단계 분석 상태 + 순환 로딩 점 |
 | `ErrorScreen.jsx` | 분석 API의 사진/서비스 오류를 `code` 우선으로 표시 (코드 없으면 status·문자열 폴백) |
-| `AnalysisResult.jsx` | STEP 02 결과 — Primary·함께 나타난 무드 / 얼굴 특징 / 헤어·메이크업 추천 |
-| `CardList.jsx` | STEP 03 — 카드 4장 (rank1 무료 + 2·3 광고 잠금 + AVOID) |
+| `AnalysisResult.jsx` | STEP 02 결과 — schema v3 제목·Primary/Traits·근거·포인트·방향 + 3개 무드 (legacy 블록 숨김) |
+| `CardList.jsx` | STEP 03 — 카드 4장 (잠금 없음 + AVOID). 리포트 화면(F04)이 생기면 대체 예정 |
 | `CardDetail.jsx` | STEP 04 — AI COMMENTARY / PERSONAL FIT / MOOD BOARD / AI SYNTHESIS (헤어/종합) |
 | `MakeupDetail.jsx` | 메이크업 카드 상세 — palette / part guide / 추천 제품 + 쿠팡 링크 |
-| `AdGate.jsx` | 15초 광고 게이트 (잠금 카드 / 사진 합성 공통) |
 | `ShareCard.jsx` | 공유 카드 오버레이 (결과 카드형 / before·after 비교형, 네이티브 공유·저장 브리지 + 웹 폴백) |
 | `History.jsx` | 최근 5회 분석 기록 목록 + 새 분석 진입 |
 | `HistoryDetail.jsx` | 저장된 분석/카드/생성 사진 재열람 + 카드 재오픈 |
 | `Trend.jsx` | 트렌드 "준비 중" 경량 화면 + START ANALYSIS CTA |
-| `My.jsx` | 계정 화면 — 세션 JWT email/provider 실데이터 + 계정 삭제 시트 |
+| `My.jsx` | 게스트/계정 화면 — 세션 정보 + 기기 Beauty Profile 요약 + 계정 삭제 시트 |
 
 `src/components/common/` — 공용 프리미티브.
+- `MoodProfileSummary.jsx` — 홈·MY가 공유하는 schema v3 Beauty Profile 요약. `legacy`면 렌더하지 않는다.
 `Icons.jsx` (인라인 SVG) / `Layout.jsx` (BackHeader·Section·IndexMark·CtaTile·TabBar·StepDots) /
 `StatusBar.jsx` (상단 상태바 목업) / `StateNotice.jsx` (공통 empty·error·loading 블록) /
 `ErrorBoundary.jsx` (렌더 크래시 폴백 + Sentry) / `Placeholders.jsx` (FacePlaceholder·MosaicOverlay·ProductPlaceholder)

@@ -1,21 +1,19 @@
 import { StatusBar } from './common/StatusBar';
 import { Icons } from './common/Icons';
 import { MOOD_KR } from '../api/moodPalette';
+import { moodProfileData, orderedMoodArchetypes } from '../utils/moodProfile';
 import shareAsset from '../assets/figma/share.svg';
 import dividerAsset from '../assets/figma/result-divider.svg';
-
-function moodTitle(result) {
-  if (result?.styleLabel) return result.styleLabel.split(' · ')[0] || result.styleLabel;
-  return '나의 Beauty Mood';
-}
 
 export default function AnalysisResult({ result, photoUrl, onCardList, onShare, onBack }) {
   const faceType = result?.faceType || '';
   const personalColor = result?.personalColor || '';
-  const moods = Array.isArray(result?.moodArchetype) ? result.moodArchetype.slice(0, 3) : [];
-  const primary = moods[0] || '';
-  const relatedMoods = moods.slice(1, 3);
+  const profile = moodProfileData(result);
+  const moods = orderedMoodArchetypes(result);
   const features = (result?.features || []).slice(0, 3);
+  const primaryLine = profile?.primaryMood
+    ? ['Primary', profile.primaryMood, ...profile.traits].join(' · ')
+    : null;
 
   return (
     <div className="wf-screen">
@@ -31,11 +29,19 @@ export default function AnalysisResult({ result, photoUrl, onCardList, onShare, 
 
       <main className="wf-scroll" style={{ padding: '32px 20px 120px' }}>
         <section>
-          <div className="wf-eyebrow">MY BEAUTY MOOD</div>
-          <h1 className="ko" style={{ margin: '8px 0 12px', fontSize: 28, fontWeight: 800, lineHeight: 1.25, letterSpacing: '-.035em' }}>{moodTitle(result)}</h1>
-          <p className="ko" style={{ color: '#6b7280', fontSize: 14, lineHeight: 1.5, margin: 0 }}>
-            분석에서 확인된 무드를 한눈에 정리했어요.
-          </p>
+          {profile ? (
+            <div data-testid="mood-profile">
+              <div className="wf-eyebrow">MY BEAUTY MOOD</div>
+              <h1 className="ko" style={{ margin: '8px 0 12px', fontSize: 28, fontWeight: 800, lineHeight: 1.25, letterSpacing: '-.035em' }}>{profile.title}</h1>
+              <p className="ko" style={{ color: 'var(--color-text-muted)', fontSize: 14, lineHeight: 1.5, margin: 0 }}>{profile.summary}</p>
+            </div>
+          ) : (
+            <div data-testid="legacy-result-heading">
+              <div className="wf-eyebrow">SAVED ANALYSIS</div>
+              <h1 className="ko" style={{ margin: '8px 0 12px', fontSize: 28, fontWeight: 800, lineHeight: 1.25, letterSpacing: '-.035em' }}>{faceType || '분석 결과'}</h1>
+              <p className="ko" style={{ color: 'var(--color-text-muted)', fontSize: 14, lineHeight: 1.5, margin: 0 }}>이전 버전에서 저장된 정보만 표시해요.</p>
+            </div>
+          )}
           <div style={{ height: 158, marginTop: 20, background: '#f3f4f6', borderRadius: 4, overflow: 'hidden' }}>
             {photoUrl ? <img src={photoUrl} alt="분석한 정면 사진" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : null}
           </div>
@@ -43,16 +49,34 @@ export default function AnalysisResult({ result, photoUrl, onCardList, onShare, 
 
         <Divider />
 
-        <section>
-          <div className="wf-eyebrow">PRIMARY MOOD</div>
-          <div className="ko" style={{ marginTop: 8, fontSize: 18, fontWeight: 700 }}>{primary ? (MOOD_KR[primary] || primary) : '확인된 대표 무드 없음'}</div>
-          <div className="wf-eyebrow" style={{ marginTop: 20 }}>함께 나타난 무드</div>
-          {relatedMoods.length > 0 ? (
+        {profile ? (
+          <section data-testid="mood-profile-details">
+            {primaryLine && <div className="ko" style={{ fontSize: 18, fontWeight: 700 }}>{primaryLine}</div>}
+            {moods.length > 0 && (
+              <>
+                <div className="wf-eyebrow" style={{ marginTop: primaryLine ? 20 : 0 }}>BEAUTY MOODS</div>
+                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 8 }} aria-label="Beauty Mood">
+                  {moods.map((mood) => <span key={mood} className="ko" style={{ padding: '6px 10px', borderRadius: 'var(--radius-pill)', background: 'var(--color-surface)', color: 'var(--color-text-secondary)', fontSize: 13, fontWeight: 600 }}>{MOOD_KR[mood] || mood}</span>)}
+                </div>
+              </>
+            )}
+            {profile.evidence.length > 0 && (
+              <>
+                <div className="wf-eyebrow" style={{ marginTop: 20 }}>MOOD EVIDENCE</div>
+                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 8 }} aria-label="무드 근거">
+                  {profile.evidence.map((item) => <span key={item} className="ko" style={{ padding: '6px 10px', border: '1px solid var(--color-line)', borderRadius: 'var(--radius-pill)', color: 'var(--color-text-muted)', fontSize: 13 }}>{item}</span>)}
+                </div>
+              </>
+            )}
+          </section>
+        ) : moods.length > 0 ? (
+          <section data-testid="legacy-moods">
+            <div className="wf-eyebrow">저장된 무드</div>
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 8 }}>
-              {relatedMoods.map((mood) => <span key={mood} className="ko" style={{ padding: '6px 10px', borderRadius: 20, background: '#f3f4f6', color: '#374151', fontSize: 13, fontWeight: 600 }}>{MOOD_KR[mood] || mood}</span>)}
+              {moods.map((mood) => <span key={mood} className="ko" style={{ padding: '6px 10px', borderRadius: 'var(--radius-pill)', background: 'var(--color-surface)', color: 'var(--color-text-secondary)', fontSize: 13, fontWeight: 600 }}>{MOOD_KR[mood] || mood}</span>)}
             </div>
-          ) : <p className="ko" style={{ color: '#9ca3af', fontSize: 13, margin: '8px 0 0' }}>함께 확인된 다른 무드가 없어요.</p>}
-        </section>
+          </section>
+        ) : null}
 
         <Divider />
 
@@ -75,11 +99,26 @@ export default function AnalysisResult({ result, photoUrl, onCardList, onShare, 
           )}
         </section>
 
+        {profile?.distinctivePoint && (
+          <>
+            <Divider />
+            <section className="wf-card" style={{ padding: 20 }}>
+              <div className="wf-eyebrow">MY DISTINCTIVE POINT</div>
+              <p className="ko" style={{ margin: '10px 0 0', color: 'var(--color-text-secondary)', fontSize: 14, lineHeight: 1.5 }}>{profile.distinctivePoint}</p>
+            </section>
+          </>
+        )}
+
         <Divider />
 
         <section>
           <h2 className="ko" style={{ margin: 0, fontSize: 17, fontWeight: 700 }}>나에게 어울리는 스타일 방향</h2>
-          <p className="ko" style={{ margin: '12px 0 20px', color: '#6b7280', fontSize: 14, lineHeight: 1.5 }}>분석 결과를 바탕으로 헤어와 메이크업 추천을 확인해보세요.</p>
+          {(profile?.hairDirection || profile?.makeupDirection) && (
+            <div className="ko" style={{ margin: '12px 0 20px', display: 'grid', gap: 6, color: 'var(--color-text-muted)', fontSize: 14, lineHeight: 1.5 }}>
+              {profile.hairDirection && <div>헤어 · {profile.hairDirection}</div>}
+              {profile.makeupDirection && <div>메이크업 · {profile.makeupDirection}</div>}
+            </div>
+          )}
           {result?.analysisId && (
             <div className="wf-card" style={{ display: 'flex', alignItems: 'center', gap: 8, padding: 12, marginBottom: 12, background: '#f9fafb' }}>
               {Icons.check(14, '#6b7280')}

@@ -35,7 +35,7 @@ last-verified: "2026-10-14"
 | 마이페이지 계정 정보 | — | 세션 JWT 파싱 ✅ | `My.jsx` ✅ | **부분 연결** — email/provider 는 실데이터, 통계 없음 |
 | 계정 삭제 | ✅ `DELETE /api/account` (실제 삭제, 멱등) | — | `My.jsx` 삭제 시트 (mock) | **백엔드만** — `My.jsx` 가 아직 alert 만 띄움, 연결은 Codex |
 | 쿠팡 상품 데이터 | ⚠️ `recommendedProducts` 미구현 | — | `MakeupDetail` (`PRODUCTS_MOCK` fallback) | Phase 5 |
-| `styleLabel` (감성 라벨) | ❌ 스키마·프롬프트에 없음 | — | `AnalysisResult` · `ShareCard` (fallback 텍스트) | 프롬프트+스키마 동시 보강 필요 |
+| 대표 무드·Traits | 분석 schema v3 (`primaryMood`·`traits`·근거·방향) ✅ | 응답 원형 사용 ✅ | `AnalysisResult` · `Home` · `My` · `ShareCard` ✅ | **연결됨** (legacy는 없는 블록 숨김) |
 | 트렌드 피드 | ❌ 미구현 | — | `Trend.jsx` ("준비 중" 화면) | v1.x 별도 작업 |
 | 광고 SDK | ❌ 미구현 | — | `AdGate` (15초 타이머 mock) | v1.1 광고 정책 |
 | 프로필 API | ❌ `GET /api/me` 없음 | — | `My.jsx` 통계 영역 부재 | Phase 3 잔여 |

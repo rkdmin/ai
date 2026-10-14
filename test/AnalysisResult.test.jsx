@@ -46,14 +46,60 @@ describe('AnalysisResult CTA 위계', () => {
 });
 
 describe('AnalysisResult 무드 렌더', () => {
-  it('동급 무드 3개를 모두 보여주고 Trait으로 이름 붙이지 않는다', () => {
-    const { container } = render(<AnalysisResult result={baseResult} onCardList={() => {}} onShare={() => {}} />);
+  it('moodArchetype 3개를 모두 보여준다', () => {
+    render(<AnalysisResult result={baseResult} onCardList={() => {}} onShare={() => {}} />);
 
     expect(screen.getByText('로맨틱')).toBeInTheDocument();
     expect(screen.getByText('클린')).toBeInTheDocument();
     expect(screen.getByText('소프트')).toBeInTheDocument();
-    expect(screen.getByText('함께 나타난 무드')).toBeInTheDocument();
-    expect(container.textContent).not.toMatch(/trait/i);
+  });
+
+  it('새 필드가 있으면 제목·Primary/Traits·설명·근거·포인트·방향을 표시하고 primary를 무드 첫 순서로 둔다', () => {
+    const result = {
+      ...baseResult,
+      moodArchetype: ['CLEAN', 'SOFT', 'ELEGANT'],
+      primaryMood: 'SOFT',
+      traits: ['곡선 윤곽', '저대비'],
+      moodTitle: '차분하고 부드러운 이미지',
+      moodSummary: '완만한 윤곽과 낮은 대비가 보여요.',
+      moodEvidence: ['곡선 윤곽', '저대비', '아몬드 눈'],
+      distinctivePoint: '눈매가 또렷한 편이에요.',
+      hairDirection: '부드러운 레이어',
+      makeupDirection: '낮은 대비의 음영',
+    };
+    render(<AnalysisResult result={result} onCardList={() => {}} onShare={() => {}} />);
+
+    expect(screen.getByText('차분하고 부드러운 이미지')).toBeInTheDocument();
+    expect(screen.getByText('Primary · SOFT · 곡선 윤곽 · 저대비')).toBeInTheDocument();
+    expect(screen.getByText('완만한 윤곽과 낮은 대비가 보여요.')).toBeInTheDocument();
+    expect(screen.getByText('눈매가 또렷한 편이에요.')).toBeInTheDocument();
+    expect(screen.getByText('헤어 · 부드러운 레이어')).toBeInTheDocument();
+    expect(screen.getByText('메이크업 · 낮은 대비의 음영')).toBeInTheDocument();
+    const moodChips = screen.getByLabelText('Beauty Mood').children;
+    expect([...moodChips].map((node) => node.textContent)).toEqual(['소프트', '클린', '엘레강트']);
+    expect(screen.getByLabelText('무드 근거').children).toHaveLength(3);
+  });
+
+  it('새 필드가 없으면 명시된 제목·설명 fallback만 쓰고 선택 필드 영역은 숨긴다', () => {
+    render(<AnalysisResult result={baseResult} onCardList={() => {}} onShare={() => {}} />);
+
+    expect(screen.getByRole('heading', { name: '나의 Beauty Mood' })).toBeInTheDocument();
+    expect(screen.getByText('대표 무드의 분위기를 중심으로 추천을 준비했어요.')).toBeInTheDocument();
+    expect(screen.queryByText(/^Primary ·/)).toBeNull();
+    expect(screen.queryByText('MOOD EVIDENCE')).toBeNull();
+    expect(screen.queryByText('MY DISTINCTIVE POINT')).toBeNull();
+    expect(screen.queryByText(/^헤어 ·/)).toBeNull();
+    expect(screen.queryByText(/^메이크업 ·/)).toBeNull();
+  });
+
+  it('legacy 저장본은 D01 블록을 숨기고 없는 값을 지어내지 않는다', () => {
+    render(<AnalysisResult result={{ ...baseResult, legacy: true }} onCardList={() => {}} onShare={() => {}} />);
+
+    expect(screen.queryByTestId('mood-profile')).toBeNull();
+    expect(screen.queryByTestId('mood-profile-details')).toBeNull();
+    expect(screen.queryByText('나의 Beauty Mood')).toBeNull();
+    expect(screen.queryByText('대표 무드의 분위기를 중심으로 추천을 준비했어요.')).toBeNull();
+    expect(screen.getByTestId('legacy-moods')).toBeInTheDocument();
   });
 });
 

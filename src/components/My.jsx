@@ -7,6 +7,7 @@ import { StatusBar } from './common/StatusBar';
 import { BackHeader, TabBar } from './common/Layout';
 import { Icons } from './common/Icons';
 import { FacePlaceholder } from './common/Placeholders';
+import MoodProfileSummary from './common/MoodProfileSummary';
 import { useAuth } from '../contexts/AuthContext';
 
 const PROVIDER_LABELS = { google: 'Google', kakao: 'Kakao', apple: 'Apple' };
@@ -77,15 +78,10 @@ export default function My({ profile = null, onNav, onBack, onSignOut }) {
           </div>
         </div>
 
-        {profile && (
+        {profile && !profile.legacy && (
           <section style={{ padding: '20px 22px', borderBottom: '1px solid #000' }} aria-label="최근 Beauty Profile">
             <div className="label" style={{ color: '#7a7a7a', marginBottom: 6 }}>LATEST BEAUTY PROFILE</div>
-            <div className="ko" style={{ fontSize: 18, lineHeight: 1.4 }}>
-              {profile.legacy ? (profile.faceType || '이전 분석 결과') : (profile.moodTitle || '나의 Beauty Mood')}
-            </div>
-            {!profile.legacy && profile.moodSummary && (
-              <p className="ko" style={{ margin: '8px 0 0', color: '#5a5a5a', fontSize: 12.5, lineHeight: 1.55 }}>{profile.moodSummary}</p>
-            )}
+            <MoodProfileSummary result={profile} />
           </section>
         )}
 

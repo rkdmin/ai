@@ -92,7 +92,7 @@ export default function ShareCard({ result, card, variant = 'hair', photoUrl = n
   async function shareNative(label) {
     tapHaptic('light');
     const title = isMakeup ? 'Beaumi · 메이크업 결과' : 'Beaumi · 헤어 결과';
-    const text = `${result?.styleLabel || (card?.name ?? 'My Beaumi result')} — ${(result?.moodArchetype || []).join(' · ')}`;
+    const text = `${result?.moodTitle || (card?.name ?? 'My Beaumi result')} — ${(result?.moodArchetype || []).join(' · ')}`;
     const blob = await captureCard();
 
     // 네이티브(앱): 캡처 PNG 를 기기에 기록 → OS 네이티브 공유 시트(files:[uri]).
@@ -261,7 +261,7 @@ function ShareButton({ label, icon, onClick }) {
 }
 
 function HairBody({ result, card, photoUrl, synthesizedPhoto }) {
-  const label = result?.styleLabel || '나의 Beauty Mood';
+  const label = result?.moodTitle || '나의 Beauty Mood';
   const subEn = result?.faceTypeEn || 'egg shape · spring warm';
   const moods = Array.isArray(result?.moodArchetype) ? result.moodArchetype.slice(0, 3) : [];
   const tags = card?.name

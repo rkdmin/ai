@@ -20,13 +20,22 @@ describe('Home', () => {
     expect(screen.getByText('RECENT HISTORY')).toBeInTheDocument();
   });
 
-  it('기기에 복원된 Beauty Profile을 표시하고 legacy에는 없는 무드를 채우지 않는다', () => {
-    const { rerender } = render(<Home profile={{ schemaVersion: 3, moodTitle: '차분한 이미지', moodSummary: '낮은 대비가 보여요.' }} onNext={() => {}} onNav={() => {}} />);
+  it('기기에 복원된 새 Beauty Profile 필드를 표시하고 legacy 블록은 숨긴다', () => {
+    const profile = {
+      schemaVersion: 3, moodTitle: '차분한 이미지', moodSummary: '낮은 대비가 보여요.',
+      primaryMood: 'SOFT', traits: ['곡선 윤곽'], moodEvidence: ['저대비'],
+      distinctivePoint: '또렷한 눈매', hairDirection: '부드러운 레이어', makeupDirection: '은은한 음영',
+      moodArchetype: ['CLEAN', 'SOFT', 'ELEGANT'],
+    };
+    const { rerender } = render(<Home profile={profile} onNext={() => {}} onNav={() => {}} />);
     expect(screen.getByText('차분한 이미지')).toBeInTheDocument();
     expect(screen.getByText('낮은 대비가 보여요.')).toBeInTheDocument();
+    expect(screen.getByText('Primary · SOFT · 곡선 윤곽')).toBeInTheDocument();
+    expect(screen.getByText('또렷한 눈매')).toBeInTheDocument();
+    expect(screen.getByText('헤어 · 부드러운 레이어')).toBeInTheDocument();
 
     rerender(<Home profile={{ schemaVersion: 1, legacy: true, faceType: '계란형' }} onNext={() => {}} onNav={() => {}} />);
-    expect(screen.getByText('계란형')).toBeInTheDocument();
+    expect(screen.queryByTestId('mood-profile-summary')).toBeNull();
     expect(screen.queryByText('차분한 이미지')).toBeNull();
   });
 

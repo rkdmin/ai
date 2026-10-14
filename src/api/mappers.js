@@ -60,7 +60,11 @@ function moodBoardFromLabel(moodLabel) {
 
 function buildMoodBoard(card, result) {
   const cardSide = moodBoardFromLabel(card.moodLabel);
-  const resultSide = (result?.moodArchetype || []).map((kw) => {
+  const orderedResultMoods = [...new Set([
+    result?.primaryMood,
+    ...(result?.moodArchetype || []),
+  ].filter(Boolean))];
+  const resultSide = orderedResultMoods.map((kw) => {
     const palette = MOOD_PALETTES[kw] || MOOD_PALETTES.ROMANTIC;
     return { kw, kr: '', c1: palette.c1, c2: palette.c2 };
   });

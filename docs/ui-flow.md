@@ -32,7 +32,7 @@ last-verified: "2026-10-14"
 
 ```txt
 flow: splash → home
-  login과 onboarding 화면은 후속 시각 정렬을 위해 남아 있지만 첫 진입을 막지 않음
+  온보딩·독립 로그인 화면은 삭제됨 (2026-10-14, Guest-first — ADR 0010). 계정 연결은 guest_gate 시트 하나
 
 main: home | style | chemistry | my
 
@@ -44,7 +44,7 @@ analysis: upload → loading → result_home   (퍼스널컬러 단계 없음 �
 detail: history | history_detail | card_detail | makeup_detail
   origin: 진입한 main/analysis/detail route
 
-sheet: guest_gate | ad_gate | share_card | share_card_makeup
+sheet: guest_gate | share_card | share_card_makeup   (ad_gate 삭제 — 광고 없음, ADR 0010)
   origin: 시트를 연 route
 
 home
@@ -53,8 +53,8 @@ home
   → guest_gate
 
 result_home
-  → hair_loading → result_tabs_hair → card_detail → ad_gate → synth_loading
-  → makeup_loading → result_tabs_makeup → makeup_detail → ad_gate
+  → hair_loading → result_tabs_hair → card_detail → synth_loading
+  → makeup_loading → result_tabs_makeup → makeup_detail
   → share_card | share_card_makeup
 ```
 
@@ -65,16 +65,14 @@ result_home
 - 상세와 시트는 `origin` route를 보관해 화면 버튼·브라우저·Android 뒤로가기가 같은 출처로 복귀한다.
 - 탭 전환은 route만 바꾸고 현재 분석 결과를 유지한다.
 - 분석·카드·합성 요청은 요청 ID로 보호해 이탈 또는 새 요청 뒤 늦게 도착한 응답을 무시한다.
-- `ad_gate` 뒤 이동 위치는 고정이 아니라 `adReturn` 상태로 결정한다.
+- 합성(`synth_loading`)이 끝나면 TRY ON 을 연 상세 route(`synthOriginRef`)로 돌아간다. 광고 게이트는 없다.
 - `share_card` 는 헤어 결과 공유, `share_card_makeup` 은 메이크업 결과 공유다.
 
 ---
 
 ## 뒤로가기 규칙
 
-- `onboarding2` → `onboarding1`
-- `onboarding3` → `onboarding2`
-- `login` / `guest_gate` → `home`
+- `guest_gate` → 시트를 연 route
 - `upload` → `home`
 - `loading` / `error_face` / `error_network` → `home`
 - `result_home` → `home`
@@ -82,7 +80,6 @@ result_home
 - `result_tabs_hair` / `result_tabs_makeup` → `result_home`
 - `card_detail` → `result_tabs_hair`
 - `makeup_detail` → `result_tabs_makeup`
-- `ad_gate` → `adReturn.back` (없으면 `result_tabs_hair`)
 - `share_card` → `activeCard` 가 있으면 `card_detail`, 없으면 `result_home`
 - `share_card_makeup` → `makeup_detail`
 - `style` / `chemistry` / `my` → `home`
@@ -99,39 +96,29 @@ Capacitor Android 하드웨어 back 은 브라우저 `popstate` 와 같은 `onPo
 그 화면의 route 종류와 `origin` 또는 `ANALYSIS_PARENT`를 함께 정의한다.
 회귀는 `test/navigation.test.js`와 `test/requestGate.test.js`가 지킨다.
 
-루트 화면은 둘이다 — `home`, 그리고 첫 방문 흐름의 `onboarding1`. 둘은 뒤로 갈 곳이 없다.
+루트 화면은 `home` 하나다 (`splash` 는 자동으로 홈으로 넘어간다). 뒤로 갈 곳이 없다.
 
 ---
 
-## Splash / Onboarding / Login
+## Splash / 계정 연결
 
 ### Splash (`stage: 'splash'`)
 
-- 200ms 후 다음 화면으로 이동 (`Splash.jsx` 의 `setTimeout`)
-- 로그인·온보딩을 강제하지 않고 항상 `home`으로 이동한다.
+- 200ms 후 `home` 으로 이동 (`Splash.jsx` 의 `setTimeout`). 로그인·온보딩을 거치지 않는다 (Guest-first).
 
-### Onboarding (`onboarding1~3`)
+### ~~Onboarding / Login~~ — 삭제 (2026-10-14)
 
-- 3장 구성
-- 마지막 화면 완료 시 `beaumi.onboarded = '1'` 저장 후 `login`
-- 중간 스킵도 가능
+Figma 에 온보딩 3장과 독립 로그인 화면이 없어 `Onboarding.jsx` 를 지우고 `login` route 를 뺐다 (ADR 0010).
+`Login.jsx` 는 아래 `guest_gate` 시트로만 쓴다.
 
-### Login (`stage: 'login' | 'guest_gate'`)
+### 계정 연결 시트 (`sheet: 'guest_gate'`, Figma `112:1017`)
 
-공통:
-- 카카오 OAuth
-- 구글 OAuth
+**컴포넌트:** `Login.jsx` (`mode="guest_gate"`)
 
-`login` 전용:
-- 게스트 1회 체험 버튼 노출
-
-`guest_gate` 전용:
-- 진입 이유별 카피 분기
-  - `history`
-  - `history_detail`
-  - `my`
-  - `unlock`
+- 카카오·구글 OAuth, 게스트로 계속
+- 진입 이유별 카피 분기: `history` · `history_detail` · `my` · `unlock`. MY 의 "로그인" 버튼은 `my` 이유로 연다
 - 로그인 성공 후 `authBridge.consumePostAuthTarget()` 으로 원래 목적지 복귀
+- 뒤로가기는 시트를 연 route 로
 
 ---
 
@@ -231,10 +218,13 @@ Figma 핵심 흐름에 퍼스널컬러 단계가 없어 뺐다 (ADR 0010 R13). `
 
 표시:
 - 업로드 사진 또는 저장된 `frontImageUrl`을 결과 Hero에 표시
-- `MY BEAUTY MOOD` 제목 (`styleLabel`이 없으면 거짓 라벨을 만들지 않고 `나의 Beauty Mood`)
+- `moodTitle` 제목. null이면 `나의 Beauty Mood`, `moodSummary` null이면 계약된 중립 문구를 표시한다.
 - 얼굴형·퍼스널컬러
-- 현재 API의 `moodArchetype` 3개는 동급 무드다. 첫 항목은 Primary, 나머지 0~2개는 `함께 나타난 무드`
-  칩으로 표시한다. D01의 별도 사전이 생기기 전에는 이 값을 Traits로 부르지 않는다.
+- `Primary {primaryMood} · {traits 0~2개}` 행을 표시하며 trait가 없으면 Primary만 남긴다.
+- `moodArchetype` 3개는 모두 유지하고 `primaryMood`를 첫 순서로 정렬한다.
+- `moodEvidence`는 최대 3개 근거 칩, `distinctivePoint`는 값이 있을 때만 별도 카드로 표시한다.
+- `hairDirection`·`makeupDirection`은 값이 있는 방향만 무료 미리보기 한 줄로 표시한다.
+- `legacy: true` 저장본은 D01 블록을 숨기고, v2에 실제로 저장된 `moodArchetype`만 별도 저장 무드로 보여준다.
 - `features` **0~3개** — 개수에 맞춰 제목이 `TOP n FEATURES` 로 바뀐다.
   0개면 `FEATURES` + "뚜렷하게 두드러지는 특징 없이 전체적으로 균형 잡힌 얼굴이에요" 안내.
   **더미 특징으로 채우지 않는다** (`docs/decisions/0009-analysis-consistency-rules.md`)
@@ -264,9 +254,7 @@ CTA (1차/2차 위계 — 동등 그리드 아님):
 
 **컴포넌트:** `CardList.jsx`
 
-- 카드 선택 시:
-  - 잠금 카드면 `ad_gate`
-  - 아니면 `card_detail`
+- 카드 선택 시 `card_detail` (잠금·광고 없음 — 모든 카드가 바로 열린다)
 
 ### Hair Detail (`stage: 'card_detail'`)
 
@@ -274,14 +262,12 @@ CTA (1차/2차 위계 — 동등 그리드 아님):
 
 - 공유 버튼
 - 하단 sticky CTA — 합성 상태에 따라 조건 분기:
-  - 합성 전: `SHARE`(2차 outline) + `합성 보기`(1차 dark) → 광고 게이트 후 `synth_loading`
+  - 합성 전: `SHARE`(2차 outline) + `합성 보기`(1차 dark) → 바로 `synth_loading`
   - 합성 후: `다시 보기`(2차 outline, 재생성) + `결과 공유`(1차 dark) → 1차 행동이 공유로 전환
-- AI SYNTHESIS 섹션 버튼: `WATCH AD & SYNTHESIZE` / 합성 후 `WATCH AD & SHOW AGAIN`
+- AI SYNTHESIS 섹션 버튼 라벨에 "WATCH AD" 가 남아 있으면 Codex 가 F06 에서 정리한다 (광고 없음)
 
-### Ad Gate / Synthesis
+### Synthesis
 
-- `ad_gate`
-  - 잠금 카드 해제용 또는 합성 보기용으로 공용 사용
 - `synth_loading`
   - `generateStyledPhoto(photo?.dataUrl || null, card)`
   - 이미 생성한 카드면 `synthByKey` 캐시 사용
@@ -304,9 +290,7 @@ CTA (1차/2차 위계 — 동등 그리드 아님):
 
 **컴포넌트:** `CardList.jsx`
 
-- 카드 선택 시:
-  - 잠금 카드면 `ad_gate`
-  - 아니면 `makeup_detail`
+- 카드 선택 시 `makeup_detail` (잠금·광고 없음)
 
 ### Makeup Detail (`stage: 'makeup_detail'`)
 
@@ -414,8 +398,19 @@ photo: { file, dataUrl } | null
 personalColor: string | null
 result: {
   analysisId?: string | null,
+  schemaVersion?: number,
+  legacy?: boolean,
   faceType: string,
   features?: string[],
+  moodArchetype?: string[],
+  primaryMood?: string | null,
+  traits?: string[],
+  moodTitle?: string | null,
+  moodSummary?: string | null,
+  moodEvidence?: string[],
+  distinctivePoint?: string | null,
+  hairDirection?: string | null,
+  makeupDirection?: string | null,
   personalColor?: string | null,
   frontImageUrl?: string | null,
 } | null

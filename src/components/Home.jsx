@@ -3,6 +3,7 @@ import { StatusBar } from './common/StatusBar';
 import { Icons } from './common/Icons';
 import { TabBar } from './common/Layout';
 import { FacePlaceholder } from './common/Placeholders';
+import MoodProfileSummary from './common/MoodProfileSummary';
 import { fetchHistory } from '../api/ai';
 import connectorAsset from '../assets/figma/home-connector.svg';
 import dividerAsset from '../assets/figma/divider.svg';
@@ -100,12 +101,11 @@ export default function Home({ profile = null, onNext, onNav, onOpenRecent, canA
           </div>
           <div style={{ paddingTop: 16 }}>
             <div className="wf-eyebrow" style={{ marginBottom: 3 }}>MY BEAUTY MOOD</div>
-            <div className="ko" style={{ fontSize: 18, fontWeight: 800, lineHeight: 1.3 }}>
-              {profile?.legacy ? (profile.faceType || '이전 분석 결과') : (profile?.moodTitle || '나의 Beauty Mood')}
-            </div>
-            <p className="ko" style={{ margin: '12px 0', color: '#4b5563', fontSize: 13, lineHeight: 1.5 }}>
-              {profile?.legacy ? '이전 버전에서 저장된 분석이에요.' : (profile?.moodSummary || '얼굴선과 비율에서 안정적인 특징을 찾아 결과를 정리해드려요.')}
-            </p>
+            {profile?.legacy ? (
+              <p className="ko" style={{ margin: 0, color: 'var(--color-text-muted)', fontSize: 13 }}>이전 버전 분석은 기록 상세에서 확인할 수 있어요.</p>
+            ) : (
+              <MoodProfileSummary result={profile || {}} />
+            )}
             <button type="button" className="wf-btn-ghost" onClick={onNext} style={{ minHeight: 36, padding: 0, justifyContent: 'flex-start', borderTop: '1px solid #e5e7eb', borderRadius: 0, fontSize: 14 }}>
               내 결과 만들기 →
             </button>

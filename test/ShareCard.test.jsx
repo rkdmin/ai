@@ -8,7 +8,7 @@ import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import ShareCard from '../src/components/ShareCard';
 
-const result = { styleLabel: '봄날의 햇살형', faceType: '계란형', moodArchetype: ['ROMANTIC', 'CLEAN', 'SOFT'] };
+const result = { moodTitle: '차분하고 부드러운 이미지', faceType: '계란형', moodArchetype: ['ROMANTIC', 'CLEAN', 'SOFT'] };
 const card = { name: '쿠션 단발' };
 
 describe('ShareCard — synthesized 반영', () => {

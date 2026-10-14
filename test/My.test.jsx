@@ -66,12 +66,19 @@ describe('My — mock 축소', () => {
     expect(screen.getByText('Google 로그인')).toBeInTheDocument();
   });
 
-  it('홈과 같은 최근 Beauty Profile 제목을 표시하고 legacy에는 없는 무드를 채우지 않는다', () => {
-    const { rerender } = render(<My profile={{ schemaVersion: 3, moodTitle: '차분한 이미지' }} onNav={() => {}} onBack={() => {}} onSignOut={() => {}} />);
+  it('홈과 같은 최근 Beauty Profile 필드를 표시하고 legacy 블록은 숨긴다', () => {
+    const profile = {
+      schemaVersion: 3, moodTitle: '차분한 이미지', primaryMood: 'SOFT', traits: ['저대비'],
+      moodArchetype: ['CLEAN', 'SOFT', 'ELEGANT'], moodEvidence: ['곡선 윤곽'],
+      hairDirection: '부드러운 레이어',
+    };
+    const { rerender } = render(<My profile={profile} onNav={() => {}} onBack={() => {}} onSignOut={() => {}} />);
     expect(screen.getByText('차분한 이미지')).toBeInTheDocument();
+    expect(screen.getByText('Primary · SOFT · 저대비')).toBeInTheDocument();
+    expect(screen.getByText('헤어 · 부드러운 레이어')).toBeInTheDocument();
 
     rerender(<My profile={{ schemaVersion: 1, legacy: true, faceType: '계란형' }} onNav={() => {}} onBack={() => {}} onSignOut={() => {}} />);
-    expect(screen.getByText('계란형')).toBeInTheDocument();
+    expect(screen.queryByLabelText('최근 Beauty Profile')).toBeNull();
     expect(screen.queryByText('나의 Beauty Mood')).toBeNull();
   });
 });

@@ -91,7 +91,8 @@ last-verified: "2026-10-14"
 - `test/profileStorage.test.js`: 게스트 재진입 결과 복원 + schemaVersion 포함 키 + 사진 미저장 + 계정별 저장본 격리 + legacy 무드 비보정
 - `test/PhotoUpload.test.jsx`: 선택 즉시 사전검사만 호출 + checks 표시 + 4개 사진 오류 코드 화면 + 권한 거절의 네이티브/웹 CTA + 동의 필수
 - `test/analysisErrors.test.js`: 분석 오류의 code 우선 분기와 코드 없는 응답의 기존 status·문자열 폴백
-- `test/AnalysisResult.test.jsx`: 헤어=1차/메이크업=2차 CTA wiring + analysisId 유무에 따른 SAVED 배지 (Phase 4-4) + 동급 무드 3개/Traits 미노출 + features 0~3개 렌더 (ADR 0009)
+- `test/AnalysisResult.test.jsx`: CTA/SAVED + D01 필드 있음·없음·legacy 3케이스 + primary 우선 무드 순서 + 선택 블록 조건부 렌더
+- `test/mappers.test.js`: 카드 shape과 `primaryMood` 우선 mood board 정렬
 - `test/CardDetail.test.jsx`: 합성 전/후 sticky CTA 조건 분기 (합성 보기↔결과 공유/다시 보기) (Phase 4-5)
 - `test/MakeupDetail.test.jsx`: 사진 생성 CTA 미노출(규칙 6) + 제품 블록 쿠팡 링크/검색 키워드 분기 (Phase 4-5)
 - `test/Trend.test.jsx`: 준비중 경량화 — mock 피드/search 버튼 제거 + START ANALYSIS→home (Phase 4-6)
