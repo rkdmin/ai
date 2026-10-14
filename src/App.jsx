@@ -3,7 +3,6 @@ import './styles/tokens.css';
 import './styles/globals.css';
 
 import Splash from './components/Splash';
-import Onboarding from './components/Onboarding';
 import Login from './components/Login';
 import Home from './components/Home';
 import PhotoUpload from './components/PhotoUpload';
@@ -12,7 +11,6 @@ import ErrorScreen from './components/ErrorScreen';
 import AnalysisResult from './components/AnalysisResult';
 import CardList from './components/CardList';
 import CardDetail from './components/CardDetail';
-import AdGate from './components/AdGate';
 import MakeupDetail from './components/MakeupDetail';
 import ShareCard from './components/ShareCard';
 import Trend from './components/Trend';
@@ -52,14 +50,6 @@ function backendPersonalColorKey(pickKo) {
   return KO_TO_KEY[pickKo] || null;
 }
 
-const ONBOARDING_FLAG = 'beaumi.onboarded';
-
-function markOnboarded() {
-  try {
-    window.localStorage.setItem(ONBOARDING_FLAG, '1');
-  } catch { /* noop */ }
-}
-
 function cardKey(card) {
   if (!card) return '';
   return `${card.cardType || 'hair'}-${card.rank ?? 0}-${card.name || card.hair || card.mood || ''}`;
@@ -74,7 +64,6 @@ export default function App() {
   const [hairCards, setHairCards] = useState(null);
   const [makeupCards, setMakeupCards] = useState(null);
   const [activeCard, setActiveCard] = useState(null);
-  const [adReturn, setAdReturn] = useState({ done: 'card_detail', originRoute: null });
   const [synthByKey, setSynthByKey] = useState({});
   const [errorInfo, setErrorInfo] = useState({ type: 'face', code: null, message: '' });
   const [guestGateReason, setGuestGateReason] = useState('history');
@@ -83,6 +72,7 @@ export default function App() {
   const requestGateRef = useRef(createRequestGate());
   const activeRequestIdRef = useRef(null);
   const routeRef = useRef(route);
+  const synthOriginRef = useRef(null); // TRY ON 을 연 상세 route — 합성 끝나면 여기로 돌아간다 (광고 게이트 없음, ADR 0010)
   const profileLoadIdRef = useRef(0);
   const profileOwner = useMemo(() => profileOwnerForSession(auth.session), [auth.session]);
 
@@ -319,26 +309,26 @@ export default function App() {
     } else {
       beginRequest(generateStyledPhoto(photo?.dataUrl || null, card));
     }
-    setAdReturn({ done: 'synth_loading', originRoute: routeRef.current });
-    go('ad_gate');
+    synthOriginRef.current = routeRef.current;
+    go('synth_loading');
   }, [photo, synthByKey, beginRequest, go]);
 
   const onSynthSuccess = useCallback((dataUrl) => {
     if (!activeCard || !dataUrl) {
-      go(adReturn.originRoute || detailRoute('card_detail'));
+      go(synthOriginRef.current || detailRoute('card_detail'));
       return;
     }
     const key = cardKey(activeCard);
     setSynthByKey((m) => (m[key] === dataUrl ? m : { ...m, [key]: dataUrl }));
-    go(adReturn.originRoute || detailRoute('card_detail'));
-  }, [activeCard, adReturn.originRoute, go]);
+    go(synthOriginRef.current || detailRoute('card_detail'));
+  }, [activeCard, go]);
 
   const onSynthError = useCallback((e) => {
     if (isStaleRequestError(e)) return;
     const msg = String(e?.message || e || '');
     setErrorInfo({ type: 'network', message: msg });
-    go(adReturn.originRoute || detailRoute('card_detail'));
-  }, [adReturn.originRoute, go]);
+    go(synthOriginRef.current || detailRoute('card_detail'));
+  }, [go]);
 
   const photoUrl = photo?.dataUrl || result?.frontImageUrl || null;
 
@@ -348,33 +338,15 @@ export default function App() {
     case 'splash':
       view = <Splash onNext={() => go('home')} />;
       break;
-    case 'onboarding1':
-      view = <Onboarding idx={0} onNext={() => go('onboarding2')} onSkip={() => go('login')} />;
-      break;
-    case 'onboarding2':
-      view = <Onboarding idx={1} onNext={() => go('onboarding3')} onSkip={() => go('login')} />;
-      break;
-    case 'onboarding3':
-      view = <Onboarding idx={2} onNext={() => { markOnboarded(); go('login'); }} />;
-      break;
-    case 'login':
-      view = (
-        <Login
-          onNext={() => { markOnboarded(); go('home'); }}
-          onOAuth={(provider) => auth.signIn(provider)}
-          onGuest={() => { auth.continueAsGuest(); markOnboarded(); go('home'); }}
-          onTestLogin={() => { auth.signInAsTestUser(); markOnboarded(); go('home'); }}
-          onBack={() => go('home')}
-        />
-      );
-      break;
+    // 온보딩 3장·독립 로그인 화면은 Figma 에 없어 뺐다 (Guest-first, ADR 0010). 스플래시 → 홈.
+    // 계정 연결은 guest_gate 시트(Figma 112:1017 "계정 연결") 하나로 받는다.
     case 'guest_gate':
       view = (
         <Login
-          onNext={() => { markOnboarded(); go('home'); }}
+          onNext={() => go('home')}
           onOAuth={(provider) => auth.signIn(provider)}
-          onGuest={() => { auth.continueAsGuest(); markOnboarded(); go('home'); }}
-          onTestLogin={() => { auth.signInAsTestUser(); markOnboarded(); go('home'); }}
+          onGuest={() => { auth.continueAsGuest(); go('home'); }}
+          onTestLogin={() => { auth.signInAsTestUser(); go('home'); }}
           onBack={back}
           mode="guest_gate"
           reason={guestGateReason}
@@ -480,12 +452,7 @@ export default function App() {
           cards={hairCards}
           onCard={(card) => {
             setActiveCard(card);
-            if (card.locked) {
-              setAdReturn({ done: 'card_detail', originRoute: routeRef.current });
-              go('ad_gate');
-            } else {
-              go('card_detail');
-            }
+            go('card_detail'); // 광고 잠금 없음 — 모든 카드가 바로 열린다 (ADR 0010)
           }}
           onBack={back}
         />
@@ -517,18 +484,7 @@ export default function App() {
           ]}
           onSuccess={onSynthSuccess}
           onError={onSynthError}
-          onCancel={() => go(adReturn.originRoute || detailRoute('card_detail'))}
-        />
-      );
-      break;
-    case 'ad_gate':
-      view = (
-        <AdGate
-          card={activeCard}
-          onDone={() => adReturn.done === 'synth_loading'
-            ? go('synth_loading')
-            : go(detailRoute(adReturn.done, adReturn.originRoute || mainRoute('home')))}
-          onBack={back}
+          onCancel={() => go(synthOriginRef.current || detailRoute('card_detail'))}
         />
       );
       break;
@@ -568,12 +524,7 @@ export default function App() {
           cards={makeupCards}
           onCard={(card) => {
             setActiveCard(card);
-            if (card.locked) {
-              setAdReturn({ done: 'makeup_detail', originRoute: routeRef.current });
-              go('ad_gate');
-            } else {
-              go('makeup_detail');
-            }
+            go('makeup_detail');
           }}
           onBack={back}
         />
@@ -634,7 +585,7 @@ export default function App() {
       );
       break;
     case 'my':
-      view = <My profile={result} onNav={(target) => target === 'history' ? openHistory() : target === 'login' ? go('login') : navTab(target)} onBack={back} onSignOut={() => { auth.signOut(); go('home'); }} />;
+      view = <My profile={result} onNav={(target) => target === 'history' ? openHistory() : target === 'login' ? openGuestGate('my', mainRoute('my')) : navTab(target)} onBack={back} onSignOut={() => { auth.signOut(); go('home'); }} />;
       break;
     default:
       view = <Splash onNext={() => go('home')} />;

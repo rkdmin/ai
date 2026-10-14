@@ -17,8 +17,9 @@ const ANALYSIS_SCREENS = new Set([
 ]);
 
 const DETAIL_SCREENS = new Set(['history', 'history_detail', 'card_detail', 'makeup_detail']);
-const SHEET_SCREENS = new Set(['guest_gate', 'ad_gate', 'share_card', 'share_card_makeup']);
-const FLOW_SCREENS = new Set(['splash', 'onboarding1', 'onboarding2', 'onboarding3', 'login']);
+// 온보딩·독립 로그인·광고 게이트는 Figma 에 없어 뺐다 (ADR 0010). 계정 연결은 guest_gate 시트 하나다.
+const SHEET_SCREENS = new Set(['guest_gate', 'share_card', 'share_card_makeup']);
+const FLOW_SCREENS = new Set(['splash']);
 
 export function mainRoute(tab = 'home') {
   return { kind: 'main', tab: MAIN_TABS.includes(tab) ? tab : 'home' };
@@ -54,11 +55,7 @@ const ANALYSIS_PARENT = {
   synth_loading: null,
 };
 
-const FLOW_PARENT = {
-  onboarding2: flowRoute('onboarding1'),
-  onboarding3: flowRoute('onboarding2'),
-  login: mainRoute('home'),
-};
+const FLOW_PARENT = {}; // splash 는 뒤로 갈 곳이 없다
 
 export function routeScreen(route) {
   return route?.kind === 'main' ? route.tab : route?.screen;

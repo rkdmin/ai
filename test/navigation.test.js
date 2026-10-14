@@ -20,7 +20,10 @@ describe('F01 route 역할 분리', () => {
     expect(routeForScreen('upload')).toEqual({ kind: 'analysis', screen: 'upload' });
     expect(routeForScreen('card_detail')).toMatchObject({ kind: 'detail', screen: 'card_detail' });
     expect(routeForScreen('share_card')).toMatchObject({ kind: 'sheet', screen: 'share_card' });
-    expect(routeForScreen('login')).toEqual({ kind: 'flow', screen: 'login' });
+    expect(routeForScreen('splash')).toEqual({ kind: 'flow', screen: 'splash' });
+    // 온보딩·독립 로그인·광고 게이트는 흐름에서 뺐다 (ADR 0010) — 모르는 화면은 홈으로
+    expect(routeForScreen('login')).toEqual({ kind: 'main', tab: 'home' });
+    expect(routeForScreen('ad_gate')).toEqual({ kind: 'main', tab: 'home' });
   });
 
   it('하단 탭은 네 개의 main route에서만 노출한다', () => {
@@ -28,7 +31,7 @@ describe('F01 route 역할 분리', () => {
     expect(routeHasTabBar(analysisRoute('result_home'))).toBe(false);
     expect(routeHasTabBar(detailRoute('card_detail'))).toBe(false);
     expect(routeHasTabBar(sheetRoute('share_card'))).toBe(false);
-    expect(routeHasTabBar(flowRoute('login'))).toBe(false);
+    expect(routeHasTabBar(flowRoute('splash'))).toBe(false);
   });
 });
 

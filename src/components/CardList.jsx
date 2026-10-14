@@ -100,35 +100,15 @@ function CardRow({ card, onClick }) {
               {card.badge}
             </span>
           )}
-          {!isWarn && !card.locked && <span className="label" style={{ color: '#7a7a7a', fontSize: 9 }}>FREE</span>}
-          {!isWarn && card.locked && <span className="label" style={{ color: '#7a7a7a', fontSize: 9 }}>LOCKED</span>}
           {isWarn && <span className="label" style={{ color: '#7a7a7a', fontSize: 9 }}>NOT RECOMMENDED</span>}
         </div>
-        {card.locked && !isWarn ? (
-          <>
-            <div className="ko" style={{ fontSize: 17, fontWeight: 400, letterSpacing: '-.01em', marginBottom: 6, lineHeight: 1.3, color: '#a8a8a8' }}>
-              ■■■ ■■
-            </div>
-            <div className="ko" style={{ fontSize: 12, color: '#7a7a7a', fontWeight: 300, lineHeight: 1.5 }}>
-              광고를 보면 {card.rank}위 추천을 볼 수 있어요
-            </div>
-          </>
-        ) : (
-          <>
-            <div className="ko" style={{ fontSize: 16, fontWeight: 500, letterSpacing: '-.01em', marginBottom: 6, lineHeight: 1.3, overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
-              {card.name || '추천 카드'}
-            </div>
-            <div className="ko" style={{ fontSize: 12, color: '#5a5a5a', fontWeight: 300, lineHeight: 1.5, overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
-              {card.sub}
-            </div>
-          </>
-        )}
-        {card.locked && !isWarn && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 10, padding: '5px 8px', border: '1px solid #000', alignSelf: 'flex-start' }}>
-            {Icons.play(11)}
-            <span className="label" style={{ fontSize: 9 }}>광고 보고 확인</span>
-          </div>
-        )}
+        {/* 잠금·광고 분기는 삭제됐다 (ADR 0010 — 광고 없음). 모든 카드가 바로 열린다. */}
+        <div className="ko" style={{ fontSize: 16, fontWeight: 500, letterSpacing: '-.01em', marginBottom: 6, lineHeight: 1.3, overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
+          {card.name || '추천 카드'}
+        </div>
+        <div className="ko" style={{ fontSize: 12, color: '#5a5a5a', fontWeight: 300, lineHeight: 1.5, overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
+          {card.sub}
+        </div>
       </div>
       <div style={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}>{Icons.arrow(16, isWarn ? '#a8a8a8' : '#000')}</div>
     </div>

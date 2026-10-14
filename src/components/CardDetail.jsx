@@ -154,8 +154,8 @@ export default function CardDetail({ card, result, photoUrl, synthesizedPhoto, o
               </div>
               <div className="ko" style={{ fontSize: 12, color: 'rgba(255,255,255,.6)', fontWeight: 300, lineHeight: 1.6 }}>
                 {synthesizedPhoto
-                  ? '저장하거나 공유해보세요. 다시 보려면 같은 버튼을 눌러도 광고만 보면 됩니다.'
-                  : '15초 광고를 보고 내 얼굴에 합성된 결과를 받아보세요.'}
+                  ? '저장하거나 공유해보세요. 다시 보려면 같은 버튼을 누르면 돼요.'
+                  : '내 사진에 이 스타일을 입혀서 바로 확인해보세요.'}
               </div>
             </div>
             <button
@@ -166,7 +166,7 @@ export default function CardDetail({ card, result, photoUrl, synthesizedPhoto, o
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
               }}
             >
-              {Icons.play(13)} {synthesizedPhoto ? 'WATCH AD & SHOW AGAIN' : 'WATCH AD & SYNTHESIZE'}
+              {Icons.play(13)} {synthesizedPhoto ? 'SHOW AGAIN' : 'TRY ON'}
             </button>
           </div>
         </Section>
