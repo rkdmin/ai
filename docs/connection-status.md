@@ -18,7 +18,7 @@ last-verified: "2026-08-12"
 | 종합 카드 | `POST /api/cards/total` ✅ | `generateTotalCards()` ✅ | — ❌ | **호출자 없음** (v1.0 진입점 미정) |
 | 사진 합성 | `POST /api/photo/generate` ✅ | `generateStyledPhoto()` ✅ | `App.onSynthesize` ✅ | **연결됨** (로그인 전용) |
 | 헬스체크 | `GET /api/health` ✅ | — | — | 운영 모니터링용 (UI 호출 불필요) |
-| 만료 사진 정리 | `jobs/cleanup_expired_photos.py` · `POST /api/admin/cleanup-expired` ✅ | — | — | **스케줄 미등록** — 배포 환경에 하루 1회 cron 필요 |
+| 만료 사진 정리 | `backend/jobs/cleanup_expired_photos.py` · `POST /api/admin/cleanup-expired` ✅ | — | — | **스케줄 미등록** — 배포 환경에 하루 1회 cron 필요 |
 | STYLE 피드·상세·제품·북마크 | `/api/styles*`, `/api/products/recommendations`, `/api/bookmarks*` ✅ (migration 0006, 사전은 초안만) | ❌ 없음 | `Trend.jsx` 는 "준비 중" | **백엔드만** (F07·F10, 운영 콘텐츠 대기) |
 | Beauty Room·초대·케미 | `/api/rooms*`, `/api/invites/{token}[/join]`, `/api/handoffs/{token}/claim` ✅ (migration 0005, 규칙 계산) | ❌ 없음 | 케미 탭·초대 웹 화면 없음 | **백엔드만** (F08·F09) |
 | 통합 리포트 | `POST/GET /api/reports`, `/{id}`, `/{id}/retry` ✅ (migration 0003, 권한은 `REPORT_ACCESS_MODE`) | ❌ 없음 | 리포트 화면 없음 | **백엔드만** (F04, 결제 P4 전) |
