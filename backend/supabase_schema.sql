@@ -50,10 +50,11 @@ create table if not exists public.generated_photos (
   id uuid primary key default gen_random_uuid(),
   analysis_id uuid not null references public.analyses(id) on delete cascade,
   card_type text not null check (card_type in ('hair', 'total')),
+  style_key text not null default '',          -- F06: 스타일별 캐시 (스타일명·앞머리·rank slug). 0004 참조
   storage_url text not null,
   created_at timestamptz default now(),
   expires_at timestamptz,
-  unique (analysis_id, card_type)
+  unique (analysis_id, card_type, style_key)
 );
 
 alter table public.analyses enable row level security;

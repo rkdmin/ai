@@ -198,7 +198,11 @@ Figma 의 "선택 사진 확인" 화면용. 요청 `{ "image": "<data URL>" }`, 
   - `productType(s)` 는 브랜드·상품명·가격 없는 **제형·형태**다. 실제 상품 카드는 STYLE(D06) 쪽이다.
   - RAG 지식은 무료 카드와 같다 (`build_hair_context`/`build_makeup_context`). 출력 모양만 넓혔다. 미용실 문장·기장 수치는
     모델이 RAG 를 근거로 쓴 것이라 **운영 검수 전**이다 (plan 0009 D02·D03 의 "검토된 지식" 항목은 열려 있다).
-- Hair 탭 상세의 TRY ON(`/api/photo/generate`)은 아직 리포트 권한과 연결되지 않았다 (F06).
+- **TRY ON (`POST /api/photo/generate`, F06)**: 요청에 `reportId` 를 넣으면 리포트 권한을 요구한다 (없으면 403
+  `REPORT_ACCESS_REQUIRED`). 캐시 키는 분석 + 카드 종류 + **스타일**(`card.hair`·`bangs`·`rank` 로 만든 `style_key`)이라
+  추천 3개가 각자 합성된다. **캐시 재열람은 한도를 차감하지 않는다** (조회가 차감보다 먼저). 보관은 `GENERATED_PHOTO_RETENTION_DAYS`.
+- **구 카드 API (`/api/cards/*`) 닫기**: 프론트가 리포트로 옮기면 `CARDS_API_MODE=report_only` 로 막는다 (403). 그때 `reportId`
+  없는 TRY ON 도 같이 막힌다. 그 전까지는 `open` 이라 기존 화면이 그대로 돈다.
 
 ## 카드 공통 필드
 

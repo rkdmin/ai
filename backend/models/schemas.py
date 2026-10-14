@@ -62,8 +62,9 @@ class PhotoRequest(BaseModel):
     Phase 3 (Supabase Storage 도입) 부터는 analyses.front_image_url 에서 가져온다.
     """
     analysisId: str | None = None
+    reportId: str | None = None  # F06: 리포트 안의 TRY ON. 있으면 리포트 권한을 요구한다
     cardType: str  # 'hair' | 'total'
-    card: dict
+    card: dict  # style_key 는 card.hair·bangs·rank 로 만든다 — 추천마다 다른 캐시
     frontImage: str | None = None  # 게스트/로컬 폴백. 로그인 유저는 Storage 원본 사용 가능.
 
 

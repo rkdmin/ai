@@ -342,7 +342,46 @@ def test_photo_generate_uploads_and_records_new_image():
 
     assert r.status_code == 200, r.text
     assert r.json() == {"generatedImage": "data:image/jpeg;base64,out", "cached": False}
-    insert_photo.assert_awaited_once_with("user-1", "analysis-1", "hair", "https://cdn.example/generated.jpg")
+    insert_photo.assert_awaited_once_with("user-1", "analysis-1", "hair", "https://cdn.example/generated.jpg", "레이어드||")
+
+
+def test_photo_cache_is_per_style_and_checked_before_rate_limit(monkeypatch):
+    """F06: 추천마다 캐시 키가 다르고, 캐시 재열람은 한도를 차감하지 않는다."""
+    from middleware import rate_limit
+    from services.supabase_service import style_key_for
+
+    assert style_key_for({"hair": "레이어드", "bangs": "시스루뱅", "rank": 1}) != style_key_for({"hair": "단발", "bangs": "없음", "rank": 2})
+    assert style_key_for({"hair": "레이어드", "bangs": "시스루뱅", "rank": 1}) == style_key_for({"hair": "레이어드 ", "bangs": "시스루뱅", "rank": 1, "coachComment": "다른 설명"})
+
+    monkeypatch.delenv("RATE_LIMIT_DISABLED", raising=False)
+    monkeypatch.setitem(rate_limit.LIMITS, "photo", {"guest": 0, "user": 0})  # 차감하면 바로 429
+    with (
+        patch("services.supabase_service.get_generated_photo", new=AsyncMock(return_value={"storage_url": "https://cdn.example/g.jpg"})) as get_cached,
+        patch("services.gemini_service.generate_styled_photo", new=AsyncMock()) as generate,
+    ):
+        with TestClient(app) as client:
+            r = client.post("/api/photo/generate", headers={"X-User-Id": "user-1"},
+                            json={"analysisId": "analysis-1", "cardType": "hair", "card": {"hair": "레이어드", "rank": 1}})
+    assert r.status_code == 200 and r.json()["cached"] is True
+    assert get_cached.await_args.args[3] == "레이어드||1"
+    generate.assert_not_awaited()
+
+
+def test_photo_in_report_requires_report_access(monkeypatch):
+    monkeypatch.setenv("REPORT_ACCESS_MODE", "entitlement")
+    with TestClient(app) as client:
+        r = client.post("/api/photo/generate", headers={"X-User-Id": "user-1"},
+                        json={"analysisId": "analysis-1", "reportId": "r1", "cardType": "hair", "card": {"hair": "레이어드"}})
+    assert r.status_code == 403 and r.json()["code"] == "REPORT_ACCESS_REQUIRED"
+
+
+def test_cards_api_can_be_closed_with_report_only_mode(monkeypatch):
+    monkeypatch.setenv("CARDS_API_MODE", "report_only")
+    with patch("services.gemini_service.generate_hair_cards", new=AsyncMock()) as gen:
+        with TestClient(app) as client:
+            r = client.post("/api/cards/hair", json={"faceType": "계란형", "features": []})
+    assert r.status_code == 403 and r.json()["code"] == "REPORT_ACCESS_REQUIRED"
+    gen.assert_not_awaited()
 
 
 # ─── 계정 삭제 · 보관 정책 (plan 0009 P1, F12 선행) ─────────────────

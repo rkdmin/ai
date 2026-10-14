@@ -163,6 +163,7 @@ SUPABASE_PHOTO_BUCKET=analysis-photos
 PHOTO_RETENTION_DAYS=90              # 정면 사진 보관 일수 (안내 문구는 /api/account/policy 로 읽는다)
 GENERATED_PHOTO_RETENTION_DAYS=30
 REPORT_ACCESS_MODE=entitlement       # 리포트 접근. 로컬은 open (운영 금지). P4 결제 후 entitlements 조회로 바뀜
+CARDS_API_MODE=open                  # 구 카드 API. 프론트가 리포트로 옮기면 report_only 로 닫는다
 ```
 
 ---

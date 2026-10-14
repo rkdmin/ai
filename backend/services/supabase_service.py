@@ -190,13 +190,22 @@ async def insert_cards(*, user_id: str, analysis_id: str, card_type: str, card_d
         raise HTTPException(status_code=502, detail="카드 저장에 실패했습니다.")
 
 
-async def get_generated_photo(user_id: str, analysis_id: str, card_type: str) -> dict[str, Any] | None:
+def style_key_for(card: dict[str, Any] | None) -> str:
+    """TRY ON 캐시 키의 스타일 부분 (F06). 같은 추천이면 같은 키, 다른 추천이면 다른 키.
+    스타일명·앞머리·rank 로 만든다 — 모델이 쓴 긴 설명문은 넣지 않는다 (사소한 표기 차이로 캐시가 깨진다)."""
+    card = card or {}
+    parts = [str(card.get("hair") or "").strip(), str(card.get("bangs") or "").strip(), str(card.get("rank") or "")]
+    return "|".join(parts).lower()[:200]
+
+
+async def get_generated_photo(user_id: str, analysis_id: str, card_type: str, style_key: str = "") -> dict[str, Any] | None:
     if not configured() or not analysis_id:
         return None
     await _assert_analysis_owner(user_id, analysis_id)
     params = {
         "analysis_id": f"eq.{analysis_id}",
         "card_type": f"eq.{card_type}",
+        "style_key": f"eq.{style_key}",
         "select": "storage_url,expires_at",
         "limit": "1",
     }
@@ -213,11 +222,11 @@ async def get_generated_photo(user_id: str, analysis_id: str, card_type: str) ->
     return rows[0]
 
 
-async def insert_generated_photo(user_id: str, analysis_id: str, card_type: str, storage_url: str) -> None:
+async def insert_generated_photo(user_id: str, analysis_id: str, card_type: str, storage_url: str, style_key: str = "") -> None:
     if not configured() or not analysis_id:
         return
     await _assert_analysis_owner(user_id, analysis_id)
-    expires_at = datetime.now(timezone.utc) + timedelta(days=30)
+    expires_at = datetime.now(timezone.utc) + timedelta(days=GENERATED_PHOTO_RETENTION_DAYS)
     async with httpx.AsyncClient(timeout=15) as client:
         resp = await client.post(
             f"{SUPABASE_URL}/rest/v1/generated_photos",
@@ -225,6 +234,7 @@ async def insert_generated_photo(user_id: str, analysis_id: str, card_type: str,
             json={
                 "analysis_id": analysis_id,
                 "card_type": card_type,
+                "style_key": style_key,
                 "storage_url": storage_url,
                 "expires_at": expires_at.isoformat(),
             },
