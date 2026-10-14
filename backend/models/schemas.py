@@ -148,3 +148,48 @@ class ReportResponse(BaseModel):
     makeupError: str | None = None
     createdAt: str | None = None
     updatedAt: str | None = None
+
+
+# ── Beauty Room · 초대 (P6 · F08·F09) ─────────────────────────────
+
+
+class RoomCreateRequest(BaseModel):
+    nickname: str | None = None      # 랭킹에 보이는 이름. 기본 "나"
+    analysisId: str | None = None    # 로그인 사용자의 서버 분석 (우선)
+    profile: dict | None = None      # 기기 보관 분석의 공개 요약 (primaryMood·moodArchetype·traits·moodTitle). 서버 분석이 없을 때
+
+
+class RoomResponse(BaseModel):
+    """소유자 DTO. participants 는 점수 내림차순 + rank."""
+    id: str
+    active: bool
+    ruleVersion: int
+    owner: dict
+    participantCount: int
+    participants: list[dict]
+    createdAt: str | None = None
+
+
+class InvitePublicResponse(BaseModel):
+    """초대 링크로 보는 공개 DTO. 닉네임·대표 무드·Traits·제목만 — 이메일·사진·이력 없음."""
+    state: str  # valid | expired | revoked | missing
+    owner: dict | None = None
+    participantCount: int = 0
+    ruleVersion: int | None = None
+
+
+class InviteJoinRequest(BaseModel):
+    nickname: str | None = None
+    clientKey: str | None = None     # 웹 게스트 필수 — 브라우저가 보관하는 랜덤 키. 같은 친구의 중복 참여를 막는다
+    analysisId: str | None = None    # 로그인한 친구의 서버 분석
+    profile: dict | None = None      # 게스트 친구: 웹에서 받은 분석 응답의 공개 요약
+
+
+class InviteJoinResponse(BaseModel):
+    owner: dict
+    me: dict
+    chemistry: dict                  # chemistry_service.compute — type·label·score·summary·ruleVersion
+    rank: int | None = None
+    participantCount: int
+    handoffToken: str                # 앱 인계용 1회성 token (30분). URL 에 결과·세션을 싣지 않는다
+    handoffExpiresAt: str

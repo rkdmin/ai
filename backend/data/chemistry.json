@@ -1,0 +1,33 @@
+{
+  "ruleVersion": 1,
+  "description": "케미 사전 (plan 0009 D08, ADR 0010 R07 추천안). 두 사람의 대표 무드·보조 무드·Traits 를 표로 조합해 재현 가능한 점수와 타입을 낸다. 모델이 점수를 생성하지 않는다. '케미'는 사진 속 인상 조합을 즐기는 표현이고 외모 가치·실제 관계 적합성을 말하지 않는다. 라벨·문장은 운영 검수 대상이다. 바꾸면 ruleVersion 을 올린다.",
+  "families": {
+    "soft": ["ROMANTIC", "SOFT", "FRESH"],
+    "clean": ["CLEAN", "CLASSIC", "ELEGANT"],
+    "bold": ["SHARP", "EDGY"]
+  },
+  "types": {
+    "MIRROR": { "label": "거울 케미", "base": 55, "summary": "대표 무드가 같아요. 같은 결의 분위기가 나란히 서면 서로를 더 또렷하게 보여줘요." },
+    "TWIN":   { "label": "같은 결 케미", "base": 50, "summary": "같은 계열의 무드예요. 톤이 비슷해서 함께 있을 때 자연스럽게 어우러져요." },
+    "BALANCE": { "label": "균형 케미", "base": 45, "summary": "부드러운 쪽과 단정한 쪽이 만났어요. 한쪽이 분위기를 풀고 한쪽이 정리해 주는 조합이에요." },
+    "SPARK":  { "label": "대비 케미", "base": 40, "summary": "부드러운 무드와 강한 무드의 조합이에요. 서로 다른 인상이 대비돼 둘 다 돋보여요." },
+    "EDGE":   { "label": "강조 케미", "base": 42, "summary": "단정한 무드와 강한 무드가 만났어요. 선이 분명한 조합이라 함께 있으면 또렷한 인상을 줘요." }
+  },
+  "pairToType": {
+    "soft+soft": "TWIN", "clean+clean": "TWIN", "bold+bold": "TWIN",
+    "soft+clean": "BALANCE", "soft+bold": "SPARK", "clean+bold": "EDGE"
+  },
+  "secondaryMoodOverlap": { "perShared": 7, "max": 14 },
+  "traitRules": {
+    "contrast": { "complement": 12, "same": 6, "note": "고대비+저대비는 서로를 받쳐 주는 조합, 같은 대비는 결이 맞는 조합" },
+    "outline":  { "same": 8, "different": 4 },
+    "proportion": { "same": 5, "different": 2 }
+  },
+  "traitAxes": {
+    "contrast": ["고대비", "저대비"],
+    "outline": ["곡선 윤곽", "직선 윤곽"],
+    "proportion": ["세로 긴 비율", "가로 넓은 비율"]
+  },
+  "scoreCap": 100,
+  "tieBreak": "joinedAt — 먼저 참여한 친구가 앞. 점수가 같아도 순위는 결정적이다"
+}

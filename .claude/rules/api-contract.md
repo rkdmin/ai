@@ -204,6 +204,30 @@ Figma 의 "선택 사진 확인" 화면용. 요청 `{ "image": "<data URL>" }`, 
 - **구 카드 API (`/api/cards/*`) 닫기**: 프론트가 리포트로 옮기면 `CARDS_API_MODE=report_only` 로 막는다 (403). 그때 `reportId`
   없는 TRY ON 도 같이 막힌다. 그 전까지는 `open` 이라 기존 화면이 그대로 돈다.
 
+## Beauty Room · 초대 · 케미 (`/api/rooms`, `/api/invites`, `/api/handoffs`, F08·F09)
+
+| 누가 | 동작 | 주소 |
+|---|---|---|
+| 방장 (로그인) | 내 Room 반환 또는 생성 (사용자당 1개) | `POST /api/rooms` `{ nickname?, analysisId? \| profile? }` |
+| 방장 | 내 Room + 랭킹 | `GET /api/rooms/me` |
+| 방장 | 초대 token 발급 (7일) / 전부 회수 | `POST /api/rooms/me/invites` → `{ token, path: "/invite/<token>", expiresAt }` / `POST /api/rooms/me/invites/revoke` |
+| 친구 (로그인 불필요) | 방장 공개 요약 + 참여 수 + 상태 | `GET /api/invites/{token}` → `{ state: valid\|expired\|revoked\|missing, owner, participantCount, ruleVersion }` |
+| 친구 | 참여 → 케미·현재 순위·인계 token | `POST /api/invites/{token}/join` `{ nickname, clientKey(게스트 필수), analysisId? \| profile? }` |
+| 친구 (앱 로그인 후) | 웹 참여를 내 계정에 붙임 (1회성, 30분) | `POST /api/handoffs/{token}/claim` → `{ ok, profile, nickname, joinedRoomId, hasOwnRoom }` |
+
+- **공개 DTO** (`owner`, `me`, `participants[].profile`): `nickname · primaryMood · moodArchetype · traits · moodTitle` 뿐이다.
+  이메일·원본 사진·전체 이력·결제는 어디에도 싣지 않는다 (`chemistry_service.public_profile`).
+- **케미는 규칙 계산이다** (`backend/data/chemistry.json`, `ruleVersion`). 모델이 점수를 만들지 않는다. 같은 두 요약이면 항상 같은 결과.
+  `{ type: MIRROR|TWIN|BALANCE|SPARK|EDGE, label, score 0~100, breakdown, summary }`. 무드 없는 legacy 프로필은 `score: null`.
+  "케미"는 사진 속 인상 조합을 즐기는 표현이다 — 외모 가치·실제 관계 적합성을 말하지 않는다 (카피 규칙).
+- **참여 snapshot 은 고정**이다 (R17 추천안). 같은 친구가 다시 참여해도 참여 수가 늘지 않고 처음 결과를 돌려준다.
+  로그인 친구는 `participant_id`, 웹 게스트는 `clientKey` 로 같은 사람을 안다. **게스트는 `clientKey` 없이는 400.**
+- 방장 본인은 자기 Room 에 참여할 수 없다 (400 `INVITE_INVALID`). 회수된 초대는 공개 조회도 즉시 `revoked`.
+- 랭킹: 점수 내림차순, 동점은 먼저 참여한 쪽이 앞 (`chemistry_service.rank`). 새로고침은 `GET /api/rooms/me` 재호출 (실시간 없음).
+- **앱 인계 (`handoffToken`)**: 참여 응답에 실린 1회성 token. 앱이 로그인 뒤 `claim` 하면 웹 참여가 계정에 붙는다.
+  URL 에는 token 만 싣는다. 설치 전후 자동 전달(App Links·Install Referrer)은 P0 POC 뒤 — 실패 폴백은 "로그인 후 링크 다시 열기".
+- 방장의 Room 생성에 로그인이 필요한 규칙은 R02 와 함께 확정 예정이지만, 서버가 방장을 기억해야 하므로 지금은 `require_user`.
+
 ## 카드 공통 필드
 
 ```json

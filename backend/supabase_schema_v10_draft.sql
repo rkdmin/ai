@@ -69,7 +69,7 @@ create table if not exists public.bookmarks (
   primary key (owner_id, content_id)                                        -- 중복 저장 불가, 게스트 병합 시 upsert
 );
 
--- ── Room·참여·초대 (P6 · F08·F09) ──────────────────────────────────
+-- ── Room·참여·초대 (P6 · F08·F09) — ✅ supabase_migrations/0005_rooms.sql 로 옮겨 적용 대상이 됐다 (client_key·owner_nickname 추가). 아래는 참고용 사본 ──
 create table if not exists public.rooms (
   id uuid primary key default gen_random_uuid(),
   owner_id uuid not null references auth.users(id) on delete cascade,

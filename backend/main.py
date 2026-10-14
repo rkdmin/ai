@@ -13,7 +13,7 @@ from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
 from models.errors import ApiError
-from routes import account, analyze, cards, history, photo, photos, reports
+from routes import account, analyze, cards, history, photo, photos, reports, rooms
 from services import mediapipe_service
 
 load_dotenv()
@@ -64,6 +64,7 @@ app.include_router(history.router, prefix="/api")
 app.include_router(photo.router, prefix="/api")
 app.include_router(account.router, prefix="/api")
 app.include_router(reports.router, prefix="/api")
+app.include_router(rooms.router, prefix="/api")
 
 
 @app.get("/api/health")

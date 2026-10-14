@@ -34,6 +34,7 @@ LIMITS = {
     "cards":    {"guest": 3, "user": 15},
     "photo":    {"guest": 0, "user": 5},
     "reports":  {"guest": 0, "user": 5},    # 리포트 생성·재시도 (Gemini 2회). 게스트는 require_user 가 먼저 401
+    "rooms":    {"guest": 10, "user": 20},  # 초대 참여 (AI 호출 없음, 규칙 계산만). 스팸 참여 방지용
 }
 
 _counts: dict[tuple[str, str, str], int] = defaultdict(int)

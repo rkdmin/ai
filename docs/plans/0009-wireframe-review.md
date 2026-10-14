@@ -125,7 +125,7 @@ Figma 가 답한 항목은 확정하고, Figma 가 비워 둔 항목은 **UX 프
 ### P1 — 공통 기반
 
 - [x] F01 화면 이동·요청 상태 — 메인 4탭에만 하단 Nav, 상세는 출처로 복귀, 취소 후 늦은 응답이 화면을 덮지 않음
-- [ ] F02 Guest-first Beauty Profile — 앱 재진입 후 홈·MY·FOR YOU 가 같은 결과, 계정 전환 시 이전 데이터 비노출
+- [x] F02 Guest-first Beauty Profile — 앱 재진입 후 홈·MY 가 같은 결과, 계정 전환 시 이전 데이터 비노출. FOR YOU 연결과 게스트→계정 병합은 후속 범위
 - [x] D04 저장 스키마 — 분석 원형 JSON + schemaVersion (`supabase_migrations/0002`), reports·purchases·entitlements·bookmarks·rooms 초안 (`supabase_schema_v10_draft.sql`, owner_id 는 R02 확정까지 auth.users 로 통일). active profile 참조는 F02 에서
 - [x] 기존 데이터 이전 — `analysis_from_row` 가 v1 행을 `legacy: true` + 빈 무드로 읽는다. UI 의 "무드 정보 없음" 표현은 Codex 몫 (api-contract 참조)
 - [ ] 안내 문구·코드 불일치 수정 — 사진 "즉시 폐기" 카피 vs 90일 만료, 계정 삭제 alert (R16·F12 선행). 백엔드 완료 2026-10-14: `DELETE /api/account` 실제 삭제, `GET /api/account/policy` + 응답 `photoExpiresAt`. **카피 수정과 My.jsx 연결은 Codex**
@@ -163,9 +163,9 @@ Figma 가 답한 항목은 확정하고, Figma 가 비워 둔 항목은 **UX 프
 
 ### P6 — 케미·초대
 
-- [ ] D08 케미 사전 — 무드 조합·Traits 호환 규칙, 타입 이름·설명, score/rank tie-break, rule version
-- [ ] F08 Room·참여·랭킹 — 자기/중복 참여 방지, 점수 재현, token 으로 다른 Room 비공개 데이터 불가, 회수 시 공개 조회 즉시 제한
-- [ ] F09 초대 웹·앱 인계 — 초대 token 검증, 기존 프로필/새 분석 분기, 일회성 handoff token, 설치/미설치·만료·재시도 확인 (P0 POC 결과 반영)
+- [x] D08 케미 사전 — 무드 조합·Traits 호환 규칙, 타입 이름·설명, score/rank tie-break, rule version (`chemistry.json` + `chemistry_service`, 2026-10-14. 타입 이름·문장은 운영 검수 대상)
+- [ ] F08 Room·참여·랭킹 — 자기/중복 참여 방지, 점수 재현, token 으로 다른 Room 비공개 데이터 불가, 회수 시 공개 조회 즉시 제한 (백엔드 완료 2026-10-14: `/api/rooms*`, migration 0005. 케미 탭 화면은 Codex)
+- [ ] F09 초대 웹·앱 인계 — 초대 token 검증, 기존 프로필/새 분석 분기, 일회성 handoff token, 설치/미설치·만료·재시도 확인 (P0 POC 결과 반영) (서버 측 완료 2026-10-14: 공개 DTO·join·1회성 handoff claim. 초대 웹 화면·App Links·설치 후 복원은 남음)
 - [ ] Room 생성 로그인 규칙 (R02 와 함께 확정)
 
 ### P7 — 계정·관리

@@ -17,6 +17,7 @@ paths:
 | `backend/routes/history.py` | `GET/POST /api/history` |
 | `backend/routes/photo.py` | `POST /api/photo/generate` (로그인 전용) |
 | `backend/routes/reports.py` | `POST/GET /api/reports`, `GET /api/reports/{id}`, `POST .../retry` — 통합 리포트 (F04) |
+| `backend/routes/rooms.py` | Beauty Room·초대·참여·랭킹·앱 인계 (F08·F09) |
 | `backend/routes/account.py` | `DELETE /api/account` (실제 데이터 삭제, 멱등) · `GET /api/account/policy` (보관 기간) |
 | `backend/services/mediapipe_service.py` | MediaPipe FaceMesh → `inspect_image` (얼굴 수·크기 검사 + `faceRatios`). `tools/landmark.py` 이관 |
 | `backend/services/gemini_service.py` | Gemini 2.5 Flash 호출 (분석/카드/이미지) |
@@ -24,6 +25,8 @@ paths:
 | `backend/services/supabase_service.py` | Supabase Auth/REST/Storage helper |
 | `backend/services/report_service.py` | 리포트 생성·부분 재시도·권한(`has_access`, P4 전엔 `REPORT_ACCESS_MODE`) |
 | `backend/services/report_store.py` | reports 테이블 REST + 미설정 시 메모리 저장소 |
+| `backend/services/chemistry_service.py` | 케미 규칙 계산·랭킹·공개 요약 (`backend/data/chemistry.json`) |
+| `backend/services/room_store.py` | rooms·participants·invite/handoff token 저장소 (REST + 메모리) |
 | `backend/middleware/auth.py` | Supabase JWT 검증 + 로컬 개발 `X-User-Id` 폴백 |
 | `backend/middleware/rate_limit.py` | 인메모리 IP/유저 카운터 (UTC 일자 단위) |
 | `backend/models/schemas.py` | Pydantic 요청/응답 스키마 |
@@ -35,6 +38,7 @@ paths:
 | `backend/test_phase3.py` | 인증/히스토리 경로 스모크 (pytest) |
 | `backend/test_consistency.py` | 얼굴형↔features↔무드 정합성 회귀 (pytest, Gemini 호출 0) |
 | `backend/test_reports.py` | 리포트 생성·멱등·부분 실패·재시도·권한·소유권 (pytest) |
+| `backend/test_chemistry.py` · `test_rooms.py` | 케미 규칙 결정성·타입·랭킹 / Room·초대·참여·회수·인계 (pytest) |
 
 > 경로는 **저장소 루트 기준**이다. `uvicorn` 은 `backend/` 안에서 띄우지만
 > 파일을 열 때는 위 경로를 그대로 쓴다.
@@ -54,6 +58,7 @@ import 한다 — 사본이 없으므로 라벨을 추가·삭제하면 채점�
 | `personal-color-makeup.json` | 컬러 팔레트 레이어 | `makeupByPersonalColor[].personalColor` (spring_warm/summer_cool/autumn_warm/winter_cool) |
 | `feature-tips.json` | 이목구비 보정 팁 (최우선) | `featureTips[].label` (한국어 매칭) |
 | `traits.json` | **Traits 사전** (D01) — 윤곽·비율·대비 축, 라벨·관찰 기준·얼굴형 제외 | `axes.<axis>.traits[].label`, `ruleVersion`, `pickOrder` |
+| `chemistry.json` | **케미 사전** (D08) — 무드 계열·타입 5개·점수·Traits 궁합 규칙. 카드 병합과 무관 | `families`, `types`, `pairToType`, `traitRules`, `ruleVersion` |
 
 병합 규칙·우선순위는 `backend/data/rag_usage_guide.md` 가 단일 진실 소스다.
 이 구조를 바꾸면 해당 가이드를 같은 작업에서 갱신한다.

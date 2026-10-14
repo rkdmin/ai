@@ -25,9 +25,10 @@ AI_ERROR = "AI_ERROR"                    # 그 외 모델 호출 실패
 # ── 리포트·권한 (403 / 404) ───────────────────────────────────────
 REPORT_ACCESS_REQUIRED = "REPORT_ACCESS_REQUIRED"  # 구매 권한 없음 (P4 전엔 REPORT_ACCESS_MODE 가 정한다)
 NOT_FOUND = "NOT_FOUND"                            # 내 소유가 아니거나 없는 리소스. 존재 여부를 구별해 알리지 않는다
+INVITE_INVALID = "INVITE_INVALID"                  # 초대·인계 token 만료/회수/재사용/없음, 또는 참여 규칙 위반. 사유는 detail
 
 PHOTO_CODES = (INVALID_IMAGE, NO_FACE, MULTIPLE_FACES, FACE_TOO_SMALL, UNSUPPORTED_PHOTO)
-ALL_CODES = PHOTO_CODES + (RATE_LIMITED, AI_UNAVAILABLE, AI_ERROR, REPORT_ACCESS_REQUIRED, NOT_FOUND)
+ALL_CODES = PHOTO_CODES + (RATE_LIMITED, AI_UNAVAILABLE, AI_ERROR, REPORT_ACCESS_REQUIRED, NOT_FOUND, INVITE_INVALID)
 
 # 코드별 기본 메시지. 라우트가 더 구체적인 문장을 넘기면 그걸 쓴다.
 DEFAULT_MESSAGES: dict[str, str] = {
@@ -41,6 +42,7 @@ DEFAULT_MESSAGES: dict[str, str] = {
     AI_ERROR: "분석에 실패했어요. 잠시 후 다시 시도해 주세요.",
     REPORT_ACCESS_REQUIRED: "Beauty Report 를 보려면 구매가 필요해요.",
     NOT_FOUND: "요청한 내용을 찾을 수 없어요.",
+    INVITE_INVALID: "유효하지 않은 초대 링크예요.",
 }
 
 STATUS_BY_CODE: dict[str, int] = {
@@ -54,6 +56,7 @@ STATUS_BY_CODE: dict[str, int] = {
     AI_ERROR: 502,
     REPORT_ACCESS_REQUIRED: 403,
     NOT_FOUND: 404,
+    INVITE_INVALID: 400,
 }
 
 
