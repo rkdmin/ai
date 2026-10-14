@@ -8,6 +8,13 @@ from datetime import datetime
 
 from pydantic import BaseModel, Field
 
+# 분석 결과 JSON 의 모양 버전. analyses.schema_version 에 저장되고 응답 schemaVersion 으로 나간다.
+#   1 — 컬럼(face_type/features)만 저장. 무드 없음. result JSON 없음. (2026-10 이전 행)
+#   2 — result JSON + mood_archetype 저장. 저장본에서 무드가 복원된다.
+# 모양을 바꾸면 번호를 올리고 supabase_service.analysis_from_row 의 adapter 에 분기를 추가한다.
+# 구버전 행을 새 모양으로 "지어내서" 채우지 않는다 — 없는 값은 없다고 표현한다 (ADR 0010, plan 0009 P1).
+ANALYSIS_SCHEMA_VERSION = 2
+
 
 class AnalyzeRequest(BaseModel):
     frontImage: str = Field(..., description="data URL 또는 순수 base64 (정면 사진)")
@@ -24,6 +31,7 @@ class AnalyzeResponse(BaseModel):
     # 진단용이라 UI 에 노출하지 않고 DB 에도 저장하지 않는다.
     faceTypeReason: dict | None = None
     analysisId: str | None = None  # Phase 3 (Supabase) 에서 발급
+    schemaVersion: int = ANALYSIS_SCHEMA_VERSION
 
 
 class CardsRequest(BaseModel):
@@ -63,9 +71,12 @@ class HistoryListItem(BaseModel):
     analysisId: str
     faceType: str
     personalColor: str | None = None
+    moodArchetype: list[str] = []  # schema v1 행은 빈 배열 (legacy=True)
     cardTypes: list[str] = []
     createdAt: datetime
     photoExpired: bool
+    schemaVersion: int = 1
+    legacy: bool = False  # True 면 저장 당시 모양이 현재와 달라 일부 필드가 비어 있다
 
 
 class HistoryDetailResponse(BaseModel):

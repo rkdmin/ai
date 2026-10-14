@@ -126,8 +126,8 @@ Figma 가 답한 항목은 확정하고, Figma 가 비워 둔 항목은 **UX 프
 
 - [ ] F01 화면 이동·요청 상태 — 메인 4탭에만 하단 Nav, 상세는 출처로 복귀, 취소 후 늦은 응답이 화면을 덮지 않음
 - [ ] F02 Guest-first Beauty Profile — 앱 재진입 후 홈·MY·FOR YOU 가 같은 결과, 계정 전환 시 이전 데이터 비노출
-- [ ] D04 저장 스키마 — 분석 원형 JSON + schemaVersion, active profile 참조, reports·purchases·entitlements·bookmarks·rooms 설계 (소유자 컬럼은 R02 확정까지 추상화)
-- [ ] 기존 데이터 이전 — schemaVersion 없는 분석은 legacy adapter 로 읽고 무드 없음을 표현, 지어내지 않음
+- [x] D04 저장 스키마 — 분석 원형 JSON + schemaVersion (`supabase_migrations/0002`), reports·purchases·entitlements·bookmarks·rooms 초안 (`supabase_schema_v10_draft.sql`, owner_id 는 R02 확정까지 auth.users 로 통일). active profile 참조는 F02 에서
+- [x] 기존 데이터 이전 — `analysis_from_row` 가 v1 행을 `legacy: true` + 빈 무드로 읽는다. UI 의 "무드 정보 없음" 표현은 Codex 몫 (api-contract 참조)
 - [ ] 안내 문구·코드 불일치 수정 — 사진 "즉시 폐기" 카피 vs 90일 만료, 계정 삭제 alert (R16·F12 선행)
 
 ### P2 — 무료 분석

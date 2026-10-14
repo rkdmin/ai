@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 
 from middleware import rate_limit
 from middleware.auth import Principal, get_principal
-from models.schemas import AnalyzeRequest, AnalyzeResponse
+from models.schemas import ANALYSIS_SCHEMA_VERSION, AnalyzeRequest, AnalyzeResponse
 from services import gemini_service, mediapipe_service, supabase_service
 
 router = APIRouter()
@@ -36,6 +36,9 @@ async def analyze(
     except gemini_service.GeminiError as e:
         status = 503 if gemini_service.is_transient_error(str(e)) else 400
         raise HTTPException(status_code=status, detail=str(e))
+
+    # 저장본과 응답이 같은 모양 버전을 갖도록 insert 전에 찍는다.
+    result["schemaVersion"] = ANALYSIS_SCHEMA_VERSION
 
     if not principal.is_guest:
         front_image_url, expires_at = await supabase_service.upload_image_data_url(

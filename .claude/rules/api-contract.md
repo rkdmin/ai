@@ -27,7 +27,8 @@ paths:
     "confidence": 78
   },
   "faceRatios": { "foreheadRatio": 0.95, "jawRatio": 0.82, "...": "..." },
-  "analysisId": "uuid (로그인 유저만 발급)"
+  "analysisId": "uuid (로그인 유저만 발급)",
+  "schemaVersion": 2
 }
 ```
 
@@ -50,6 +51,16 @@ paths:
 - `faceRatios` — MediaPipe 계산값. 디버깅·골든셋 회귀 비교용. **프론트는 표시하지 않는다.**
 - `analysisId` — 로그인 유저에게만 발급. 카드 저장(`POST /api/history`)과
   사진 생성(`POST /api/photo/generate`)에 사용된다.
+- `schemaVersion` — 분석 결과 JSON 의 모양 버전 (`backend/models/schemas.py` 의 `ANALYSIS_SCHEMA_VERSION`, 현재 2).
+  로그인 유저는 응답 전체가 `analyses.result` 에 같은 버전으로 저장된다.
+
+### 저장된 분석 다시 읽기 — legacy (`GET /api/history/{id}` · `GET /api/history`)
+
+`analysis` 에 `schemaVersion` 과 `legacy` 가 붙는다. **`legacy: true` 면 2026-10 이전에 저장된 v1 행**이라
+`moodArchetype` 이 빈 배열이다. 백엔드는 얼굴형 선호 무드로 채우지 않는다 — 분석하지 않은 값을
+분석 결과처럼 보이게 하지 않기 위해서다. UI 는 `legacy` 를 보고 "무드 정보 없음" 을 표현하거나 재분석을 권한다.
+adapter 는 `supabase_service.analysis_from_row` 하나다. 모양을 또 바꾸면 거기에 분기를 추가한다.
+목록 항목(`HistoryListItem`)에도 `moodArchetype` / `schemaVersion` / `legacy` 가 있다.
 
 ### 얼굴 미검출 시 조기 거부 (Gemini 호출 안 함)
 

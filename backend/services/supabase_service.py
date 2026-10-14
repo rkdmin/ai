@@ -11,6 +11,8 @@ from typing import Any
 import httpx
 from fastapi import HTTPException
 
+from models.schemas import ANALYSIS_SCHEMA_VERSION
+
 
 SUPABASE_URL = os.getenv("SUPABASE_URL", "").rstrip("/")
 SUPABASE_ANON_KEY = os.getenv("SUPABASE_ANON_KEY", "")
@@ -95,6 +97,46 @@ async def upload_image_data_url(data_url: str, prefix: str, ttl_days: int) -> tu
     return f"{SUPABASE_URL}/storage/v1/object/public/{SUPABASE_PHOTO_BUCKET}/{object_path}", expires_at
 
 
+# result JSON 에 넣지 않는 키. faceRatios 는 전용 컬럼이 있고, faceTypeReason 은 진단용이라
+# DB 에 남기지 않는다 (api-contract). analysisId 는 행 자체가 ID 다.
+_RESULT_EXCLUDED_KEYS = frozenset({"faceRatios", "faceTypeReason", "analysisId", "frontImage"})
+
+
+def analysis_result_payload(result: dict[str, Any]) -> dict[str, Any]:
+    """저장용 result JSON — 응답 그대로에서 전용 컬럼·진단 필드를 뺀 것."""
+    return {k: v for k, v in result.items() if k not in _RESULT_EXCLUDED_KEYS}
+
+
+def analysis_from_row(row: dict[str, Any]) -> dict[str, Any]:
+    """
+    analyses 행 → 응답 analysis dict. **legacy adapter** 가 여기 있다.
+
+    schema v2 행은 result JSON 을 그대로 쓴다. v1 행(result 없음)은 컬럼으로만 복원하고
+    무드는 빈 배열로 둔 채 legacy=True 를 세운다 — 저장하지 않은 무드를 얼굴형 선호 무드로
+    채우면 "분석 결과"처럼 보이므로 하지 않는다. UI 는 legacy 를 보고 "무드 정보 없음"을 표현한다.
+    """
+    version = int(row.get("schema_version") or 1)
+    stored = row.get("result") if version >= 2 else None
+    if isinstance(stored, dict):
+        analysis = dict(stored)
+        legacy = False
+    else:
+        analysis = {
+            "faceType": row.get("face_type"),
+            "features": row.get("features") or [],
+            "moodArchetype": list(row.get("mood_archetype") or []),
+        }
+        legacy = True
+    analysis.setdefault("faceType", row.get("face_type"))
+    analysis.setdefault("features", row.get("features") or [])
+    analysis.setdefault("moodArchetype", list(row.get("mood_archetype") or []))
+    analysis["faceRatios"] = row.get("face_ratios")
+    analysis["analysisId"] = row.get("id")
+    analysis["schemaVersion"] = version
+    analysis["legacy"] = legacy
+    return analysis
+
+
 async def insert_analysis(
     *,
     user_id: str,
@@ -112,6 +154,9 @@ async def insert_analysis(
         "face_ratios": result.get("faceRatios"),
         "personal_color": personal_color,
         "features": result.get("features") or [],
+        "mood_archetype": list(result.get("moodArchetype") or []),
+        "result": analysis_result_payload(result),
+        "schema_version": int(result.get("schemaVersion") or ANALYSIS_SCHEMA_VERSION),
         "front_image_url": front_image_url,
         "photo_expires_at": photo_expires_at.isoformat(),
     }
@@ -206,7 +251,7 @@ async def list_history(user_id: str, limit: int = 5) -> list[dict[str, Any]]:
         return []
     params = {
         "user_id": f"eq.{user_id}",
-        "select": "id,face_type,personal_color,created_at,photo_expires_at,front_image_url,cards(card_type)",
+        "select": "id,face_type,personal_color,mood_archetype,schema_version,created_at,photo_expires_at,front_image_url,cards(card_type)",
         "order": "created_at.desc",
         "limit": str(limit),
     }
@@ -219,14 +264,18 @@ async def list_history(user_id: str, limit: int = 5) -> list[dict[str, Any]]:
     for row in resp.json():
         expires = row.get("photo_expires_at")
         expired = bool(expires and datetime.fromisoformat(expires.replace("Z", "+00:00")) < now)
+        version = int(row.get("schema_version") or 1)
         items.append(
             {
                 "analysisId": row["id"],
                 "faceType": row["face_type"],
                 "personalColor": row.get("personal_color"),
+                "moodArchetype": list(row.get("mood_archetype") or []),
                 "cardTypes": sorted({c["card_type"] for c in row.get("cards", []) if c.get("card_type")}),
                 "createdAt": row["created_at"],
                 "photoExpired": expired or not row.get("front_image_url"),
+                "schemaVersion": version,
+                "legacy": version < ANALYSIS_SCHEMA_VERSION,
             }
         )
     return items
@@ -236,7 +285,7 @@ async def get_history_detail(user_id: str, analysis_id: str) -> dict[str, Any]:
     row = await _get_analysis(
         user_id,
         analysis_id,
-        select="id,face_type,face_ratios,personal_color,features,created_at,photo_expires_at,front_image_url,cards(card_type,card_data),generated_photos(card_type,storage_url,expires_at)",
+        select="id,face_type,face_ratios,personal_color,features,mood_archetype,result,schema_version,created_at,photo_expires_at,front_image_url,cards(card_type,card_data),generated_photos(card_type,storage_url,expires_at)",
     )
     if not row:
         raise HTTPException(status_code=404, detail="히스토리를 찾을 수 없습니다.")
@@ -247,18 +296,17 @@ async def get_history_detail(user_id: str, analysis_id: str) -> dict[str, Any]:
         if expires and datetime.fromisoformat(expires.replace("Z", "+00:00")) < now:
             continue
         generated.append(photo)
-    return {
-        "analysis": {
-            "faceType": row["face_type"],
-            "features": row.get("features") or [],
-            "moodArchetype": [],
-            "faceRatios": row.get("face_ratios"),
-            "analysisId": row["id"],
+    analysis = analysis_from_row(row)
+    analysis.update(
+        {
             "personalColor": row.get("personal_color"),
             "createdAt": row.get("created_at"),
             "photoExpired": bool(row.get("photo_expires_at") and datetime.fromisoformat(row["photo_expires_at"].replace("Z", "+00:00")) < now),
             "frontImageUrl": row.get("front_image_url"),
-        },
+        }
+    )
+    return {
+        "analysis": analysis,
         "cards": [c.get("card_data") for c in row.get("cards", []) if c.get("card_data")],
         "generatedPhotos": generated,
     }

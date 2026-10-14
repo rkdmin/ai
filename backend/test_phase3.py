@@ -84,6 +84,87 @@ def test_analyze_logged_in_user_persists_analysis_and_returns_id():
     insert.assert_awaited_once()
     assert insert.await_args.kwargs["user_id"] == "user-1"
     assert insert.await_args.kwargs["personal_color"] == "spring_warm"
+    # 저장본과 응답이 같은 모양 버전을 갖는다 (plan 0009 P1 · D04)
+    assert r.json()["schemaVersion"] == 2
+    assert insert.await_args.kwargs["result"]["schemaVersion"] == 2
+
+
+def test_analysis_from_row_v2_restores_mood_from_result_json():
+    from services.supabase_service import analysis_from_row
+
+    row = {
+        "id": "analysis-2",
+        "face_type": "둥근형",
+        "features": ["눈 간격 넓음"],
+        "face_ratios": {"jawRatio": 0.9},
+        "mood_archetype": ["SOFT", "ROMANTIC", "FRESH"],
+        "schema_version": 2,
+        "result": {
+            "faceType": "둥근형",
+            "features": ["눈 간격 넓음"],
+            "moodArchetype": ["SOFT", "ROMANTIC", "FRESH"],
+            "schemaVersion": 2,
+        },
+    }
+    a = analysis_from_row(row)
+    assert a["moodArchetype"] == ["SOFT", "ROMANTIC", "FRESH"]
+    assert a["faceRatios"] == {"jawRatio": 0.9}
+    assert a["analysisId"] == "analysis-2"
+    assert a["schemaVersion"] == 2
+    assert a["legacy"] is False
+
+
+def test_analysis_from_row_v1_is_legacy_and_does_not_invent_mood():
+    from services.supabase_service import analysis_from_row
+
+    # 2026-10 이전 행: result 없음, mood_archetype 컬럼 자체가 없을 수도 있다
+    row = {"id": "analysis-1", "face_type": "계란형", "features": ["균형"], "face_ratios": None}
+    a = analysis_from_row(row)
+    assert a["faceType"] == "계란형"
+    assert a["moodArchetype"] == []  # 얼굴형 선호 무드로 채우지 않는다
+    assert a["schemaVersion"] == 1
+    assert a["legacy"] is True
+
+
+def test_analysis_result_payload_strips_diagnostic_fields():
+    from services.supabase_service import analysis_result_payload
+
+    result = {
+        "faceType": "계란형",
+        "features": [],
+        "moodArchetype": ["CLEAN", "ELEGANT", "CLASSIC"],
+        "faceRatios": {"jawRatio": 0.8},
+        "faceTypeReason": {"decidedAt": 4},
+        "analysisId": "x",
+        "schemaVersion": 2,
+    }
+    stored = analysis_result_payload(result)
+    assert "faceRatios" not in stored and "faceTypeReason" not in stored and "analysisId" not in stored
+    assert stored["moodArchetype"] == ["CLEAN", "ELEGANT", "CLASSIC"]
+
+
+def test_history_detail_uses_legacy_adapter():
+    row = {
+        "id": "analysis-1",
+        "face_type": "계란형",
+        "face_ratios": None,
+        "personal_color": None,
+        "features": ["균형"],
+        "created_at": "2026-05-11T00:00:00+00:00",
+        "photo_expires_at": None,
+        "front_image_url": None,
+        "cards": [],
+        "generated_photos": [],
+    }
+    with patch("services.supabase_service._get_analysis", new=AsyncMock(return_value=row)):
+        with TestClient(app) as client:
+            r = client.get("/api/history/analysis-1", headers={"X-User-Id": "user-1"})
+
+    assert r.status_code == 200, r.text
+    analysis = r.json()["analysis"]
+    assert analysis["legacy"] is True
+    assert analysis["moodArchetype"] == []
+    assert analysis["schemaVersion"] == 1
 
 
 def test_analyze_transient_gemini_error_returns_503():

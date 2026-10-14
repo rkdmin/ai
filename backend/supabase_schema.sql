@@ -1,5 +1,7 @@
--- Phase 3 Supabase schema.
--- Apply in Supabase SQL Editor after enabling Auth providers.
+-- Phase 3 Supabase schema (+ plan 0009 P1 의 analyses v2 컬럼).
+-- 새 프로젝트: 이 파일만 적용한다. 기존 프로젝트: supabase_migrations/ 의 번호 순으로 적용한다.
+-- v1.0 신규 테이블(reports/purchases/bookmarks/rooms …)은 supabase_schema_v10_draft.sql 초안에 있고
+-- 각 단계(P3~P6)에서 migration 으로 옮겨 적용한다. 여기엔 아직 없다.
 
 create extension if not exists "pgcrypto";
 
@@ -10,6 +12,9 @@ create table if not exists public.analyses (
   face_ratios jsonb,
   personal_color text,
   features text[] default '{}',
+  mood_archetype text[] not null default '{}',   -- v2: 무드 3개 (목록 조회용)
+  result jsonb,                                  -- v2: 분석 응답 JSON 원형 (faceRatios·faceTypeReason 제외)
+  schema_version int not null default 1,         -- 1 = 컬럼만 · 2 = result 있음. 백엔드 ANALYSIS_SCHEMA_VERSION
   front_image_url text,
   created_at timestamptz default now(),
   photo_expires_at timestamptz

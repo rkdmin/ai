@@ -22,7 +22,9 @@ paths:
 | `backend/middleware/auth.py` | Supabase JWT 검증 + 로컬 개발 `X-User-Id` 폴백 |
 | `backend/middleware/rate_limit.py` | 인메모리 IP/유저 카운터 (UTC 일자 단위) |
 | `backend/models/schemas.py` | Pydantic 요청/응답 스키마 |
-| `backend/supabase_schema.sql` | 테이블/RLS 스키마 |
+| `backend/supabase_schema.sql` | 테이블/RLS 스키마 (새 프로젝트용 전체) |
+| `backend/supabase_migrations/` | 기존 프로젝트에 번호 순으로 적용하는 증분 SQL |
+| `backend/supabase_schema_v10_draft.sql` | **초안·미적용** — reports/purchases/bookmarks/rooms (plan 0009 D04). 각 단계에서 migration 으로 옮긴다 |
 | `backend/test_integration.py` | 백엔드 통합 스모크 (pytest, 프론트 vitest 와 별개) |
 | `backend/test_phase3.py` | 인증/히스토리 경로 스모크 (pytest) |
 | `backend/test_consistency.py` | 얼굴형↔features↔무드 정합성 회귀 (pytest, Gemini 호출 0) |
@@ -102,6 +104,8 @@ Gemini 는 한국어 값을 반환하고 RAG JSON 은 영문 키를 쓴다. 새 
 3. **인증이 필요한 엔드포인트에 `X-User-Id` 폴백을 신뢰하지 않는다.** 로컬 개발 편의 장치이며
    운영에서는 Supabase JWT 검증만 유효하다.
 4. `backend/models/schemas.py` 는 프론트와의 계약이다. 필드를 바꾸면 `src/api/` 와 관련 테스트를 함께 고친다.
+5. **분석 결과 모양을 바꾸면 `ANALYSIS_SCHEMA_VERSION` 을 올리고 `analysis_from_row` 에 구버전 분기를 둔다.**
+   구버전 행을 새 값으로 지어내 채우지 않는다 — 없는 값은 `legacy: true` 로 없다고 말한다.
 
 ## 검증
 

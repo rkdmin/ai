@@ -91,6 +91,8 @@ Supabase `posts` 테이블을 도입한다.
 
 - Supabase SQL Editor 에서 `backend/supabase_schema.sql` 적용
   (`analyses` / `cards` / `feedback` / `usage_counters` / `generated_photos` + RLS)
+- 이미 적용한 프로젝트는 `backend/supabase_migrations/0002_analysis_schema_v2.sql` 을 추가 적용
+  (`analyses.result` / `schema_version` / `mood_archetype` — 저장된 분석에서 무드 복원)
 - Storage bucket `analysis-photos` 생성 (정면 사진 90일 보관)
 - Kakao / Google OAuth provider 와 redirect URL 등록
 - Android 실기기 카카오 PoC — 앱 설치 / 미설치 / 백그라운드 복귀 케이스
