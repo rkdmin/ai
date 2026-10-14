@@ -148,7 +148,7 @@ export default function My({ onNav, onBack, onSignOut }) {
         </div>
       </div>
 
-      <TabBar active="my" onNav={onNav} />
+      {!confirmStep && <TabBar active="my" onNav={onNav} />}
 
       {confirmStep && (
         <DeleteAccountSheet

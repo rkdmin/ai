@@ -14,32 +14,43 @@ last-verified: "2026-10-14"
 현재 하단 탭바는 4개다.
 
 ```
-[홈] [트렌드] [히스토리] [마이]
+[홈] [스타일] [케미] [마이]
 ```
 
 - `home`: 새 분석 시작 + 최근 기록 이어보기
-- `trend`: "준비 중" 경량 화면 (mock 피드 제거, START ANALYSIS CTA, Phase 4-6)
-- `history`: 로그인 사용자만 접근 가능
-- `my`: 로그인 사용자만 접근 가능
+- `style`: 스타일 콘텐츠 준비 중 화면
+- `chemistry`: 케미 콘텐츠 준비 중 화면
+- `my`: 계정과 Beauty Profile 확인
 
 인증 게이트:
-- 비로그인 사용자가 `history`, `my` 로 이동하면 `guest_gate` 로 보낸다.
-- `guest_gate` 에서 OAuth 로그인 성공 시 원래 의도한 탭/기록 상세로 복귀한다.
+- 홈의 히스토리 진입은 로그인 사용자에게만 열고, 비로그인 사용자는 `guest_gate` 로 보낸다.
+- `guest_gate` 에서 OAuth 로그인 성공 시 원래 의도한 기록 목록/상세로 복귀한다.
 
 ---
 
-## 전체 stage 맵 (`App.jsx`)
+## 화면 상태 맵 (`App.jsx`)
 
 ```txt
-splash
+flow: splash
   → onboarding1 → onboarding2 → onboarding3
   → login | home
 
+main: home | style | chemistry | my
+
+analysis: upload → personal_color → loading → result_home
+  → hair_loading → result_tabs_hair
+  → makeup_loading → result_tabs_makeup
+  → synth_loading
+
+detail: history | history_detail | card_detail | makeup_detail
+  origin: 진입한 main/analysis/detail route
+
+sheet: guest_gate | ad_gate | share_card | share_card_makeup
+  origin: 시트를 연 route
+
 home
   → upload → personal_color → loading → result_home
-  → trend
   → history → history_detail
-  → my
   → guest_gate
 
 result_home
@@ -49,7 +60,12 @@ result_home
 ```
 
 핵심 포인트:
+- 하나의 `stage` 문자열 대신 `main`·`analysis`·`detail`·`sheet`·`flow` route를 분리한다.
+- 하단 탭바는 `main` 네 화면에서만 표시하며 분석·결과·결제·상세·시트에서는 숨긴다.
 - `history_detail` 은 `home recent` 와 `history list` 두 곳에서 모두 진입한다.
+- 상세와 시트는 `origin` route를 보관해 화면 버튼·브라우저·Android 뒤로가기가 같은 출처로 복귀한다.
+- 탭 전환은 route만 바꾸고 현재 분석 결과를 유지한다.
+- 분석·카드·합성 요청은 요청 ID로 보호해 이탈 또는 새 요청 뒤 늦게 도착한 응답을 무시한다.
 - `ad_gate` 뒤 이동 위치는 고정이 아니라 `adReturn` 상태로 결정한다.
 - `share_card` 는 헤어 결과 공유, `share_card_makeup` 은 메이크업 결과 공유다.
 
@@ -71,20 +87,19 @@ result_home
 - `ad_gate` → `adReturn.back` (없으면 `result_tabs_hair`)
 - `share_card` → `activeCard` 가 있으면 `card_detail`, 없으면 `result_home`
 - `share_card_makeup` → `makeup_detail`
-- `history` / `my` / `trend` → `home`
-- `history_detail` → 진입 출처 기준 복귀 (`historySelection.back`)
+- `style` / `chemistry` / `my` → `home`
+- `history_detail` → route의 `origin` 기준 복귀
   - `home recent` 에서 열었으면 `home`
   - `history list` 에서 열었으면 `history`
 - `synth_loading` → **뒤로가기 없음** (`PARENT_STAGE` 에 없어 back 이 무시된다. 합성 중 이탈 방지)
 
-구현은 `src/utils/navigation.js` 에 있다. 고정 복귀 지점은 `PARENT_STAGE` 테이블,
-진입 맥락에 따라 달라지는 세 화면(`history_detail` · `ad_gate` · `share_card`)은
-`resolveParentStage(stage, ctx)` 가 상태를 보고 결정한다.
+구현은 `src/utils/navigation.js` 에 있다. 분석 화면의 고정 복귀 지점은 `ANALYSIS_PARENT`,
+진입 맥락에 따라 달라지는 상세·시트는 각 route의 `origin`과 `resolveBackRoute(route)`가 결정한다.
 Capacitor Android 하드웨어 back 은 브라우저 `popstate` 와 같은 `onPop` 을 탄다.
 
 **화면 안의 닫기 버튼과 하드웨어 back 은 같은 결과를 내야 한다.** 새 화면을 추가할 때
-그 화면의 `onClose` 로직을 `resolveParentStage()` 에도 반영한다.
-회귀는 `test/navigation.test.js` 가 지킨다.
+그 화면의 route 종류와 `origin` 또는 `ANALYSIS_PARENT`를 함께 정의한다.
+회귀는 `test/navigation.test.js`와 `test/requestGate.test.js`가 지킨다.
 
 루트 화면은 둘이다 — `home`, 그리고 첫 방문 흐름의 `onboarding1`. 둘은 뒤로 갈 곳이 없다.
 

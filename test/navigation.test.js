@@ -1,76 +1,64 @@
-import { describe, it, expect } from 'vitest';
-import { PARENT_STAGE, resolveParentStage } from '../src/utils/navigation';
+import { describe, expect, it } from 'vitest';
+import {
+  MAIN_TABS,
+  analysisRoute,
+  detailRoute,
+  flowRoute,
+  mainRoute,
+  resolveBackRoute,
+  routeForScreen,
+  routeHasTabBar,
+  routeScreen,
+  sheetRoute,
+  transitionNavigation,
+} from '../src/utils/navigation';
 
-describe('resolveParentStage — 고정 복귀 지점', () => {
-  it('맥락과 무관한 화면은 PARENT_STAGE 를 그대로 쓴다', () => {
-    expect(resolveParentStage('personal_color')).toBe('upload');
-    expect(resolveParentStage('card_detail')).toBe('result_tabs_hair');
-    expect(resolveParentStage('makeup_detail')).toBe('result_tabs_makeup');
-    expect(resolveParentStage('share_card_makeup')).toBe('makeup_detail');
-    expect(resolveParentStage('trend')).toBe('home');
+describe('F01 route 역할 분리', () => {
+  it('메인 탭·분석·상세·시트를 서로 다른 route kind로 만든다', () => {
+    expect(MAIN_TABS).toEqual(['home', 'style', 'chemistry', 'my']);
+    expect(routeForScreen('home')).toEqual({ kind: 'main', tab: 'home' });
+    expect(routeForScreen('upload')).toEqual({ kind: 'analysis', screen: 'upload' });
+    expect(routeForScreen('card_detail')).toMatchObject({ kind: 'detail', screen: 'card_detail' });
+    expect(routeForScreen('share_card')).toMatchObject({ kind: 'sheet', screen: 'share_card' });
+    expect(routeForScreen('login')).toEqual({ kind: 'flow', screen: 'login' });
   });
 
-  it('합성 로딩 중에는 뒤로가기를 무시한다 (복귀 지점 없음)', () => {
-    expect(resolveParentStage('synth_loading')).toBeUndefined();
-  });
-
-  it('알 수 없는 stage 는 undefined', () => {
-    expect(resolveParentStage('nope')).toBeUndefined();
-  });
-});
-
-describe('resolveParentStage — share_card (회귀)', () => {
-  // 하드웨어/브라우저 back 이 result_home 으로 튀어 카드 상세를 건너뛰던 버그.
-  // ShareCard 의 onClose 와 같은 결과를 내야 한다.
-  it('카드에서 연 공유는 카드 상세로 돌아간다', () => {
-    expect(resolveParentStage('share_card', { activeCard: { rank: 1 } })).toBe('card_detail');
-  });
-
-  it('결과 화면에서 연 공유는 결과 화면으로 돌아간다', () => {
-    expect(resolveParentStage('share_card', { activeCard: null })).toBe('result_home');
-    expect(resolveParentStage('share_card')).toBe('result_home');
-  });
-});
-
-describe('resolveParentStage — 진입 맥락에 따라 달라지는 화면', () => {
-  it('history_detail 은 진입 출처로 복귀한다', () => {
-    expect(resolveParentStage('history_detail', { historySelection: { back: 'home' } })).toBe('home');
-    expect(resolveParentStage('history_detail', { historySelection: { back: 'history' } })).toBe('history');
-  });
-
-  it('history_detail 은 출처가 없으면 history 로 폴백한다', () => {
-    expect(resolveParentStage('history_detail', {})).toBe('history');
-    expect(resolveParentStage('history_detail', { historySelection: {} })).toBe('history');
-  });
-
-  it('ad_gate 는 adReturn.back 을 따른다', () => {
-    expect(resolveParentStage('ad_gate', { adReturn: { back: 'result_tabs_makeup' } })).toBe('result_tabs_makeup');
-  });
-
-  it('ad_gate 는 adReturn 이 없으면 PARENT_STAGE 폴백', () => {
-    expect(resolveParentStage('ad_gate', {})).toBe(PARENT_STAGE.ad_gate);
+  it('하단 탭은 네 개의 main route에서만 노출한다', () => {
+    for (const tab of MAIN_TABS) expect(routeHasTabBar(mainRoute(tab))).toBe(true);
+    expect(routeHasTabBar(analysisRoute('result_home'))).toBe(false);
+    expect(routeHasTabBar(detailRoute('card_detail'))).toBe(false);
+    expect(routeHasTabBar(sheetRoute('share_card'))).toBe(false);
+    expect(routeHasTabBar(flowRoute('login'))).toBe(false);
   });
 });
 
-describe('PARENT_STAGE 무결성', () => {
-  it('모든 값이 자기 자신을 가리키지 않는다 (무한 루프 방지)', () => {
-    for (const [stage, parent] of Object.entries(PARENT_STAGE)) {
-      expect(parent).not.toBe(stage);
-    }
+describe('F01 origin 기반 뒤로가기', () => {
+  it('상세와 시트는 버튼·브라우저·Android가 함께 쓰는 origin으로 복귀한다', () => {
+    const home = mainRoute('home');
+    const history = detailRoute('history', home);
+    const historyItem = detailRoute('history_detail', history);
+    const share = sheetRoute('share_card', historyItem);
+
+    expect(resolveBackRoute(share)).toEqual(historyItem);
+    expect(resolveBackRoute(historyItem)).toEqual(history);
+    expect(resolveBackRoute(history)).toEqual(home);
   });
 
-  it('뒤로가기를 따라가면 루트 화면에 도달한다', () => {
-    // 루트는 두 개다. `home` 은 앱의 기본 화면이고,
-    // `onboarding1` 은 첫 방문 흐름의 첫 화면이라 뒤로 갈 곳이 없다.
-    const ROOTS = ['home', 'onboarding1'];
-    for (const stage of Object.keys(PARENT_STAGE)) {
-      let cur = stage;
-      let hops = 0;
-      while (cur && !ROOTS.includes(cur) && hops < 10) {
-        cur = PARENT_STAGE[cur];
-        hops += 1;
-      }
-      expect(ROOTS, `${stage} 에서 루트까지 못 감`).toContain(cur);
-    }
+  it('분석 단계의 고정 복귀와 합성 중 back 무시를 유지한다', () => {
+    expect(resolveBackRoute(analysisRoute('personal_color'))).toEqual(analysisRoute('upload'));
+    expect(resolveBackRoute(analysisRoute('result_home'))).toEqual(mainRoute('home'));
+    expect(resolveBackRoute(analysisRoute('synth_loading'))).toBeUndefined();
+  });
+});
+
+describe('F01 탭 전환 상태 보존', () => {
+  it('main tab을 바꿔도 현재 분석 결과를 초기화하지 않는다', () => {
+    const result = { analysisId: 'analysis-1', faceType: '계란형' };
+    const current = { route: mainRoute('home'), result, anotherState: { cards: 4 } };
+    const next = transitionNavigation(current, mainRoute('style'));
+
+    expect(routeScreen(next.route)).toBe('style');
+    expect(next.result).toBe(result);
+    expect(next.anotherState).toBe(current.anotherState);
   });
 });

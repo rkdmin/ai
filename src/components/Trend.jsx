@@ -3,12 +3,14 @@
 import { StatusBar } from './common/StatusBar';
 import { TabBar, IndexMark } from './common/Layout';
 
-export default function Trend({ onNav }) {
+export default function Trend({ onNav, section = 'style' }) {
+  const isChemistry = section === 'chemistry';
+  const label = isChemistry ? 'CHEMISTRY' : 'STYLE';
   return (
     <div style={{ width: '100%', minHeight: '100dvh', background: '#fff', color: '#000', display: 'flex', flexDirection: 'column' }}>
       <StatusBar />
       <div style={{ display: 'flex', alignItems: 'center', padding: '4px 14px 6px', flexShrink: 0, minHeight: 52 }}>
-        <span className="label" style={{ paddingLeft: 8 }}>TREND</span>
+        <span className="label" style={{ paddingLeft: 8 }}>{label}</span>
       </div>
       <div style={{ height: 1, background: '#000', flexShrink: 0 }} />
 
@@ -20,7 +22,7 @@ export default function Trend({ onNav }) {
           }}
         >
           <h1 className="ko" style={{ margin: 0, fontSize: 26, fontWeight: 300, lineHeight: 1.25, letterSpacing: '-.01em' }}>
-            트렌드 피드는<br />준비 중이에요
+            {isChemistry ? <>뷰티 케미는<br />준비 중이에요</> : <>스타일 피드는<br />준비 중이에요</>}
           </h1>
           <IndexMark n="soon" />
         </div>
@@ -37,8 +39,9 @@ export default function Trend({ onNav }) {
             coming soon
           </span>
           <div className="ko" style={{ fontSize: 13.5, fontWeight: 300, lineHeight: 1.7, color: '#5a5a5a', maxWidth: 320 }}>
-            얼굴형·무드·시즌별 인기 룩을 모아 보여드릴 주간 트렌드 피드를 준비하고 있어요.
-            준비되면 이 탭에서 가장 먼저 만나보실 수 있어요.
+            {isChemistry
+              ? '서로의 Beauty Mood를 연결해 케미를 확인하는 기능을 준비하고 있어요.'
+              : '얼굴형·무드별 스타일 콘텐츠를 모아 보여드릴 피드를 준비하고 있어요.'}
           </div>
           <button
             onClick={() => onNav?.('home')}
@@ -54,7 +57,7 @@ export default function Trend({ onNav }) {
         </div>
       </div>
 
-      <TabBar active="trend" onNav={onNav} />
+      <TabBar active={section} onNav={onNav} />
     </div>
   );
 }

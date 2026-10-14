@@ -1,58 +1,103 @@
-// 뒤로가기 복귀 지점 결정 로직.
-//
-// App.jsx 밖으로 뺀 이유: 순수 함수라 단위 테스트가 가능하고,
-// 화면 안 닫기 버튼과 하드웨어/브라우저 back 이 어긋나는 사고를 회귀로 막기 위해서다.
-// (`share_card` 에서 실제로 어긋나 있었다 — onClose 는 card_detail, back 은 result_home)
+// 앱 화면을 하나의 stage 문자열로 섞지 않고 역할별 route 로 구분한다.
+// 상세와 시트는 origin route 를 직접 보관하므로 화면 버튼·브라우저·Android back 이 같은 곳으로 돌아간다.
 
-/** 화면별 기본 복귀 지점. 진입 맥락과 무관하게 고정인 것들. */
-export const PARENT_STAGE = {
-  onboarding2: 'onboarding1',
-  onboarding3: 'onboarding2',
-  login: 'home',
-  guest_gate: 'home',
-  upload: 'home',
-  personal_color: 'upload',
-  loading: 'home',
-  error_face: 'home',
-  error_network: 'home',
-  result_home: 'home',
-  hair_loading: 'result_home',
-  result_tabs_hair: 'result_home',
-  card_detail: 'result_tabs_hair',
-  // ad_gate / share_card 는 resolveParentStage 가 상태를 보고 덮어쓴다. 아래는 폴백값이다.
-  ad_gate: 'result_tabs_hair',
-  share_card: 'result_home',
-  makeup_loading: 'result_home',
-  result_tabs_makeup: 'result_home',
-  makeup_detail: 'result_tabs_makeup',
-  share_card_makeup: 'makeup_detail',
-  trend: 'home',
-  history: 'home',
-  history_detail: 'history',
-  my: 'home',
+export const MAIN_TABS = ['home', 'style', 'chemistry', 'my'];
+
+const ANALYSIS_SCREENS = new Set([
+  'upload',
+  'personal_color',
+  'loading',
+  'error_face',
+  'error_network',
+  'result_home',
+  'hair_loading',
+  'result_tabs_hair',
+  'makeup_loading',
+  'result_tabs_makeup',
+  'synth_loading',
+]);
+
+const DETAIL_SCREENS = new Set(['history', 'history_detail', 'card_detail', 'makeup_detail']);
+const SHEET_SCREENS = new Set(['guest_gate', 'ad_gate', 'share_card', 'share_card_makeup']);
+const FLOW_SCREENS = new Set(['splash', 'onboarding1', 'onboarding2', 'onboarding3', 'login']);
+
+export function mainRoute(tab = 'home') {
+  return { kind: 'main', tab: MAIN_TABS.includes(tab) ? tab : 'home' };
+}
+
+export function analysisRoute(screen) {
+  return { kind: 'analysis', screen };
+}
+
+export function detailRoute(screen, origin = mainRoute('home')) {
+  return { kind: 'detail', screen, origin };
+}
+
+export function sheetRoute(screen, origin = mainRoute('home')) {
+  return { kind: 'sheet', screen, origin };
+}
+
+export function flowRoute(screen) {
+  return { kind: 'flow', screen };
+}
+
+const ANALYSIS_PARENT = {
+  upload: mainRoute('home'),
+  personal_color: analysisRoute('upload'),
+  loading: mainRoute('home'),
+  error_face: mainRoute('home'),
+  error_network: mainRoute('home'),
+  result_home: mainRoute('home'),
+  hair_loading: analysisRoute('result_home'),
+  result_tabs_hair: analysisRoute('result_home'),
+  makeup_loading: analysisRoute('result_home'),
+  result_tabs_makeup: analysisRoute('result_home'),
+  // 합성 요청 중에는 시스템 back 을 무시한다. 화면의 취소 버튼은 명시적으로 상세로 이동한다.
+  synth_loading: null,
 };
 
-/**
- * 현재 stage 에서 뒤로 갈 곳을 정한다.
- *
- * 진입 맥락에 따라 달라지는 세 화면은 상태를 보고 결정한다.
- * **화면 안의 닫기 버튼과 결과가 같아야 한다** — 새 화면을 추가하면 그 화면의 onClose 로직을
- * 여기에도 반영한다.
- *
- * @param {string} cur 현재 stage
- * @param {{historySelection?: {back?: string}, adReturn?: {back?: string}, activeCard?: unknown}} ctx
- * @returns {string|undefined} 복귀할 stage. undefined 면 뒤로가기를 무시한다 (예: synth_loading)
- */
-export function resolveParentStage(cur, ctx = {}) {
-  switch (cur) {
-    case 'history_detail':
-      return ctx.historySelection?.back || 'history';
-    case 'ad_gate':
-      return ctx.adReturn?.back || PARENT_STAGE[cur];
-    case 'share_card':
-      // ShareCard 의 onClose 와 같은 규칙 — 카드에서 열었으면 카드로 돌아간다.
-      return ctx.activeCard ? 'card_detail' : 'result_home';
-    default:
-      return PARENT_STAGE[cur];
-  }
+const FLOW_PARENT = {
+  onboarding2: flowRoute('onboarding1'),
+  onboarding3: flowRoute('onboarding2'),
+  login: mainRoute('home'),
+};
+
+export function routeScreen(route) {
+  return route?.kind === 'main' ? route.tab : route?.screen;
+}
+
+export function routeHasTabBar(route) {
+  return route?.kind === 'main' && MAIN_TABS.includes(route.tab);
+}
+
+export function routeKey(route) {
+  const screen = routeScreen(route) || 'unknown';
+  return `${route?.kind || 'unknown'}:${screen}`;
+}
+
+export function routeForScreen(screen, origin = mainRoute('home')) {
+  if (MAIN_TABS.includes(screen)) return mainRoute(screen);
+  if (ANALYSIS_SCREENS.has(screen)) return analysisRoute(screen);
+  if (DETAIL_SCREENS.has(screen)) return detailRoute(screen, origin);
+  if (SHEET_SCREENS.has(screen)) return sheetRoute(screen, origin);
+  if (FLOW_SCREENS.has(screen)) return flowRoute(screen);
+  return mainRoute('home');
+}
+
+export function resolveBackRoute(route) {
+  if (!route) return undefined;
+  if (route.kind === 'detail' || route.kind === 'sheet') return route.origin || mainRoute('home');
+  if (route.kind === 'main') return route.tab === 'home' ? undefined : mainRoute('home');
+  if (route.kind === 'analysis') return ANALYSIS_PARENT[route.screen] || undefined;
+  if (route.kind === 'flow') return FLOW_PARENT[route.screen] || undefined;
+  return undefined;
+}
+
+// 라우트만 교체하고 result 등 앱 데이터는 그대로 둔다. 탭 전환이 분석 결과를 지우지 않는 계약이다.
+export function transitionNavigation(appState, nextRoute) {
+  return { ...appState, route: nextRoute };
+}
+
+export function isRequestRoute(route) {
+  return ['loading', 'hair_loading', 'makeup_loading', 'synth_loading'].includes(routeScreen(route));
 }

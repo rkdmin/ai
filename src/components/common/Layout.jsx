@@ -110,8 +110,8 @@ export function StepDots({ total, current }) {
 export function TabBar({ active = 'home', dark = false, onNav }) {
   const tabs = [
     { id: 'home', label: 'HOME', icon: Icons.camera },
-    { id: 'trend', label: 'TREND', icon: Icons.trend },
-    { id: 'history', label: 'HISTORY', icon: Icons.archive },
+    { id: 'style', label: 'STYLE', icon: Icons.trend },
+    { id: 'chemistry', label: 'CHEMISTRY', icon: Icons.sparkle },
     { id: 'my', label: 'MY', icon: Icons.user },
   ];
   const bg = dark ? '#111827' : '#fff';

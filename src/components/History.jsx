@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { StatusBar } from './common/StatusBar';
-import { BackHeader, TabBar } from './common/Layout';
+import { BackHeader } from './common/Layout';
 import { Icons } from './common/Icons';
 import { StateNotice } from './common/StateNotice';
 import { FacePlaceholder } from './common/Placeholders';
@@ -18,7 +18,7 @@ function historyLabel(item) {
   return `${item.faceType || '분석 결과'} · ${cardTypes}`;
 }
 
-export default function History({ onNav, onBack, onOpenDetail, onNewAnalysis }) {
+export default function History({ onBack, onOpenDetail, onNewAnalysis }) {
   const [remoteItems, setRemoteItems] = useState(null);
   const [error, setError] = useState('');
   const [removed, setRemoved] = useState({});
@@ -180,7 +180,6 @@ export default function History({ onNav, onBack, onOpenDetail, onNewAnalysis }) 
         </div>
       </div>
 
-      <TabBar active="history" onNav={onNav} />
     </div>
   );
 }

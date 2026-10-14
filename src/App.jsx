@@ -25,7 +25,20 @@ import { analyzeFace, generateHairCards, generateMakeupCards, generateStyledPhot
 import { mapCards } from './api/mappers';
 import { useAuth } from './contexts/AuthContext';
 import { consumePostAuthTarget, setPostAuthTarget } from './utils/authBridge';
-import { resolveParentStage } from './utils/navigation';
+import {
+  MAIN_TABS,
+  detailRoute,
+  flowRoute,
+  isRequestRoute,
+  mainRoute,
+  resolveBackRoute,
+  routeForScreen,
+  routeKey,
+  routeScreen,
+  sheetRoute,
+  transitionNavigation,
+} from './utils/navigation';
+import { createRequestGate, isStaleRequestError } from './utils/requestGate';
 
 const KO_TO_KEY = {
   '봄 웜톤': 'spring_warm',
@@ -74,83 +87,105 @@ function cardKey(card) {
 
 export default function App() {
   const auth = useAuth();
-  const [stage, setStage] = useState('splash');
+  const [appState, setAppState] = useState({ route: flowRoute('splash'), result: null });
+  const { route, result } = appState;
   const [photo, setPhoto] = useState(null);
   const [personalColor, setPersonalColor] = useState(null);
-  const [result, setResult] = useState(null);
   const [hairCards, setHairCards] = useState(null);
   const [makeupCards, setMakeupCards] = useState(null);
   const [activeCard, setActiveCard] = useState(null);
-  const [adReturn, setAdReturn] = useState({ done: 'card_detail', back: 'result_tabs_hair' });
+  const [adReturn, setAdReturn] = useState({ done: 'card_detail', originRoute: null });
   const [synthByKey, setSynthByKey] = useState({});
   const [errorInfo, setErrorInfo] = useState({ type: 'face', message: '' });
   const [guestGateReason, setGuestGateReason] = useState('history');
-  const [historySelection, setHistorySelection] = useState({ analysisId: null, back: 'history' });
+  const [historySelection, setHistorySelection] = useState({ analysisId: null });
   const taskRef = useRef(null);
-  const isPopRef = useRef(false);
-  const stageRef = useRef(stage);
-  const adReturnRef = useRef(adReturn);
-  const historySelectionRef = useRef(historySelection);
-  const activeCardRef = useRef(activeCard);
+  const requestGateRef = useRef(createRequestGate());
+  const activeRequestIdRef = useRef(null);
+  const routeRef = useRef(route);
 
-  useEffect(() => { stageRef.current = stage; }, [stage]);
-  useEffect(() => { adReturnRef.current = adReturn; }, [adReturn]);
-  useEffect(() => { historySelectionRef.current = historySelection; }, [historySelection]);
-  useEffect(() => { activeCardRef.current = activeCard; }, [activeCard]);
+  useEffect(() => { routeRef.current = route; }, [route]);
+
+  const setResult = useCallback((nextResult) => {
+    setAppState((current) => ({ ...current, result: nextResult }));
+  }, []);
+
+  const cancelActiveRequest = useCallback(() => {
+    requestGateRef.current.cancel(activeRequestIdRef.current);
+    activeRequestIdRef.current = null;
+    taskRef.current = null;
+  }, []);
+
+  const beginRequest = useCallback((promise) => {
+    const request = requestGateRef.current.run(promise);
+    activeRequestIdRef.current = request.id;
+    taskRef.current = request.task;
+    return request.id;
+  }, []);
+
+  const setRoute = useCallback((nextRoute, historyMode = 'push') => {
+    const current = routeRef.current;
+    if (isRequestRoute(current) && routeKey(current) !== routeKey(nextRoute)) cancelActiveRequest();
+    routeRef.current = nextRoute;
+    setAppState((state) => transitionNavigation(state, nextRoute));
+    if (typeof window === 'undefined') return;
+    try {
+      const method = historyMode === 'replace' ? 'replaceState' : 'pushState';
+      window.history[method]({ route: nextRoute }, '', '');
+    } catch { /* noop */ }
+  }, [cancelActiveRequest]);
 
   const go = useCallback((next) => {
-    setStage(next);
-    if (typeof window === 'undefined') return;
-    if (isPopRef.current) {
-      isPopRef.current = false;
-      return;
-    }
-    try { window.history.pushState({ stage: next }, '', ''); } catch { /* noop */ }
-  }, []);
+    const nextRoute = typeof next === 'string' ? routeForScreen(next, routeRef.current) : next;
+    setRoute(nextRoute);
+  }, [setRoute]);
+
+  const back = useCallback(() => {
+    const parent = resolveBackRoute(routeRef.current);
+    if (!parent) return;
+    setRoute(parent, 'replace');
+  }, [setRoute]);
 
   const openGuestGate = useCallback((reason, target) => {
     setGuestGateReason(reason);
     setPostAuthTarget(target);
-    go('guest_gate');
+    go(sheetRoute('guest_gate', routeRef.current));
   }, [go]);
 
-  const openHistoryDetail = useCallback((analysisId, back = 'history') => {
-    if (!analysisId) return;
+  const openHistory = useCallback(() => {
     if (!auth.isAuthenticated) {
-      openGuestGate('history_detail', { kind: 'history_detail', analysisId, back });
+      openGuestGate('history', { kind: 'detail', screen: 'history' });
       return;
     }
-    setHistorySelection({ analysisId, back });
-    go('history_detail');
+    go(detailRoute('history', routeRef.current));
+  }, [auth.isAuthenticated, go, openGuestGate]);
+
+  const openHistoryDetail = useCallback((analysisId) => {
+    if (!analysisId) return;
+    if (!auth.isAuthenticated) {
+      openGuestGate('history_detail', { kind: 'history_detail', analysisId });
+      return;
+    }
+    setHistorySelection({ analysisId });
+    go(detailRoute('history_detail', routeRef.current));
   }, [auth.isAuthenticated, go, openGuestGate]);
 
   const navTab = useCallback((tab) => {
-    const allowed = ['home', 'trend', 'history', 'my'];
-    if (!allowed.includes(tab)) return;
-    if ((tab === 'history' || tab === 'my') && !auth.isAuthenticated) {
-      openGuestGate(tab, { kind: 'tab', stage: tab });
-      return;
-    }
-    go(tab);
-  }, [auth.isAuthenticated, go, openGuestGate]);
+    if (!MAIN_TABS.includes(tab)) return;
+    go(mainRoute(tab));
+  }, [go]);
 
   useEffect(() => {
     if (typeof window === 'undefined') return undefined;
-    try { window.history.replaceState({ stage: 'splash' }, '', ''); } catch { /* noop */ }
+    try { window.history.replaceState({ route: flowRoute('splash') }, '', ''); } catch { /* noop */ }
 
     const onPop = () => {
-      const cur = stageRef.current;
-      const parent = resolveParentStage(cur, {
-        historySelection: historySelectionRef.current,
-        adReturn: adReturnRef.current,
-        activeCard: activeCardRef.current,
-      });
+      const parent = resolveBackRoute(routeRef.current);
       if (!parent) {
-        try { window.history.pushState({ stage: cur }, '', ''); } catch { /* noop */ }
+        try { window.history.pushState({ route: routeRef.current }, '', ''); } catch { /* noop */ }
         return;
       }
-      isPopRef.current = true;
-      setStage(parent);
+      setRoute(parent, 'replace');
     };
     window.addEventListener('popstate', onPop);
 
@@ -169,19 +204,23 @@ export default function App() {
       window.removeEventListener('popstate', onPop);
       try { appListenerHandle?.remove?.(); } catch { /* noop */ }
     };
-  }, []);
+  }, [setRoute]);
 
   useEffect(() => {
     if (!auth.isAuthenticated) return;
     const target = consumePostAuthTarget();
     if (!target) return;
     if (target.kind === 'tab' && target.stage) {
-      go(target.stage);
+      go(mainRoute(target.stage));
+      return;
+    }
+    if (target.kind === 'detail' && target.screen === 'history') {
+      go(detailRoute('history', mainRoute('home')));
       return;
     }
     if (target.kind === 'history_detail' && target.analysisId) {
-      setHistorySelection({ analysisId: target.analysisId, back: target.back || 'history' });
-      go('history_detail');
+      setHistorySelection({ analysisId: target.analysisId });
+      go(detailRoute('history_detail', detailRoute('history', mainRoute('home'))));
     }
   }, [auth.isAuthenticated, go]);
 
@@ -191,9 +230,9 @@ export default function App() {
       go('error_face');
       return;
     }
-    taskRef.current = analyzeFace(photo.dataUrl, backendPersonalColorKey(personalColor));
+    beginRequest(analyzeFace(photo.dataUrl, backendPersonalColorKey(personalColor)));
     go('loading');
-  }, [photo, personalColor, go]);
+  }, [photo, personalColor, beginRequest, go]);
 
   const onAnalysisSuccess = useCallback((r) => {
     if (!r || r.faceType === '판정 어려움') {
@@ -207,9 +246,10 @@ export default function App() {
     setActiveCard(null);
     setSynthByKey({});
     go('result_home');
-  }, [personalColor, go]);
+  }, [personalColor, go, setResult]);
 
   const onAnalysisError = useCallback((e) => {
+    if (isStaleRequestError(e)) return;
     const msg = String(e?.message || e || '');
     const isNet = e?.status >= 500 || /연결|네트워크|fetch|Network|timeout|high demand|try again later|temporarily|unavailable|overloaded/i.test(msg);
     setErrorInfo({ type: isNet ? 'network' : 'face', message: msg });
@@ -225,14 +265,14 @@ export default function App() {
       features: result.features || [],
     };
     const fn = type === 'makeup' ? generateMakeupCards : generateHairCards;
-    taskRef.current = fn(payload).then((arr) =>
+    beginRequest(fn(payload).then((arr) =>
       mapCards(arr, type, { result, features: result.features }).map((card) => ({
         ...card,
         analysisId: result.analysisId ?? null,
       })),
-    );
+    ));
     go(type === 'makeup' ? 'makeup_loading' : 'hair_loading');
-  }, [result, go]);
+  }, [result, beginRequest, go]);
 
   const onCardsSuccess = useCallback((type, cards) => {
     if (type === 'makeup') {
@@ -245,6 +285,7 @@ export default function App() {
   }, [go]);
 
   const onCardsError = useCallback((e) => {
+    if (isStaleRequestError(e)) return;
     const msg = String(e?.message || e || '');
     setErrorInfo({ type: 'network', message: msg });
     go('error_network');
@@ -256,34 +297,36 @@ export default function App() {
     const key = cardKey(card);
     const cached = synthByKey[key];
     if (cached) {
-      taskRef.current = Promise.resolve(cached);
+      beginRequest(Promise.resolve(cached));
     } else {
-      taskRef.current = generateStyledPhoto(photo?.dataUrl || null, card);
+      beginRequest(generateStyledPhoto(photo?.dataUrl || null, card));
     }
-    setAdReturn({ done: 'synth_loading', back: 'card_detail' });
+    setAdReturn({ done: 'synth_loading', originRoute: routeRef.current });
     go('ad_gate');
-  }, [photo, synthByKey, go]);
+  }, [photo, synthByKey, beginRequest, go]);
 
   const onSynthSuccess = useCallback((dataUrl) => {
     if (!activeCard || !dataUrl) {
-      go('card_detail');
+      go(adReturn.originRoute || detailRoute('card_detail'));
       return;
     }
     const key = cardKey(activeCard);
     setSynthByKey((m) => (m[key] === dataUrl ? m : { ...m, [key]: dataUrl }));
-    go('card_detail');
-  }, [activeCard, go]);
+    go(adReturn.originRoute || detailRoute('card_detail'));
+  }, [activeCard, adReturn.originRoute, go]);
 
   const onSynthError = useCallback((e) => {
+    if (isStaleRequestError(e)) return;
     const msg = String(e?.message || e || '');
     setErrorInfo({ type: 'network', message: msg });
-    go('card_detail');
-  }, [go]);
+    go(adReturn.originRoute || detailRoute('card_detail'));
+  }, [adReturn.originRoute, go]);
 
   const photoUrl = photo?.dataUrl || result?.frontImageUrl || null;
 
+  const screen = routeScreen(route);
   let view;
-  switch (stage) {
+  switch (screen) {
     case 'splash':
       view = <Splash onNext={() => go(hasOnboarded() ? 'home' : 'onboarding1')} />;
       break;
@@ -314,14 +357,14 @@ export default function App() {
           onOAuth={(provider) => auth.signIn(provider)}
           onGuest={() => { auth.continueAsGuest(); markOnboarded(); go('home'); }}
           onTestLogin={() => { auth.signInAsTestUser(); markOnboarded(); go('home'); }}
-          onBack={() => go('home')}
+          onBack={back}
           mode="guest_gate"
           reason={guestGateReason}
         />
       );
       break;
     case 'home':
-      view = <Home onNext={() => go('upload')} onNav={navTab} onOpenRecent={(analysisId) => openHistoryDetail(analysisId, 'home')} canAccessHistory={auth.isAuthenticated} />;
+      view = <Home onNext={() => go('upload')} onNav={(target) => target === 'history' ? openHistory() : navTab(target)} onOpenRecent={openHistoryDetail} canAccessHistory={auth.isAuthenticated} />;
       break;
     case 'upload':
       view = (
@@ -330,7 +373,7 @@ export default function App() {
             setPhoto({ file, dataUrl });
             go('personal_color');
           }}
-          onBack={() => go('home')}
+          onBack={back}
         />
       );
       break;
@@ -341,7 +384,7 @@ export default function App() {
             setPersonalColor(normalizePersonalColor(pick));
             startAnalysis();
           }}
-          onBack={() => go('upload')}
+          onBack={back}
         />
       );
       break;
@@ -352,7 +395,7 @@ export default function App() {
           photoUrl={photoUrl}
           onSuccess={onAnalysisSuccess}
           onError={onAnalysisError}
-          onCancel={() => go('home')}
+          onCancel={back}
         />
       );
       break;
@@ -362,7 +405,7 @@ export default function App() {
           type="face"
           message={errorInfo.message}
           onRetry={() => go('upload')}
-          onBack={() => go('home')}
+          onBack={back}
         />
       );
       break;
@@ -378,7 +421,7 @@ export default function App() {
               go('result_home');
             }
           }}
-          onBack={() => go('home')}
+          onBack={back}
         />
       );
       break;
@@ -387,7 +430,7 @@ export default function App() {
         <AnalysisResult
           result={result}
           photoUrl={photoUrl}
-          onBack={() => go('home')}
+          onBack={back}
           onCardList={(type) => {
             const cached = type === 'makeup' ? makeupCards : hairCards;
             if (cached) {
@@ -417,7 +460,7 @@ export default function App() {
           ]}
           onSuccess={(cards) => onCardsSuccess('hair', cards)}
           onError={onCardsError}
-          onCancel={() => go('result_home')}
+          onCancel={back}
         />
       );
       break;
@@ -429,13 +472,13 @@ export default function App() {
           onCard={(card) => {
             setActiveCard(card);
             if (card.locked) {
-              setAdReturn({ done: 'card_detail', back: 'result_tabs_hair' });
+              setAdReturn({ done: 'card_detail', originRoute: routeRef.current });
               go('ad_gate');
             } else {
               go('card_detail');
             }
           }}
-          onBack={() => go('result_home')}
+          onBack={back}
         />
       );
       break;
@@ -446,7 +489,7 @@ export default function App() {
           result={result}
           photoUrl={photoUrl}
           synthesizedPhoto={activeCard ? synthByKey[cardKey(activeCard)] : null}
-          onBack={() => go('result_tabs_hair')}
+          onBack={back}
           onShare={() => go('share_card')}
           onSynthesize={() => startSynthesis(activeCard)}
         />
@@ -465,7 +508,7 @@ export default function App() {
           ]}
           onSuccess={onSynthSuccess}
           onError={onSynthError}
-          onCancel={() => go('card_detail')}
+          onCancel={() => go(adReturn.originRoute || detailRoute('card_detail'))}
         />
       );
       break;
@@ -473,8 +516,10 @@ export default function App() {
       view = (
         <AdGate
           card={activeCard}
-          onDone={() => go(adReturn.done)}
-          onBack={() => go(adReturn.back)}
+          onDone={() => adReturn.done === 'synth_loading'
+            ? go('synth_loading')
+            : go(detailRoute(adReturn.done, adReturn.originRoute || mainRoute('home')))}
+          onBack={back}
         />
       );
       break;
@@ -486,7 +531,7 @@ export default function App() {
           card={activeCard}
           photoUrl={photoUrl}
           synthesizedPhoto={activeCard ? synthByKey[cardKey(activeCard)] : null}
-          onClose={() => go(activeCard ? 'card_detail' : 'result_home')}
+          onClose={back}
         />
       );
       break;
@@ -503,7 +548,7 @@ export default function App() {
           ]}
           onSuccess={(cards) => onCardsSuccess('makeup', cards)}
           onError={onCardsError}
-          onCancel={() => go('result_home')}
+          onCancel={back}
         />
       );
       break;
@@ -515,13 +560,13 @@ export default function App() {
           onCard={(card) => {
             setActiveCard(card);
             if (card.locked) {
-              setAdReturn({ done: 'makeup_detail', back: 'result_tabs_makeup' });
+              setAdReturn({ done: 'makeup_detail', originRoute: routeRef.current });
               go('ad_gate');
             } else {
               go('makeup_detail');
             }
           }}
-          onBack={() => go('result_home')}
+          onBack={back}
         />
       );
       break;
@@ -531,7 +576,7 @@ export default function App() {
           card={activeCard}
           result={result}
           photoUrl={photoUrl}
-          onBack={() => go('result_tabs_makeup')}
+          onBack={back}
           onShare={() => go('share_card_makeup')}
         />
       );
@@ -543,21 +588,24 @@ export default function App() {
           result={result}
           card={activeCard}
           photoUrl={photoUrl}
-          onClose={() => go('makeup_detail')}
+          onClose={back}
         />
       );
       break;
-    case 'trend':
-      view = <Trend onNav={navTab} />;
+    case 'style':
+      view = <Trend section="style" onNav={navTab} />;
+      break;
+    case 'chemistry':
+      view = <Trend section="chemistry" onNav={navTab} />;
       break;
     case 'history':
-      view = <History onNav={navTab} onBack={() => go('home')} onOpenDetail={(analysisId) => openHistoryDetail(analysisId, 'history')} onNewAnalysis={() => go('upload')} />;
+      view = <History onBack={back} onOpenDetail={openHistoryDetail} onNewAnalysis={() => go('upload')} />;
       break;
     case 'history_detail':
       view = (
         <HistoryDetail
           analysisId={historySelection.analysisId}
-          onBack={() => go(historySelection.back || 'history')}
+          onBack={back}
           onNewAnalysis={() => go('upload')}
           onOpenCards={(type, cards, analysis) => {
             setResult(analysis);
@@ -566,18 +614,18 @@ export default function App() {
             if (type === 'makeup') {
               setHairCards(null);
               setMakeupCards(cards);
-              go('result_tabs_makeup');
+              go(detailRoute('result_tabs_makeup', routeRef.current));
               return;
             }
             setMakeupCards(null);
             setHairCards(cards);
-            go('result_tabs_hair');
+            go(detailRoute('result_tabs_hair', routeRef.current));
           }}
         />
       );
       break;
     case 'my':
-      view = <My onNav={navTab} onBack={() => go('home')} onSignOut={() => { auth.signOut(); go('login'); }} />;
+      view = <My onNav={(target) => target === 'history' ? openHistory() : navTab(target)} onBack={back} onSignOut={() => { auth.signOut(); go('login'); }} />;
       break;
     default:
       view = <Splash onNext={() => go('onboarding1')} />;
@@ -598,7 +646,7 @@ export default function App() {
   return (
     <div style={containerStyle}>
       <div
-        key={stage}
+        key={routeKey(route)}
         className="page-enter"
         style={{ display: 'flex', flexDirection: 'column', flex: 1, minWidth: 0, width: '100%' }}
       >
