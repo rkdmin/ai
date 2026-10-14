@@ -14,7 +14,7 @@
 -- 결제 세부 컬럼(purchases.store_payload 등)은 P4 의 Play Billing POC 로 구글이 실제로 주는 토큰·
 -- pending·환불 알림 모양을 본 뒤 확정한다. 지금 모양은 "거래 토큰 + 소유자 + 리포트" 의 최소 연결이다.
 
--- ── 리포트 (P3 · F04) ──────────────────────────────────────────────
+-- ── 리포트 (P3 · F04) — ✅ supabase_migrations/0003_reports.sql 로 옮겨 적용 대상이 됐다. 아래는 참고용 사본 ──
 -- 리포트는 구매 시점의 분석 snapshot 에 고정된다 (ADR 0010 R01). 재분석해도 바뀌지 않는다.
 create table if not exists public.reports (
   id uuid primary key default gen_random_uuid(),

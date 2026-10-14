@@ -9,6 +9,7 @@ Phase 3 에서 Supabase `usage_counters` 또는 Redis 로 교체한다.
   /api/analyze  : 게스트 1/일,  로그인 5/일
   /api/cards/*  : 게스트 3/일 (3종 합산), 로그인 15/일 (3종 합산)
   /api/photo/*  : 게스트 0 (auth 단에서 401), 로그인 5/일
+  /api/reports  : 게스트 0 (auth 단에서 401), 로그인 5/일
 
 `(scope, key, day)` 단위로 카운터를 관리한다.
 - scope: 엔드포인트 그룹 ('analyze' | 'cards' | 'photo')
@@ -32,6 +33,7 @@ LIMITS = {
     "analyze":  {"guest": 1, "user": 5},
     "cards":    {"guest": 3, "user": 15},
     "photo":    {"guest": 0, "user": 5},
+    "reports":  {"guest": 0, "user": 5},    # 리포트 생성·재시도 (Gemini 2회). 게스트는 require_user 가 먼저 401
 }
 
 _counts: dict[tuple[str, str, str], int] = defaultdict(int)

@@ -141,7 +141,7 @@ Figma 가 답한 항목은 확정하고, Figma 가 비워 둔 항목은 **UX 프
 
 ### P3 — 통합 리포트
 
-- [ ] F04 구매 가능한 Beauty Report — reportId + 분석 snapshot + 권한, 한 권한으로 두 탭, 구매 전 전체 본문이 payload 에 없음
+- [ ] F04 구매 가능한 Beauty Report — reportId + 분석 snapshot + 권한, 한 권한으로 두 탭, 구매 전 전체 본문이 payload 에 없음 (백엔드 완료 2026-10-14: `/api/reports` 생성·멱등·부분 재시도·locked, migration 0003. 권한은 P4 전까지 `REPORT_ACCESS_MODE`. 프론트 화면은 Codex)
 - [ ] D02 헤어 RAG·리포트 — 전체 방향, 길이/앞머리/볼륨/레이어 값+이유, salon guide, 대안
 - [ ] D03 메이크업 RAG·리포트 — 공통 방향, 부위별 evidence·eligibility, 0~3개 확실한 부위, 적용 순서, 제형 추천
 - [ ] F06 TRY ON·저장·공유 재정의 — 추천별 합성 결과가 섞이지 않음, 캐시 재열람은 생성 차감 없음, 광고 mock 제거

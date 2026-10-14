@@ -22,9 +22,12 @@ UNSUPPORTED_PHOTO = "UNSUPPORTED_PHOTO"  # 모델이 거부 — 일러스트·�
 RATE_LIMITED = "RATE_LIMITED"            # 일일 한도 초과
 AI_UNAVAILABLE = "AI_UNAVAILABLE"        # 모델 과부하·일시 장애 — 재시도 안내
 AI_ERROR = "AI_ERROR"                    # 그 외 모델 호출 실패
+# ── 리포트·권한 (403 / 404) ───────────────────────────────────────
+REPORT_ACCESS_REQUIRED = "REPORT_ACCESS_REQUIRED"  # 구매 권한 없음 (P4 전엔 REPORT_ACCESS_MODE 가 정한다)
+NOT_FOUND = "NOT_FOUND"                            # 내 소유가 아니거나 없는 리소스. 존재 여부를 구별해 알리지 않는다
 
 PHOTO_CODES = (INVALID_IMAGE, NO_FACE, MULTIPLE_FACES, FACE_TOO_SMALL, UNSUPPORTED_PHOTO)
-ALL_CODES = PHOTO_CODES + (RATE_LIMITED, AI_UNAVAILABLE, AI_ERROR)
+ALL_CODES = PHOTO_CODES + (RATE_LIMITED, AI_UNAVAILABLE, AI_ERROR, REPORT_ACCESS_REQUIRED, NOT_FOUND)
 
 # 코드별 기본 메시지. 라우트가 더 구체적인 문장을 넘기면 그걸 쓴다.
 DEFAULT_MESSAGES: dict[str, str] = {
@@ -36,6 +39,8 @@ DEFAULT_MESSAGES: dict[str, str] = {
     RATE_LIMITED: "오늘 사용량을 모두 사용했어요. 내일 다시 시도해 주세요.",
     AI_UNAVAILABLE: "분석 서버가 잠시 바빠요. 잠시 후 다시 시도해 주세요.",
     AI_ERROR: "분석에 실패했어요. 잠시 후 다시 시도해 주세요.",
+    REPORT_ACCESS_REQUIRED: "Beauty Report 를 보려면 구매가 필요해요.",
+    NOT_FOUND: "요청한 내용을 찾을 수 없어요.",
 }
 
 STATUS_BY_CODE: dict[str, int] = {
@@ -47,6 +52,8 @@ STATUS_BY_CODE: dict[str, int] = {
     RATE_LIMITED: 429,
     AI_UNAVAILABLE: 503,
     AI_ERROR: 502,
+    REPORT_ACCESS_REQUIRED: 403,
+    NOT_FOUND: 404,
 }
 
 

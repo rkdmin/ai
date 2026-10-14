@@ -128,3 +128,22 @@ class AccountDeleteResponse(BaseModel):
     analysesDeleted: bool = False
     authUserDeleted: bool = False
     errors: list[str] = []
+
+
+class ReportCreateRequest(BaseModel):
+    analysisId: str
+
+
+class ReportResponse(BaseModel):
+    """통합 Beauty Report (F04). locked=true 면 hair/makeup 이 없다 — 구매 전 본문은 내려가지 않는다."""
+    id: str
+    analysisId: str
+    status: str  # not_started | generating | ready | partial_failed | failed
+    locked: bool = False
+    analysis: dict  # snapshot 요약: faceType·primaryMood·moodTitle·traits·personalColor·schemaVersion
+    hair: list[dict] | None = None
+    makeup: list[dict] | None = None
+    hairError: str | None = None
+    makeupError: str | None = None
+    createdAt: str | None = None
+    updatedAt: str | None = None

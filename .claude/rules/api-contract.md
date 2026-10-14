@@ -166,6 +166,33 @@ Figma 의 "선택 사진 확인" 화면용. 요청 `{ "image": "<data URL>" }`, 
 - 한도: 게스트 5/일, 로그인 20/일. 분석(`/api/analyze`)과 별도 카운터.
 - 같은 이미지를 바로 `/api/analyze` 에 보내면 MediaPipe 검사를 한 번 더 돈다. 검사 ID 재사용은 아직 없다.
 
+## 통합 Beauty Report (`/api/reports`, F04) — 로그인 전용
+
+리포트 = **구매 시점 분석 snapshot** + Hair 카드 + Makeup 카드 (ADR 0010 R01). 재분석해도 바뀌지 않는다.
+
+| 동작 | 주소 | 비고 |
+|---|---|---|
+| 만들기 | `POST /api/reports` `{ analysisId }` | 같은 분석이면 기존 리포트 반환 (멱등). 두 탭을 동기 생성 (10~20초) |
+| 목록 | `GET /api/reports` | 권한 없으면 `locked: true` + 본문 없음 |
+| 하나 | `GET /api/reports/{id}` | 남의 것은 `404 NOT_FOUND` (존재 여부를 알리지 않는다) |
+| 재시도 | `POST /api/reports/{id}/retry` | **실패한 탭만** 다시 만든다. 성공한 탭은 재생성하지 않는다 |
+
+```json
+{ "id": "uuid", "analysisId": "uuid", "status": "ready", "locked": false,
+  "analysis": { "faceType": "계란형", "primaryMood": "SOFT", "moodTitle": "...", "traits": ["곡선 윤곽"], "personalColor": null, "schemaVersion": 3 },
+  "hair": [ "...HAIR_CARDS_FORMAT 카드 4장..." ], "makeup": [ "...MAKEUP_CARDS_FORMAT 카드 4장..." ],
+  "hairError": null, "makeupError": null, "createdAt": "...", "updatedAt": "..." }
+```
+
+- `status`: `not_started | generating | ready | partial_failed | failed`. `partial_failed` 면 한 탭만 있고 다른 탭의 `*Error` 에 사유.
+  UI 는 재결제가 아니라 **재시도 버튼**을 보여준다.
+- **권한**: 결제(P4) 전까지 `REPORT_ACCESS_MODE` 가 정한다. `entitlement`(기본)는 항상 403 `REPORT_ACCESS_REQUIRED`,
+  `open` 은 로그인만으로 허용 (로컬·테스트). P4 가 끝나면 `report_service.has_access()` 가 `entitlements` 를 조회한다.
+- **권한이 사라지면(환불 등) 본문을 내려주지 않는다** — `locked: true`, `hair`/`makeup` 은 `null`, `analysis` 요약만.
+- 리포트 본문은 지금 기존 카드 포맷(HAIR/MAKEUP_CARDS_FORMAT) 그대로다. Figma 의 "길이·볼륨·미용실 문장·부위별 근거"는
+  D02·D03 RAG 확장 후 포맷이 넓어진다. 필드가 **추가**되지 제거되진 않는다.
+- Hair 탭 상세의 TRY ON(`/api/photo/generate`)은 아직 리포트 권한과 연결되지 않았다 (F06).
+
 ## 카드 공통 필드
 
 ```json

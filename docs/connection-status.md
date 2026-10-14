@@ -18,6 +18,7 @@ last-verified: "2026-08-12"
 | 종합 카드 | `POST /api/cards/total` ✅ | `generateTotalCards()` ✅ | — ❌ | **호출자 없음** (v1.0 진입점 미정) |
 | 사진 합성 | `POST /api/photo/generate` ✅ | `generateStyledPhoto()` ✅ | `App.onSynthesize` ✅ | **연결됨** (로그인 전용) |
 | 헬스체크 | `GET /api/health` ✅ | — | — | 운영 모니터링용 (UI 호출 불필요) |
+| 통합 리포트 | `POST/GET /api/reports`, `/{id}`, `/{id}/retry` ✅ (migration 0003, 권한은 `REPORT_ACCESS_MODE`) | ❌ 없음 | 리포트 화면 없음 | **백엔드만** (F04, 결제 P4 전) |
 | 계정 삭제 | `DELETE /api/account` ✅ (Storage·행·auth 삭제, 멱등) | ❌ 없음 | `My.jsx` 는 alert 만 띄움 — 미연결 | **백엔드만** (F12 선행, Codex 연결 대기) |
 | 보관 정책 조회 | `GET /api/account/policy` ✅ | ❌ 없음 | 안내 문구가 아직 숫자를 박아 씀 | **백엔드만** |
 | 사진 사전검사 | `POST /api/photos/validate` ✅ (MediaPipe 만, 에러 코드 계약 포함) | ❌ 없음 | `PhotoUpload` 확인 화면 — 미연결 | **백엔드만** (F03, Codex 연결 대기) |
@@ -29,7 +30,7 @@ last-verified: "2026-08-12"
 | 외부 링크 (쿠팡 등) | — | `src/utils/external.js` ✅ | `MakeupDetail.jsx` ✅ | **연결됨** (시스템 브라우저 + 웹 폴백) |
 | 에러 트래킹 | — | `src/utils/sentry.js` ✅ | `ErrorBoundary.jsx` ✅ | **연결됨** (`VITE_SENTRY_DSN` 게이트, 없으면 no-op) |
 | 마이페이지 계정 정보 | — | 세션 JWT 파싱 ✅ | `My.jsx` ✅ | **부분 연결** — email/provider 는 실데이터, 통계 없음 |
-| 계정 삭제 | ❌ 미구현 | — | `My.jsx` 삭제 시트 (mock) | 클라이언트 저장분만 정리 |
+| 계정 삭제 | ✅ `DELETE /api/account` (실제 삭제, 멱등) | — | `My.jsx` 삭제 시트 (mock) | **백엔드만** — `My.jsx` 가 아직 alert 만 띄움, 연결은 Codex |
 | 쿠팡 상품 데이터 | ⚠️ `recommendedProducts` 미구현 | — | `MakeupDetail` (`PRODUCTS_MOCK` fallback) | Phase 5 |
 | `styleLabel` (감성 라벨) | ❌ 스키마·프롬프트에 없음 | — | `AnalysisResult` · `ShareCard` (fallback 텍스트) | 프롬프트+스키마 동시 보강 필요 |
 | 트렌드 피드 | ❌ 미구현 | — | `Trend.jsx` ("준비 중" 화면) | v1.x 별도 작업 |

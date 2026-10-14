@@ -388,8 +388,8 @@ async def delete_user_data(user_id: str) -> dict[str, Any]:
         except Exception as e:  # noqa: BLE001 — 부분 실패를 모아서 돌려준다
             report["errors"].append(f"storage: {getattr(e, 'detail', e)}")
 
-        # 2) 분석 행 (cascade) + 사용량 카운터
-        for table in ("analyses", "usage_counters"):
+        # 2) 리포트(analyses 를 restrict 로 참조) → 분석 행 (cascade) → 사용량 카운터
+        for table in ("reports", "analyses", "usage_counters"):
             resp = await client.delete(
                 f"{SUPABASE_URL}/rest/v1/{table}",
                 headers=_rest_headers(),
