@@ -11,17 +11,19 @@ paths:
 | 경로 | 역할 |
 |------|------|
 | `backend/main.py` | 앱 진입점 + CORS + 라우터 등록 + MediaPipe 워밍업 |
+| `backend/routes/photos.py` | `POST /api/photos/validate` — MediaPipe 만 도는 사진 사전검사 (F03) |
 | `backend/routes/analyze.py` | `POST /api/analyze` |
 | `backend/routes/cards.py` | `POST /api/cards/{hair\|makeup\|total}` |
 | `backend/routes/history.py` | `GET/POST /api/history` |
 | `backend/routes/photo.py` | `POST /api/photo/generate` (로그인 전용) |
-| `backend/services/mediapipe_service.py` | MediaPipe FaceMesh → `faceRatios` (`tools/landmark.py` 이관) |
+| `backend/services/mediapipe_service.py` | MediaPipe FaceMesh → `inspect_image` (얼굴 수·크기 검사 + `faceRatios`). `tools/landmark.py` 이관 |
 | `backend/services/gemini_service.py` | Gemini 2.5 Flash 호출 (분석/카드/이미지) |
 | `backend/services/rag_service.py` | RAG 컨텍스트 빌더 + 카드 포맷 + `ANALYZE_PROMPT` |
 | `backend/services/supabase_service.py` | Supabase Auth/REST/Storage helper |
 | `backend/middleware/auth.py` | Supabase JWT 검증 + 로컬 개발 `X-User-Id` 폴백 |
 | `backend/middleware/rate_limit.py` | 인메모리 IP/유저 카운터 (UTC 일자 단위) |
 | `backend/models/schemas.py` | Pydantic 요청/응답 스키마 |
+| `backend/models/errors.py` | 에러 코드 계약 (`ApiError` → `{detail, code}`). 코드 표는 `api-contract.md` |
 | `backend/supabase_schema.sql` | 테이블/RLS 스키마 (새 프로젝트용 전체) |
 | `backend/supabase_migrations/` | 기존 프로젝트에 번호 순으로 적용하는 증분 SQL |
 | `backend/supabase_schema_v10_draft.sql` | **초안·미적용** — reports/purchases/bookmarks/rooms (plan 0009 D04). 각 단계에서 migration 으로 옮긴다 |

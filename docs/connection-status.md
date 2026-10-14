@@ -18,6 +18,7 @@ last-verified: "2026-08-12"
 | 종합 카드 | `POST /api/cards/total` ✅ | `generateTotalCards()` ✅ | — ❌ | **호출자 없음** (v1.0 진입점 미정) |
 | 사진 합성 | `POST /api/photo/generate` ✅ | `generateStyledPhoto()` ✅ | `App.onSynthesize` ✅ | **연결됨** (로그인 전용) |
 | 헬스체크 | `GET /api/health` ✅ | — | — | 운영 모니터링용 (UI 호출 불필요) |
+| 사진 사전검사 | `POST /api/photos/validate` ✅ (MediaPipe 만, 에러 코드 계약 포함) | ❌ 없음 | `PhotoUpload` 확인 화면 — 미연결 | **백엔드만** (F03, Codex 연결 대기) |
 | 히스토리 저장 | `POST /api/history` ✅ + 카드 생성 시 자동 저장 ✅ | `saveHistoryCard()` ✅ | 카드 생성 플로우 ✅ | **연결됨** (Supabase 필요) |
 | 히스토리 조회 | `GET /api/history` ✅ / `GET /api/history/{id}` ✅ | `fetchHistory()` / `fetchHistoryDetail()` ✅ | `Home` · `History` · `HistoryDetail` ✅ | **연결됨** (Supabase 필요) |
 | 카카오/구글 로그인 | Supabase JWT 검증 ✅ | OAuth redirect bridge ✅ | `Login.jsx` ✅ | **코드 연결됨** (콘솔 설정·실기기 PoC 필요) |

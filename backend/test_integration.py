@@ -182,8 +182,14 @@ _FACE_RATIOS = {
 
 
 def _patch_mediapipe(ratios=_FACE_RATIOS):
-    """기본은 얼굴 검출 성공. `ratios=None` 을 넘기면 미검출 상황을 재현한다."""
-    return patch("services.mediapipe_service.extract_face_ratios", return_value=ratios)
+    """기본은 얼굴 검출 성공. `ratios=None` 을 넘기면 미검출(NO_FACE) 상황을 재현한다."""
+    from services.mediapipe_service import PhotoCheck
+
+    if ratios is None:
+        check = PhotoCheck(True, 0, None, None, "NO_FACE", "사진에서 얼굴을 찾을 수 없어요. 정면 얼굴이 잘 보이는 사진으로 다시 시도해 주세요.")
+    else:
+        check = PhotoCheck(True, 1, True, ratios, None, None)
+    return patch("services.mediapipe_service.inspect_image", return_value=check)
 
 
 # ─── 테스트 ────────────────────────────────────────────────────────
@@ -217,6 +223,7 @@ def test_analyze_skips_gemini_when_no_face_detected():
 
     assert r.status_code == 400, r.text
     assert "얼굴을 찾을 수 없어요" in r.json()["detail"]
+    assert r.json()["code"] == "NO_FACE"  # F03 — 프론트는 문장이 아니라 코드로 분기한다
     # 핵심 — 유료 호출이 발생하지 않았는지.
     call_gemini.assert_not_awaited()
 

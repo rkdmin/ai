@@ -5,6 +5,7 @@ Phase 3 에서 Supabase `usage_counters` 또는 Redis 로 교체한다.
 서버 재시작 시 카운터가 초기화되며, 멀티 인스턴스 배포에는 적합하지 않다.
 
 엔드포인트별 한도:
+  /api/photos/validate : 게스트 5/일, 로그인 20/일
   /api/analyze  : 게스트 1/일,  로그인 5/일
   /api/cards/*  : 게스트 3/일 (3종 합산), 로그인 15/일 (3종 합산)
   /api/photo/*  : 게스트 0 (auth 단에서 401), 로그인 5/일
@@ -21,14 +22,16 @@ import threading
 from collections import defaultdict
 from datetime import datetime, timezone
 
-from fastapi import HTTPException, Request
+from fastapi import Request
 
 from middleware.auth import Principal
+from models.errors import RATE_LIMITED, ApiError
 
 LIMITS = {
-    "analyze": {"guest": 1, "user": 5},
-    "cards":   {"guest": 3, "user": 15},
-    "photo":   {"guest": 0, "user": 5},
+    "validate": {"guest": 5, "user": 20},   # MediaPipe 만 도는 사진 검사 (F03). 싸지만 무제한은 아니다
+    "analyze":  {"guest": 1, "user": 5},
+    "cards":    {"guest": 3, "user": 15},
+    "photo":    {"guest": 0, "user": 5},
 }
 
 _counts: dict[tuple[str, str, str], int] = defaultdict(int)
@@ -74,9 +77,9 @@ def consume(scope: str, principal: Principal, request: Request) -> None:
     with _lock:
         current = _counts[key]
         if current >= limit:
-            raise HTTPException(
-                status_code=429,
-                detail=f"오늘 {scope} 사용량({limit}회)을 모두 사용했어요. 내일 다시 시도해주세요.",
+            raise ApiError(
+                RATE_LIMITED,
+                f"오늘 {scope} 사용량({limit}회)을 모두 사용했어요. 내일 다시 시도해주세요.",
             )
         _counts[key] = current + 1
 

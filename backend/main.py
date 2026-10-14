@@ -8,10 +8,12 @@ import os
 from contextlib import asynccontextmanager
 
 from dotenv import load_dotenv
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
-from routes import analyze, cards, history, photo
+from models.errors import ApiError
+from routes import analyze, cards, history, photo, photos
 from services import mediapipe_service
 
 load_dotenv()
@@ -47,6 +49,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+
+@app.exception_handler(ApiError)
+async def api_error_handler(_: Request, exc: ApiError):
+    # 기존 프론트는 detail 만 읽고, 새 화면은 code 로 분기한다 (.claude/rules/api-contract.md).
+    return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail, "code": exc.code})
+
+
+app.include_router(photos.router, prefix="/api")
 app.include_router(analyze.router, prefix="/api")
 app.include_router(cards.router, prefix="/api")
 app.include_router(history.router, prefix="/api")

@@ -132,7 +132,7 @@ Figma 가 답한 항목은 확정하고, Figma 가 비워 둔 항목은 **UX 프
 
 ### P2 — 무료 분석
 
-- [ ] F03 사진 사전검사·오류 코드 — 얼굴 없음/여러 얼굴은 Gemini 호출 전 차단, NO_FACE 등 코드 계약, 권한 거절 복귀
+- [ ] F03 사진 사전검사·오류 코드 — 얼굴 없음/여러 얼굴은 Gemini 호출 전 차단, NO_FACE 등 코드 계약, 권한 거절 복귀 (백엔드 완료 2026-10-14: `/api/photos/validate` + `models/errors.py`. 프론트 연결·권한 거절 UI 는 Codex)
 - [ ] D01 분석·무드 계약 — Primary 1 + Traits 0~2 + 근거 + distinctive point nullable + rule version, `/eval-face` 회귀 통과
 - [ ] D07 예시·미디어 — 샘플 결과 1세트·촬영 가상 예시, 내부 평가 사진은 제품 경로에 쓰지 않음
 - [ ] 홈 분석 전/후·사진 가이드·확인·로딩·무료 결과 화면 — 사진 검증→분석→결과→홈 복귀 전체 흐름

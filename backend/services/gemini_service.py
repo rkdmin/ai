@@ -34,6 +34,10 @@ GEMINI_BASE = "https://generativelanguage.googleapis.com/v1beta/models"
 _TIMEOUT = httpx.Timeout(90.0)
 
 
+class GeminiRejected(Exception):
+    """모델이 ANALYZE_PROMPT 의 거부 조건으로 사진을 거절했다 (일러스트·측면·가림 등). 사유는 str(e)."""
+
+
 class GeminiError(Exception):
     pass
 
@@ -181,7 +185,7 @@ async def analyze_face(image_b64: str, face_ratios: dict | None = None) -> dict:
     text = _extract_text(raw)
     result = _extract_json_obj(text)
     if "error" in result:
-        raise GeminiError(result["error"])
+        raise GeminiRejected(str(result["error"]))
     # 프롬프트로 같은 규칙을 지시하지만 모델 응답은 확률적이다. 마지막 방어선.
     result = sanitize_analysis(result)
     if face_ratios:

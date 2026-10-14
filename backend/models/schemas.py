@@ -58,7 +58,21 @@ class PhotoResponse(BaseModel):
 
 
 class ErrorResponse(BaseModel):
-    error: str
+    detail: str
+    code: str | None = None  # models/errors.py 의 코드. 코드가 붙은 에러만 채워진다
+
+
+class PhotoValidateRequest(BaseModel):
+    image: str = Field(..., description="data URL 또는 순수 base64")
+
+
+class PhotoValidateResponse(BaseModel):
+    """POST /api/photos/validate — Gemini 없이 MediaPipe 검사만 한 결과 (F03)."""
+    ok: bool
+    code: str | None = None       # ok=False 일 때 사진 코드 (INVALID_IMAGE / NO_FACE / MULTIPLE_FACES / FACE_TOO_SMALL)
+    message: str | None = None
+    checks: dict[str, bool]       # imageDecoded / faceDetected / singleFace / faceLargeEnough
+    faceCount: int = 0
 
 
 class HistorySaveRequest(BaseModel):

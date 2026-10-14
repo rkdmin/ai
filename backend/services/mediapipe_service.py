@@ -9,6 +9,7 @@ import base64
 import sys
 import threading
 import urllib.request
+from dataclasses import dataclass
 from pathlib import Path
 
 import cv2
@@ -50,6 +51,23 @@ LANDMARKS = {
 _landmarker = None
 _lock = threading.Lock()
 
+# 사진 검사 기준 (F03). 얼굴 폭 = 양쪽 광대(cheek_left~cheek_right) 거리.
+# 이미지 폭 대비 비율과 절대 픽셀 둘 다 봐야 한다 — 작은 이미지는 비율은 크고 픽셀은 모자란다.
+MAX_FACES = 3                   # 이보다 많아도 "여러 명" 으로만 알린다. 셀 필요는 없다.
+MIN_FACE_WIDTH_RATIO = 0.12     # 광대 폭 / 이미지 폭
+MIN_FACE_WIDTH_PX = 96
+
+
+@dataclass
+class PhotoCheck:
+    """inspect_image 의 결과. code 가 None 이면 분석에 넘겨도 되는 사진이다."""
+    decoded: bool
+    face_count: int
+    face_large_enough: bool | None     # 얼굴이 없으면 None
+    face_ratios: dict | None           # 얼굴이 정확히 1개일 때만 채운다
+    code: str | None                   # models.errors 의 사진 코드 또는 None
+    message: str | None
+
 
 def _ensure_model() -> Path:
     if MODEL_PATH.exists():
@@ -66,7 +84,7 @@ def _make_landmarker():
     options = vision.FaceLandmarkerOptions(
         base_options=base_options,
         running_mode=vision.RunningMode.IMAGE,
-        num_faces=1,
+        num_faces=MAX_FACES,  # 여러 명을 걸러내려면 2개 이상을 볼 수 있어야 한다 (F03)
         output_face_blendshapes=False,
         output_facial_transformation_matrixes=False,
     )
@@ -151,16 +169,31 @@ def _decode_data_url(image_b64: str) -> bytes:
     return base64.b64decode(image_b64)
 
 
-def extract_face_ratios(image_b64: str) -> dict | None:
+def _face_width_px(landmarks, image_shape) -> float:
+    return _dist(
+        _get_xy(landmarks, image_shape, "cheek_left"),
+        _get_xy(landmarks, image_shape, "cheek_right"),
+    )
+
+
+def inspect_image(image_b64: str) -> PhotoCheck:
     """
-    이미지에서 faceRatios 를 추출. 얼굴 검출 실패 시 None.
-    Gemini는 None 인 경우에도 이미지 분석 자체는 가능하므로 라우터에서 graceful 하게 처리.
+    사진을 검사해 코드로 답한다 (F03). Gemini 를 부르지 않는다.
+
+    순서: 디코딩 → 얼굴 수 → 얼굴 크기. 먼저 걸리는 것 하나만 코드로 낸다.
+    실사 여부(일러스트·마네킹)는 여기서 못 거른다 — 그건 ANALYZE_PROMPT 의 거부 조건이 맡는다.
     """
-    raw = _decode_data_url(image_b64)
+    # 지연 import — mediapipe_service 는 models 에 의존하지 않는 게 원칙이나 코드 상수는 공유해야 한다.
+    from models import errors
+
+    try:
+        raw = _decode_data_url(image_b64)
+    except Exception:
+        return PhotoCheck(False, 0, None, None, errors.INVALID_IMAGE, errors.DEFAULT_MESSAGES[errors.INVALID_IMAGE])
     arr = np.frombuffer(raw, dtype=np.uint8)
     image = cv2.imdecode(arr, cv2.IMREAD_COLOR)
     if image is None:
-        return None
+        return PhotoCheck(False, 0, None, None, errors.INVALID_IMAGE, errors.DEFAULT_MESSAGES[errors.INVALID_IMAGE])
 
     rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=rgb)
@@ -170,6 +203,24 @@ def extract_face_ratios(image_b64: str) -> dict | None:
     with _lock:
         result = landmarker.detect(mp_image)
 
-    if not result.face_landmarks:
-        return None
-    return _compute_ratios(result.face_landmarks[0], image.shape)
+    faces = result.face_landmarks or []
+    if not faces:
+        return PhotoCheck(True, 0, None, None, errors.NO_FACE, errors.DEFAULT_MESSAGES[errors.NO_FACE])
+    if len(faces) > 1:
+        return PhotoCheck(True, len(faces), None, None, errors.MULTIPLE_FACES, errors.DEFAULT_MESSAGES[errors.MULTIPLE_FACES])
+
+    width_px = _face_width_px(faces[0], image.shape)
+    image_w = image.shape[1]
+    large_enough = width_px >= MIN_FACE_WIDTH_PX and (width_px / max(image_w, 1)) >= MIN_FACE_WIDTH_RATIO
+    if not large_enough:
+        return PhotoCheck(True, 1, False, None, errors.FACE_TOO_SMALL, errors.DEFAULT_MESSAGES[errors.FACE_TOO_SMALL])
+
+    return PhotoCheck(True, 1, True, _compute_ratios(faces[0], image.shape), None, None)
+
+
+def extract_face_ratios(image_b64: str) -> dict | None:
+    """
+    이미지에서 faceRatios 를 추출. 얼굴이 정확히 1개이고 충분히 클 때만 값, 아니면 None.
+    tools/ 와 구 호출자를 위한 호환 래퍼 — 라우트는 inspect_image 를 써서 코드를 받는다.
+    """
+    return inspect_image(image_b64).face_ratios

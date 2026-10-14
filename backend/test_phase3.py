@@ -17,8 +17,14 @@ os.environ.setdefault("RATE_LIMIT_DISABLED", "true")
 
 from fastapi.testclient import TestClient  # noqa: E402
 
-from services.gemini_service import GeminiError  # noqa: E402
+from services.gemini_service import GeminiError, GeminiRejected  # noqa: E402
+from services.mediapipe_service import PhotoCheck  # noqa: E402
 from main import app  # noqa: E402
+
+
+def _ok_check(ratios=None) -> PhotoCheck:
+    """얼굴 1개·충분히 큼 — 분석에 넘겨도 되는 사진."""
+    return PhotoCheck(True, 1, True, ratios or {"jawRatio": 0.8}, None, None)
 
 
 def test_history_requires_login():
@@ -63,7 +69,7 @@ def test_history_list_returns_current_user_items():
 def test_analyze_logged_in_user_persists_analysis_and_returns_id():
     result = {"faceType": "계란형", "features": ["균형"], "moodArchetype": ["CLEAN"]}
     with (
-        patch("services.mediapipe_service.extract_face_ratios", return_value={"jawRatio": 0.8}),
+        patch("services.mediapipe_service.inspect_image", return_value=_ok_check()),
         patch("services.gemini_service.analyze_face", new=AsyncMock(return_value=result)),
         patch(
             "services.supabase_service.upload_image_data_url",
@@ -170,7 +176,7 @@ def test_history_detail_uses_legacy_adapter():
 def test_analyze_transient_gemini_error_returns_503():
     with (
         # 얼굴은 정상 검출된 상태여야 Gemini 까지 도달한다 (미검출이면 400 으로 먼저 끊긴다).
-        patch("services.mediapipe_service.extract_face_ratios", return_value={"jawRatio": 0.8}),
+        patch("services.mediapipe_service.inspect_image", return_value=_ok_check()),
         patch(
             "services.gemini_service.analyze_face",
             new=AsyncMock(side_effect=GeminiError("This model is currently experiencing high demand. Please try again later.")),
@@ -181,6 +187,75 @@ def test_analyze_transient_gemini_error_returns_503():
 
     assert r.status_code == 503
     assert "high demand" in r.json()["detail"]
+    assert r.json()["code"] == "AI_UNAVAILABLE"
+
+
+def test_analyze_multiple_faces_is_rejected_before_gemini_with_code():
+    check = PhotoCheck(True, 2, None, None, "MULTIPLE_FACES", "사진에 얼굴이 여러 개 보여요.")
+    with (
+        patch("services.mediapipe_service.inspect_image", return_value=check),
+        patch("services.gemini_service.analyze_face", new=AsyncMock()) as gemini,
+    ):
+        with TestClient(app) as client:
+            r = client.post("/api/analyze", json={"frontImage": "data:image/jpeg;base64,xxx"})
+
+    assert r.status_code == 400
+    assert r.json()["code"] == "MULTIPLE_FACES"
+    assert "여러 개" in r.json()["detail"]
+    gemini.assert_not_awaited()  # 무료 게이트가 유료 호출을 막는다
+
+
+def test_analyze_model_rejection_maps_to_unsupported_photo():
+    with (
+        patch("services.mediapipe_service.inspect_image", return_value=_ok_check()),
+        patch("services.gemini_service.analyze_face", new=AsyncMock(side_effect=GeminiRejected("일러스트로 보입니다."))),
+    ):
+        with TestClient(app) as client:
+            r = client.post("/api/analyze", json={"frontImage": "data:image/jpeg;base64,xxx"})
+
+    assert r.status_code == 400
+    assert r.json()["code"] == "UNSUPPORTED_PHOTO"
+    assert r.json()["detail"] == "일러스트로 보입니다."
+
+
+def test_photos_validate_returns_checks_without_gemini():
+    with (
+        patch("services.mediapipe_service.inspect_image", return_value=_ok_check()),
+        patch("services.gemini_service.analyze_face", new=AsyncMock()) as gemini,
+    ):
+        with TestClient(app) as client:
+            r = client.post("/api/photos/validate", json={"image": "data:image/jpeg;base64,xxx"})
+
+    assert r.status_code == 200, r.text
+    body = r.json()
+    assert body["ok"] is True and body["code"] is None and body["faceCount"] == 1
+    assert body["checks"] == {"imageDecoded": True, "faceDetected": True, "singleFace": True, "faceLargeEnough": True}
+    gemini.assert_not_awaited()
+
+
+def test_photos_validate_reports_no_face_as_data_not_error():
+    check = PhotoCheck(True, 0, None, None, "NO_FACE", "얼굴을 찾을 수 없어요.")
+    with patch("services.mediapipe_service.inspect_image", return_value=check):
+        with TestClient(app) as client:
+            r = client.post("/api/photos/validate", json={"image": "data:image/jpeg;base64,xxx"})
+
+    assert r.status_code == 200  # 검사 결과는 200 으로 데이터로 준다. 분석 실패가 아니다
+    body = r.json()
+    assert body["ok"] is False and body["code"] == "NO_FACE"
+    assert body["checks"]["faceDetected"] is False
+
+
+def test_rate_limit_error_carries_code(monkeypatch):
+    from middleware import rate_limit
+
+    monkeypatch.delenv("RATE_LIMIT_DISABLED", raising=False)
+    monkeypatch.setitem(rate_limit.LIMITS, "validate", {"guest": 0, "user": 0})
+    with patch("services.mediapipe_service.inspect_image", return_value=_ok_check()):
+        with TestClient(app) as client:
+            r = client.post("/api/photos/validate", json={"image": "data:image/jpeg;base64,xxx"})
+
+    assert r.status_code == 429
+    assert r.json()["code"] == "RATE_LIMITED"
 
 
 def test_cards_logged_in_user_persists_generated_cards():

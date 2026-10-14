@@ -62,14 +62,48 @@ paths:
 adapter 는 `supabase_service.analysis_from_row` 하나다. 모양을 또 바꾸면 거기에 분기를 추가한다.
 목록 항목(`HistoryListItem`)에도 `moodArchetype` / `schemaVersion` / `legacy` 가 있다.
 
-### 얼굴 미검출 시 조기 거부 (Gemini 호출 안 함)
+### 에러 응답 — 코드 계약 (F03, `backend/models/errors.py`)
 
-MediaPipe 가 얼굴을 찾지 못하면(`extract_face_ratios → None`) **Gemini 를 호출하지 않고**
-`400` + `detail: "사진에서 얼굴을 찾을 수 없어요. ..."` 로 즉시 끊는다. 무료 게이트로 유료 호출을
-막는 구조이며, 프론트는 `status < 500` 이므로 `error_face` 화면으로 분기한다.
+코드가 붙는 에러는 이 모양이다. `detail` 은 사람이 읽는 문장(기존 프론트가 그대로 씀), `code` 로 화면을 분기한다.
+**문자열 매칭으로 분기하지 마라** — 문장은 바뀐다, 코드는 안 바뀐다.
 
-단, **일러스트·3D 렌더링·마네킹은 MediaPipe 가 랜드마크를 찾아내므로 이 게이트를 통과한다.**
-실사 여부 판별은 `ANALYZE_PROMPT` 의 거부 조건(Gemini)이 계속 담당한다.
+```json
+{ "detail": "사진에 얼굴이 여러 개 보여요. ...", "code": "MULTIPLE_FACES" }
+```
+
+| code | status | 뜻 | 화면 |
+|---|---|---|---|
+| `INVALID_IMAGE` | 400 | 이미지로 읽히지 않음 | 사진 다시 선택 |
+| `NO_FACE` | 400 | MediaPipe 가 얼굴을 못 찾음 | 얼굴 없음 안내 + 가이드 재열기 |
+| `MULTIPLE_FACES` | 400 | 얼굴 2개 이상. 자동 선택 안 함 | 여러 얼굴 안내 |
+| `FACE_TOO_SMALL` | 400 | 광대 폭이 이미지 폭의 12% 미만 또는 96px 미만 | 더 가까이 찍기 안내 |
+| `UNSUPPORTED_PHOTO` | 400 | **Gemini 가 거부** (일러스트·측면·가림 등). 사유는 `detail` | 실사 정면 안내 |
+| `RATE_LIMITED` | 429 | 일일 한도 | 내일 다시 |
+| `AI_UNAVAILABLE` | 503 | 모델 과부하·일시 장애 | 재시도 |
+| `AI_ERROR` | 400/502 | 그 외 모델 실패 | 재시도 |
+
+앞의 네 개는 **Gemini 호출 전** MediaPipe 에서 끊는다 (무료 게이트). 일러스트·3D·마네킹은 랜드마크가
+잡혀 통과하고 `ANALYZE_PROMPT` 의 거부 조건이 `UNSUPPORTED_PHOTO` 로 잡는다.
+`판정 어려움` 은 에러가 아니라 **200 응답의 `faceType` 값**이다 — 결과 화면이 처리한다.
+코드 없는 `HTTPException` (400 입력 검증 등)은 `code` 가 없다. 그땐 `detail` 만 보여준다.
+
+### 사진 사전검사 (`POST /api/photos/validate`) — Gemini 없음
+
+Figma 의 "선택 사진 확인" 화면용. 요청 `{ "image": "<data URL>" }`, 응답:
+
+```json
+{
+  "ok": false, "code": "NO_FACE", "message": "사진에서 얼굴을 찾을 수 없어요. ...",
+  "checks": { "imageDecoded": true, "faceDetected": false, "singleFace": false, "faceLargeEnough": false },
+  "faceCount": 0
+}
+```
+
+- 검사 실패도 **200** 이다. 에러가 아니라 검사 결과다. `ok=false` 면 `code` 가 위 표의 사진 코드다.
+- `checks` 는 **검사한 항목만** 말한다. 실사 여부는 검사하지 않으므로 `ok=true` 가 "분석 보장" 이 아니다.
+  UI 에 "분석 가능" 체크를 켤 때는 이 한계를 카피에 반영한다 (예: "얼굴 확인됨" 까지만).
+- 한도: 게스트 5/일, 로그인 20/일. 분석(`/api/analyze`)과 별도 카운터.
+- 같은 이미지를 바로 `/api/analyze` 에 보내면 MediaPipe 검사를 한 번 더 돈다. 검사 ID 재사용은 아직 없다.
 
 ## 카드 공통 필드
 
@@ -134,7 +168,7 @@ MediaPipe 가 얼굴을 찾지 못하면(`extract_face_ratios → None`) **Gemin
    - 게스트는 recent API 를 호출하지 않고 로그인 유도 카피만 본다
 2. `PhotoUpload` → 정면 사진 1장 수집 (프론트)
 3. 프론트가 `POST /api/analyze` 호출 (`src/api/backend.js`)
-   - 백엔드: MediaPipe → `faceRatios` (**미검출이면 여기서 400 종료 — Gemini 호출 없음**)
+   - 백엔드: MediaPipe → `faceRatios` (**얼굴 없음·여러 명·너무 작음이면 여기서 400 + code — Gemini 호출 없음**)
    - 백엔드: Gemini 2.5 Flash → `{ faceType, features, moodArchetype, faceRatios, analysisId? }`
 4. `PersonalColor` → 퍼스널컬러 선택 후 분석 시작
 5. 프론트가 `POST /api/cards/{hair|makeup|total}` 호출
