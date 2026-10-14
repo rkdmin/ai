@@ -7,15 +7,16 @@
 
 | ADR | Phase | 마일스톤 | 결정 | 상태 |
 |-----|-------|---------|------|------|
-| [0001](./0001-mvp-scope-android-first.md) | — | v1.0 | 광고 없이 Android 1차 출시로 범위 확정 | Accepted |
+| [0001](./0001-mvp-scope-android-first.md) | — | v1.0 | 광고 없이 Android 1차 출시로 범위 확정 | Superseded → 0010 |
 | [0002](./0002-phase1-face-accuracy-rag.md) | 1 | v1.0 | 얼굴 인식 정확도·RAG 품질을 로컬 Python 으로 먼저 검증 | Accepted |
 | [0003](./0003-phase2-backend-split.md) | 2 | v1.0 | FastAPI 백엔드 분리로 AI 키를 프론트에서 제거 | Accepted |
 | [0004](./0004-phase3-auth-supabase.md) | 3 | v1.0 | Supabase 인증 + 분석 히스토리 저장 | Accepted |
 | [0005](./0005-phase4-ux-design-system.md) | 4 | v1.0 | Beaumi 에디토리얼 디자인 시스템으로 UX 통일 | Accepted |
 | [0006](./0006-phase6-capacitor-android.md) | 6 | v1.0 | Capacitor 로 패키징해 Play Store 1차 출시 | Accepted |
-| [0007](./0007-phase5-monetization.md) | 5 | v1.1 | 수익화는 v1.1 로 연기 (광고 + 쿠팡파트너스) | Accepted |
+| [0007](./0007-phase5-monetization.md) | 5 | v1.1 | 수익화는 v1.1 로 연기 (광고 + 쿠팡파트너스) | Superseded → 0010 |
 | [0008](./0008-phase7-ios.md) | 7 | v1.2 | iOS 는 Android 지표 검증 후 후속 출시 | Accepted |
 | [0009](./0009-analysis-consistency-rules.md) | — | v1.0 | 얼굴형과 모순되는 분석 결과를 프롬프트 + 사후 필터로 차단 | Accepted |
+| [0010](./0010-wireframe-v10-scope.md) | — | v1.0 | 최신 와이어프레임(Guest-first + 유료 통합 리포트)을 v1.0 범위로 채택 | Accepted |
 
 > ADR 번호는 **결정 시점 순서**다. Phase 번호와 어긋나는 구간이 있다 — Phase 6(Android 출시)을
 > Phase 5(수익화)보다 먼저 하기로 결정했기 때문이다. 이 역전 자체가 0001·0007 의 결정 내용이다.

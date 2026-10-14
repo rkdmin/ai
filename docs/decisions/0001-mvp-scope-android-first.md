@@ -3,10 +3,10 @@ adr: "0001"
 title: "v1.0 범위 — 광고 없이 Android 1차 출시"
 phase: null
 milestone: "v1.0"
-status: Accepted
+status: Superseded
 date: "2026-03-05"
 supersedes: []
-superseded_by: []
+superseded_by: ["0010"]
 ---
 # 🎯 MVP — Android 1차 출시 기준 (v1.0)
 

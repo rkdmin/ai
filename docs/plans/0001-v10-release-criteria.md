@@ -9,6 +9,9 @@ last-verified: "2026-09-15"
 ---
 # Plan 0001 — v1.0 출시 기준
 
+> ⚠️ **ADR [0010](../decisions/0010-wireframe-v10-scope.md) 으로 대체됨 (2026-10-14).** 이 plan 의 근거 결정은 Superseded 다.
+> 살아 있는 항목은 [plan 0009](./0009-wireframe-review.md) 로 이관한 뒤 정리한다. 그 전까지 새 항목을 여기에 추가하지 않는다.
+
 > 결정 배경: [ADR 0001](../decisions/0001-mvp-scope-android-first.md) · 전체 진행 상황: [ROADMAP](../ROADMAP.md)
 
 체크 표기는 [`README.md`](./README.md) 의 규약을 따른다.

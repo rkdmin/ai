@@ -1,5 +1,5 @@
 ---
-last-verified: "2026-09-15"
+last-verified: "2026-10-14"
 ---
 
 # 🗺️ AI 뷰티 코치 — 전체 로드맵
@@ -31,6 +31,11 @@ Cross-cut │ 테스트 아키텍처 + 품질 게이트
 > **순서 변경 요지**: 광고/카드 잠금은 첫 출시 리스크와 일정 부담을 키우므로 **v1.1로 분리**한다.
 > Android 첫 출시(v1.0) → 광고·잠금 도입(v1.1) → iOS 출시(Phase 7) 순서로 간다.
 
+> ⚠️ **2026-10-14 — v1.0 범위가 바뀌었다.** [ADR 0010](./decisions/0010-wireframe-v10-scope.md) 이
+> 최신 와이어프레임(Guest-first + 유료 통합 리포트 + STYLE + 케미)을 v1.0 으로 채택하고 ADR 0001·0007 을 대체했다.
+> 위 다이어그램의 "v1.1 광고 + 카드 잠금"은 더 이상 유효하지 않다. 실행 단계(P0~P8)와 기능 묶음(F01~F12)은
+> [plan 0009](./plans/0009-wireframe-review.md) 가 단일 출처다. Phase 1~4·6 은 그 기반으로 계속 유효하다.
+
 | Phase | 핵심 목표 | 실행 계획 | 결정 기록 (ADR) | 시점 | 완료 기준 |
 |-------|----------|----------|----------------|------|---------|
 | 1 | 얼굴 인식 정확도 검증 (로컬 Python) + RAG 데이터 보강 | [0002](./plans/0002-phase1-face-accuracy-rag.md) | [0002](./decisions/0002-phase1-face-accuracy-rag.md) | v1.0 | 골든셋 자가평가 정확도 90% 이상 (10장 중 9장 납득) |
@@ -38,7 +43,7 @@ Cross-cut │ 테스트 아키텍처 + 품질 게이트
 | 3 | 로그인 + 히스토리 저장 | [0004](./plans/0004-phase3-auth-supabase.md) | [0004](./decisions/0004-phase3-auth-supabase.md) | v1.0 | 카카오/구글 로그인 + 내 기록 조회 |
 | 4 | UI/UX 폴리싱 | [0005](./plans/0005-phase4-ux-design-system.md) | [0005](./decisions/0005-phase4-ux-design-system.md) | v1.0 | 디자인 시스템 확립 + 온보딩 완성 |
 | 6 | Android 1차 출시 | [0006](./plans/0006-phase6-capacitor-android.md) | [0006](./decisions/0006-phase6-capacitor-android.md) | v1.0 | Play Store 출시 |
-| 5 | 수익화 (광고 + 카드 잠금) — 쿠팡 정적 링크는 v1.0부터 | [0007](./plans/0007-phase5-monetization.md) | [0007](./decisions/0007-phase5-monetization.md) | v1.1 | 첫 수익 발생 |
+| 5 | ~~수익화 (광고 + 카드 잠금)~~ → 유료 통합 리포트로 대체 | [0009](./plans/0009-wireframe-review.md) | [0010](./decisions/0010-wireframe-v10-scope.md) | v1.0 | 리포트 구매·복원 동작 |
 | 7 | iOS 후속 출시 | [0008](./plans/0008-phase7-ios.md) | [0008](./decisions/0008-phase7-ios.md) | v1.2 | App Store 출시 |
 
 ---
@@ -56,7 +61,7 @@ Cross-cut │ 테스트 아키텍처 + 품질 게이트
 | 3 인증·히스토리 | [plan 0004](./plans/0004-phase3-auth-supabase.md) | 🟡 코드 완료 | 코드 경로는 전부 연결. **Supabase 콘솔 설정·실기기 OAuth PoC 대기** |
 | 4 UI/UX | [plan 0005](./plans/0005-phase4-ux-design-system.md) | 🟡 구현 완료 | 디자인 시스템 적용 완료. 사용자 직접 확인 항목 남음 |
 | 6 Android 출시 | [plan 0006](./plans/0006-phase6-capacitor-android.md) | 🟡 진행 중 | 네이티브 브리지 4종 완료. **`.aab` 생성·Play Store 제출 남음** |
-| 5 수익화 | [plan 0007](./plans/0007-phase5-monetization.md) | ⚪ 미착수 | v1.1. 쿠팡 링크 여는 경로만 선행 구현됨 |
+| 5 수익화 | [plan 0007](./plans/0007-phase5-monetization.md) | ⚪ 대체됨 | ADR 0010 으로 대체. 살아 있는 항목은 plan 0009 로 이관 예정 |
 | 7 iOS | [plan 0008](./plans/0008-phase7-ios.md) | ⚪ 미착수 | v1.2. Android 지표 확보 후 |
 
 `🟢 완료 · 🟡 진행 중 · ⚪ 미착수`
@@ -65,8 +70,8 @@ Phase 에 속하지 않는 계획:
 
 | 계획 | 상태 | 내용 |
 |------|------|------|
-| [plan 0001](./plans/0001-v10-release-criteria.md) | 🟡 진행 중 | v1.0 출시 기준 — 전 Phase 교차 |
-| [plan 0009](./plans/0009-wireframe-review.md) | ⚪ 검토 전 | 최신 와이어프레임 구현 계획 (승인 시 ADR 로 결정을 남긴다) |
+| [plan 0001](./plans/0001-v10-release-criteria.md) | 🟡 대체됨 | 구 v1.0 출시 기준. ADR 0010 으로 대체, 살아 있는 항목은 0009 로 이관 예정 |
+| [plan 0009](./plans/0009-wireframe-review.md) | 🟡 P0 진행 중 | **새 v1.0** — 와이어프레임 구현 (ADR 0010). UI/UX 는 Codex, 그 외는 Claude |
 
 **품질 게이트 현황** — `npm run verify` (lint + test + docs:check) 통과.
 상세는 [`test.md`](./test.md) 의 "출시 전 최소 품질 게이트".
@@ -109,7 +114,7 @@ Phase 1 (정확도 검증 / 골든셋)
 
 ## MVP 정의
 
-→ [`decisions/0001-mvp-scope-android-first.md`](./decisions/0001-mvp-scope-android-first.md) 참고
+→ [`decisions/0010-wireframe-v10-scope.md`](./decisions/0010-wireframe-v10-scope.md) 참고 (구 정의는 [0001](./decisions/0001-mvp-scope-android-first.md), Superseded)
 
 ## 테스트 전략
 

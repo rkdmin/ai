@@ -3,10 +3,10 @@ adr: "0007"
 title: "수익화는 v1.1 로 연기 (광고 + 쿠팡파트너스)"
 phase: 5
 milestone: "v1.1"
-status: Accepted
+status: Superseded
 date: "2026-03-05"
 supersedes: []
-superseded_by: []
+superseded_by: ["0010"]
 ---
 # Phase 5 — 수익화 시스템 (v1.1)
 

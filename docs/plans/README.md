@@ -32,7 +32,7 @@ last-verified: "2026-10-12"
 | [0006](./0006-phase6-capacitor-android.md) | 6 | v1.0 | Android 1차 출시 | [0006](../decisions/0006-phase6-capacitor-android.md) | In Progress |
 | [0007](./0007-phase5-monetization.md) | 5 | v1.1 | 수익화 (광고 + 카드 잠금) | [0007](../decisions/0007-phase5-monetization.md) | Proposed |
 | [0008](./0008-phase7-ios.md) | 7 | v1.2 | iOS 후속 출시 | [0008](../decisions/0008-phase7-ios.md) | Proposed |
-| [0009](./0009-wireframe-review.md) | — | 미정 | 최신 와이어프레임 구현 계획 | — | Proposed |
+| [0009](./0009-wireframe-review.md) | — | v1.0 | 최신 와이어프레임 구현 계획 | [0010](../decisions/0010-wireframe-v10-scope.md) | Proposed |
 
 > plan 번호는 **만든 순서**다. Phase 번호와 어긋나는 구간이 있다 (0006=Phase 6, 0007=Phase 5).
 > Phase 로 찾을 때는 위 표의 Phase 열을 본다. 현재는 우연히 ADR 번호와 1:1로 맞지만
