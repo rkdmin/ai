@@ -156,10 +156,10 @@ Figma 가 답한 항목은 확정하고, Figma 가 비워 둔 항목은 **UX 프
 
 ### P5 — STYLE·저장
 
-- [ ] D05 STYLE 콘텐츠 사전 — contentId·상태·카테고리·본문 block·mood/trait 태그·활용법, "인기" 집계 전엔 에디터 추천
-- [ ] D06 제품·제품 타입 사전 — 제품 타입과 실제 catalog 분리, 검토된 URL·활성 상태, AI 가 상품·가격·URL 생성 금지
-- [ ] F07 STYLE 콘텐츠·FOR YOU — 분석 전 에디토리얼, 미구매도 FOR YOU, 모든 더 보기에 목적지, 제품 목록은 `106:2457` canonical + 진입 파라미터
-- [ ] F10 저장한 스타일 — 안정적 content ID 로 저장/해제·필터·개수, 게스트→계정 병합 시 중복 없음
+- [ ] D05 STYLE 콘텐츠 사전 — contentId·상태·카테고리·본문 block·mood/trait 태그·활용법, "인기" 집계 전엔 에디터 추천 (구조·조회·개인화 완료 2026-10-14 `data/styles/content.json`. **글 본문·이미지·발행은 운영 콘텐츠 대기**, 지금은 초안 6개)
+- [ ] D06 제품·제품 타입 사전 — 제품 타입과 실제 catalog 분리, 검토된 URL·활성 상태, AI 가 상품·가격·URL 생성 금지 (구조·매칭 완료 2026-10-14 `data/styles/products.json`. **브랜드·상품·파트너스 URL 은 운영 대기**, 초안 4개 브랜드 미정)
+- [ ] F07 STYLE 콘텐츠·FOR YOU — 분석 전 에디토리얼, 미구매도 FOR YOU, 모든 더 보기에 목적지, 제품 목록은 `106:2457` canonical + 진입 파라미터 (백엔드 완료 2026-10-14: `/api/styles`, `/api/products/recommendations`, 폴백 시 personalized=false. 화면·더 보기 목록은 Codex)
+- [ ] F10 저장한 스타일 — 안정적 content ID 로 저장/해제·필터·개수, 게스트→계정 병합 시 중복 없음 (백엔드 완료 2026-10-14: `/api/bookmarks` + merge, migration 0006. 기기 저장·화면은 Codex)
 
 ### P6 — 케미·초대
 

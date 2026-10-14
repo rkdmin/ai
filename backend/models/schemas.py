@@ -193,3 +193,7 @@ class InviteJoinResponse(BaseModel):
     participantCount: int
     handoffToken: str                # 앱 인계용 1회성 token (30분). URL 에 결과·세션을 싣지 않는다
     handoffExpiresAt: str
+
+
+class BookmarkMergeRequest(BaseModel):
+    contentIds: list[str] = []   # 게스트 기기 저장본. 중복·없는 글은 건너뛴다

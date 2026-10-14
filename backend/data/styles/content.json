@@ -1,0 +1,74 @@
+{
+  "_comment": [
+    "STYLE 콘텐츠 사전 (plan 0009 D05). 운영자가 검토한 글만 status=published 로 바꾼다.",
+    "아래 항목은 Figma 캔버스의 예시 제목을 옮긴 **초안(draft)** 이다 — 본문·이미지·출처가 없다. 제품 화면에 나가면 안 된다.",
+    "기본 API 는 published 만 돌려주고, STYLE_INCLUDE_DRAFTS=true (로컬 개발) 일 때만 draft 를 섞는다.",
+    "태그: moodTags 는 8개 무드 키, traitTags 는 backend/data/traits.json 라벨, kind 는 makeup|hair|mood.",
+    "usageByMood 는 '내 무드로 활용하는 법' 한 줄 — 분석 후 상세에서 대표 무드에 맞는 줄만 보여준다. 글마다 운영자가 쓴다.",
+    "personalized 의 contrast/texture/point 는 분석 후 상세의 CONTRAST / TEXTURE / POINT 블록이다.",
+    "heroAsset / 인물 사진: 사용권한이 확인된 자산 ID 만. 실제 인물·연예인 사진 금지."
+  ],
+  "schemaVersion": 1,
+  "items": [
+    {
+      "id": "c-soft-blush-5", "status": "draft", "kind": "makeup", "category": "블러셔",
+      "title": "SOFT 무드에 잘 어울리는 블러셔 표현법 5", "summary": "경계를 흐리는 블러셔로 부드러운 인상을 더 부드럽게.",
+      "publishedAt": null, "heroAsset": null, "editorial": true,
+      "moodTags": ["SOFT", "ROMANTIC"], "traitTags": ["저대비", "곡선 윤곽"], "faceTypeTags": [],
+      "body": [{"type": "paragraph", "text": "(초안) 본문 미작성"}],
+      "usageByMood": {"SOFT": "앞볼 중앙에서 바깥으로 넓게, 경계는 손으로 풀어 주세요.", "ROMANTIC": "볼 중앙을 둥글게, 톤은 한 단계 밝게."},
+      "personalized": {"contrast": "낮은 대비를 유지하도록 색을 피부 톤에 가깝게", "texture": "크림·리퀴드 제형으로 경계 없이", "point": "볼 중앙 한 점만 강조"},
+      "relatedContentIds": ["c-soft-eye-soft-edge"], "relatedProductIds": ["p-blush-cream-01"]
+    },
+    {
+      "id": "c-sharp-lip", "status": "draft", "kind": "makeup", "category": "립",
+      "title": "SHARP 무드를 살리는 립 메이크업", "summary": "또렷한 라인과 매트 질감으로 선을 분명하게.",
+      "publishedAt": null, "heroAsset": null, "editorial": true,
+      "moodTags": ["SHARP", "EDGY"], "traitTags": ["고대비", "직선 윤곽"], "faceTypeTags": [],
+      "body": [{"type": "paragraph", "text": "(초안) 본문 미작성"}],
+      "usageByMood": {"SHARP": "라인을 살려 그리고 매트로 마무리.", "EDGY": "채도 높은 색을 한 번에."},
+      "personalized": {"contrast": "입술과 피부 대비를 키우는 색", "texture": "매트·벨벳", "point": "입술 라인"},
+      "relatedContentIds": [], "relatedProductIds": ["p-lip-tint-01"]
+    },
+    {
+      "id": "c-layer-cut-by-face", "status": "draft", "kind": "hair", "category": "커트",
+      "title": "얼굴형별 레이어 커트 가이드", "summary": "윤곽에 따라 레이어 시작점이 달라집니다.",
+      "publishedAt": null, "heroAsset": null, "editorial": true,
+      "moodTags": ["SOFT", "CLEAN", "CLASSIC"], "traitTags": ["곡선 윤곽", "직선 윤곽"], "faceTypeTags": ["계란형", "둥근형", "사각형"],
+      "body": [{"type": "paragraph", "text": "(초안) 본문 미작성"}],
+      "usageByMood": {"SOFT": "턱선 아래부터 가볍게 레이어.", "CLEAN": "레이어를 최소로, 끝만 정리."},
+      "personalized": {"contrast": "", "texture": "자연스러운 결", "point": "얼굴선을 감싸는 앞쪽 레이어"},
+      "relatedContentIds": ["c-bangs-by-ratio"], "relatedProductIds": []
+    },
+    {
+      "id": "c-bangs-by-ratio", "status": "draft", "kind": "hair", "category": "앞머리",
+      "title": "앞머리 스타일링, 얼굴 비율로 고르는 법", "summary": "세로 비율이 길면 이마를 가리고, 짧으면 열어 둡니다.",
+      "publishedAt": null, "heroAsset": null, "editorial": true,
+      "moodTags": ["FRESH", "ROMANTIC", "CLEAN"], "traitTags": ["세로 긴 비율", "가로 넓은 비율"], "faceTypeTags": ["긴형", "둥근형"],
+      "body": [{"type": "paragraph", "text": "(초안) 본문 미작성"}],
+      "usageByMood": {"FRESH": "시스루뱅으로 가볍게.", "CLEAN": "앞머리 없이 가르마만."},
+      "personalized": {"contrast": "", "texture": "", "point": "앞머리 길이"},
+      "relatedContentIds": ["c-layer-cut-by-face"], "relatedProductIds": []
+    },
+    {
+      "id": "c-soft-eye-soft-edge", "status": "draft", "kind": "makeup", "category": "아이",
+      "title": "선명한 경계보다 부드러운 음영을 만드는 Eye Makeup", "summary": "라인 대신 그라데이션으로 눈매를 키웁니다.",
+      "publishedAt": null, "heroAsset": null, "editorial": false,
+      "moodTags": ["SOFT", "ELEGANT"], "traitTags": ["저대비"], "faceTypeTags": [],
+      "body": [{"type": "paragraph", "text": "(초안) 본문 미작성"}],
+      "usageByMood": {"SOFT": "브라운 한 색으로 음영만.", "ELEGANT": "눈꼬리를 길게 스머징."},
+      "personalized": {"contrast": "대비를 올리지 않는 중간 톤", "texture": "크림 섀도우", "point": "눈꼬리 음영"},
+      "relatedContentIds": ["c-soft-blush-5"], "relatedProductIds": ["p-eye-cream-01"]
+    },
+    {
+      "id": "c-clean-blush-picks", "status": "draft", "kind": "makeup", "category": "블러셔",
+      "title": "이번 시즌 CLEAN 무드 블러셔 Picks", "summary": "색보다 결. 피부처럼 보이는 블러셔.",
+      "publishedAt": null, "heroAsset": null, "editorial": true,
+      "moodTags": ["CLEAN", "CLASSIC"], "traitTags": [], "faceTypeTags": [],
+      "body": [{"type": "paragraph", "text": "(초안) 본문 미작성"}],
+      "usageByMood": {"CLEAN": "광대 위에 얇게 한 번."},
+      "personalized": {"contrast": "", "texture": "파우더·새틴", "point": "광대 위"},
+      "relatedContentIds": [], "relatedProductIds": ["p-blush-cream-01"]
+    }
+  ]
+}

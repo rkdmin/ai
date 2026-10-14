@@ -1,0 +1,19 @@
+{
+  "_comment": [
+    "제품 카탈로그 (plan 0009 D06). 리포트 상세의 '제형·형태'(productType, 브랜드 없음)와 다르게 여기는 **실제 브랜드 상품** 이 들어간다.",
+    "운영자가 브랜드·상품명·검토된 URL(쿠팡파트너스)을 확인한 것만 status=published, active=true 로 바꾼다. AI 가 상품·가격·URL 을 만들지 않는다.",
+    "가격은 저장하지 않는다 — 바뀌는 값이라 화면에서 '가격 보기' 로 링크만 건다. 아래 항목은 자리만 잡은 **초안** 이고 브랜드 미정이다.",
+    "partType: base|blush|lip|eye|brow|hair · formType 은 제형·형태 · moodTags/traitTags/personalColorTags 로 FOR YOU 매칭."
+  ],
+  "schemaVersion": 1,
+  "items": [
+    { "id": "p-blush-cream-01", "status": "draft", "active": false, "brand": null, "name": "(브랜드 미정) 크림 블러셔", "partType": "blush", "formType": "크림 블러셔",
+      "moodTags": ["SOFT", "ROMANTIC", "CLEAN"], "traitTags": ["저대비"], "personalColorTags": ["봄웜", "여름쿨"], "imageAsset": null, "url": null, "reviewedAt": null },
+    { "id": "p-lip-tint-01", "status": "draft", "active": false, "brand": null, "name": "(브랜드 미정) 매트 틴트", "partType": "lip", "formType": "매트 틴트",
+      "moodTags": ["SHARP", "EDGY", "ELEGANT"], "traitTags": ["고대비"], "personalColorTags": ["겨울쿨", "가을웜"], "imageAsset": null, "url": null, "reviewedAt": null },
+    { "id": "p-eye-cream-01", "status": "draft", "active": false, "brand": null, "name": "(브랜드 미정) 크림 섀도우", "partType": "eye", "formType": "크림 섀도우",
+      "moodTags": ["SOFT", "ELEGANT", "CLASSIC"], "traitTags": ["저대비"], "personalColorTags": [], "imageAsset": null, "url": null, "reviewedAt": null },
+    { "id": "p-brow-pencil-01", "status": "draft", "active": false, "brand": null, "name": "(브랜드 미정) 펜슬 브로우", "partType": "brow", "formType": "펜슬 브로우",
+      "moodTags": ["CLEAN", "CLASSIC", "SHARP"], "traitTags": ["직선 윤곽"], "personalColorTags": [], "imageAsset": null, "url": null, "reviewedAt": null }
+  ]
+}

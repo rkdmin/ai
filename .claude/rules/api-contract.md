@@ -257,6 +257,26 @@ Figma 의 "선택 사진 확인" 화면용. 요청 `{ "image": "<data URL>" }`, 
 
 퍼스널컬러가 없으면 `eyeshadow` · `eyeliner` 와 그 `Reason` 은 `null` 이다.
 
+## STYLE 콘텐츠 · 제품 추천 · 저장한 스타일 (`/api/styles`, `/api/products/recommendations`, `/api/bookmarks`, F07·F10)
+
+사전은 `backend/data/styles/content.json`(D05) · `products.json`(D06). **운영자가 검토해 `published` 로 바꾼 것만** 나간다.
+지금 들어 있는 건 Figma 제목을 옮긴 초안뿐이라 운영 기본값에서 피드는 **비어 있다**. 로컬은 `STYLE_INCLUDE_DRAFTS=true`.
+
+| 동작 | 주소 | 비고 |
+|---|---|---|
+| 피드 | `GET /api/styles?section=editorial\|foryou\|trending&kind=makeup\|hair\|mood\|all&mood=&moods=a,b&traits=a,b&faceType=&limit=` | 로그인 불필요. 개인화 입력은 쿼리(기기 저장본도 쓸 수 있게) |
+| 상세 | `GET /api/styles/{id}?mood=&traits=` | `usage`(내 무드 활용법)·`personalized{contrast,texture,point}` 는 `mood` 가 있을 때만, 없으면 `null` |
+| 제품 | `GET /api/products/recommendations?mood=&moods=&traits=&personalColor=&part=&contentId=&limit=` | `contentId` 가 있으면 그 글에 연결된 상품 우선 (`source: editorial_detail`) |
+| 북마크 | `GET /api/bookmarks?kind=` · `PUT/DELETE /api/bookmarks/{contentId}` · `POST /api/bookmarks/merge {contentIds}` | 로그인 전용. 게스트는 기기 저장 → 연결 시 `merge` (중복·없는 글 건너뜀) |
+
+- **`personalized: false` 면 개인화가 아니다.** 매칭이 없으면 에디터 추천으로 폴백하고 라벨도 `에디터 추천` 이다. "지금 많이 보는" 집계는 없다 —
+  `trending` 도 에디토리얼 최신순이다. UI 는 이 라벨을 그대로 쓴다 (과장 금지).
+- 매칭 점수: 대표 무드 +3, 보조 무드 +1, trait +1, 얼굴형 +1 (제품은 퍼스널컬러 +1). `matchReasons` 에 이유가 실린다.
+- 제품은 **가격을 저장하지 않는다** (바뀌는 값). `url` 이 있으면 `affiliate: true` 로 파트너스 고지를 띄우고 "가격 보기" 로 링크만 건다.
+  `url` 없는 상품은 구매 affordance 없이 제형·형태 정보만. AI 가 상품·URL 을 만들지 않는다.
+- 비공개·삭제된 글은 북마크로 우회 열람할 수 없다 (`PUT` 404, 목록에선 `available: false`).
+- 제품 목록 공통 화면(Figma `106:2457` canonical)의 진입 파라미터는 closeout 3.1 절대로: `contentId`(editorial 진입) 또는 `mood·traits`(분석 결과 진입).
+
 ## 메이크업 추천 제품 — **미구현 (계획 스키마)**
 
 > ⚠️ 아래는 **아직 백엔드가 채우지 않는다.** `MAKEUP_CARDS_FORMAT` 에 `recommendedProducts`

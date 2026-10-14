@@ -399,7 +399,7 @@ async def delete_user_data(user_id: str) -> dict[str, Any]:
             report["errors"].append(f"storage: {getattr(e, 'detail', e)}")
 
         # 2) 리포트(analyses 를 restrict 로 참조) → 분석 행 (cascade) → 사용량 카운터
-        # rooms 는 owner cascade. 내가 친구로 참여한 행은 participant_id 만 null 이 되고 닉네임·공개 요약은 Room 에 남는다 (F12 보관 설계)
+        # bookmarks·rooms 는 owner cascade. 내가 친구로 참여한 행은 participant_id 만 null 이 되고 닉네임·공개 요약은 Room 에 남는다 (F12 보관 설계)
         for table in ("reports", "analyses", "usage_counters"):
             resp = await client.delete(
                 f"{SUPABASE_URL}/rest/v1/{table}",

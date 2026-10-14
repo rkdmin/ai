@@ -18,6 +18,7 @@ last-verified: "2026-08-12"
 | 종합 카드 | `POST /api/cards/total` ✅ | `generateTotalCards()` ✅ | — ❌ | **호출자 없음** (v1.0 진입점 미정) |
 | 사진 합성 | `POST /api/photo/generate` ✅ | `generateStyledPhoto()` ✅ | `App.onSynthesize` ✅ | **연결됨** (로그인 전용) |
 | 헬스체크 | `GET /api/health` ✅ | — | — | 운영 모니터링용 (UI 호출 불필요) |
+| STYLE 피드·상세·제품·북마크 | `/api/styles*`, `/api/products/recommendations`, `/api/bookmarks*` ✅ (migration 0006, 사전은 초안만) | ❌ 없음 | `Trend.jsx` 는 "준비 중" | **백엔드만** (F07·F10, 운영 콘텐츠 대기) |
 | Beauty Room·초대·케미 | `/api/rooms*`, `/api/invites/{token}[/join]`, `/api/handoffs/{token}/claim` ✅ (migration 0005, 규칙 계산) | ❌ 없음 | 케미 탭·초대 웹 화면 없음 | **백엔드만** (F08·F09) |
 | 통합 리포트 | `POST/GET /api/reports`, `/{id}`, `/{id}/retry` ✅ (migration 0003, 권한은 `REPORT_ACCESS_MODE`) | ❌ 없음 | 리포트 화면 없음 | **백엔드만** (F04, 결제 P4 전) |
 | 계정 삭제 | `DELETE /api/account` ✅ (Storage·행·auth 삭제, 멱등) | ❌ 없음 | `My.jsx` 는 alert 만 띄움 — 미연결 | **백엔드만** (F12 선행, Codex 연결 대기) |
@@ -98,7 +99,7 @@ Supabase `posts` 테이블을 도입한다.
   (`analyses` / `cards` / `feedback` / `usage_counters` / `generated_photos` + RLS)
 - 이미 적용한 프로젝트는 `backend/supabase_migrations/0002_analysis_schema_v2.sql` 을 추가 적용
   (`analyses.result` / `schema_version` / `mood_archetype` — 저장된 분석에서 무드 복원)
-- `0003_reports.sql` (통합 리포트), `0004_generated_photos_style_key.sql` (TRY ON 스타일별 캐시), `0005_rooms.sql` (Room·초대·인계) 도 번호 순으로 적용
+- `0003_reports.sql` (통합 리포트), `0004_generated_photos_style_key.sql` (TRY ON 스타일별 캐시), `0005_rooms.sql` (Room·초대·인계), `0006_bookmarks.sql` (저장한 스타일) 도 번호 순으로 적용
 - Storage bucket `analysis-photos` 생성 (정면 사진 `PHOTO_RETENTION_DAYS` 일 보관, 기본 90)
 - Kakao / Google OAuth provider 와 redirect URL 등록
 - Android 실기기 카카오 PoC — 앱 설치 / 미설치 / 백그라운드 복귀 케이스

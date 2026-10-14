@@ -59,7 +59,7 @@ create table if not exists public.entitlements (
   revoked_at timestamptz
 );
 
--- ── 북마크 (P5 · F10) ─────────────────────────────────────────────
+-- ── 북마크 (P5 · F10) — ✅ supabase_migrations/0006_bookmarks.sql 로 옮겨 적용 대상이 됐다 (kind 에 mood 추가). 아래는 참고용 사본 ──
 -- 저장 대상은 운영 콘텐츠(STYLE 에디토리얼)만. content_id 는 콘텐츠 사전(D05)의 안정적 ID.
 create table if not exists public.bookmarks (
   owner_id uuid not null references auth.users(id) on delete cascade,
