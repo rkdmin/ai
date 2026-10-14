@@ -1,5 +1,5 @@
 ---
-last-verified: "2026-09-15"
+last-verified: "2026-10-12"
 ---
 
 # 실행 계획 (Plans)
@@ -65,6 +65,11 @@ last-verified: "2026-09-15"
 ```
 
 `status` 는 넷뿐이다.
+
+**부속 문서**: 조사 결과·근거표처럼 plan 에 딸린 `.md` 는 같은 번호를 앞에 붙이고
+frontmatter 에 `attachment-of: "NNNN"` 만 둔다 (`plan`/`status` 없음). 체크리스트 집계와
+status 규율에서 빠지며, 번호가 파일명과 같고 본체 plan 이 실재하는지만 검사한다.
+예: `0009-figma-closeout.md` → `attachment-of: "0009"`. `.json`/`.html` 부속은 검사하지 않는다.
 
 | 값 | 뜻 |
 |----|-----|

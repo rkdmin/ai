@@ -1,9 +1,22 @@
 {
   "status": "Proposal evidence; not implementation",
-  "reviewDate": "2026-09-15",
+  "reviewDate": "2026-10-12",
   "fileKey": "PCUCRGz6FRNmOrhynuHulp",
   "canvasId": "108:2562",
-  "source": "Figma get_metadata cached page 0:1; names are layer names, not guaranteed current text characters",
+  "source": "Figma use_figma live read of page 0:1 and canvas 108:2562; screen text, IA notes, visibility, dimensions, reactions, and annotations verified",
+  "summary": {
+    "screenFrames": 53,
+    "visibleScreenFrames": 51,
+    "hiddenArchiveDuplicates": 2,
+    "visibleScreensWithUnresolvedText": 23,
+    "unresolvedTextNodes": 81,
+    "prototypeReactionsInScreenTrees": 0,
+    "annotationsInScreenTrees": 0
+  },
+  "driftFrom2026-09-15": {
+    "removedNodeIds": ["108:2563"],
+    "resizedNodeIds": ["158:574", "108:3175", "108:3277", "108:3410", "108:3481"]
+  },
   "screens": [
     {
       "id": "158:574",
@@ -11,7 +24,7 @@
       "visible": true,
       "path": "horizontal-canvas_1/IA_SECTION_CORE",
       "width": 390,
-      "height": 1318,
+      "height": 1374,
       "url": "https://www.figma.com/design/PCUCRGz6FRNmOrhynuHulp?node-id=158-574"
     },
     {
@@ -22,15 +35,6 @@
       "width": 390,
       "height": 2107,
       "url": "https://www.figma.com/design/PCUCRGz6FRNmOrhynuHulp?node-id=158-657"
-    },
-    {
-      "id": "108:2563",
-      "name": "home-wireframe",
-      "visible": true,
-      "path": "horizontal-canvas_1",
-      "width": 390,
-      "height": 844,
-      "url": "https://www.figma.com/design/PCUCRGz6FRNmOrhynuHulp?node-id=108-2563"
     },
     {
       "id": "108:2714",
@@ -101,7 +105,7 @@
       "visible": true,
       "path": "horizontal-canvas_1",
       "width": 390,
-      "height": 2321,
+      "height": 1828,
       "url": "https://www.figma.com/design/PCUCRGz6FRNmOrhynuHulp?node-id=108-3175"
     },
     {
@@ -110,7 +114,7 @@
       "visible": true,
       "path": "horizontal-canvas_1",
       "width": 390,
-      "height": 2915,
+      "height": 2766,
       "url": "https://www.figma.com/design/PCUCRGz6FRNmOrhynuHulp?node-id=108-3277"
     },
     {
@@ -119,7 +123,7 @@
       "visible": true,
       "path": "horizontal-canvas_1",
       "width": 390,
-      "height": 1889,
+      "height": 1925,
       "url": "https://www.figma.com/design/PCUCRGz6FRNmOrhynuHulp?node-id=108-3410"
     },
     {
@@ -128,7 +132,7 @@
       "visible": true,
       "path": "horizontal-canvas_1",
       "width": 390,
-      "height": 2539,
+      "height": 2965,
       "url": "https://www.figma.com/design/PCUCRGz6FRNmOrhynuHulp?node-id=108-3481"
     },
     {

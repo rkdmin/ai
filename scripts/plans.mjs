@@ -46,12 +46,29 @@ function parse(file) {
   return { file, fm, raw, done, open, cancelled, total: done + open };
 }
 
-export function collect() {
+/**
+ * `NNNN-*.md` 중 frontmatter 에 `attachment-of: "NNNN"` 이 있으면 plan 이 아니라
+ * 그 plan 의 **부속 문서**다 (조사 결과·근거표 등). 체크리스트 집계와 status 규율에서 빠지고,
+ * 대신 번호가 파일명과 같고 본체 plan 이 실재하는지만 검사한다.
+ */
+function isAttachment(p) {
+  return Boolean(p.fm && p.fm['attachment-of'] !== undefined);
+}
+
+function collectAll() {
   if (!existsSync(DIR)) return [];
   return readdirSync(DIR)
     .filter((f) => /^\d{4}-.*\.md$/.test(f))
     .sort()
     .map(parse);
+}
+
+export function collect() {
+  return collectAll().filter((p) => !isAttachment(p));
+}
+
+export function collectAttachments() {
+  return collectAll().filter(isAttachment);
 }
 
 /** 규율 위반 목록을 돌려준다. 빈 배열이면 통과. */
@@ -93,6 +110,17 @@ export function verify(plans) {
     }
     if (p.open > 0 && p.fm.status === 'Done') {
       problems.push(`${p.file} — status 가 Done 인데 남은 항목이 ${p.open}개입니다`);
+    }
+  }
+
+  // 부속 문서 — 번호가 파일명과 같고, 그 번호의 본체 plan 이 있어야 한다
+  for (const a of collectAttachments()) {
+    const num = a.file.slice(0, 4);
+    const of = String(a.fm['attachment-of']);
+    if (of !== num) {
+      problems.push(`${a.file} — attachment-of("${of}") 가 파일명 번호(${num})와 다릅니다`);
+    } else if (!seen.has(num)) {
+      problems.push(`${a.file} — 부속 문서인데 본체 plan ${num} 이 없습니다`);
     }
   }
   return problems;
